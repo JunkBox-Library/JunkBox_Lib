@@ -1,0 +1,31 @@
+INVITE sip:confctl-313@bhr.vivox.com SIP/2.0
+Via: SIP/2.0/UDP 192.168.27.1:2935;rport;branch=z9hG4bK676118220
+From: <sip:xMVjKOM2VSiOeIrVffPimZg==@bhr.vivox.com>;tag=2107297877
+To: <sip:confctl-313@bhr.vivox.com>
+Call-ID: 3314557226@192.168.27.1
+CSeq: 20 INVITE
+Contact: <sip:xMVjKOM2VSiOeIrVffPimZg==@192.168.27.1:2935>
+Max-Forwards: 70
+User-Agent: Vivox-SDK-2.0.2961.3323-Win/Feb--4-2008/16:23:20
+Subject: New Call
+Expires: 120
+Supported: path, 100rel
+VxSessionId: fbb67f49-cd5e-4284-a03f-0163b7a34c4c
+Content-Type: application/sdp
+Content-Length: 416
+
+v=0
+o=amsip 0 0 IN IP4 192.168.27.1
+s=conversation
+c=IN IP4 70.42.62.102
+t=0 0
+m=audio 22860 RTP/AVP 111 0 8 101
+a=candidate 987444749 1 pas987444749 UDP 1.0 192.168.27.1 22860
+a=candidate 330074552 1 pas330074552 UDP 1.0 58.158.97.83 22860
+a=rtpmap:111 SIREN14-3D/32000
+a=fmtp:111 bitrate=32000
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-11
+a=setup:both

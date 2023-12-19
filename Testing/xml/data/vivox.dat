@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VCConfiguration>
+<DefaultRealm>bhr.vivox.com</DefaultRealm>
+<DefaultSIPProxy>proxy.bhr.vivox.com:5062</DefaultSIPProxy>
+<DefaultSIPProxy>proxy.bhr.vivox.com:5060</DefaultSIPProxy>
+<DefaultAttemptUseSTUN>true</DefaultAttemptUseSTUN>
+<DefaultSTUNServer>stun.vivox.com</DefaultSTUNServer>
+<DefaultEchoServer>echo2.vivox.com</DefaultEchoServer>
+<DefaultEchoPort>50505</DefaultEchoPort>
+<DefaultWellKnownIP>64.207.141.79</DefaultWellKnownIP>
+<DefaultTimeout>5000</DefaultTimeout>
+<SubscribeRetry>120</SubscribeRetry>
+<UrlResetPassword>http://www.bhr.vivox.com/api2/viv_request_password.php?user_uri={curruser.uri}&amp;user_email={curruser.email}&amp;nowindow=1</UrlResetPassword>
+<!-- Set this to true to disable the Vivox logo in Connector -->
+<App.NoBottomLogo>false</App.NoBottomLogo>
+<!-- Set this to true to enable the direct call window in Connector -->
+<App.DirectDial>false</App.DirectDial> 
+</VCConfiguration>

@@ -1,0 +1,560 @@
+
+/**
+@brief   LLSD用ライブラリヘッダ（サブセット版）
+@file    llsd_tool.c
+@author  Fumi.Iseki (C)
+@sa http://wiki.secondlife.com/wiki/LLSD
+@sa http://www.nsl.tuis.ac.jp/xoops/modules/xpwiki/?LLSD
+*/
+
+#ifdef CPLUSPLUS
+    #undef CPLUSPLUS
+#endif
+
+
+#include "llsd_tool.h"
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Binary LLSD
+//
+
+/**
+@brief ストリングマーカーの要素を返す．ポインタは次に進む．
+
+@param *ptr LLSD_MAKER_STR ('s') の次のデータを指すポインタ
+*/
+Buffer  llsd_bin_get_str(uByte** ptr)
+{
+    Buffer buf = init_Buffer();
+
+    if (ptr==NULL) return buf;
+
+    int size = ntohl(*(int*)(*ptr));
+    (*ptr) += 4;
+    
+    char* str = (char*)malloc(size+1);
+    if (str!=NULL) {
+        memcpy(str, *ptr, size);
+        str[size] = '\0';
+        buf = make_Buffer_bystr(str);
+        free(str);
+    }
+    (*ptr) += size;
+
+    return buf;
+}
+
+
+/**
+@brief 整数マーカーの要素を返す．ポインタは次に進む．
+
+@param *ptr LLSD_MAKER_INT ('i') の次のデータを指すポインタ
+*/
+int  llsd_bin_get_int(uByte** ptr)
+{
+    if (ptr==NULL) return 0;
+
+    int value = ntohl(*(int*)(*ptr));
+    (*ptr) += 4;
+
+    return value;
+}
+
+
+/**
+@brief デイトマーカーの要素を返す．ポインタは次に進む．
+
+@param *ptr LLSD_MAKER_DATE ('d') の次のデータを指すポインタ
+*/
+unsigned long long int llsd_bin_get_date(uByte** ptr)
+{
+    if (ptr==NULL) return 0ULL;
+
+    unsigned long long int value = ntohull(*(unsigned long long int*)(*ptr));
+    (*ptr) += 8;
+
+    return value;
+}
+
+
+/**
+@brief 実数マーカーの要素を返す．ポインタは次に進む．
+
+@param *ptr LLSD_MAKER_REAL ('r') の次のデータを指すポインタ
+*/
+double  llsd_bin_get_real(uByte** ptr)
+{
+    if (ptr==NULL) return 0.0;
+
+#ifdef WIN32
+    long long int tmp;//  __attribute__((may_alias));
+#else
+    long long int tmp  __attribute__((may_alias));
+#endif
+
+    tmp = ntohull(*(long long int*)(*ptr));
+
+    long long int* ptmp = (long long int*)&tmp;
+    double* valuep = (double*)ptmp;
+    double  value  = *valuep;
+
+/*  UnionPtr uptr;
+    uptr.llintp = (long long int*)&tmp;
+    double  value = *(uptr.drealp);
+*/
+//  double  value = *(double*)(&tmp);
+
+    (*ptr) += 8;
+
+    return value;
+}
+
+
+/**
+@brief UUIDマーカーの要素を返す．ポインタは次に進む．
+
+@param *ptr LLSD_MAKER_UUID ('u') の次のデータを指すポインタ
+*/
+Buffer  llsd_bin_get_uuid(uByte** ptr)
+{
+    Buffer buf = init_Buffer();
+
+    if (ptr==NULL) return buf;
+
+    char* str = (char*)malloc(16);
+    if (str!=NULL) {
+        memcpy(str, *ptr, 16);
+        buf = set_Buffer(str, 16);
+        free(str);
+    }
+    (*ptr) += 16;
+
+    return buf;
+}
+
+
+/**
+@brief バイナリマーカーの要素を返す．ポインタは次に進む．
+
+@param *ptr LLSD_MAKER_BIN ('b') の次のデータを指すポインタ
+*/
+Buffer  llsd_bin_get_bin(uByte** ptr)
+{
+    Buffer buf = init_Buffer();
+
+    if (ptr==NULL) return buf;
+
+    int size = ntohl(*(int*)(*ptr));
+    (*ptr) += 4;
+    
+    uByte* bin = (uByte*)malloc(size);
+    if (bin!=NULL) {
+        memcpy(bin, *ptr, size);
+        buf = set_Buffer(bin, size);
+        free(bin);
+    }
+    (*ptr) += size;
+
+    return buf;
+}
+
+
+int  llsd_bin_get_length(uByte* ptr, int sz)
+{
+    if (ptr==NULL) return 0;
+
+    int cc = 0;
+    Buffer stack = make_Buffer(LSDATA);
+    uByte* buf   = ptr;
+
+    while (buf<ptr+sz) {
+        //
+        if      (*buf==LLSD_MAKER_UNDEF) buf++;
+        else if (*buf==LLSD_MAKER_TRUE)  buf++;
+        else if (*buf==LLSD_MAKER_FALSE) buf++;
+        else if (*buf==LLSD_MAKER_INT)   buf += 5;
+        else if (*buf==LLSD_MAKER_REAL)  buf += 9;
+        else if (*buf==LLSD_MAKER_UUID)  buf += 17;
+        else if (*buf==LLSD_MAKER_BIN)   buf += ntohl(*(int*)(buf+1)) + 5;
+        else if (*buf==LLSD_MAKER_STR)   buf += ntohl(*(int*)(buf+1)) + 5;
+        else if (*buf==LLSD_MAKER_URI)   buf += ntohl(*(int*)(buf+1)) + 5;
+        else if (*buf==LLSD_MAKER_KEY)   buf += ntohl(*(int*)(buf+1)) + 5;
+        else if (*buf==LLSD_MAKER_DATE)  buf += 9;
+        else if (*buf!=LLSD_MAKER_MAP && *buf!=LLSD_MAKER_ARRAY &&
+                 *buf!=LLSD_MAKER_MAP_END && *buf!=LLSD_MAKER_ARRAY_END) {
+            if (ptr==buf) return 0;
+            PRINT_MESG("WARNING: llsd_bin_get_length: unknown marker %c: %04x\n", *buf, *buf);
+            break;
+        }
+
+        if (*buf==LLSD_MAKER_MAP) {
+            push_char_ringStack(&stack, LLSD_MAKER_MAP_END);
+            cc++;
+            buf += 5;
+        }
+        else if (*buf==LLSD_MAKER_ARRAY) {
+            push_char_ringStack(&stack, LLSD_MAKER_ARRAY_END);
+            cc++;
+            buf += 5;
+        }
+        else if (*buf==LLSD_MAKER_MAP_END || *buf==LLSD_MAKER_ARRAY_END) {
+            unsigned char marker = (unsigned char)pop_char_ringStack(&stack);
+            if (marker!=*buf) PRINT_MESG("WARNING: llsd_bin_get_length: missmatch stack data of [ or {\n");
+            cc--;
+            buf++;
+        }
+
+        if (cc==0) break;
+    }   
+
+    free_Buffer(&stack);
+
+    return (int)(buf - ptr);
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// Binary LLSD Parser
+//
+
+/**
+@brief  LLSD のバイナリデータを tXMLのデータに格納する．
+
+@param  ptr  LLSDのバイナリデータへのポインタ
+@param  sz   データのサイズ
+
+@return XMLデータを格納した tXMLのアンカーへのポインタ．
+@return エラーの場合，next以下のノードにはエラーを起こす直前までの内容が保存される
+@retval 0以下 エラーを起こした場合 stateに JBXL_XML_PARSED以外の値（負数）が入る．
+*/
+tXML*  llsd_bin_parse(uByte* ptr, int sz)
+{
+    tXML* xml;
+    tXML* node;
+
+    xml = new_xml_node();                   // アンカー
+    xml->ldat.id = XML_ANCHOR_NODE;
+
+    // パース
+    node = llsd_bin_main_parse(xml, ptr, sz);
+    if (node->state<0) return xml;
+
+
+    // 元に戻ったか？
+    if (xml==node) {
+        xml->state = JBXL_XML_PARSED;
+    }
+    else {
+        xml->state = JBXL_XML_NOT_CLOSED;
+    }
+
+    // XML rootの数
+    if (xml->next!=NULL) {
+        int n = 0;
+        node = xml->next;
+        while(node!=NULL) {
+            if (node->ldat.id==XML_NAME_NODE) n++;
+            node = node->ysis;
+        }
+        if (n!=1) xml->state = JBXL_XML_MULTI_ROOT;
+    }
+    else xml->state = JBXL_XML_DEFAULT_STATE;
+
+    return xml;
+}
+
+
+/**
+@brief  LLSD のバイナリデータをパースするメイン関数．
+
+@param  xml  XMLデータを格納するツリー構造体の先頭へのポインタ．
+@param  ptr  LLSDのバイナリデータへのポインタ
+@param  sz   データのサイズ
+
+@return 最後に処理したノードへのポインタ．ppがNULLの場合は xml, xmlが NULLの場合は NULLが返る．
+@retval 負数 @b state エラーの場合は stateに 負数の値が入る．
+*/
+tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
+{
+    if (ptr==NULL) return xml;
+    if (xml==NULL) return NULL;
+
+    tXML* snode = xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 0, "llsd", NULL, NULL, 0);
+
+    uByte* end = ptr + sz;
+    while (ptr<end  && !(xml==snode && *ptr!=LLSD_MAKER_MAP && *ptr!=LLSD_MAKER_ARRAY)) {
+        //
+        if (*ptr==LLSD_MAKER_MAP) {
+            ptr++;
+            int num = llsd_bin_get_map(&ptr);
+            xml = add_tTree_node_bystr(xml, XML_NAME_NODE, num, "map", NULL, NULL, 0);
+            xml->state = JBXL_XML_NODE_OPENED;
+        }
+        //
+        else if (*ptr==LLSD_MAKER_ARRAY) {
+            ptr++;
+            int num = llsd_bin_get_map(&ptr);
+            xml = add_tTree_node_bystr(xml, XML_NAME_NODE, num, "array", NULL, NULL, 0);
+            xml->state = JBXL_XML_NODE_OPENED;
+        }
+        //
+        else if (*ptr==LLSD_MAKER_MAP_END) {
+            ptr++;
+            if (xml->state==JBXL_XML_NODE_OPENED) {
+                xml->state = JBXL_XML_NODE_CLOSED;
+                xml = xml->prev;
+            }   
+        }
+        //
+        else if (*ptr==LLSD_MAKER_ARRAY_END) {
+            ptr++;
+            if (xml->state==JBXL_XML_NODE_OPENED) {
+                xml->state = JBXL_XML_NODE_CLOSED;
+                xml = xml->prev;
+            }   
+        }
+        //
+        else if (*ptr==LLSD_MAKER_KEY) {
+            ptr++;
+            Buffer key = llsd_bin_get_key(&ptr);
+            xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "key", NULL, NULL, 0);
+            xml = add_tTree_node_bystr(xml, XML_CONTENT_NODE, 0, (char*)key.buf, NULL, NULL, 0);
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+            free_Buffer(&key);
+        }
+        //
+        else if (*ptr==LLSD_MAKER_STR) {
+            ptr++;
+            Buffer str = llsd_bin_get_str(&ptr);
+            xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "string", NULL, NULL, 0);
+            xml = add_tTree_node_bystr(xml, XML_CONTENT_NODE, 0, (char*)str.buf, NULL, NULL, 0);
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+            free_Buffer(&str);
+        }
+        //
+        else if (*ptr==LLSD_MAKER_UUID) {
+            ptr++;
+            Buffer uuid = llsd_bin_get_uri(&ptr);
+            char*  guid = (char*)uuid2guid(uuid.buf);
+            xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "uuid", NULL, NULL, 0);
+            xml = add_tTree_node_bystr(xml, XML_CONTENT_NODE, 0, guid, NULL, NULL, 0);
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+            free(guid);
+            free_Buffer(&uuid);
+        }
+        //
+        else if (*ptr==LLSD_MAKER_URI) {
+            ptr++;
+            Buffer str = llsd_bin_get_uri(&ptr);
+            xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "uri", NULL, NULL, 0);
+            xml = add_tTree_node_bystr(xml, XML_CONTENT_NODE, 0, (char*)str.buf, NULL, NULL, 0);
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+            free_Buffer(&str);
+        }
+        //
+        else if (*ptr==LLSD_MAKER_INT) {
+            ptr++;
+            int val = llsd_bin_get_int(&ptr);
+            xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "integer", NULL, NULL, 0);
+            char* str = itostr_ts(val);
+            xml = add_tTree_node_bystr(xml, XML_CONTENT_NODE, 0, str, NULL, NULL, 0);
+            freeNull(str);
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+        }
+        //
+        else if (*ptr==LLSD_MAKER_DATE) {
+            ptr++;
+            unsigned long long int val = llsd_bin_get_date(&ptr);
+            xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "date", NULL, NULL, 0);
+            char* str = ulltostr_ts(val);
+            xml = add_tTree_node_bystr(xml, XML_CONTENT_NODE, 0, str, NULL, NULL, 0);
+            freeNull(str);
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+        }
+        //
+        else if (*ptr==LLSD_MAKER_REAL) {
+            ptr++;
+            double val = llsd_bin_get_real(&ptr);
+            xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "real", NULL, NULL, 0);
+            char* str = dtostr_ts(val);
+            xml = add_tTree_node_bystr(xml, XML_CONTENT_NODE, 0, str, NULL, NULL, 0);
+            freeNull(str);
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+        }
+        //
+        else if (*ptr==LLSD_MAKER_BIN) {
+            ptr++;
+            Buffer bin = llsd_bin_get_bin(&ptr);
+            Buffer b64 = encode_base64_Buffer(bin);
+            xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "binary", NULL, NULL, 0);
+            xml = add_tTree_node_bystr(xml, XML_CONTENT_NODE, 0, (char*)b64.buf, NULL, NULL, 0);
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+            free_Buffer(&bin);
+            free_Buffer(&b64);
+        }
+        //
+        else if (*ptr==LLSD_MAKER_TRUE) {
+            ptr++;
+            xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "boolean", NULL, NULL, 0);
+            xml = add_tTree_node_bystr(xml, XML_CONTENT_NODE, 0, "true", NULL, NULL, 0);
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+        }
+        //
+        else if (*ptr==LLSD_MAKER_FALSE) {
+            ptr++;
+            xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "boolean", NULL, NULL, 0);
+            xml = add_tTree_node_bystr(xml, XML_CONTENT_NODE, 0, "false", NULL, NULL, 0);
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+        }
+        //
+        else if (*ptr==LLSD_MAKER_UNDEF) {
+            ptr++;
+            xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 0, "undef", NULL, NULL, 0);
+            xml->state = JBXL_XML_NODE_CLOSED;
+            xml = xml->prev;
+        }
+        else {
+            PRINT_MESG("ERROR: llsd_bin_main_parse: unknown marker: %c (%04x)\n", *ptr, *ptr);
+            ptr++;
+        }
+    }
+
+    //
+    if (snode==xml) xml->state = JBXL_XML_NODE_CLOSED;
+    else           xml->state = JBXL_XML_NOT_CLOSED;
+
+    xml = xml->prev;
+
+    return xml;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// XML LLSD of Single Data 
+//  
+
+int  llsd_xml_contain_key(tXML* xml, const char* key)
+{
+    if (xml==NULL || key==NULL) return FALSE;
+
+    Buffer buf = make_Buffer_bystr("<llsd><map><key>");
+    cat_s2Buffer(key, &buf);
+    cat_s2Buffer("</key>", &buf);
+
+    tXML* node = get_xml_node_bystr(xml, (char*)buf.buf);
+    free_Buffer(&buf);
+
+    if (node!=NULL) return TRUE;
+    return FALSE;
+}
+
+
+/**
+*/
+int  llsd_xml_get_content_int(tXML* xml, const char* key, const char* item)
+{
+    if (xml==NULL || key==NULL || item==NULL) return 0;
+
+    Buffer buf = make_Buffer_bystr("<llsd><map><key>");
+    cat_s2Buffer(key, &buf);
+    cat_s2Buffer("</key><map><key>", &buf);
+    cat_s2Buffer(item, &buf);
+    cat_s2Buffer("</key><integer>", &buf);
+
+    int ret = get_xml_int_content_bystr(xml, (char*)buf.buf);
+    free_Buffer(&buf);
+
+    return ret;
+}
+
+
+double  llsd_xml_get_content_real(tXML* xml, const char* key, const char* item)
+{
+    if (xml==NULL || key==NULL || item==NULL) return 0.0;
+
+    Buffer buf = make_Buffer_bystr("<llsd><map><key>");
+    cat_s2Buffer(key, &buf);
+    cat_s2Buffer("</key><map><key>", &buf);
+    cat_s2Buffer(item, &buf);
+    cat_s2Buffer("</key><real>", &buf);
+
+    double ret = get_xml_double_content_bystr(xml, (char*)buf.buf);
+    free_Buffer(&buf);
+
+    return ret;
+}
+
+
+Buffer  llsd_xml_get_content_str(tXML* xml, const char* key, const char* item)
+{
+    Buffer buf = init_Buffer();
+    if (xml==NULL || key==NULL || item==NULL) return buf;
+
+    buf = make_Buffer_bystr("<llsd><map><key>");
+    cat_s2Buffer(key, &buf);
+    cat_s2Buffer("</key><map><key>", &buf);
+    cat_s2Buffer(item, &buf);
+    cat_s2Buffer("</key><string>", &buf);
+
+    char* ret = get_xml_char_content_bystr(xml, (char*)buf.buf);
+    free_Buffer(&buf);
+    buf = make_Buffer_bystr(ret);
+
+    return buf;
+}
+
+
+Buffer  llsd_xml_get_content_bin(tXML* xml, const char* key, const char* item)
+{
+    Buffer buf = init_Buffer();
+    if (xml==NULL || key==NULL || item==NULL) return buf;
+
+    buf = make_Buffer_bystr("<llsd><map><key>");
+    cat_s2Buffer(key, &buf);
+    cat_s2Buffer("</key><map><key>", &buf);
+    cat_s2Buffer(item, &buf);
+    cat_s2Buffer("</key><binary>", &buf);
+
+    char* ret = get_xml_char_content_bystr(xml, (char*)buf.buf);
+    free_Buffer(&buf);
+    buf = make_Buffer_bystr(ret);
+    
+    Buffer bin = decode_base64_Buffer(buf);
+    free_Buffer(&buf);
+
+    return bin;
+}
+

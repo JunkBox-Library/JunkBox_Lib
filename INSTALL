@@ -1,0 +1,70 @@
+
+ How to Compile
+
+
+ Compile
+
+        $ zcat junkbox_lib-X.Y.Z.tgz | tar xfv -
+        $ cd JunkBox_Lib
+        $ ./configure [options]
+        $ make        
+
+
+        configure options
+        --enable-debug          enable debug mode function 
+        --disable-gLib          no compile gLib. 
+        --disable-X11           no compile X11 library in gLib. When X Window is not installed, please specifies it.
+
+        --enable-zlib=DIR       specify the directory where ZLIB is installed. default is /usr
+        --disable-zlib          not use ZLIB function.
+
+        --enable-ssl=DIR        specify the directory where OpenSSL is installed. default is disable. default directory is /usr
+        --enable-ldap=DIR       enable OpenLDAP function. default is disable. default directory is /usr
+        --enable-db=DIR         enable Berkeley DB(4.2) function. libdb-4.2.a is necessary. default is disable. default directory is /usr
+        --enable-mysql=DIR      enable MySQL client function. libdb-4.2.a is necessary. default is disable. default directory is /usr
+
+        --enable-jpeg=DIR       specify the directory where libjpeg is installed. default is disable. default directory is /usr
+        --enable-openjpeg=OPTN  enable OpenJpeg function. OPTN is directory or OpenJpeg version (2.0or 2.1). Default durectory is /usr/local
+                                Default version is 2.0
+
+
+Ex.) ./configure --enable-jpeg --enable-ssl --enable-openjpeg=2.1 --enable-ldap --enable-mysql=/usr/local/mysql
+Ex.) ./configure --enable-jpeg --enable-ssl --enable-ldap --enable-debug
+
+
+
+-----------------------------------------------------------------------------
+Japanese
+
+
+ コンパイル．
+
+    $ zcat junkbox_lib-X.Y.Z.tgz | tar xfv -
+        $ cd JunkBox_Lib
+    $ ./configure  [オプション]
+    $ make
+
+    make install は行わない．
+
+    configure のオプション
+        --enable-debug          デバッグモードでコンパイルする．  
+        --disable-gLib          グラフィック関数を使用しない．
+        --disable-X11           グラフィック関数の中の X Window関連の関数を使用しない．X Window がインストールされていない場合に指定する．
+
+        --enable-zlib=DIR       zlibのディレクトリを指定する．デフォルトは使用する．またデフォルトのディレクトリは /usr になる．
+        --disable-zlib          zlibの機能 (gz_tool.c) を使用しない．
+
+        --enable-ssl=DIR        OpenSSLを使用する． デフォルトは使用しない．またデフォルトのディレクトリは /usr になる．
+        --enable-ldap=DIR       OpenLDAPを使用する．デフォルトは使用しない．またデフォルトのディレクトリは /usr になる．
+        --enable-db=DIR         Berkley DB (4.2)機能を使用する．デフォルトは使用しない．またデフォルトのディレクトリは /usr になる．
+        --enable-mysql=DIR      MySQLのクライアント機能を使用する．デフォルトは使用しない．またデフォルトのディレクトリは /usr になる．
+
+        --enable-jpeg=DIR       libjpegの機能を使用する．デフォルトは使用しない．デフォルトのディレクトリは /usr になる．
+        --enable-openjpeg=OPTN  OpenJpeg の機能を使用する．デフォルトは使用しない．OPTNはディレクトリか，OpenJpegのバージョン（2.0, 2.1）．
+                                デフォルトのディレクトリは /usr/local デフォルトのバージョンは 2.0
+
+
+
+例： ./configure --enable-jpeg --enable-ssl --enable-openjpeg=2.1 --enable-ldap --enable-mysql
+
+

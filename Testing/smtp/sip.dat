@@ -1,0 +1,12 @@
+REGISTER sip:proxy.bhr.vivox.com:5062 SIP/2.0
+Via: SIP/2.0/UDP 202.26.159.137:22891;rport;branch=z9hG4bK831225887
+From: <sip:xDl7DbGxzTR219yvIKqoKjQ==@bhr.vivox.com>;tag=561498858 
+To: <sip:xDl7DbGxzTR219yvIKqoKjQ==@bhr.vivox.com>
+Call-ID: 1962420700@202.26.159.137
+CSeq: 1 REGISTER
+Contact: <sip:xDl7DbGxzTR219yvIKqoKjQ==@202.26.159.137:22891>
+Max-Forwards: 70
+User-Agent: Vivox-SDK-2.0.2961.3323-Win/Feb--4-2008/16:23:20
+Expires: 1200
+Content-Length: 0
+

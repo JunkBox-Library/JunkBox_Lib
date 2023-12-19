@@ -1,0 +1,253 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.4.1" xmlns="http://www.collada.org/2005/11/COLLADASchema">
+  <asset>
+    <contributor>
+      <author />
+      <authoring_tool>Unity3D 4.5.3f3 - COLLADA exporter v1.5.0</authoring_tool>
+      <comments />
+      <copyright />
+      <source_data />
+    </contributor>
+    <created>2015-05-01T13:32:09.7467241+09:00</created>
+    <modified>2015-05-01T13:32:09.7467241+09:00</modified>
+    <unit meter="1" name="meter" />
+    <up_axis>Y_UP</up_axis>
+  </asset>
+  <library_materials>
+    <material id="_" name="Default-Diffuse">
+      <instance_effect url="#_-fx" />
+    </material>
+  </library_materials>
+  <library_effects>
+    <effect id="_-fx" name="Diffuse">
+      <profile_COMMON>
+        <newparam sid="_Color">
+          <semantic>Main_x0020_Color</semantic>
+          <float4>1.000000 1.000000 1.000000 0.500000</float4>
+        </newparam>
+        <technique sid="common">
+          <phong>
+            <diffuse>
+              <color>1.000000 1.000000 1.000000 0.500000</color>
+            </diffuse>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_geometries>
+    <geometry id="_34738" name="Cube">
+      <mesh>
+        <source id="_34738-positions">
+          <float_array id="_34738-positions-array" count="72">
+-0.500000 -0.500000 0.500000 
+0.500000 -0.500000 0.500000 
+-0.500000 0.500000 0.500000 
+0.500000 0.500000 0.500000 
+-0.500000 0.500000 -0.500000 
+0.500000 0.500000 -0.500000 
+-0.500000 -0.500000 -0.500000 
+0.500000 -0.500000 -0.500000 
+-0.500000 0.500000 0.500000 
+0.500000 0.500000 0.500000 
+-0.500000 0.500000 -0.500000 
+0.500000 0.500000 -0.500000 
+-0.500000 -0.500000 -0.500000 
+0.500000 -0.500000 0.500000 
+0.500000 -0.500000 -0.500000 
+-0.500000 -0.500000 0.500000 
+0.500000 -0.500000 0.500000 
+0.500000 0.500000 -0.500000 
+0.500000 -0.500000 -0.500000 
+0.500000 0.500000 0.500000 
+-0.500000 -0.500000 -0.500000 
+-0.500000 0.500000 0.500000 
+-0.500000 -0.500000 0.500000 
+-0.500000 0.500000 -0.500000</float_array>
+          <technique_common>
+            <accessor count="24" source="#_34738-positions-array" stride="3">
+              <param name="X" type="float" />
+              <param name="Y" type="float" />
+              <param name="Z" type="float" />
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="_34738-colors">
+          <float_array id="_34738-colors-array" count="96">
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000 
+1.000000 1.000000 1.000000 1.000000</float_array>
+          <technique_common>
+            <accessor count="24" source="#_34738-colors-array" stride="4">
+              <param name="R" type="float" />
+              <param name="G" type="float" />
+              <param name="B" type="float" />
+              <param name="A" type="float" />
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="_34738-normals">
+          <float_array id="_34738-normals-array" count="72">
+0.000000 0.000000 1.000000 
+0.000000 0.000000 1.000000 
+0.000000 0.000000 1.000000 
+0.000000 0.000000 1.000000 
+0.000000 1.000000 0.000000 
+0.000000 1.000000 0.000000 
+0.000000 0.000000 -1.000000 
+0.000000 0.000000 -1.000000 
+0.000000 1.000000 0.000000 
+0.000000 1.000000 0.000000 
+0.000000 0.000000 -1.000000 
+0.000000 0.000000 -1.000000 
+0.000000 -1.000000 0.000000 
+0.000000 -1.000000 0.000000 
+0.000000 -1.000000 0.000000 
+0.000000 -1.000000 0.000000 
+1.000000 0.000000 0.000000 
+1.000000 0.000000 0.000000 
+1.000000 0.000000 0.000000 
+1.000000 0.000000 0.000000 
+-1.000000 0.000000 0.000000 
+-1.000000 0.000000 0.000000 
+-1.000000 0.000000 0.000000 
+-1.000000 0.000000 0.000000</float_array>
+          <technique_common>
+            <accessor count="24" source="#_34738-normals-array" stride="3">
+              <param name="X" type="float" />
+              <param name="Y" type="float" />
+              <param name="Z" type="float" />
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="_34738-uv0">
+          <float_array id="_34738-uv0-array" count="48">
+0.000000 0.000000 
+1.000000 0.000000 
+0.000000 1.000000 
+1.000000 1.000000 
+0.000000 1.000000 
+1.000000 1.000000 
+0.000000 1.000000 
+1.000000 1.000000 
+0.000000 0.000000 
+1.000000 0.000000 
+0.000000 0.000000 
+1.000000 0.000000 
+0.000000 0.000000 
+1.000000 1.000000 
+1.000000 0.000000 
+0.000000 1.000000 
+0.000000 0.000000 
+1.000000 1.000000 
+1.000000 0.000000 
+0.000000 1.000000 
+0.000000 0.000000 
+1.000000 1.000000 
+1.000000 0.000000 
+0.000000 1.000000</float_array>
+          <technique_common>
+            <accessor count="24" source="#_34738-uv0-array" stride="2">
+              <param name="S" type="float" />
+              <param name="T" type="float" />
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="_34738-vertices">
+          <input semantic="POSITION" source="#_34738-positions" />
+        </vertices>
+        <triangles count="12" material="material-0">
+          <input offset="0" semantic="VERTEX" source="#_34738-vertices" />
+          <input offset="0" semantic="COLOR" source="#_34738-colors" />
+          <input offset="0" semantic="NORMAL" source="#_34738-normals" />
+          <input offset="0" semantic="TEXCOORD" source="#_34738-uv0" set="0" />
+          <p>3 0 1 2 0 3 5 8 9 4 8 5 7 10 11 6 10 7 13 12 14 15 12 13 17 16 18 19 16 17 21 20 22 23 20 21</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+
+
+
+  <library_physics_models>
+    <physics_model id="collada_physics_model">
+      <rigid_body sid="_-1462094" name="Cube">
+        <technique_common>
+          <dynamic>false</dynamic>
+          <mass>0</mass>
+          <shape>
+            <instance_geometry url="#_34738" />
+          </shape>
+        </technique_common>
+      </rigid_body>
+    </physics_model>
+  </library_physics_models>
+  <library_physics_scenes>
+    <physics_scene id="collada_physics_scene">
+      <instance_physics_model url="#collada_physics_model">
+        <instance_rigid_body body="_-1462094" target="#_-1462094" />
+      </instance_physics_model>
+      <technique_common>
+        <gravity>0.000000 -9.810000 0.000000</gravity>
+      </technique_common>
+    </physics_scene>
+  </library_physics_scenes>
+
+
+
+
+
+
+  <library_visual_scenes>
+    <visual_scene id="collada_scene">
+      <node id="_-1462094" name="Cube">
+        <matrix sid="matrix">
+
+1.000000 0.000000 0.000000 2.529673 
+0.000000 1.000000 0.000000 3.479940 
+0.000000 0.000000 1.000000 0.786031 
+0.000000 0.000000 0.000000 1.000000</matrix>
+        <instance_geometry url="#_34738">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="material-0" target="#_" />
+            </technique_common>
+            <extra>
+              <technique profile="fl4re">
+                <shadows>
+                  <castShadows>true</castShadows>
+                  <receiveShadows>true</receiveShadows>
+                </shadows>
+              </technique>
+            </extra>
+          </bind_material>
+        </instance_geometry>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_physics_scene url="#collada_physics_scene" />
+    <instance_visual_scene url="#collada_scene" />
+  </scene>
+</COLLADA>

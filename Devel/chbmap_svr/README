@@ -1,0 +1,28 @@
+
+
+標高データサーバ
+
+  chbgeo_svr 
+    -f    設定ファイル指定 (未実装)
+    -i    Geo TIFFファイルを指定
+    -p    ポート番号を指定
+    -pid  PIDファイルを指定
+    -d    デーモンモード
+
+    ./chbgeo_svr -i inba/dem_hokusou.tif  -d
+
+
+
+
+テクスチャデータサーバ
+
+  chbmap_svr
+    -f    設定ファイル指定 (未実装)
+    -i    Geo TIFFファイルを指定
+    -s    シェイプファイルを指定
+    -p    ポート番号を指定
+    -pid  PIDファイルを指定
+    -d    デーモンモード
+
+    ./chbmap_svr -i inba/hokusou.tif -s inba/admin_bnd/admin_bnd.shp -d
+

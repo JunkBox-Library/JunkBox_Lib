@@ -1,0 +1,49 @@
+ 
+    JunkBox_Lib: C Language Libraries for software development
+
+              Copyright (C) 2000 JunkBox_Lib by Fumi.Iseki. Subaru Projrct 0. 
+                                             http://www.nsl.tuis.ac.jp/
+                                             mailto:iseki@rsch.tuis.ac.jp
+
+
+
+Explanation
+
+  This software is C Language Libraries for software developmen.
+  This libraries are composed by three directory. 
+
+  Lib  --- Basic Function
+  xLib --- Extended Function
+  gLib --- Graphic Function (for X Window) 
+
+  Documentations of libraries in Doc directories are Japanese only. Sorry.
+
+
+
+Latest Version
+
+  Please read ChangeLog 
+
+
+
+License.
+        
+  BSD License.
+
+Address of thanks.
+   
+  This product use Berkeley DB library.
+
+  This product includes software developed by the OpenSSL Project
+  for use in the OpenSSL Toolkit. (http://www.openssl.org/)
+            
+  This product use zlib library.  http://www.zlib.net/
+            
+  This software is based in part on the work of the Independent JPEG Group.
+
+  This work is part of OpenLDAP Software <http://www.openldap.org/>.
+
+  Thank you very much!!!
+
+
+

@@ -1,0 +1,23 @@
+Return-Path: SAYASAYA@jp.ibm.com
+Return-Path: <SAYASAYA@jp.ibm.com>
+X-Original-To: iseki@solar-system.tuis.ac.jp
+Delivered-To: iseki@solar-system.tuis.ac.jp
+Received: from falcon.sagamino.jp.ibm.com (falcon.sagamino.jp.ibm.com [203.141.92.58])
+	by jupiter.solar-system.tuis.ac.jp (Postfix) with ESMTP id E57DDBA2A5
+	for <iseki@solar-system.tuis.ac.jp>; Thu, 14 Sep 2006 16:20:41 +0900 (JST)
+Received: from e19p2l2.sagamino.japan.ibm.com (d19relay12.sagamino.japan.ibm.com [203.141.92.43])
+	by falcon.sagamino.jp.ibm.com (8.12.11.20060614/8.12.11) with ESMTP id k8E7AmVw059906
+	for <iseki@solar-system.tuis.ac.jp>; Thu, 14 Sep 2006 16:10:48 +0900
+Received: from d19av03.sagamino.japan.ibm.com (d19av03.sagamino.japan.ibm.com [9.189.5.111])
+	by e19p2l2.sagamino.japan.ibm.com (8.13.6/8.13.6/NCO v8.1.1) with ESMTP id k8E7Agtl307404
+	for <iseki@solar-system.tuis.ac.jp>; Thu, 14 Sep 2006 16:10:43 +0900
+Received: from d19av03.sagamino.japan.ibm.com (loopback [127.0.0.1])
+	by d19av03.sagamino.japan.ibm.com (8.12.11.20060308/8.13.3) with ESMTP id k8E7AgTn016272
+	for <iseki@solar-system.tuis.ac.jp>; Thu, 14 Sep 2006 16:10:42 +0900
+Received: from D19ML105.sagamino.japan.ibm.com (d19ml105.sagamino.japan.ibm.com [9.189.4.12])
+	by d19av03.sagamino.japan.ibm.com (8.12.11.20060308/8.12.11) with ESMTP id k8E79j7C015270;
+	Thu, 14 Sep 2006 16:09:45 +0900
+To: "T.AOKI" <taoki@rsch.tuis.ac.jp>, iseki@solar-system.tuis.ac.jp
+Cc: iijima@affrs.tuis.ac.jp, wasaki@affrs.tuis.ac.jp
+Subject: E =?ISO-2022-JP?B?GyRCJWEhPCVrJTslLSVlJWolRiUjITw0SU19GyhC?=
+MIME-Version: 1.0

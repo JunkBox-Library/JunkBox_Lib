@@ -1,0 +1,11 @@
+SIP/2.0 200 OK
+Via: SIP/2.0/UDP 192.168.27.7:2114;rport=2114;received=58.158.97.83
+Via: SIP/2.0/UDP 192.168.27.1:22891;rport;branch=z9hG4bK2041164858
+From: <sip:xc8FdtfLqQl-DZZYf0X7gvg==@bhr.vivox.com>;tag=3200936019
+To: <sip:xc8FdtfLqQl-DZZYf0X7gvg==@bhr.vivox.com>;tag=8ed71cefda31ab7612ee481a3532d3b1.93e0
+Call-ID: 2106455242@192.168.27.1
+CSeq: 2 REGISTER
+Date: Wed, 18 Feb 2009 15:15:45 GMT
+Contact: <sip:xc8FdtfLqQl-DZZYf0X7gvg==@192.168.27.7:2715>;q=0.1;expires=1133;received="sip:58.158.97.83:2715;dstip=70.42.62.50;dstport=5062", <sip:xc8FdtfLqQl-DZZYf0X7gvg==@192.168.27.7:2114>;q=0.1;expires=1200;received="sip:58.158.97.83:2114;dstip=70.42.62.50;dstport=5062"
+Content-Length: 0
+

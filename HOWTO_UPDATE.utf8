@@ -1,0 +1,21 @@
+
+■ バージョンアップ
+
+1. ソースを修正
+2. vi configure.ac
+3. ./config.sh
+
+
+
+
+■ 配布用tarボール
+
+1. ./config.sh
+2. vi aclocal.m4  (tarの chofを cofに)
+3. ./configure
+4. make clean
+5. make dist-pkg  or  make release
+
+../Dist に tar.gz ができる．
+
+

@@ -1,0 +1,3 @@
+
+./chbmap_svr -i inba/hokusou.tif -s inba/admin_bnd/admin_bnd
+

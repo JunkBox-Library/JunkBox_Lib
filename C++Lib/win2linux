@@ -1,0 +1,64 @@
+#!/bin/sh
+
+LANG=C
+
+LINUX_TOP=.
+WIN_TOP=../../../vc++/JunkBox_Lib++
+
+
+copy2linux()
+{
+    WF=$WIN_TOP/$1
+    LF=$LINUX_TOP/$2
+
+    if [ ! -f $WF ]; then
+        return
+    fi
+
+    nkf -w $WF >| $LF
+    echo "update "$LF
+}
+
+
+
+diffwin()
+{
+    LF=$LINUX_TOP/$1
+    WF=$WIN_TOP/$1
+
+    if [ ! -f $WF ]; then
+        return
+    fi
+
+    nkf -w $WF >| $WF.temp
+    diff -q $LF $WF.temp |awk -F" " '{print $2}'
+    rm -rf $WF.temp
+}
+
+
+diffwin_c()
+{
+    LF=$LINUX_TOP/$1
+    WF=`echo $WIN_TOP/$1 | sed s/\.c$/\.cpp/`
+
+    if [ ! -f $WF ]; then
+        return
+    fi
+
+    nkf -w $WF >| $WF.temp
+    diff -q $LF $WF.temp |awk -F" " '{print $2}'
+    rm -rf $WF.temp
+}
+
+
+
+if [ "$1" = "" ]; then
+    exit
+fi
+
+WN=`echo $1 | sed s/\.c$/\.cpp/`
+copy2linux $WN $1
+
+
+
+

@@ -1,0 +1,47 @@
+Japanese Text only.
+ 
+　　JunkBox_Lib: Ｃ言語用開発ライブラリ
+
+
+               Copyright (C) 2000 JunkBox_Lib by Fumi.Iseki. Subaru Projrct 0. 
+                                             http://www.nsl.tuis.ac.jp/
+                                             mailto:iseki@rsch.tuis.ac.jp
+
+
+
+
+１．説明
+
+　これは C言語でプログラムを作成する時のライブラリ集です．ライブラリは Lib, xLib, gLibの３つの
+のディレクトリに分かれており，それぞれ以下のような分類になっています．
+　Lib  --- 基本機能
+  xLib --- 拡張機能（実験的または他のライブラリへの依存部分を含む）
+  gLib --- グラフィック機能（for X Window） 
+
+  各ライブラリで使用できる関数については，各ディレクトリ下の Docディレクトリ内の文章を参照して
+ください．これらの文章はシステムをコンパイル(make)すると自動的に生成されます．
+
+
+  このソフトウェアの最新バージョンに関しては ChangeLog を読んでください．
+
+
+
+２．ライセンス＆免責
+
+  BSD License.
+
+  このプログラムは xLib で Berkeley DB を使用しています．
+
+  このプログラムは xLib で OpenSSL を使用しています．
+  This product includes software developed by the OpenSSL Project
+  for use in the OpenSSL Toolkit. (http://www.openssl.org/)
+
+  このプログラムは xLib で zlib を使用しています．
+  This product use zlib library.  http://www.zlib.net/
+
+  このプログラムは gLib で libjpeg を使用しています．
+  this software is based in part on the work of the Independent JPEG Group
+
+  このプログラムは xLib で OpenLDAP を使用しています．
+  This work is part of OpenLDAP Software <http://www.openldap.org/>.
+

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+if [ "$1" = "" ]; then
+    TOP="."
+else
+    TOP=$1
+fi
+
+IFS=$'\n'
+LIST=`grep "^#define " $TOP/jbxl_state.h | grep " JBXL_" | grep -v ANCHOR`
+
+echo "// created by $0 shell script"
+echo
+echo "#include \"jbxl_state.h\""
+echo
+echo "void  jbxl_add_all_states(void)"
+echo "{"
+
+for ERROR in $LIST ; do
+    SYMBL=`echo $ERROR | awk -F" "   '{print $2}'`
+    EXPLN=`echo $ERROR | awk -F"///< " '{print $2}'`
+    echo "    "jbxl_add_state\($SYMBL, \"$SYMBL\", \"$EXPLN\"\)";"
+done
+
+echo "}"
