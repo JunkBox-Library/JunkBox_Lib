@@ -1,4 +1,4 @@
-#ifndef  __JBXL_CPP_RINGBUFFER_H_
+﻿#ifndef  __JBXL_CPP_RINGBUFFER_H_
 #define  __JBXL_CPP_RINGBUFFER_H_
 
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
 @brief   Buffer型サポートプログラム 
 @file    buffer.c
 @version 1.3

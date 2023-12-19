@@ -1,4 +1,4 @@
-
+﻿
 /** 
 @brief   HTTPS ツールライブラリ
 @file    https_tool.c

@@ -1,4 +1,4 @@
-
+﻿
 #include  "jpeg.h"
 
 using namespace jbxl;

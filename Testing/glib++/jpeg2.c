@@ -1,4 +1,4 @@
-
+﻿
 
 #include  "JpegTool.h"
 #include  "Gio.h"

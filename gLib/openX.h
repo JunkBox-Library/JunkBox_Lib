@@ -1,4 +1,4 @@
-#ifndef  __JBXL_OPEN_X11_H_ 
+﻿#ifndef  __JBXL_OPEN_X11_H_ 
 #define  __JBXL_OPEN_X11_H_
 
 

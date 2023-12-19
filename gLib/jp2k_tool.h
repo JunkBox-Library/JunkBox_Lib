@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_JP2K_TOOL_H_
 #define  __JBXL_JP2K_TOOL_H_
 

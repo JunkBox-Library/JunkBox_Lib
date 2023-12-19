@@ -1,4 +1,4 @@
-
+﻿
 #include  "jpeg_tool.h"
 #include  "gio.h"
 

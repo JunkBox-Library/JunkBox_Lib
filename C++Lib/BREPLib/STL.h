@@ -1,4 +1,4 @@
-#ifndef __JBXL_STL_H_
+﻿#ifndef __JBXL_STL_H_
 #define __JBXL_STL_H_
 
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
 @brief   SMTPツールプログラム
 @file    smtp_tool.c
 @author  Fumi.Iseki (C)

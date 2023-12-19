@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief   LLSD用ライブラリヘッダ（サブセット版）
 @file    llsd_tool.c

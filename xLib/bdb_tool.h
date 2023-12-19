@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_BERKELEY_DB4_H__
 #define  __JBXL_BERKELEY_DB4_H__
 

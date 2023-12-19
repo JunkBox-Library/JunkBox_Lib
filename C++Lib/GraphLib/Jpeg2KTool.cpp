@@ -1,4 +1,4 @@
-/**
+﻿/**
 @brief JPEG 2000グラフィックデータ定義 for C++  (with OpenJpeg-1.5)
 
 現在は JPEG 2000の読み込みのみ．@n

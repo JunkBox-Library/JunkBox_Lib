@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief    JPEGグラフィックデータ ツール for C++ 
 @file     JpegTool.cpp

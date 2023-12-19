@@ -1,4 +1,4 @@
-//
+﻿//
 /** 
 @brief   ネットワーク用ライブラリ for IPv4/IPv6
 @file    network6.c

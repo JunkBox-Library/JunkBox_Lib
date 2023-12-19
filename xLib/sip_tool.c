@@ -1,4 +1,4 @@
-/**
+﻿/**
 @brief   SIP用ライブラリ
 @file    sip_tool.c
 @author  Fumi.Iseki (C)

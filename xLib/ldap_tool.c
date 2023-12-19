@@ -1,4 +1,4 @@
-/**
+﻿/**
 @brief   LDAP用ライブラリ
 @file    ldap_tool.c
 @author  Fumi.Iseki (C)

@@ -1,4 +1,4 @@
-
+﻿
 #include "common.h"
 #include "ldap_tool.h"
 

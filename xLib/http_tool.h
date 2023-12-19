@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_HTTP_TOOL_H_
 #define  __JBXL_HTTP_TOOL_H_
 

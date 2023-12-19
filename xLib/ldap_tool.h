@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_LDAP_TOOL_H_
 #define  __JBXL_LDAP_TOOL_H_
 

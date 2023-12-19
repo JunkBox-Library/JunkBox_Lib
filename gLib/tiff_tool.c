@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief    TIFF TOOL
 @file     tiff_tool.c

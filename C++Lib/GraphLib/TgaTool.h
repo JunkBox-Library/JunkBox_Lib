@@ -1,4 +1,4 @@
-#ifndef  __JBXL_CPP_TGA_TOOl_H_
+﻿#ifndef  __JBXL_CPP_TGA_TOOl_H_
 #define  __JBXL_CPP_TGA_TOOl_H_
 
 /**

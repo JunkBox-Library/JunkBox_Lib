@@ -1,4 +1,4 @@
-
+﻿
 
 #define  WORK_COLOR  10000
 #define  EDGE_SIZE   30

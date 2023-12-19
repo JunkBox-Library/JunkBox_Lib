@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_CPP_COLLADA_TOOL_H_
 #define  __JBXL_CPP_COLLADA_TOOL_H_
 

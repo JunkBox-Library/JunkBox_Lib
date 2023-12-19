@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_CPP_LOG_RING_BUFFER_H__
 #define  __JBXL_CPP_LOG_RING_BUFFER_H__
 

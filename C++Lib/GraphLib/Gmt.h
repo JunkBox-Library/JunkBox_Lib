@@ -1,4 +1,4 @@
-#ifndef  __JBXL_CPP_GRAPHIC_MATH_H_
+﻿#ifndef  __JBXL_CPP_GRAPHIC_MATH_H_
 #define  __JBXL_CPP_GRAPHIC_MATH_H_
 
 

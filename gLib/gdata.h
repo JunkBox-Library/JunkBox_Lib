@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_GRAPHIC_DATA_H_
 #define  __JBXL_GRAPHIC_DATA_H_
 

@@ -1,4 +1,4 @@
-#ifndef  __JBXL_TINY_LIST_H_
+﻿#ifndef  __JBXL_TINY_LIST_H_
 #define  __JBXL_TINY_LIST_H_
 
 /** 

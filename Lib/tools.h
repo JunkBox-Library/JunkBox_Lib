@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_TOOLS_HEADER_
 #define  __JBXL_TOOLS_HEADER_
 

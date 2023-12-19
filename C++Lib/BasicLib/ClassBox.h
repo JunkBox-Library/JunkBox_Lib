@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_CPP_CLASS_BOX_H_
 #define  __JBXL_CPP_CLASS_BOX_H_
 

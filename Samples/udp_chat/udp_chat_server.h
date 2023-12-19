@@ -1,4 +1,4 @@
-/**
+﻿/**
   簡易UDP_CHAT サーバ  v2.0
             by Fumi.Iseki  '06 6/7
 */

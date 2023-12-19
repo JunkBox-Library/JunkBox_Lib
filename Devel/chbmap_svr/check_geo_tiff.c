@@ -1,4 +1,4 @@
-
+﻿
 #include "common.h"
 #include "tools.h"
 //#include "buffer.h"

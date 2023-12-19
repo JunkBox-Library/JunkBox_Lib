@@ -1,4 +1,4 @@
-
+﻿
 
 /**
 @brief    MSGraph用 数学ライブラリ in Graph Library

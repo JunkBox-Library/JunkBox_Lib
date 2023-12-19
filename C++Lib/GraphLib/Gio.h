@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_CPP_GRAPHIC_IO_H_
 #define  __JBXL_CPP_GRAPHIC_IO_H_
 

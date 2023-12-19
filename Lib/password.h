@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_PASSWORD_H_
 #define  __JBXL_PASSWORD_H_
  

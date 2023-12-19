@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_IP_ADDRESS_TOOL_H_
 #define  __JBXL_IP_ADDRESS_TOOL_H_
 

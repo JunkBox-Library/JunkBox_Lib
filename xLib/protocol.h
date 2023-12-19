@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_PROTOCOL_H_
 #define  __JBXL_PROTOCOL_H_
 

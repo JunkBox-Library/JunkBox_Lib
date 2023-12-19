@@ -1,4 +1,4 @@
-#ifndef  __JBXL_OPENNI2_TOOL_H_
+﻿#ifndef  __JBXL_OPENNI2_TOOL_H_
 #define  __JBXL_OPENNI2_TOOL_H_
 
 /**

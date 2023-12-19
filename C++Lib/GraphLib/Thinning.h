@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_CPP_THINNING_H_
 #define  __JBXL_CPP_THINNING_H_
 

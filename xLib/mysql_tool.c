@@ -1,4 +1,4 @@
-/**
+﻿/**
 @brief   MySQL用ライブラリ
 @file    mysql_tool.c
 @author  Fumi.Iseki (C)

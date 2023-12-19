@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_CIPHER_H_
 #define  __JBXL_CIPHER_H_
 

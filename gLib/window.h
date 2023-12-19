@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_WINDOW_H_
 #define  __JBXL_WINDOW_H_
 

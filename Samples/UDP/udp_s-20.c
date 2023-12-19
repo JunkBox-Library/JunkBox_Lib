@@ -1,4 +1,4 @@
-/*
+﻿/*
    cc  XXXX.c -o XXXX -lcrypt
 
 */

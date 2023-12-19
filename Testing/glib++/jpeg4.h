@@ -1,4 +1,4 @@
-
+﻿
 
 #ifndef  __EXTRACT_PHOTO_H
 #define  __EXTRACT_PHOTO_H

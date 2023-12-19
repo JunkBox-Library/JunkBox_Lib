@@ -1,4 +1,4 @@
-/*  
+﻿/*  
     SSL Client TEST Program     ssl_client v 1.0
 */
 

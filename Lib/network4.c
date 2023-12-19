@@ -1,4 +1,4 @@
-
+﻿
 /** 
 @brief   ネットワーク用ライブラリ
 @file    network4.c  for IPv4

@@ -1,4 +1,4 @@
-/**
+﻿/**
 簡易データベースライブラリ for Berkeley BD4:  bdb_tool.c  v2.0
 
   ヘッダ

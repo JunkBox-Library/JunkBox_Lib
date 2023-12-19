@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief   ISNETプロトコル用ライブラリ
 @file    isnet.c

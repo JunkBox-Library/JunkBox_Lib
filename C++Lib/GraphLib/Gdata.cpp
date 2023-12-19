@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief    グラフィックデータ定義
 @file     Gdata.cpp   

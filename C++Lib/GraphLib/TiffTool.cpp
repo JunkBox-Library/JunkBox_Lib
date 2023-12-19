@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief    TIFF TOOL
 @file     TiffTool.cpp

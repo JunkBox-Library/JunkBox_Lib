@@ -1,4 +1,4 @@
-#ifndef  __JBXL_MATERIAL_PARAM_H_
+﻿#ifndef  __JBXL_MATERIAL_PARAM_H_
 #define  __JBXL_MATERIAL_PARAM_H_
 
 /**

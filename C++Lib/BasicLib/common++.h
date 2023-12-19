@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_CPP_COMMONPP_HEADER_
 #define  __JBXL_CPP_COMMONPP_HEADER_
 

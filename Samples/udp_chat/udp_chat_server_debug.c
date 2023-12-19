@@ -1,4 +1,4 @@
-
+﻿
 /*
 演習用　簡易UDP_CHATシステム サーバ v2.0
                         by Fumi.Iseki '06 6/7

@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief    ネットワーク用C++ライブラリ
 @file     network++.cpp

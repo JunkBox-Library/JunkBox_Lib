@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_CPP_NETWORK_H_
 #define  __JBXL_CPP_NETWORK_H_
 

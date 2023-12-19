@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief    TGAグラフィックデータ ツール for C++ 
 @file     TgaTool.cpp

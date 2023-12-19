@@ -1,4 +1,4 @@
-/*
+﻿/*
 OAR の objects/*.xml内の TextureEntry タグの処理テスト
 
 */

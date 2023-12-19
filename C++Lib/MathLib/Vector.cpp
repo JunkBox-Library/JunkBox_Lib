@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief    ベクトルライブラリ for C++
 @file     Vector.cpp

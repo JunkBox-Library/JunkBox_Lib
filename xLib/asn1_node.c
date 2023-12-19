@@ -1,4 +1,4 @@
-/** 
+﻿/** 
 @brief   ASN1 NODE用ライブラリ
 @file    asn1_node.c
 @author  Fumi.Iseki (C)

@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_INFO_SYSTEM_NET_H_
 #define  __JBXL_INFO_SYSTEM_NET_H_
 

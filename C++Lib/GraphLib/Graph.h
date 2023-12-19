@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_CPP_MEMORY_SIMPLE_GRAPH_H_
 #define  __JBXL_CPP_MEMORY_SIMPLE_GRAPH_H_
 

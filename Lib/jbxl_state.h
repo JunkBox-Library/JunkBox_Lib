@@ -1,4 +1,4 @@
-#ifndef  __JBXL_JBXL_ERROR_HEADER_
+﻿#ifndef  __JBXL_JBXL_ERROR_HEADER_
 #define  __JBXL_JBXL_ERROR_HEADER_
 
 /** 

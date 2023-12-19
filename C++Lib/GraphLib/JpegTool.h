@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_CPP_JPEG_TOOl_H_
 #define  __JBXL_CPP_JPEG_TOOl_H_
 

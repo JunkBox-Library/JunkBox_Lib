@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief   SSL暗号用ライブラリ
 @file    ssl_tool.c

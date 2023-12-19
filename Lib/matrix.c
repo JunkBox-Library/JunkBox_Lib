@@ -1,4 +1,4 @@
-/** 
+﻿/** 
 @brief   マトリックス＆ベクトルライブラリ 
 @file    matrix.c
 @author  Fumi.Iseki (C)

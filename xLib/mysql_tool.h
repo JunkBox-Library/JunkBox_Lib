@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  DISABLE_MYSQL
 
 #ifndef  __JBXL_MYSQL_TOOL_H_

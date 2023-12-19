@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_MATH_LIBRARY_H_
 #define  __JBXL_MATH_LIBRARY_H_
 

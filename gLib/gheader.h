@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_GRAPHIC_HEADER_H_
 #define  __JBXL_GRAPHIC_HEADER_H_
 

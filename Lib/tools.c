@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief   汎用ツールプログラム
 @file    tools.c

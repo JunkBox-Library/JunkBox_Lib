@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief    三角Contour(Facet)用ライブラリ 
 @file     TriBrep.cpp

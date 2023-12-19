@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_EXTEND_TOOLS_H_
 #define  __JBXL_EXTEND_TOOLS_H_
  

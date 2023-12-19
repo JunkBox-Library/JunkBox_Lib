@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief   プロトコル解析ライブラリ
 @file    protocol.c

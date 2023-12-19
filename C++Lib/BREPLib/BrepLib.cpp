@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief   BREPライブラリ
 @file    BrepLib.cpp

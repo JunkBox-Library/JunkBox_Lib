@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_OPENNI_DEV_H_
 #define  __JBXL_OPENNI_DEV_H_
 

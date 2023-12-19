@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief    グラフィックライブラリ for C++
 @file     Graph.cpp

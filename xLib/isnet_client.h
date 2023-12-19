@@ -1,4 +1,4 @@
-
+﻿
 
 // クライアント側でのコマンド送信処理
 int    send_command_recv_ans(int sock, char* command, int tm, Buffer* key, EVP_CIPHER* cipher);

@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_GRAPHIC_MATH_H_
 #define  __JBXL_GRAPHIC_MATH_H_
 

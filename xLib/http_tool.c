@@ -1,4 +1,4 @@
-
+﻿
 /** 
 @brief   HTTP ツールライブラリ
 @file    http_tool.c

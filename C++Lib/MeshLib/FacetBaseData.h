@@ -1,4 +1,4 @@
-#ifndef  __JBXL_FACET_BASE_H_
+﻿#ifndef  __JBXL_FACET_BASE_H_
 #define  __JBXL_FACET_BASE_H_
 
 /**

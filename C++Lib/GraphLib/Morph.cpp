@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief    モルフォリジーライブラリ
 @file     Morph.cpp

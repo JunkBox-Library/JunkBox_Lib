@@ -1,4 +1,4 @@
-
+﻿
 #ifndef __JBXLPP_TIFF_TOOL_H_
 #define __JBXLPP_TIFF_TOOL_H_
 

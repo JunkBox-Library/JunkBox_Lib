@@ -1,4 +1,4 @@
-
+﻿
 Buffer* Base64_DHspki   = NULL;
 Buffer* Base64_RSAspki  = NULL;
 

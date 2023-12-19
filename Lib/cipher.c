@@ -1,4 +1,4 @@
-/** 
+﻿/** 
 @brief   暗号用ライブラリ
 @file    cipher.c
 @author  Fumi.Iseki (C)

@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_CPP_MORPHOLOGY_H_
 #define  __JBXL_CPP_MORPHOLOGY_H_
 

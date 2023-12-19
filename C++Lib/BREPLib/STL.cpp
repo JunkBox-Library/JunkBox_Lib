@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief    STL ファイル入出力用ライブラリ
 @file     STL.cpp

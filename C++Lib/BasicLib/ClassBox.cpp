@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief    C++ ToolBox of Class --->  ClassBox
 @file     ClassBox.cpp

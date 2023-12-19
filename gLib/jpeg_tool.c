@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief    JPEG TOOL
 @file     jpeg_tool.c

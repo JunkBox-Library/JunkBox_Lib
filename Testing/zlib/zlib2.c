@@ -1,4 +1,4 @@
-
+﻿
 #include "gz_tool.h"
 
 

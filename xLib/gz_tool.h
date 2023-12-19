@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_GZPACKING_TOOL_H_
 #define  __JBXL_GZPACKING_TOOL_H_
 

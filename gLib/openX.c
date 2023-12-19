@@ -1,4 +1,4 @@
-
+﻿
 /**
 @brief    X-Winow 表示用関数
 @file     openX.c

@@ -1,4 +1,4 @@
-/** 
+﻿/** 
 @brief   エラーメッセージ用ライブラリ
 @file    jbxl_state_func.c
 @author  Fumi.Iseki (C)

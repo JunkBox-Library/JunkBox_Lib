@@ -1,4 +1,4 @@
-
+﻿
 #ifndef  __JBXL_JPEG_TOOL_H_
 #define  __JBXL_JPEG_TOOL_H_
 
