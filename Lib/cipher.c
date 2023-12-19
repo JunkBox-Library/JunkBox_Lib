@@ -6,11 +6,7 @@
 CentOS8 では encrypt(), setkey() が存在しない？
 */
 
-
-
-
 #include "cipher.h"
-
 
 
 /**
@@ -33,7 +29,6 @@ void  setkey_byBase64(Buffer key)
     free_Buffer(&deskey);
     return;
 }
- 
 
 
 /**
@@ -54,7 +49,6 @@ void  setkey_byBuffer(Buffer key)
 
     return;
 }
-
 
 
 /**
@@ -79,7 +73,6 @@ Buffer  encrypt_Buffer(Buffer buf, int mode)
     free_Buffer(&str);
     return  cry;
 }
-
 
 
 /**
@@ -111,7 +104,6 @@ Buffer  encrypt_Base64(Buffer buf, int mode)
 }
 
 
-
 /**
 Buffer  to_bin64(Buffer str)
 
@@ -134,7 +126,6 @@ Buffer  to_bin64(Buffer str)
     ret.vldsz = mi;
     return ret;
 }
-
 
 
 /**
@@ -162,7 +153,6 @@ Buffer  from_bin64(Buffer str)
 }
 
 
-
 /**
 void  dump_bin64(char* format, Buffer str)
 
@@ -179,5 +169,4 @@ void  dump_bin64(char* format, Buffer str)
     for (i=0; i<str.vldsz; i++) fprintf(stderr, "%1d", str.buf[i]);
     fprintf(stderr, "\n");
 }
-
 
