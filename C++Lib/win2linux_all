@@ -35,7 +35,6 @@ EXTENDLIB_XLIB_C=`(cd $LINUX_TOP && ls ExtendLib/xLib/*.c)`
 EXTENDLIB_XLIB_H=`(cd $LINUX_TOP && ls ExtendLib/xLib/*.h)`
 
 
-
 copy2linux()
 {
     WF=$WIN_TOP/$1
@@ -44,11 +43,9 @@ copy2linux()
     if [ ! -f $WF ]; then
         return
     fi
-
-    nkf -w $WF >| $LF
+    cp -f $WF $LF
     echo "update "$LF
 }
-
 
 
 diffwin()
@@ -59,10 +56,7 @@ diffwin()
     if [ ! -f $WF ]; then
         return
     fi
-
-    nkf -w $WF >| $WF.temp
-    diff -q $LF $WF.temp |awk -F" " '{print $2}'
-    rm -rf $WF.temp
+    diff -q $LF $WF |awk -F" " '{print $2}'
 }
 
 
@@ -74,10 +68,7 @@ diffwin_c()
     if [ ! -f $WF ]; then
         return
     fi
-
-    nkf -w $WF >| $WF.temp
     diff -q $LF $WF.temp |awk -F" " '{print $2}'
-    rm -rf $WF.temp
 }
 
 

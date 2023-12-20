@@ -14,8 +14,7 @@ copy2linux()
     if [ ! -f $WF ]; then
         return
     fi
-
-    nkf -w $WF >| $LF
+    cp -f $WF $LF
     echo "update "$LF
 }
 
@@ -29,10 +28,7 @@ diffwin()
     if [ ! -f $WF ]; then
         return
     fi
-
-    nkf -w $WF >| $WF.temp
-    diff -q $LF $WF.temp |awk -F" " '{print $2}'
-    rm -rf $WF.temp
+    diff -q $LF $WF |awk -F" " '{print $2}'
 }
 
 
@@ -44,12 +40,8 @@ diffwin_c()
     if [ ! -f $WF ]; then
         return
     fi
-
-    nkf -w $WF >| $WF.temp
-    diff -q $LF $WF.temp |awk -F" " '{print $2}'
-    rm -rf $WF.temp
+    diff -q $LF $WF |awk -F" " '{print $2}'
 }
-
 
 
 if [ "$1" = "" ]; then
