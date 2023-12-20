@@ -61,8 +61,6 @@ int  isNull(void* p)
 #endif
 
 
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 // 
 
@@ -100,7 +98,6 @@ int is_little_endian(void)
 }
 
 
-
 /**
 int is_big_endian(void)
 
@@ -135,7 +132,6 @@ int is_big_endian(void)
 }
 
 
-
 /**
 void  check_endian(void)
 
@@ -147,7 +143,6 @@ void  check_endian(void)
 {
     if (HostEndian==UNKNOWN_ENDIAN) is_little_endian();
 } 
-
 
 
 /** double double_from_little_endian(void* ptr)
@@ -165,7 +160,6 @@ double double_from_little_endian(void* ptr)
     if (HostEndian==BIG_ENDIAN) reverse_str((uByte*)(&ret), 8);
     return ret;
 }
-
 
 
 /**
@@ -186,7 +180,6 @@ float float_from_little_endian(void* ptr)
 }
 
 
-
 /**
 int  int_from_little_endian(void* ptr)
 
@@ -203,7 +196,6 @@ int  int_from_little_endian(void* ptr)
     if (HostEndian==BIG_ENDIAN) reverse_str((uByte*)(&ret), 4);
     return ret;
 }
-
 
 
 /**
@@ -224,7 +216,6 @@ unsigned int  uint_from_little_endian(void* ptr)
 }
 
 
-
 /**
 short short_from_little_endian(void* ptr)
 
@@ -241,7 +232,6 @@ short short_from_little_endian(void* ptr)
     if (HostEndian==BIG_ENDIAN) reverse_str((uByte*)(&ret), 2);
     return ret;
 }
-
 
 
 /**
@@ -262,7 +252,6 @@ unsigned short ushort_from_little_endian(void* ptr)
 }
 
 
-
 /**
 double double_from_big_endian(void* ptr)
 
@@ -279,7 +268,6 @@ double double_from_big_endian(void* ptr)
     if (HostEndian==LITTLE_ENDIAN) reverse_str((uByte*)(&ret), 8);
     return ret;
 }
-
 
 
 /**
@@ -300,7 +288,6 @@ float float_from_big_endian(void* ptr)
 }
 
 
-
 /**
 int  int_from_big_endian(void* ptr)
 
@@ -317,7 +304,6 @@ int  int_from_big_endian(void* ptr)
     if (HostEndian==LITTLE_ENDIAN) reverse_str((uByte*)(&ret), 4);
     return ret;
 }
-
 
 
 /**
@@ -338,7 +324,6 @@ unsigned int  uint_from_big_endian(void* ptr)
 }
 
 
-
 /**
 short short_from_big_endian(void* ptr)
 
@@ -355,7 +340,6 @@ short short_from_big_endian(void* ptr)
     if (HostEndian==LITTLE_ENDIAN) reverse_str((uByte*)(&ret), 2);
     return ret;
 }
-
 
 
 /**
@@ -376,8 +360,6 @@ unsigned short ushort_from_big_endian(void* ptr)
 }
 
 
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Time
 
@@ -385,9 +367,9 @@ unsigned short ushort_from_big_endian(void* ptr)
 
 
 /**
-char*  get_localtime(char 1, char c2, char c3, char c4)
+char*  get_localtime(char c1, char c2, char c3, char c4)
 
-非推奨．use get_local_timestamp(time(0), ....)
+非推奨．use get_local_timestamp(time(0), "%Y/%m/%dT%H:%M:%SZ")
 
 ローカルタイムを "年c1月c1日c2時c3分c3秒c4" の形式で返す．@n
 返ってきた char* ポインタは free() してはいけない.
@@ -418,11 +400,10 @@ char*  get_localtime(char c1, char c2, char c3, char c4)
 */
 
 
-
 /**
 char*  get_localtime_ts(char c1, char c2, char c3, char c4)
 
-非推奨．use get_local_timestamp(time(0), ....)
+非推奨．use get_local_timestamp(time(0), "%Y/%m/%dT%H:%M:%SZ")
 
 ローカルタイムを "年c1月c1日c2時c3分c3秒c4" の形式で返す．@n
 返ってきた char* ポインタは free() すること．
@@ -453,6 +434,8 @@ char*  get_localtime_ts(char c1, char c2, char c3, char c4)
 
 
 // 要 free
+// char* ltime = get_local_timestamp(time(0), "%Y/%m/%dT%H:%M:%SZ")
+//
 char*  get_local_timestamp(time_t date, const char* format)
 {
     char* buf = (char*)malloc(64);
@@ -478,13 +461,7 @@ char*  get_gmt_timestamp(time_t date, const char* format)
 }
 
 
-
-
-///////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////   ///////////////////////////////////////////////////////////////////////////////////////////
 
 /**
 char*  get_line(char* buf, int n)
@@ -529,7 +506,6 @@ char*  get_line(char* buf, int n)
 }
 
 
-
 /**
 char*  get_seq_data(char* buf, int* ptr)
 
@@ -572,7 +548,6 @@ char*  get_seq_data(char* buf, int* ptr)
 }
 
 
-
 /**
 char*  awk(char* buf, char cc, int n)
 
@@ -611,7 +586,6 @@ char*  awk(char* buf, char cc, int n)
 
     return item;
 }
-
 
 
 /**
@@ -656,7 +630,6 @@ char*  cawk(char* buf, char cc, int n)
 }
 
 
-
 /**
 int  bincmp(unsigned char* b1, unsigned char* b2, int n) 
 
@@ -683,7 +656,6 @@ int  bincmp(unsigned char* b1, unsigned char* b2, int n)
 
     return 0;
 }
-
 
 
 /**
@@ -715,7 +687,6 @@ int  strnrvscmp(const char* s1, const char* s2, int n)
 }
 
 
-
 /**
 int  strncaservscmp(const char* s1, const char* s2, int n) 
 
@@ -743,7 +714,6 @@ int  strncaservscmp(const char* s1, const char* s2, int n)
     if (n==0) return 0;
     else      return 1;
 }
-
 
 
 /**
@@ -793,7 +763,6 @@ char*  strstrcase(const char* buf, const char* nd)
 }
 
 
-
 /**
 int  ex_strncmp(const char* dat, const char* key, int len) 
 
@@ -828,7 +797,6 @@ int  ex_strncmp(const char* dat, const char* key, int len)
     
     return FALSE;
 }
-
 
 
 /**
@@ -867,7 +835,6 @@ int  ex_strncasecmp(const char* dat, const char* key, int len)
 }
 
 
-
 /**
 int  ex_strnrvscmp(const char* dat, const char* key, int len) 
 
@@ -902,7 +869,6 @@ int  ex_strnrvscmp(const char* dat, const char* key, int len)
     
     return FALSE;
 }
-
 
 
 /**
@@ -941,7 +907,6 @@ int  ex_strncaservscmp(const char* dat, const char* key, int len)
 }
 
 
-
 /**
 char*  chomp(char* buf)
 
@@ -965,7 +930,6 @@ char*  chomp(char* buf)
     }
     return buf;
 }
-
 
 
 /**
@@ -1005,7 +969,6 @@ char*  skip_chars(char* pp, const char* check)
 }
 
 
-
 /**
 char*  skip_char(char* pp, char cc)
 
@@ -1033,7 +996,6 @@ char*  skip_char(char* pp, char cc)
 
     return pp;
 }
-
 
 
 /**
@@ -1083,7 +1045,6 @@ char*   skip_char_pair(char* pp, char pair, char end)
 }
 
 
-
 /**
 char*  skip_string_end(char* pp)
 
@@ -1111,7 +1072,6 @@ char*  skip_string_end(char* pp)
     } 
     return pp;
 }
-
 
 
 /**
@@ -1151,7 +1111,6 @@ char*  pack_head_tail_char(char* mesg, char cc)
 }
 
 
-
 /**
 char*  pack_char(char* mesg, char cc)
 
@@ -1172,7 +1131,6 @@ char*  pack_char(char* mesg, char cc)
     return pack_char_len(mesg, cc, -1);
 }
 */
-
 
 
 /**
@@ -1236,7 +1194,6 @@ char*  pack_char_len(char* mesg, char cc, int len)
 }
 
 
-
 /**
 char*  change_esc(char* mesg)
 
@@ -1275,7 +1232,6 @@ char*  change_esc(char* mesg)
     
     return pp;
 }
-
 
 
 /** 
@@ -1336,7 +1292,6 @@ char*  replace_str(char* buf, int len, const char* frm, const char* tos)
 }
 
 
-
 /**
 char*  cut_str(char* buf, int ls, int le)
 
@@ -1371,7 +1326,6 @@ char*  cut_str(char* buf, int ls, int le)
 }
 
 
-
 /**
 char*  dup_str(char* buf)
 
@@ -1398,7 +1352,6 @@ char*  dup_str(char* buf)
 }
 
 
-
 static char  _ToSTR[LDATA];        ///< 作業用（文字変換）
 
 
@@ -1418,7 +1371,6 @@ char*  itostr(int n)
 }
 
 
-
 /**
 char*  ltostr(long int n)
 
@@ -1433,7 +1385,6 @@ char*  ltostr(long int n)
     snprintf(_ToSTR, LDATA-1, "%ld", n);
     return _ToSTR;
 }
-
 
 
 /**
@@ -1452,7 +1403,6 @@ char*  ultostr(unsigned long int n)
 }
 
 
-
 /**
 char*  lltostr(long long int n)
 
@@ -1467,7 +1417,6 @@ char*  lltostr(long long int n)
     snprintf(_ToSTR, LDATA-1, "%lld", n);
     return _ToSTR;
 }
-
 
 
 /**
@@ -1486,7 +1435,6 @@ char*  ulltostr(unsigned long long int n)
 }
 
 
-
 /**
 char*  ftostr(float n)
 
@@ -1503,7 +1451,6 @@ char*  ftostr(float n)
 }
 
 
-
 /**
 char*  dtostr(double n)
 
@@ -1518,7 +1465,6 @@ char*  dtostr(double n)
     snprintf(_ToSTR, LDATA-1, "%f", n);
     return _ToSTR;
 }
-
 
 
 /**
@@ -1541,7 +1487,6 @@ char*  itostr_ts(int n)
 }
 
 
-
 /**
 char*  ltostr_ts(long int n)
 
@@ -1560,7 +1505,6 @@ char*  ltostr_ts(long int n)
     snprintf(str, LDATA-1, "%ld", n);
     return str;
 }
-
 
 
 /**
@@ -1583,7 +1527,6 @@ char*  ultostr_ts(unsigned long int n)
 }
 
 
-
 /**
 char*  lltostr_ts(long long int n)
 
@@ -1602,7 +1545,6 @@ char*  lltostr_ts(long long int n)
     snprintf(str, LDATA-1, "%lld", n);
     return str;
 }
-
 
 
 /**
@@ -1625,7 +1567,6 @@ char*  ulltostr_ts(unsigned long long int n)
 }
 
 
-
 /**
 char*  ftostr_ts(float n)
 
@@ -1646,7 +1587,6 @@ char*  ftostr_ts(float n)
 }
 
 
-
 /**
 char*  dtostr_ts(double n)
 
@@ -1665,7 +1605,6 @@ char*  dtostr_ts(double n)
     snprintf(str, LDATA-1, "%f", n);
     return str;
 }
-
 
 
 /**
@@ -1698,7 +1637,6 @@ int  count_lines(const char* buf)
 
     return line;
 }
-
 
 
 /**
@@ -1773,7 +1711,6 @@ void  init_rand(void)
 #endif
 
 
-
 /**
 char*  randstr(int n)
 
@@ -1801,7 +1738,6 @@ char*  randstr(int n)
 }
 
 
-
 /**
 unsigned char*  randbit(int n)
 
@@ -1827,7 +1763,6 @@ unsigned char*  randbit(int n)
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 
 //
@@ -1850,7 +1785,6 @@ unsigned long long int ntohull(unsigned long long int s)
     }
     return s;
 }
-
 
 
 /** void  swap_byte(void* p, int s, int c)
@@ -1896,7 +1830,6 @@ short  swaps(unsigned short p)
 }
 
 
-
 /** int  swapl(unsigned int p)
 
 int型 32bit pを8bitづつ逆順にする
@@ -1923,7 +1856,6 @@ int  swapl(unsigned int p)
 }
 
 
-
 /**
 void  reverse_str(uByte* p, int s)
 
@@ -1945,7 +1877,6 @@ void  reverse_str(uByte* p, int s)
         p[i]     = c;
     }
 }   
-
 
 
 
@@ -2000,7 +1931,6 @@ int  file_from_to(const char* src, const char* dst, const char* mode)
 }
 
 
-
 /**
 int  fp_from_to(FILE* src, FILE* dst, long int sz)
 
@@ -2037,7 +1967,6 @@ int  fp_from_to(FILE* src, FILE* dst, long int sz)
 }
 
 
-
 /**
 char* get_file_name(const char* str)
 
@@ -2064,7 +1993,6 @@ char* get_file_name(const char* str)
 
     return fnm;
 }
-
 
 
 /**
@@ -2107,7 +2035,6 @@ char* del_file_name(const char* str)
 
     return path;
 }
-
 
 
 /**
@@ -2164,7 +2091,6 @@ char* make_file_path(const char* str)
     return path;
 }
 */
-
 
 
 /**
@@ -2238,7 +2164,6 @@ char* get_file_extension(const char* str)
 }
 
 
-
 /**
 char* del_file_extension(const char* str)
 
@@ -2264,7 +2189,6 @@ char* del_file_extension(const char* str)
 
     return path;
 }
-
 
 
 /**
@@ -2294,7 +2218,6 @@ char* cut_file_extension(const char* str)
 }
 
 
-
 /**
 unsigned long int   file_size(const char* fn)                                              
 
@@ -2316,7 +2239,6 @@ unsigned long int   file_size(const char* fn)
     else                        return 0;
 #endif
 }
-
 
 
 /**
@@ -2343,7 +2265,6 @@ int  file_exist(const char* fn)
     fclose(fp);
     return TRUE;
 }
-
 
 
 /**
@@ -2378,7 +2299,6 @@ FILE*  file_chmod_open(const char* fn, const char* fm, mode_t mode)
     fp = fopen(fn, fm);
     return fp;
 }
-
 
 
 /**
@@ -2479,7 +2399,6 @@ unsigned char*  read_file(const char* fname, unsigned long int* size)
 }
 
 
-
 /**
 long int  write_file(const char* fname, unsigned char* buf, unsigned long int size)
 
@@ -2502,7 +2421,6 @@ long int  write_file(const char* fname, unsigned char* buf, unsigned long int si
 
     return size;
 }
-
 
 
 /**
@@ -2533,7 +2451,6 @@ char* double_bs(char* str)
 
     return buf;
 }
-
 
 
 /**
@@ -2567,7 +2484,6 @@ char*  numbering_name(const char* fmt, int n)
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -2586,7 +2502,6 @@ void kanji_convert(unsigned char* mesg)
         kanji_convert_euc2sjis(mesg);
     }
 }
-
 
 
 /**
@@ -2609,7 +2524,6 @@ void kanji_convert_euc2sjis(unsigned char* mesg)
 }
 
 
-
 /**
 void kanji_convert_sjis2euc(unsigned char* mesg)
 
@@ -2630,7 +2544,6 @@ void kanji_convert_sjis2euc(unsigned char* mesg)
         else  i++;
     }
 }
-
 
 
 /**
@@ -2660,7 +2573,6 @@ void  euc2sjis(unsigned char *c1, unsigned char *c2)
         *c1 += 0x70;
     }
 }
-
 
 
 /**
@@ -2704,7 +2616,6 @@ void  sjis2euc(unsigned char *c1, unsigned char *c2)
 }
 
 
-
 /**
 void  upper_string(char* str)
 
@@ -2719,7 +2630,6 @@ void  upper_string(char* str)
         if (str[i]>='a' && str[i]<='z') str[i] += 'A' - 'a';
     }
 }
-
 
 
 /**
@@ -2782,7 +2692,6 @@ unsigned char*  decode_base64(unsigned char* buf, int* sz)
 
     return dcd;
 }
-
 
 
 /**
@@ -2883,7 +2792,6 @@ unsigned char*  encode_base64_filename(unsigned char* buf, int sz, unsigned char
 }
 
 
-
 /**
 unsigned char*  decode_urlenc(unsigned char* buf, int* sz)
 
@@ -2981,7 +2889,6 @@ unsigned char*  encode_urlenc(unsigned char* buf, int sz)
 }    
 
 
-
 /**
 unsigned char*  decode_quoted_printable(unsigned char* buf, int* sz)
 
@@ -3020,7 +2927,6 @@ unsigned char*  decode_quoted_printable(unsigned char* buf, int* sz)
     *sz = j;
     return dec;
 }
-
 
 
 /**
@@ -3083,7 +2989,6 @@ unsigned char*  encode_quoted_printable(unsigned char* buf, int sz)
 }    
 
 
-
 /**
 unsigned char*  encode_hex(unsigned char cc)
 
@@ -3123,7 +3028,6 @@ unsigned char*  encode_hex(unsigned char cc)
 }
 
 
-
 /**
 unsigned char  decode_hex(unsigned char pp1, unsigned char pp2)
 
@@ -3154,7 +3058,6 @@ unsigned char  decode_hex(unsigned char pp1, unsigned char pp2)
     ret = (pp1<<4) + pp2;
     return ret;
 }
-
 
 
 
@@ -3190,7 +3093,6 @@ ringBuffer*  new_ringBuffer(int sz)
 }
 
 
-
 /**
 void  del_ringBuffer(ringBuffer** rb)
 
@@ -3210,7 +3112,6 @@ void  del_ringBuffer(ringBuffer** rb)
 }
 
 
-
 /**
 ringBuffer  init_ringBuffer()
 
@@ -3228,7 +3129,6 @@ ringBuffer  init_ringBuffer()
 
     return rb;
 }
-
 
 
 /**
@@ -3258,7 +3158,6 @@ ringBuffer  make_ringBuffer(int sz)
 }
 
 
-
 /**
 void  free_ringBuffer(ringBuffer* rb)
 
@@ -3274,7 +3173,6 @@ void  free_ringBuffer(ringBuffer* rb)
         rb->state = JBXL_NORMAL;
     }
 }
-
 
 
 /**
@@ -3296,7 +3194,6 @@ void   clear_ringBuffer(ringBuffer* rb)
         rb->bufsz = sz;
     }
 }
-
 
 
 /**
@@ -3342,7 +3239,6 @@ int  put_ringBuffer(ringBuffer* rb, unsigned char* pp, int sz)
 }    
 
 
-
 /**
 unsigned char*  get_ringBuffer(ringBuffer* rb, int sz)
 
@@ -3384,7 +3280,6 @@ unsigned char*  get_ringBuffer(ringBuffer* rb, int sz)
 }    
 
 
-
 /**
 int  seek_ringBuffer(ringBuffer* rb, int sz)
 
@@ -3419,7 +3314,6 @@ int  seek_ringBuffer(ringBuffer* rb, int sz)
 }    
 
 
-
 /**
 unsigned char*  ref_ringBuffer(ringBuffer* rb, int pos)
 
@@ -3444,7 +3338,6 @@ unsigned char*  ref_ringBuffer(ringBuffer* rb, int pos)
 
     return pp;
 }    
-
 
 
 
@@ -3494,7 +3387,6 @@ int  put_mstream(mstream* sb, unsigned char* mesg)
     if (cc<0) sb->state = JBXL_ERROR;
     return cc;
 }
-
 
 
 /**
@@ -3550,7 +3442,6 @@ unsigned char*  get_mstream(mstream* sb)
 }
 
 
-
 /**
 unsigned char*  fgets_mstream(unsigned char* mesg, mstream* sb)
 
@@ -3596,7 +3487,6 @@ unsigned char*  fgets_mstream(unsigned char* mesg, mstream* sb)
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 
@@ -3622,7 +3512,6 @@ unsigned char*  uuid2guid(unsigned char* p)
 
     return guid;
 }
-
 
 
 /**
@@ -3671,7 +3560,6 @@ unsigned char*  guid2uuid(unsigned char* p)
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 
@@ -3711,7 +3599,6 @@ unsigned long int get_free_memory(void)
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // シグナル処理
 //
@@ -3745,7 +3632,6 @@ void  set_sigterm_child(void (*handler)(int))
     sigaddset(&sa.sa_mask, SIGTERM);    // SIGCHLD 処理中は SIGTERM をブロック
     sigaction(SIGCHLD, &sa, NULL);
 }
-
 
 
 /**
@@ -3788,7 +3674,6 @@ void  ignore_sigterm_child()
 }
 
 
-
 /**
 void  set_sigsegv_handler(void (*handler)(int))
 
@@ -3812,7 +3697,6 @@ void  set_sigsegv_handler(void (*handler)(int))
 }
 
 
-
 /**
 void  trap_segmentation_falt(int signal)
 
@@ -3833,7 +3717,6 @@ void  trap_segmentation_falt(int signal)
 #endif        // SIGCHLD
 
 #endif        // NOT WIN32
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3860,7 +3743,6 @@ void  bcopy(char* f, char* t, unsigned int n)
 
 
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // 入出力＆DEBUG
 //
@@ -3883,7 +3765,6 @@ void  open_logfile(void)
 }
 
 
-
 /**
 void  close_logfile(void)
 
@@ -3898,7 +3779,6 @@ void  close_logfile(void)
 
     return;
 }
-
 
 
 /**
@@ -3946,7 +3826,6 @@ void  print_logfile(const char* fmt, ...)
 }
 
 
-
 /**
 void  open_errfile(void)
 
@@ -3959,7 +3838,6 @@ void  open_errfile(void)
     FP_LogFile = fopen(JBXL_ERR_FILE, "a");
     return;
 }
-
 
 
 /**
@@ -3976,7 +3854,6 @@ void  close_errfile(void)
 
     return;
 }
-
 
 
 /**
@@ -4057,7 +3934,6 @@ void  print_message(const char* fmt, ...)
 }
 
 
-
 /**
 void  fprint_message(FILE *fp, const char* fmt, ...)
 
@@ -4092,7 +3968,6 @@ void  fprint_message(FILE* fp, const char* fmt, ...)
 }
 
 
-
 /**
 void  print_escape(const char* fmt, const char* mesg)
 
@@ -4116,7 +3991,6 @@ void  print_escape(const char* fmt, char* mesg)
     PRINT_MESG(fmt, pp);
     free(pp);
 }
-
 
 
 /**
@@ -4144,7 +4018,6 @@ void  fprint_escape(FILE* fp, char* fmt, char* mesg)
     fprint_message(fp, fmt, pp);
     free(pp);
 }
-
 
 
 /**
@@ -4198,7 +4071,6 @@ void  fdump(FILE* fp, unsigned char* mesg, int n)
 }
 
 
-
 /**
 void  print_16x(FILE* fp, unsigned char* mesg, int n)
 
@@ -4224,5 +4096,4 @@ void  print_16x(FILE* fp, unsigned char* mesg, int n)
     }
     fprintf(fp, "\n");
 }
-
 
