@@ -16,7 +16,9 @@
 #include <zlib.h>
 
 
-#ifdef WIN32
+#ifdef WIN64
+#pragma  comment(lib, "zlib64.lib")
+#elif WIN32
 #pragma  comment(lib, "zdll.lib")
 #endif
 

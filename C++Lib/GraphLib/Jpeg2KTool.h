@@ -52,21 +52,15 @@ this software is based on OpenJPEG. http://www.openjpeg.org/
 
 #if OPENJPEG_VER <= JP2K_VER_15
   #undef OFF
-  #ifdef WIN32
-    #ifdef _DEBUG
-      #pragma  comment(lib, "OpenJPEGd.lib")    // DLLを使用
-    #else
-      #pragma  comment(lib, "OpenJPEG.lib")     // DLLを使用
-    #endif
+  #ifdef _DEBUG
+    #pragma  comment(lib, "OpenJPEGd.lib")    // DLLを使用
+  #else
+    #pragma  comment(lib, "OpenJPEG.lib")     // DLLを使用
   #endif
 #elif OPENJPEG_VER >= JP2K_VER_21
-  #ifdef WIN32
-    #pragma  comment(lib, "openjp2.lib")        // DLLを使用
-  #endif
+  #pragma  comment(lib, "openjp2.lib")        // DLLを使用
 #else   // default
-  #ifdef WIN32
-    #pragma  comment(lib, "openjp2.lib")        // DLLを使用
-  #endif
+  #pragma  comment(lib, "openjp2.lib")        // DLLを使用
 #endif
  
 
