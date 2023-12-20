@@ -1,4 +1,4 @@
-<?php
+ï»¿<?php
 
 require_once './config.php';
 //require_once '../func.php';
@@ -62,7 +62,7 @@ while($ldat = socket_read($socket, 4*$size)) {
     $num = unpack("f".$size, $ldat);
     for ($i=1; $i<=$size; $i++) {
         $h = $num[$i];
-        if ($h==GEO_SEAMAP_DATA) $h = GEO_SEA_DEEP*$mgnf + $seal;   // ³¤¤Ï GEO_SEA_DEEP ¶Ñ°ì
+        if ($h==GEO_SEAMAP_DATA) $h = GEO_SEA_DEEP*$mgnf + $seal;   // æµ·ã¯ GEO_SEA_DEEP å‡ä¸€
         else $h = $h/GEO_MAP_FAC*$mgnf + $seal;
         print(" ".$h);
     }

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 define ('GEO_TOP_PATH',     dirname(__FILE__));
 define ('GEO_BASE_NAME',    basename(GEO_TOP_PATH));

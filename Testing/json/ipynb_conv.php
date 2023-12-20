@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  ipynb_conv.php : ipnb ファイル変換  v0.9.2
          filename: と codenum: を metadata の tags の配列に追加
