@@ -34,7 +34,6 @@ tList_data  init_tList_data(void)
 }
 
 
-
 /**
 tList_data  make_tList_data(int id, int lv, Buffer key, Buffer val, void* ptr, int sz)
 
@@ -72,7 +71,6 @@ tList_data  make_tList_data(int id, int lv, Buffer key, Buffer val, void* ptr, i
     
     return pp;
 }
-
 
 
 /**
@@ -114,7 +112,6 @@ tList_data  make_tList_data_bystr(int id, int lv, const char* key, const char* v
 }
 
 
-
 /**
 void  free_tList_data(tList_data* ldat)
 
@@ -144,7 +141,6 @@ void  free_tList_data(tList_data* ldat)
 }
 
 
-
 /**
 void  del_tList_data(tList_data** ldat)
 
@@ -161,7 +157,6 @@ void  del_tList_data(tList_data** ldat)
 
     return;
 }
-
 
 
 /**
@@ -191,7 +186,6 @@ tList_data  dup_tList_data(tList_data ldat)
 
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // Tiny List
 //
@@ -217,7 +211,6 @@ tList*  new_tList_node(void)
 }
 
 
-
 /**
 tList  make_tList_node(tList_data ldat)
 
@@ -239,7 +232,6 @@ tList  make_tList_node(tList_data ldat)
 
     return pp;
 }
-
 
 
 /** 
@@ -267,7 +259,6 @@ tList*  free_tList_node(tList* node)
 }
 
 
-
 /**    
 tList*  del_tList_node(tList** node)
 
@@ -288,7 +279,6 @@ tList*  del_tList_node(tList** node)
 
     return pp;
 }    
-
 
 
 /**
@@ -320,7 +310,6 @@ tList*  dup_tList_node(tList* node)
 }
 
 
-
 /**
 tList*  move_tList_node(tList* pp, tList* node)
 
@@ -345,7 +334,6 @@ tList*  move_tList_node(tList* pp, tList* node)
     
     return node;
 }
-
 
 
 /**
@@ -382,7 +370,6 @@ tList*  swap_tList_node(tList* pp1, tList* pp2)
 }
 
 
-
 tList*  new_tList_anchor_node(void)
 {
     tList* pp;
@@ -397,7 +384,6 @@ tList*  new_tList_anchor_node(void)
 
     return pp;
 }
-
 
 
 tList*  del_tList_anchor_node(tList* node)
@@ -448,7 +434,6 @@ tList*  add_tList_node_bydata(tList* pp, tList_data ldat)
 }
 
 
-
 /**
 tList*  add_tList_node_bystr(tList* pp, int id, int lv, const char* key, const char* val, void* ptr, int sz) 
 
@@ -477,7 +462,6 @@ tList*  add_tList_node_bystr(tList* pp, int id, int lv, const char* key, const c
 
     return pt;
 }
-
 
 
 /**
@@ -2157,7 +2141,6 @@ int  get_bool_param_tList(tList* lt, const char* key, int dflt)
 
 
 
-
 /////////////////////////////////////////////////////////////////////////////
 // Tiny List File I/O
 //
@@ -2188,7 +2171,6 @@ tList*  read_tList_file(const char* fname, int mode)
 
     return lp;
 }
-
 
 
 /**
@@ -2252,7 +2234,6 @@ tList*  read_tList_fp(FILE* fp, int mode)
 }
 
 
-
 /**
 tList*  read_index_tList_file(const char* fname, char deli) 
 
@@ -2277,7 +2258,6 @@ tList*  read_index_tList_file(const char* fname, char deli)
     }
     return lp;
 }
-
 
 
 /**
@@ -2322,7 +2302,6 @@ tList*  read_index_tList_fp(FILE* fp, char deli)
 }
 
 
-
 /**
 tList*  read_Buffer_tList_file(const char* fname) 
 
@@ -2343,7 +2322,6 @@ tList*  read_Buffer_tList_file(const char* fname)
     }
     return lp;
 }
-
 
 
 /**
@@ -2378,7 +2356,6 @@ tList*  read_Buffer_tList_fp(FILE* fp)
 }
 
 
-
 /**
 int  save_Buffer_tList_file(const char* fname, tList* lp) 
 
@@ -2403,7 +2380,6 @@ int  save_Buffer_tList_file(const char* fname, tList* lp)
     }
     return ret;
 }
-
 
 
 /**

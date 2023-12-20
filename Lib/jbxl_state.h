@@ -30,7 +30,7 @@ void    jbxl_add_state(int id, const char* smb, const char* str);
 // STATE
 //       エラー状態は 負数にする
 
-#define  JBXL_STATE_ANCHOR           9999999    ///< アンカーノード
+#define  JBXL_STATE_ANCHOR           999999999  ///< アンカーノード
 
 #define  JBXL_NORMAL                 1          ///< 正常
 #define  JBXL_NONE                   0          ///< 情報無し
