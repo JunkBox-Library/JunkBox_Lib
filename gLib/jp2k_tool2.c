@@ -3,8 +3,8 @@
 @brief    JP2K TOOL2 with OpenJpeg-2.x
 
 @file     jp2k_tool2.c
-@version  0.9
-@date     2014 9/24
+@version  1.0
+@date     2023 12/20
 @author   Fumi.Iseki (C)
 
 @attention
@@ -19,7 +19,6 @@ this software is based on OpenJPEG. http://www.openjpeg.org/
 #ifdef  ENABLE_OPENJPEG
 
 #if OPENJPEG_VER >= JP2K_VER_20
-
 
 void  init_jp2k(JP2KImage* jp)
 {
@@ -36,7 +35,6 @@ void  init_jp2k(JP2KImage* jp)
 }
 
 
-
 void  free_jp2k(JP2KImage* jp)
 {
     if (jp==NULL) return;
@@ -46,7 +44,6 @@ void  free_jp2k(JP2KImage* jp)
     }
     init_jp2k(jp);
 }
-
 
 
 void  setup_jp2k(JP2KImage* jp)
@@ -74,7 +71,11 @@ void  setup_jp2k(JP2KImage* jp)
 */
     // 設定されないものについては，未対応
     jp->cmode = GRAPH_COLOR_UNKNOWN;
+#if OPENJPEG_VER < JP2K_VER_25
     int depth = (int)jp->image->comps->bpp;
+#else
+    int depth = (int)jp->image->comps->prec;
+#endif
     if (depth==0) {
         if      (jp->col==3) jp->cmode = GRAPH_COLOR_RGB;
         else if (jp->col==4) jp->cmode = GRAPH_COLOR_RGBA;
@@ -97,7 +98,6 @@ void  setup_jp2k(JP2KImage* jp)
 }
 
 
-
 /**
 JPEG 2000のヘッダからファイルの種類を返す．@n
 ただし，ヘッダから JP2K_FMT_JPTであることは判別できないので，注意する．
@@ -117,7 +117,6 @@ int  get_jp2k_format(uByte* buf)
     }
     return format;
 }
-
 
 
 JP2KImage  read_jp2k_file(const char* fname)
@@ -155,7 +154,6 @@ JP2KImage  read_jp2k_file(const char* fname)
 
     return jp;
 }
-
 
 
 #if OPENJPEG_VER < JP2K_VER_21
@@ -233,7 +231,6 @@ JP2KImage  read_jp2k_data(const char* fname, int format)
 
     return jp;
 }
-
 
 
 BSGraph  jp2k_toBSGraph(JP2KImage jp)

@@ -22,7 +22,6 @@ this software does not support OpenJpeg-1.3
 
 #if OPENJPEG_VER <= JP2K_VER_15
 
-
 using namespace jbxl;
 
 
@@ -272,5 +271,4 @@ int  jbxl::isJPEG2KHeader(Buffer buf)
 
 #endif      // OPENJPEG_VER
 #endif      // ENABLE_OPENJPEG
-
 

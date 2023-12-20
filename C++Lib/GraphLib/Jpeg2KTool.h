@@ -22,12 +22,13 @@ this software is based on OpenJPEG. http://www.openjpeg.org/
 #include "Gdata.h"
 #include "xtools.h"
 
-
+/*
 #ifndef HAVE_OPENJPEG_H
 #ifndef DISABLE_OPENJPEG
 #define DISABLE_OPENJPEG
 #endif
 #endif
+*/
 
 #ifdef DISABLE_OPENJPEG
 #undef ENABLE_OPENJPEG
@@ -45,6 +46,7 @@ this software is based on OpenJPEG. http://www.openjpeg.org/
 #define JP2K_VER_15     15
 #define JP2K_VER_20     20
 #define JP2K_VER_21     21
+#define JP2K_VER_25     25
 
 #undef HAVE_STDLIB_H
 
@@ -57,7 +59,7 @@ this software is based on OpenJPEG. http://www.openjpeg.org/
       #pragma  comment(lib, "OpenJPEG.lib")     // DLLを使用
     #endif
   #endif
-#elif OPENJPEG_VER == JP2K_VER_21
+#elif OPENJPEG_VER >= JP2K_VER_21
   #ifdef WIN32
     #pragma  comment(lib, "openjp2.lib")        // DLLを使用
   #endif
@@ -81,10 +83,8 @@ this software is based on OpenJPEG. http://www.openjpeg.org/
 #define JP2K_FMT_JPT            3
 
 
-
 //
 namespace jbxl {
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -125,7 +125,7 @@ JPEG2KImage readJPEG2KFile(const char* fname);
 
 #if   OPENJPEG_VER <= JP2K_VER_15
 JPEG2KImage readJPEG2KData(unsigned char* data, int len, int format);
-#elif OPENJPEG_VER == JP2K_VER_21
+#elif OPENJPEG_VER >= JP2K_VER_21
 JPEG2KImage readJPEG2KData(const char* fname, int format);
 #else               //JP2K_VER_20
 JPEG2KImage readJPEG2KData(FILE* fp, int format);
@@ -154,7 +154,7 @@ JPEG 2000イメージデータを MSGraph型イメージデータに変換する
 @retval GRAPH_NODATA_ERROR @b state データ無し
 @retval GRAPH_MEMORY_ERROR @b state メモリ確保エラー 
 */
-template <typename T> MSGraph<T> JPEG2KImage2MSGraph(JPEG2KImage jp)
+template <typename T>  MSGraph<T> JPEG2KImage2MSGraph(JPEG2KImage jp)
 {
     MSGraph<T> vp;
 

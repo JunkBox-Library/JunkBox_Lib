@@ -282,6 +282,30 @@ else
 		OPENJPEG_VER_INT="21"
 		OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
     fi
+	if test "$OPENJPEG_DIR" = "2.2" ; then
+		OPENJPEG_DIR="/usr/local"
+		OPENJPEG_VER="2.2"
+		OPENJPEG_VER_INT="22"
+		OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
+    fi
+	if test "$OPENJPEG_DIR" = "2.3" ; then
+		OPENJPEG_DIR="/usr/local"
+		OPENJPEG_VER="2.3"
+		OPENJPEG_VER_INT="23"
+		OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
+    fi
+	if test "$OPENJPEG_DIR" = "2.4" ; then
+		OPENJPEG_DIR="/usr/local"
+		OPENJPEG_VER="2.4"
+		OPENJPEG_VER_INT="24"
+		OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
+    fi
+	if test "$OPENJPEG_DIR" = "2.5" ; then
+		OPENJPEG_DIR="/usr/local"
+		OPENJPEG_VER="2.5"
+		OPENJPEG_VER_INT="25"
+		OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
+    fi
 
     echo "yes   option = $OPENJPEG_DIR"
     if test ! -d $OPENJPEG_DIR ; then

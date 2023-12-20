@@ -94,7 +94,11 @@ void  JPEG2KImage::setup_image(void)
 */
         // 設定されないものについては，未対応
         cmode = GRAPH_COLOR_UNKNOWN;
+#if OPENJPEG_VER < JP2K_VER_25
         int depth = (int)image->comps->bpp;
+#else
+        int depth = (int)image->comps->prec;
+#endif
         if (depth==0) {
             if      (col==3) cmode = GRAPH_COLOR_RGB;
             else if (col==4) cmode = GRAPH_COLOR_RGBA;

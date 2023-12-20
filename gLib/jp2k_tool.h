@@ -102,7 +102,7 @@ JP2KImage read_jp2k_file(const char* fname);
 
 #if   OPENJPEG_VER <= JP2K_VER_15
 JP2KImage read_jp2k_data(unsigned char* data, int len, int format);
-#elif OPENJPEG_VER == JP2K_VER_21
+#elif OPENJPEG_VER >= JP2K_VER_21
 JP2KImage read_jp2k_data(const char* fname, int format);
 #else               //JP2K_VER_20
 JP2KImage read_jp2k_data(FILE* fp, int format);
