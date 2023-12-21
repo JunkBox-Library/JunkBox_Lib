@@ -68,7 +68,7 @@ diffwin_c()
     if [ ! -f $WF ]; then
         return
     fi
-    diff -q $LF $WF.temp |awk -F" " '{print $2}'
+    diff -q $LF $WF |awk -F" " '{print $2}'
 }
 
 

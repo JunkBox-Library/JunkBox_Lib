@@ -16,10 +16,12 @@
 #include <zlib.h>
 
 
-#ifdef WIN64
-#pragma  comment(lib, "zlib64.lib")
-#elif WIN32
-#pragma  comment(lib, "zdll.lib")
+#ifdef WIN32
+  #ifdef _DEBUG 
+    #pragma  comment(lib, "zlibd.lib")
+  #else 
+    #pragma  comment(lib, "zlib.lib")
+  #endif
 #endif
 
 
