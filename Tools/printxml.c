@@ -1,10 +1,7 @@
 ﻿#include "txml.h"
 
-
 /**
-
     XMLパース&表示プログラム
-
 */
 
 int main(int argc, char** argv)

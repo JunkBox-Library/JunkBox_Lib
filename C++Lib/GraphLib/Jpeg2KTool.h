@@ -58,9 +58,7 @@ this software is based on OpenJPEG. http://www.openjpeg.org/
     #else
       #pragma  comment(lib, "OpenJPEG.lib")     // DLLを使用
     #endif
-  #elif OPENJPEG_VER >= JP2K_VER_21
-    #pragma  comment(lib, "openjp2.lib")        // DLLを使用
-  #else   // default
+  #elif OPENJPEG_VER >= JP2K_VER_20
     #pragma  comment(lib, "openjp2.lib")        // DLLを使用
   #endif
 #endif

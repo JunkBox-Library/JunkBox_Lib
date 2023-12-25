@@ -23,7 +23,6 @@ int main(int argc, char** argv)
     sz = file_size(argv[1]);
     if (sz<=0) exit(1);
 
-
     buf = (char*)malloc(sz);
     fp = fopen(argv[1], "r");
     if (fp==NULL) {

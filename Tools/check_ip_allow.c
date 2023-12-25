@@ -1,13 +1,9 @@
 ﻿
 /*  
-        
-                by Fumi Iseki '06 3/24
+     by Fumi Iseki '06 3/24
 */
 
 #include "ipaddr_tool.h"
-
-
-
 
  
 int  main(int argc, char** argv)
@@ -17,7 +13,6 @@ int  main(int argc, char** argv)
     char* ipchar=NULL;
     unsigned char* ip=NULL;
     tList*  lt = NULL;
-
 
     for (i=1; i<argc; i++) {
         if      (!strcmp(argv[i],"-f")) {if (i!=argc-1) fname  = argv[i+1];}
@@ -40,7 +35,6 @@ int  main(int argc, char** argv)
         }
     }
     
-
     ip = to_address_num8_ipv4(ipchar, 1);
     if (ip==NULL) {
         printf("NG");

@@ -36,7 +36,6 @@ this software is based in part on the work of the Independent JPEG Group. http:/
 
 #ifdef WIN32
 #pragma  comment(lib, "libjpeg.lib")
-//#pragma  comment(lib, "jpeg.lib")
 #endif
 
 

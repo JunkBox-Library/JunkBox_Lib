@@ -32,12 +32,10 @@ this software uses OpenCV
 #pragma  comment(lib, "opencv_core242d.lib")
 #pragma  comment(lib, "opencv_imgproc242d.lib")
 #pragma  comment(lib, "opencv_objdetect242d.lib")
-#pragma  comment(lib, "zlibd.lib")
 #else 
 #pragma  comment(lib, "opencv_core242.lib")
 #pragma  comment(lib, "opencv_imgproc242.lib")
 #pragma  comment(lib, "opencv_objdetect242.lib")
-#pragma  comment(lib, "zlib.lib")
 #endif
 #endif
 
