@@ -13,9 +13,7 @@
 @see Buffer, _tList
 */
 
-
 #include "xtools.h"
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,7 +55,6 @@ int  udp_recv_Buffer_sockaddr_in(int sock, Buffer* str, struct sockaddr_in* sv_a
 }
 
 
-
 /**
 int  udp_send_Buffer_sockaddr_in(int sock, Buffer* str, struct sockaddr_in* sv_addr)
 
@@ -85,7 +82,6 @@ int  udp_send_Buffer_sockaddr_in(int sock, Buffer* str, struct sockaddr_in* sv_a
     if (cc<0) cc = JBXL_NET_SEND_ERROR;
     return cc;
 }
-
 
 
 /**
@@ -147,7 +143,6 @@ int  udp_recv_Buffer_wait_sockaddr_in(int sock, Buffer* str, struct sockaddr_in*
 }
 
 
-
 /**
 struct sockaddr_in  get_sockaddr_in_Buffer(Buffer buf)
 
@@ -178,7 +173,6 @@ struct sockaddr_in  get_sockaddr_in_Buffer(Buffer buf)
 }
 
 
-
 /*
 Buffer get_hostport_sockaddr_in(struct sockaddr_in addr)
 {
@@ -196,11 +190,9 @@ Buffer get_hostport_sockaddr_in(struct sockaddr_in addr)
 
 
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Networks for IPv4/IPv6 
 //
-
 
 /**
 int  udp_recv_Buffer(int sock, Buffer* str, struct addrinfo* sv_addr)
@@ -239,7 +231,6 @@ int  udp_recv_Buffer(int sock, Buffer* str, struct addrinfo* sv_addr)
 }
 
 
-
 /**
 int  udp_send_Buffer(int sock, Buffer* str, struct addrinfo* sv_addr)
 
@@ -269,7 +260,6 @@ int  udp_send_Buffer(int sock, Buffer* str, struct addrinfo* sv_addr)
 
     return cc;
 }
-
 
 
 /**
@@ -302,7 +292,6 @@ int  tcp_recv_Buffer(int sock, Buffer* str)
 }
 
 
-
 /**
 int  tcp_send_Buffer(int sock, Buffer* str)
 
@@ -326,7 +315,6 @@ int  tcp_send_Buffer(int sock, Buffer* str)
     if (cc<0) cc = JBXL_NET_SEND_ERROR;
     return cc;
 }
-
 
 
 /**
@@ -363,7 +351,6 @@ int  udp_recv_Buffer_wait(int sock, Buffer* str, struct addrinfo* sv_addr, int t
 }
 
 
-
 /**
 int  tcp_recv_Buffer_wait(int sock, Buffer* str, int tm)
 
@@ -394,7 +381,6 @@ int  tcp_recv_Buffer_wait(int sock, Buffer* str, int tm)
 
     return cc;
 }
-
 
 
 /**
@@ -443,7 +429,6 @@ int  tcp_recv_Buffer_tosize(int sock, Buffer* str, Buffer* mod, int size)
     }
     return sz;
 }
-
 
 
 /**
@@ -499,7 +484,6 @@ int  tcp_recv_Buffer_tosize_wait(int sock, Buffer* str, Buffer* mod, int size, i
 }
 
 
-
 /**
 int  udp_send_sBuffer(int sock, Buffer* str, struct addrinfo* sv_addr)
 
@@ -527,7 +511,6 @@ int  udp_send_sBuffer(int sock, Buffer* str, struct addrinfo* sv_addr)
 }
 
 
-
 /**
 int  tcp_send_sBuffer(int sock, Buffer* str)
 
@@ -548,7 +531,6 @@ int  tcp_send_sBuffer(int sock, Buffer* str)
     cc = send(sock, (char*)str->buf, (int)strlen((const char*)str->buf), 0);
     return cc;
 }
-
 
 
 /**
@@ -576,7 +558,6 @@ int  tcp_send_sBufferln(int sock, Buffer* str)
 
     return cc;
 }
-
 
 
 /**
@@ -639,7 +620,6 @@ int  tcp_recv_mstream_Buffer(int sock, Buffer* mesg, mstream* sb, int tm)
 
     return mesg->vldsz;
 }
-
 
 
 /**
@@ -726,7 +706,6 @@ Buffer  comp_hostport(char* host, unsigned short port)
 }
 
 
-
 /**
 int  decomp_hostport(Buffer buf, Buffer* host, unsigned short* port)
 
@@ -762,7 +741,6 @@ int  decomp_hostport(Buffer buf, Buffer* host, unsigned short* port)
 
     return TRUE;
 }
-
 
 
 /**
@@ -803,7 +781,6 @@ Buffer  comp_url(char* protocol, char* host, unsigned short port, char* dir)
 
     return url;
 }
-
 
 
 /**
@@ -1008,7 +985,6 @@ int   save_tagged_Buffer(Buffer buf, FILE* fp, unsigned int mode, int prfm)
 }
 
 
-
 /**
 Buffer  read_tagged_Buffer(FILE* fp, unsigned int* mode)
 
@@ -1084,7 +1060,6 @@ Buffer  read_tagged_Buffer(FILE* fp, unsigned int* mode)
 }
 
 
-
 /**
 Buffer  fgets_mstream_Buffer(Buffer buf, mstream* sb)
 
@@ -1118,8 +1093,6 @@ Buffer  fgets_mstream_Buffer(Buffer buf, mstream* sb)
     }
     return ret;
 }
-
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1160,7 +1133,6 @@ int  get_runlength_byte(unsigned char* buf, int len, int pos)
 
     return JBXL_ERROR;
 }
-
 
 
 /**
@@ -1302,7 +1274,6 @@ int  put_Buffer_ringBuffer(ringBuffer* rb, Buffer* buf)
 }
 
 
-
 /**
 Buffer*  get_Buffer_ringBuffer(ringBuffer* rb, int sz)
 
@@ -1338,7 +1309,6 @@ Buffer*  get_Buffer_ringBuffer(ringBuffer* rb, int sz)
     rb->datasz -= sz;
     return buf;
 }
-
 
 
 
@@ -1392,7 +1362,6 @@ Buffer*  get_Buffer_dim_tList(tList* lp)
 }
 
 
-
 /**
 Buffer*  get_Buffer_dim_tList_value(tList* lp)
 
@@ -1438,7 +1407,6 @@ Buffer*  get_Buffer_dim_tList_value(tList* lp)
 }
 
 
-
 /**
 Buffer*  awk_Buffer_dim(Buffer buf, char cc)
 
@@ -1463,7 +1431,6 @@ Buffer*  awk_Buffer_dim(Buffer buf, char cc)
     
     return  bf;
 }
-
 
 
 /**
@@ -1491,7 +1458,6 @@ Buffer*  cawk_Buffer_dim(Buffer buf, char cc)
     
     return  bf;
 }
-
 
 
 /**
@@ -1564,7 +1530,6 @@ Buffer*  decompline_Buffer_dim(Buffer buf, int mode)
 }
 
 
-
 /**
 Buffer  join_Buffer_dim(Buffer* dim, const char* deli)
     
@@ -1589,7 +1554,6 @@ Buffer  join_Buffer_dim(Buffer* dim, const char* deli)
 
     return buf;
 }
-
 
 
 /**
@@ -1617,7 +1581,6 @@ void  del_Buffer_dim(Buffer** dim)
     *dim = NULL;
     return;
 }
-
 
 
 
@@ -1652,7 +1615,6 @@ tList*  get_tList_line_Buffer(Buffer buf, int n)
 }
 
 
-
 /**
 tList*  get_tList_seq_data_Buffer(Buffer buf, int* ptr)
 
@@ -1677,7 +1639,6 @@ tList*  get_tList_seq_data_Buffer(Buffer buf, int* ptr)
 
     return list;
 }
-
 
 
 
@@ -1754,7 +1715,6 @@ int  set_item_tList_node(tList* lp, char deli, int nm, char* value)
 
     return rep;
 }
-
 
 
 /**
@@ -1834,7 +1794,6 @@ int  replace_item_tList_node(tList* lp, char deli, int nm, char* srcval, char* v
 
     return rep;
 }
-
 
 
 
@@ -1998,7 +1957,6 @@ void  change_file_extension_Buffer(Buffer* path, const char* ext)
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //
 
@@ -2022,7 +1980,6 @@ char*  get_resource_path(char* name, tList* lp)
 
     return NULL;
 }
-
 
 
 /**
@@ -2067,6 +2024,4 @@ tList*  add_resource_list(const char* path, int keylen, tList* list, tList* extn
 
     return list;
 }
-
-
 

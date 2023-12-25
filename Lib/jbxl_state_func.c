@@ -12,7 +12,6 @@ tList* _jbxl_state_list    = NULL;
 tList* _jbxl_state_pointer = NULL;
 
 
-
 /**
 void  jbxl_fprint_state(FILE* fp, int no)
 
@@ -35,7 +34,6 @@ void  jbxl_fprint_state(FILE* fp, int no)
         fprintf(fp, "JBXL_STATE: %s: %d\n", lt->ldat.key.buf, no);
     }
 }
-
 
 
 /**
@@ -82,6 +80,4 @@ void  jbxl_add_state(int id, const char* smb, const char* str)
 {
     _jbxl_state_pointer = add_tList_node_bystr(_jbxl_state_pointer, id, 0, smb, str, NULL, 0);
 }
-
-
 
