@@ -10,7 +10,8 @@ CPU = Intel
 
 #
 #
-SUBJ = json_test6 ipynb_conv json_file json2 json json_test5 json_test4 json_test3 json_test2 json_test
+SUBJ = json_test6 json2 json_test5 json_test4 json_test3 json_test2 json_test
+SUBJ += unlock_overlay_containers ipynb_conv json_file json
 #
 all: $(SUBJ)
 
@@ -52,6 +53,9 @@ clean:
 #
 #
 #
+unlock_overlay_containers: unlock_overlay_containers.o  $(LIB_BSC)
+	$(CC) $(@).o $(ELIB) $(SLIB) -O2 -o $@   
+
 ipynb_conv: ipynb_conv.o  $(LIB_BSC)
 	$(CC) $(@).o $(ELIB) $(SLIB) -O2 -o $@   
 

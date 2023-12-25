@@ -5,6 +5,7 @@ rewrite configure.ac, doxygen.conf
 working now ..... v1.9.0
 
 v1.9.0
+    fix tjson.c ([ で始まる場合)
     引数変更
         unsigned char*  decode_base64_filename(unsigned char* buf, int* sz)
         unsigned char*  encode_base64_filename(unsigned char* buf, int sz)

@@ -234,7 +234,7 @@ char*    get_string_from_json(tJson* json);                                 ///<
 //
 tList*   search_all_node_strval_json(tJson* json, char* name, char* val);   ///< 指定した条件に合う全てのノードへのポインタを，リストに格納して返す．
 tList*   _search_all_node_strval_json(tList* list, tJson* pp, char* name, char* val);   ///< search_all_node_strval_json() の補助関数   
-
+// ex.) search_all_node_strval_json(json, "ARRAY_VALUE", "jupyterhub-j20047si");
 
 
 #endif  // __JBXL_TINY_JSON_H_

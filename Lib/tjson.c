@@ -1252,13 +1252,13 @@ int  _json_check_node_bykey(tJson* pp, char* key, int needval, int nn)
 /**
 tList*   search_all_node_strval_json(tJson* pp, char* name, char* val)
 
-指定した条件に会う全てのノードへのポインタを，リストに格納して返す．@n
+指定した条件に会う全てのノードへのポインタを，リスト（list->altp）に格納して返す．@n
 検索条件は，属性名 name, 属性値 val ("name": "val") を持つノード．
 
 @param   pp 検索する JSONデータ．
 @param   name 属性名
 @param   val  属性値
-@return  検索結果を ldat.altp に格納した リスト．
+@return  検索結果を altp に格納した リスト．ldat.id は通し番号で，0から始まる．altp==NULL ならそこで終わり．
 */
 tList*   search_all_node_strval_json(tJson* pp, char* name, char* val)
 {
@@ -1276,7 +1276,7 @@ tList*   _search_all_node_strval_json(tList* list, tJson* pp, char* name, char* 
 {
     while (pp->esis!=NULL) pp = pp->esis;
     do {
-        if (pp->ldat.id==JSON_DATA_NODE) {
+        if (pp->ldat.id==JSON_DATA_NODE || pp->ldat.id==JSON_ARRAY_VALUE_NODE) {
             if (!strncasecmp(name, (char*)pp->ldat.key.buf, strlen(name))) {
                 if (pp->ldat.lv==JSON_VALUE_STR) {
                     if (!strncasecmp(val, (char*)(pp->ldat.val.buf+1), strlen(val))) {
@@ -1288,7 +1288,7 @@ tList*   _search_all_node_strval_json(tList* list, tJson* pp, char* name, char* 
                     }
                 }
             }
-            else if (pp->ldat.id==JSON_VALUE_OBJ) {
+            else if (pp->ldat.lv==JSON_VALUE_OBJ) {
                 if (pp->next!=NULL) {
                     list = _search_all_node_strval_json(list, pp->next, name, val);
                 }
