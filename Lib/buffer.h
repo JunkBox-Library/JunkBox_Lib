@@ -105,7 +105,7 @@ char*変数 srcから Buffer型変数dstへ文字列を copyする．@n
 @retval -1    メモリの確保に失敗した．何も実行されなかった．
 @retval 1以上 dstのバッファにコピーされた文字数．
 */
-#define copy_s2Buffer(src, dst)    copy_b2Buffer((void*)(src), (dst), (int)strlen((char*)(src)))    ///< copy_b2Buffer()
+#define copy_s2Buffer(src, dst)    copy_b2Buffer((void*)(src), (dst), -1)    ///< copy_b2Buffer()
 
 
 /** @def cat_s2Buffer
@@ -119,8 +119,8 @@ char*変数 srcから Buffer型変数dstへ文字列を catする．@n
 @retval -1    メモリの確保に失敗した．何も実行されなかった．
 @retval 1以上 dstのバッファにコピーされた文字数．
 */
-#define cat_s2Buffer(src, dst)     cat_b2Buffer( (void*)(src), (dst), (int)strlen((char*)(src)))    ///< cat_b2Buffer()
-#define ins_s2Buffer(src, dst)     ins_b2Buffer( (void*)(src), (dst), (int)strlen((char*)(src)))    ///< cat_b2Buffer()
+#define cat_s2Buffer(src, dst)     cat_b2Buffer( (void*)(src), (dst), -1)    ///< cat_b2Buffer()
+#define ins_s2Buffer(src, dst)     ins_b2Buffer( (void*)(src), (dst), -1)    ///< cat_b2Buffer()
 
 
 // ツール
@@ -162,8 +162,8 @@ int     save_Buffer_file(Buffer buf, char* fn);         ///< ファイル fn へ
 
 // 文字削除
 Buffer  erase_bBuffer(Buffer buf, char* bin, int len);  ///< buf.buf 中にある bin のデータ（各1Byte，順不同）を削除する．
-#define erase_Buffer(b, f)              erase_bBuffer((b), (char*)((f).buf), (f).vldsz)  ///< erase_bBuffer()
-#define erase_sBuffer(b, f)             erase_bBuffer((b), (char*)(f), strlen(f))        ///< erase_bBuffer()
+#define erase_Buffer(b, f)              erase_bBuffer((b), (char*)((f).buf), (f).vldsz) ///< erase_bBuffer()
+#define erase_sBuffer(b, f)             erase_bBuffer((b), (char*)(f), -1)              ///< erase_bBuffer()
 
 
 // 文字列置換

@@ -14,8 +14,10 @@ int main(int argc, char** argv)
     }
 
     tJson* json = json_parse_file(argv[1], 999);
+    if (json==NULL) return 1;
 
     print_tTree(stdout, json);
+
     //print_json_opt(stdout, json, "\n", "    ");
 	print_json(stdout, json, JSON_INDENT_FORMAT);
     print_message("status = %d\n", json->state);

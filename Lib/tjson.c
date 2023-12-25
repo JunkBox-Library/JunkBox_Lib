@@ -50,8 +50,11 @@ tJson*  json_parse(char* pp, int num)
 */
 tJson*  json_parse(char* pp, int num)
 {
-    while(*pp!='{' && *pp!='\0') pp++;
+    int state = JBXL_JSON_DEFAULT_STATE;
+
+    while(*pp!='{' && *pp!='[' && *pp!='\0') pp++;
     if (*pp=='\0') return NULL;
+    if (*pp=='[') state = JBXL_JSON_ARRAY;
 
     tJson* json = new_json_anchor_node();                    // アンカー
     //json->ldat.id = JSON_ANCHOR_NODE;
@@ -73,7 +76,7 @@ tJson*  json_parse(char* pp, int num)
     }
 
     // JSON rootの数
-    if (json->next!=NULL) {
+    if (json->next!=NULL && state!=JBXL_JSON_ARRAY) {
         int n = 0;
         node = json->next;
         while(node!=NULL) {
@@ -82,11 +85,10 @@ tJson*  json_parse(char* pp, int num)
         }
         if (n!=1) json->state = JBXL_JSON_MULTI_ROOT;
     }
-    else json->state = JBXL_JSON_DEFAULT_STATE;
+    else json->state = state;
 
     return json;
 }
-
 
 
 /**
@@ -195,21 +197,28 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
                 return json;
             }
 
+            if (json->next==NULL) { // アンカーのみ
+                node = new_json_node();
+                node->ldat.id = JSON_ARRAY_NODE;
+                node->ldat.lv = JSON_VALUE_ARRAY;
+                add_tTree_node(json, node);
+            }
+
             int len = (int)(pt - pp) + 1;
             Buffer temp = set_Buffer(pp, len);
             json->yngr->ldat.val = pack_Buffer(temp, '\0');
             json->yngr->ldat.lv  = JSON_VALUE_ARRAY;
             free_Buffer(&temp);
 
+            if (num>0) _json_array_parse(json->yngr, num-1);
+
             pt++; 
-            while(*pt!=',' && *pt!='}' && *pt!='\0') pt++; 
+            while(*pt!=',' && *pt!='}' && *pt!='{' && *pt!='[' && *pt!='\0') pt++; 
             if (*pt=='\0') {
-                json->state = JBXL_JSON_PARSE_TERM;
+                if (json->depth>0) json->state = JBXL_JSON_PARSE_TERM;
                 return json;    
             }
             //
-            if (num>0) _json_array_parse(json->yngr, num-1);
-
             pp = pt;
         }
 
@@ -315,7 +324,8 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
                 json = json->prev;
             }
             pt = pp = pp + 1;
-            while (*pt!=',' && *pt!='}' && *pt!='{' && *pt!='\0') pt++;
+            //while (*pt!=',' && *pt!='}' && *pt!='{' && *pt!='\0') pt++;
+            while (*pt!='}' && *pt!='{' && *pt!='\0') pt++;
             if (*pt=='\0' && json->depth>0) {
                 json->state = JBXL_JSON_PARSE_TERM;
                 return json;    
@@ -340,7 +350,6 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 }
 
 
-
 /**
 tJson*  _json_array_parse(tJson* json, int num)
 
@@ -359,7 +368,6 @@ tJson*  _json_array_parse(tJson* json, int num)
 
     return json;
 }
-
 
 
 /**
@@ -385,11 +393,12 @@ tJson*  json_array_parse(tJson* json, char* pp, int num)
     if (json==NULL) {
         json = new_json_node();
         json->ldat.id = JSON_TEMP_NODE;
+        json->ldat.lv = JSON_VALUE_NULL;
     }
     else {
         json->ldat.id = JSON_ARRAY_NODE;
+        json->ldat.lv = JSON_VALUE_ARRAY;
     }
-    json->ldat.lv = JSON_VALUE_NULL;
 
     //
     pp++;
@@ -475,7 +484,6 @@ tJson*  json_array_parse(tJson* json, char* pp, int num)
 }
 
 
-
 /**
 tJson*  _json_parse_term(tJson* json, char* st, char* ed, const char* com)
 
@@ -496,7 +504,6 @@ tJson*  _json_parse_term(tJson* json, char* st, char* ed, const char* com)
     }    
     return json;
 }
-
 
 
 /**
@@ -529,7 +536,6 @@ tJson*  json_parse_seq(tJson* json, char* pp, int num)
 
     return json;
 }
-
 
 
 
@@ -578,7 +584,6 @@ Buffer  json_inverse_parse(tJson* pp, int mode)
 }
 
 
-
 /**
 Buffer  json_inverse_parse_opt(tJson* pp, const char* crlf, const char* space)
 
@@ -610,7 +615,6 @@ Buffer  json_inverse_parse_opt(tJson* pp, const char* crlf, const char* space)
 }
 
 
-
 /**
 void  _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* space)
 
@@ -636,6 +640,7 @@ void  _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* spac
             if (space[0]!='\0') for(i=0; i<pp->depth; i++) cat_s2Buffer(space, buf);
             //
             if (pp->ldat.id==JSON_BRACKET_NODE) {
+                //print_message("JSON_BRACKET_NODE\n");
                 cat_s2Buffer("{", buf);
                 if (pp->next!=NULL) {
                     if (crlf[0]!='\0') cat_s2Buffer(crlf, buf);
@@ -647,6 +652,7 @@ void  _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* spac
             }
             //
             else if (pp->ldat.id==JSON_DATA_NODE) {
+                //print_message("JSON_DATA_NODE\n");
                 cat_s2Buffer("\"", buf);
                 cat_s2Buffer(pp->ldat.key.buf, buf);
                 cat_s2Buffer("\"", buf);
@@ -674,9 +680,13 @@ void  _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* spac
             //
             // array
             else if (pp->ldat.id==JSON_ARRAY_NODE) {
-                cat_s2Buffer("\"", buf);
-                cat_s2Buffer(pp->ldat.key.buf, buf);
-                cat_s2Buffer("\": [", buf);
+                //print_message("JSON_ARRAY_NODE\n");
+                if (pp->ldat.key.buf!=NULL) {
+                    cat_s2Buffer("\"", buf);
+                    cat_s2Buffer(pp->ldat.key.buf, buf);
+                    cat_s2Buffer("\": ", buf);
+                }
+                 cat_s2Buffer("[", buf);
                 if (pp->next!=NULL) {
                     if (crlf[0]!='\0') cat_s2Buffer(crlf, buf);
                     _json_to_Buffer(pp->next, buf, crlf, space);
@@ -687,6 +697,7 @@ void  _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* spac
             }
 
             else if (pp->ldat.id==JSON_ARRAY_VALUE_NODE) {
+                //print_message("JSON_ARRAY_VALUE_NODE\n");
                 if (pp->ldat.lv==JSON_VALUE_OBJ) {
                     if (pp->ldat.val.buf==NULL) {
                         cat_s2Buffer("{", buf);
@@ -725,7 +736,6 @@ void  _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* spac
 }
 
 
-
 /**
 void  print_json(FILE* fp, tJson* json, int mode)
 
@@ -749,7 +759,6 @@ void  print_json(FILE* fp, tJson* json, int mode)
 }
 
 
-
 /**
 void  print_json_opt(FILE* fp, tJson* json, const char* crlf, const char* space)
 
@@ -770,7 +779,6 @@ void  print_json_opt(FILE* fp, tJson* json, const char* crlf, const char* space)
 
     return;
 }
-
 
 
 
@@ -804,7 +812,6 @@ tJson*  json_parse_file(const char* fn, int num)
 }
 
 
-
 /**
 void  json_set_str_val(tJson* json, char* str)
 
@@ -819,7 +826,6 @@ void  json_set_str_val(tJson* json, char* str)
 
     return;
 }
-
 
 
 /**
@@ -838,7 +844,6 @@ void  json_copy_val(tJson* f_json, tJson* t_json)
 }
 
 
-
 /**
 void  json_copy_data(tJson* f_json, tJson* t_json)
 
@@ -855,7 +860,6 @@ void  json_copy_data(tJson* f_json, tJson* t_json)
 
     return;
 }
-
 
 
 /**
@@ -894,7 +898,6 @@ void  insert_json_nodes(tJson* parent, tJson* child)
 
     return;
 }
-
 
 
 /**
@@ -964,7 +967,6 @@ tJson*  search_top_bracket_json(tJson* pp, int nn)
 }
 
 
-
 /**
 tJson*  search_key_json(tJson* pp, char* key, int needval, int nn)
 
@@ -995,7 +997,6 @@ tJson*  search_key_json(tJson* pp, char* key, int needval, int nn)
 
     return pp; 
 }
-
 
 
 /**
@@ -1031,7 +1032,6 @@ tJson*   search_sister_json(tJson* pp, int nn)
 }
 
 
-
 /**
 tJson*  search_key_child_json(tJson* pp, char* key, int needval)
 
@@ -1053,7 +1053,6 @@ tJson*  search_key_child_json(tJson* pp, char* key, int needval)
 
     return json;
 }
-
 
 
 /**
@@ -1081,7 +1080,6 @@ tJson*  search_key_sister_json(tJson* pp, char* key, int needval)
     
     return NULL; 
 }
-
 
 
 /**
@@ -1117,7 +1115,6 @@ tJson*  search_key_json_obj(tJson* pp, char* key, int nn)
 }
 
 
-
 /**
 tJson*  search_double_key_json(tJson* pp, char* key1, char* key2, int needval)
 
@@ -1143,7 +1140,6 @@ tJson*  search_double_key_json(tJson* pp, char* key1, char* key2, int needval)
 
     return pp; 
 }
-
 
 
 /*
@@ -1183,7 +1179,6 @@ tJson*  _search_key_json(tJson* pp, char* key, int needval, int* nn)
     
     return NULL; 
 }
-
 
  
 /*
@@ -1226,7 +1221,6 @@ tJson*  _search_key_json_obj(tJson* pp, char* key, int* nn)
     
     return NULL; 
 }
-
 
 
 /**
@@ -1278,7 +1272,6 @@ tList*   search_all_node_strval_json(tJson* pp, char* name, char* val)
 }
 
 
-
 tList*   _search_all_node_strval_json(tList* list, tJson* pp, char* name, char* val)
 {
     while (pp->esis!=NULL) pp = pp->esis;
@@ -1313,8 +1306,6 @@ tList*   _search_all_node_strval_json(tList* list, tJson* pp, char* name, char* 
 }
 
 
-
-
 Buffer  get_json_val(tJson* json)
 {
     Buffer val = init_Buffer();
@@ -1332,7 +1323,6 @@ Buffer  get_json_val(tJson* json)
     }
     return val;
 }
-
 
 
 /**
@@ -1356,7 +1346,6 @@ Buffer  get_key_json_val(tJson* pp, char* key, int nn)
 }
 
 
-
 /**
 Buffer  get_key_sister_json_val(tJson* pp, char* key)
 
@@ -1378,7 +1367,6 @@ Buffer  get_key_sister_json_val(tJson* pp, char* key)
 }
 
 
-
 /**
 Buffer  get_double_key_json_val(tJson* pp, char* key1, char* key2)
 
@@ -1397,8 +1385,6 @@ Buffer  get_double_key_json_val(tJson* pp, char* key1, char* key2)
 
     return val;
 }
-
-
 
 
 /**
@@ -1435,7 +1421,6 @@ Buffer  get_Buffer_from_json(tJson* json)
 }
 
 
-
 /**
 char*  get_string_from_json(tJson* json)
 
@@ -1465,7 +1450,6 @@ char*  get_string_from_json(tJson* json)
         }
         if (str==NULL) str = dup_str(pp);
     }
-
 
     return str;
 }

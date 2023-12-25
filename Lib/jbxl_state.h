@@ -107,6 +107,7 @@ void    jbxl_add_state(int id, const char* smb, const char* str);
 #define  JBXL_JSON_NODE_OPENED       802        ///< JSONノードは開いている
 #define  JBXL_JSON_NODE_CLOSED       803        ///< JSONノードは閉じている
 #define  JBXL_JSON_NODE_EMPTY        804        ///< JSONの空のノード
+#define  JBXL_JSON_ARRAY             805        ///< JSONの配列
 #define  JBXL_JSON_NOT_CLOSED        810        ///< JSONデータが閉じていない．原因不明．パースアルゴリズムのミス？
 #define  JBXL_JSON_PARSE_TERM        811        ///< JSON のパースが途中で終了した．入力データが不完全．
 #define  JBXL_JSON_IN_STR            820        ///< JSONデータの属性値処理で文字列を処理中．

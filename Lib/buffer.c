@@ -37,7 +37,6 @@ Buffer*  new_Buffer(int sz)
 }
 
 
-
 /**
 Buffer  init_Buffer()
 
@@ -56,7 +55,6 @@ Buffer  init_Buffer()
 
     return buf;
 }
-
 
 
 /**
@@ -95,7 +93,6 @@ Buffer  make_Buffer(int sz)
 }
 
 
-
 /**
 Buffer  make_Buffer_bychar(unsigned char cc)
 
@@ -122,7 +119,6 @@ Buffer  make_Buffer_bychar(unsigned char cc)
 }
 
 
-
 /**
 void  free_Buffer(Buffer* buf)
 
@@ -142,7 +138,6 @@ void  free_Buffer(Buffer* buf)
 }
 
 
-
 /**
 void   del_Buffer(Buffer** buf)
 
@@ -160,7 +155,6 @@ void   del_Buffer(Buffer** buf)
         *buf = NULL;
     }
 }
-
 
 
 /**
@@ -207,7 +201,6 @@ Buffer  make_Buffer_randomstr(int n)
 }
 
 
-
 /**
 Buffer  dup_Buffer(Buffer buf)
 
@@ -228,7 +221,6 @@ Buffer  dup_Buffer(Buffer buf)
     //
     return  str;
 }
-
 
 
 /**
@@ -253,7 +245,6 @@ Buffer  rept_Buffer(unsigned char cc, int n)
 }
 
 
-
 /**
 void  expand_Buffer(Buffer* buf, int len)
 
@@ -272,7 +263,6 @@ void  expand_Buffer(Buffer* buf, int len)
 }
 
 
-
 /**
 void  clear_Buffer(Buffer* str)
 
@@ -286,7 +276,6 @@ void  clear_Buffer(Buffer* str)
     str->vldsz = 0;
     str->state = JBXL_NORMAL;
 }
-
 
 
 /**
@@ -354,7 +343,6 @@ int  copy_Buffer(Buffer* src, Buffer* dst)
 
     return  sz;
 }
-
 
 
 /**
@@ -455,7 +443,6 @@ int  cat_Buffer(Buffer* src, Buffer* dst)
 }
 
 
-
 /**
 int  ins_Buffer(Buffer* src, Buffer* dst)
 
@@ -489,7 +476,6 @@ int  ins_Buffer(Buffer* src, Buffer* dst)
 
     return  dst->vldsz;
 }
-
 
 
 /**
@@ -555,7 +541,6 @@ int  copy_b2Buffer(void* src, Buffer* dst, int len)
 
     return  sz;
 }
-
 
 
 /**
@@ -632,7 +617,6 @@ int  cat_b2Buffer(void* src, Buffer* dst, int len)
 }
 
 
-
 /**
 int  ins_b2Buffer(void* src, Buffer* dst, int len)
 
@@ -670,7 +654,6 @@ int  ins_b2Buffer(void* src, Buffer* dst, int len)
 }
 
 
-
 /**
 int  copy_i2Buffer(int src, Buffer* dst)
 
@@ -683,7 +666,6 @@ int  copy_i2Buffer(int src, Buffer* dst)
     snprintf(num, LEN_INT-1, "%d", src);
     return copy_b2Buffer((void*)num, dst, (int)strlen(num));
 }
-
 
 
 /**
@@ -700,7 +682,6 @@ int  cat_i2Buffer(int src, Buffer* dst)
 }
 
 
-
 /**
 int  ins_i2Buffer(int src, Buffer* dst)
 
@@ -713,7 +694,6 @@ int  ins_i2Buffer(int src, Buffer* dst)
     snprintf(num, LEN_INT-1, "%d", src);
     return ins_b2Buffer((void*)num, dst, (int)strlen(num));
 }
-
 
 
 /**
@@ -752,7 +732,6 @@ int  cmp_Buffer(Buffer src, Buffer dst, int n)
     }
     return 0;
 }
-
 
 
 /**
@@ -807,7 +786,6 @@ Buffer  encode_base64_Buffer(Buffer buf)
 }
 
 
-
 /**
 Buffer  decode_base64_Buffer(Buffer str)
 
@@ -850,7 +828,6 @@ Buffer  decode_base64_Buffer(Buffer str)
 }
 
 
-
 /**
 Buffer  encode_base64_filename_Buffer(Buffer buf, unsigned char cc)
 
@@ -889,7 +866,6 @@ Buffer  decode_base64_filename_Buffer(Buffer str, unsigned char cc)
 
     return dec;
 }
-
 
 
 /**
@@ -935,7 +911,6 @@ Buffer  get_line_Buffer(Buffer str, int n)
 
     return  ret;
 }
-
 
 
 /**
@@ -985,7 +960,6 @@ Buffer  get_seq_data_Buffer(Buffer str, int* ptr)
 }
 
 
-
 /**
 Buffer  awk_Buffer(Buffer str, char cc, int n)
 
@@ -1027,7 +1001,6 @@ Buffer  awk_Buffer(Buffer str, char cc, int n)
 
     return item;
 }
-
 
 
 /**
@@ -1075,7 +1048,6 @@ Buffer  cawk_Buffer(Buffer str, char cc, int n)
 }
 
 
-
 /**
 Buffer  pack_Buffer(Buffer buf, char cc)
 
@@ -1098,7 +1070,6 @@ Buffer  pack_Buffer(Buffer buf, char cc)
 
     return res;
 }
-
 
 
 /**
@@ -1144,7 +1115,6 @@ void kanji_convert_Buffer(Buffer* str)
 }
 
 
-
 /**
 Buffer  randstr_Buffer(int n)
 
@@ -1170,7 +1140,6 @@ Buffer  randstr_Buffer(int n)
 }
 
 
-
 /**
 Buffer  randbit_Buffer(int n) 
 
@@ -1192,7 +1161,6 @@ Buffer  randbit_Buffer(int n)
     for (i=0; i<n; i++) setBit(str.buf, i, rand()%2);
     return str;     
 }
-
 
 
 #define  DUMP_BUFFER_LINE_SIZE     85     // 16*5("%02x "+"%c ") + 5("   "+"\r\n");
@@ -1256,7 +1224,6 @@ Buffer  dump_Buffer(Buffer buf)
 }
 
 
-
 /**
 int  recalc_strlen_Buffer(Buffer* buf)
 
@@ -1273,7 +1240,6 @@ int  recalc_strlen_Buffer(Buffer* buf)
     buf->vldsz = len;
     return len;
 }
-
 
 
 /**
@@ -1301,7 +1267,6 @@ void  chomp_Buffer(Buffer* str)
 }
 
 
-
 /**
 int  isText_Buffer(Buffer buf)
 
@@ -1316,7 +1281,6 @@ int  isText_Buffer(Buffer buf)
     if (buf.vldsz==(int)strlen((const char*)buf.buf)) return TRUE;
     return FALSE;
 }
-
 
 
 
@@ -1355,7 +1319,6 @@ int  fgets_Buffer(Buffer* str, FILE* fp)
 }
 
 
-
 /**
 int  read_lines_Buffer(Buffer* str, FILE* fp)
 
@@ -1392,7 +1355,6 @@ int  read_lines_Buffer(Buffer* str, FILE* fp)
 }
 
 
-
 /**
 Buffer  read_Buffer_file(const char* fn)
 
@@ -1420,7 +1382,6 @@ Buffer  read_Buffer_file(const char* fn)
     
     return buf;
 }
-
 
 
 /**
@@ -1454,7 +1415,6 @@ Buffer  read_Buffer_data(FILE* fp, int sz)
 }
 
 
-
 /**
 int   save_Buffer_file(Buffer buf, char* fn)
 
@@ -1483,7 +1443,6 @@ int   save_Buffer_file(Buffer buf, char* fn)
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////
 //  文字列操作
 // 
@@ -1495,7 +1454,7 @@ buf.buf 中にある bin のデータ（各1Byte，順不同）を削除する�
 
 @param  buf  操作する Buffer変数
 @param  bin  削除するデータを格納したメモリへのポインタ
-@param    len  binデータの長さ
+@param  len  binデータの長さ（-1以下の場合は strlen(bin)）
 
 @return 変換した文字列を格納した Buffer変数．要free
 */
@@ -1505,8 +1464,10 @@ Buffer  erase_bBuffer(Buffer buf, char* bin, int len)
     char cc;
 
     Buffer res = dup_Buffer(buf);
-    Buffer wrk = make_Buffer(buf.vldsz+1);
+    if (bin==NULL) return res;
+    Buffer wrk = make_Buffer(buf.vldsz + 1);
 
+    if (len<0) len = strlen(bin);
     for (i=0; i<len; i++) {
         cc = bin[i];
         n  = 0;
@@ -1523,7 +1484,6 @@ Buffer  erase_bBuffer(Buffer buf, char* bin, int len)
 
     return res;
 }
-
 
 
 /**
@@ -1576,7 +1536,6 @@ Buffer  replace_sBuffer_bystr(Buffer buf, const char* frm, const char* tos)
 }
 
 
-
 /**
 int  replace_sBuffer_file(char* fn, Buffer frm, Buffer tos)
 
@@ -1608,7 +1567,6 @@ int  replace_sBuffer_file(char* fn, Buffer frm, Buffer tos)
 }
 
 
-
 /**
 void  rewrite_sBuffer_bystr(Buffer* buf, const char* frm, const char* tos)
 
@@ -1628,7 +1586,6 @@ void  rewrite_sBuffer_bystr(Buffer* buf, const char* frm, const char* tos)
     }
     return;
 }
-
 
 
 
@@ -1663,7 +1620,6 @@ int   save_Buffer2_fp(Buffer key, Buffer buf, FILE* fp)
 }
 
 
-
 /**
 int   save_Buffer_fp(Buffer buf, FILE* fp)
 
@@ -1689,7 +1645,6 @@ int   save_Buffer_fp(Buffer buf, FILE* fp)
     
     return TRUE;
 }
-
 
 
 /**
@@ -1722,7 +1677,6 @@ Buffer  read_Buffer_fp(FILE* fp)
     
     return buf;
 }
-
 
 
 /**
@@ -1759,7 +1713,6 @@ int  read_Buffer2_fp(Buffer* key, Buffer* buf, FILE* fp)
 
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // etc. etc.
 //
@@ -1782,7 +1735,6 @@ char  pop_char_ringStack(Buffer* buf)
 
     return  (char)buf->buf[buf->vldsz];
 }
-
 
 
 /**

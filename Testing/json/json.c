@@ -2,7 +2,6 @@
     JSON TEST Program 
 */
 
-
 #include "tjson.h"
 
 
@@ -51,7 +50,6 @@ void  check_json(tJson* json)
 }
 
 
-
 int main(int argc, char** argv)
 {
     if (argc<2) {
@@ -82,6 +80,4 @@ int main(int argc, char** argv)
 
     return 0;
 }
-
-
 
