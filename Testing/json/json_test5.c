@@ -10,11 +10,11 @@
 int main()
 {
 
-    char pp[] = "{\"sjkj\", \"aaaa\":[2,3,4,[[333,444], 222],666], \"bbbb\": {\"cccc\" , \"sss\":dhdhash, \"ABC\"  :  {  \"XYZ\" : {  } },\"JJJ\", },\"ppp\":xyz}";
+    char pp[] = "{\"sjkj\", \"aaaa\":[2,3,4,[[\"333\",444], 222],666], \"bbbb\": {\"cccc\" , \"sss\":dhdhash, \"ABC\"  :  {  \"XYZ\" : {  } },\"JJJ\", },\"ppp\":xyz}";
 
     tJson* json;
 
-    json = json_parse(pp, 2);
+    json = json_parse(pp, 20);
     
     print_tTree(stdout, json);
     fprintf(stdout, "\n");
