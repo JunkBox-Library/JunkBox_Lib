@@ -67,17 +67,17 @@ if test "$enableval" = "no" ; then
     echo "no"
 else
     ZLIB_DIR="$enableval"
-	if test "$ZLIB_DIR" = "yes" ; then
-		ZLIB_DIR="/usr"
+    if test "$ZLIB_DIR" = "yes" ; then
+        ZLIB_DIR="/usr"
     fi
     echo "yes   sdir = $ZLIB_DIR"
     if test ! -d $ZLIB_DIR ; then
         AC_MSG_ERROR([ZLIB top directory $ZLIB_DIR is not exist.])
         ENABLE_ZLIBFNC="no"
     else
-	    ZLIB_INC_DIR="-I${ZLIB_DIR}/include"
-	    ZLIB_LIB_DIR="-L${ZLIB_DIR}/lib"
-	    ENABLE_ZLIB="-DENABLE_ZLIB"
+        ZLIB_INC_DIR="-I${ZLIB_DIR}/include"
+        ZLIB_LIB_DIR="-L${ZLIB_DIR}/lib"
+        ENABLE_ZLIB="-DENABLE_ZLIB"
         AC_SUBST(ZLIB_INC_DIR)
         AC_SUBST(ZLIB_LIB_DIR)
         AC_SUBST(ENABLE_ZLIB)
@@ -108,17 +108,17 @@ if test "$enableval" = "no" ; then
     echo "no"
 else
     LDAP_DIR="$enableval"
-	if test "$LDAP_DIR" = "yes" ; then
-		LDAP_DIR="/usr"
+    if test "$LDAP_DIR" = "yes" ; then
+        LDAP_DIR="/usr"
     fi
     echo "yes   sdir = $LDAP_DIR"
     if test ! -d $LDAP_DIR ; then
         AC_MSG_ERROR([ldap top directory $LDAP_DIR is not exist.])
         ENABLE_LDAPFNC="no"
     else
-	    LDAP_INC_DIR="-I${LDAP_DIR}/include"
-	    LDAP_LIB_DIR="-L${LDAP_DIR}/lib"
-	    ENABLE_LDAP="-DENABLE_LDAP"
+        LDAP_INC_DIR="-I${LDAP_DIR}/include"
+        LDAP_LIB_DIR="-L${LDAP_DIR}/lib"
+        ENABLE_LDAP="-DENABLE_LDAP"
         AC_SUBST(LDAP_INC_DIR)
         AC_SUBST(LDAP_LIB_DIR)
         AC_SUBST(ENABLE_LDAP)
@@ -142,17 +142,17 @@ if test "$enableval" = "no" ; then
     echo "no"
 else
     SSL_DIR="$enableval"
-	if test "$SSL_DIR" = "yes" ; then
-		SSL_DIR="/usr"
+    if test "$SSL_DIR" = "yes" ; then
+        SSL_DIR="/usr"
     fi
     echo "yes   sdir = $SSL_DIR"
     if test ! -d $SSL_DIR ; then
         AC_MSG_ERROR([SSL top directory $SSL_DIR is not exist.])
         ENABLE_SSLFNC="no"
     else
-	    SSL_INC_DIR="-I${SSL_DIR}/include"
-	    SSL_LIB_DIR="-L${SSL_DIR}/lib"
-	    ENABLE_SSL="-DENABLE_SSL"
+        SSL_INC_DIR="-I${SSL_DIR}/include"
+        SSL_LIB_DIR="-L${SSL_DIR}/lib"
+        ENABLE_SSL="-DENABLE_SSL"
         AC_SUBST(SSL_INC_DIR)
         AC_SUBST(SSL_LIB_DIR)
         AC_SUBST(ENABLE_SSL)
@@ -176,17 +176,17 @@ if test "$enableval" = "no" ; then
     echo "no"
 else
     MYSQL_DIR="$enableval"
-	if test "$MYSQL_DIR" = "yes" ; then
-		MYSQL_DIR="/usr"
+    if test "$MYSQL_DIR" = "yes" ; then
+        MYSQL_DIR="/usr"
     fi
     echo "yes   sdir = $MYSQL_DIR"
     if test ! -d $MYSQL_DIR ; then
         AC_MSG_ERROR([MySQL top directory $MYSQL_DIR is not exist.])
         ENABLE_MYSQLFNC="no"
     else
-	    MYSQL_INC_DIR="-I${MYSQL_DIR}/include"
-	    MYSQL_LIB_DIR="-L${MYSQL_DIR}/lib/mysql"
-	    ENABLE_MYSQL="-DENABLE_MYSQL"
+        MYSQL_INC_DIR="-I${MYSQL_DIR}/include"
+        MYSQL_LIB_DIR="-L${MYSQL_DIR}/lib/mysql"
+        ENABLE_MYSQL="-DENABLE_MYSQL"
         AC_SUBST(MYSQL_INC_DIR)
         AC_SUBST(MYSQL_LIB_DIR)
         AC_SUBST(ENABLE_MYSQL)
@@ -210,8 +210,8 @@ if test "$enableval" = "no" ; then
     echo "no"
 else
     JPEG_DIR="$enableval"
-	if test "$JPEG_DIR" = "yes" ; then
-		JPEG_DIR="/usr"
+    if test "$JPEG_DIR" = "yes" ; then
+        JPEG_DIR="/usr"
     fi
     echo "yes   sdir = $JPEG_DIR"
     if test ! -d $JPEG_DIR ; then
@@ -244,67 +244,67 @@ if test "$enableval" = "no" ; then
     echo "no"
 else
     OPENJPEG_DIR="$enableval"
-	OPENJPEG_VER="2.1"
-	OPENJPEG_VER_INT="21"
+    OPENJPEG_VER="2.1"
+    OPENJPEG_VER_INT="21"
 
-	if test "$OPENJPEG_DIR" = "yes" ; then
-		OPENJPEG_DIR="/usr"
-		OPENJPEG_VER="1.0"
-		OPENJPEG_VER_INT="10"
+    if test "$OPENJPEG_DIR" = "yes" ; then
+        OPENJPEG_DIR="/usr"
+        OPENJPEG_VER="1.0"
+        OPENJPEG_VER_INT="10"
     fi
-	if test "$OPENJPEG_DIR" = "1.2" ; then
-		OPENJPEG_DIR="/usr"
-		OPENJPEG_VER="1.2"
-		OPENJPEG_VER_INT="12"
-		OPENJPEG_INC=""
+    if test "$OPENJPEG_DIR" = "1.2" ; then
+        OPENJPEG_DIR="/usr"
+        OPENJPEG_VER="1.2"
+        OPENJPEG_VER_INT="12"
+        OPENJPEG_INC=""
     fi
-	if test "$OPENJPEG_DIR" = "1.4" ; then
-		OPENJPEG_DIR="/usr/local"
-		OPENJPEG_VER="1.4"
-		OPENJPEG_VER_INT="14"
-		OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
+    if test "$OPENJPEG_DIR" = "1.4" ; then
+        OPENJPEG_DIR="/usr/local"
+        OPENJPEG_VER="1.4"
+        OPENJPEG_VER_INT="14"
+        OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
     fi
-	if test "$OPENJPEG_DIR" = "1.5" ; then
-		OPENJPEG_DIR="/usr/local"
-		OPENJPEG_VER="1.5"
-		OPENJPEG_VER_INT="15"
-		OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
+    if test "$OPENJPEG_DIR" = "1.5" ; then
+        OPENJPEG_DIR="/usr/local"
+        OPENJPEG_VER="1.5"
+        OPENJPEG_VER_INT="15"
+        OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
     fi
-	if test "$OPENJPEG_DIR" = "2.0" ; then
-		OPENJPEG_DIR="/usr/local"
-		OPENJPEG_VER="2.0"
-		OPENJPEG_VER_INT="20"
-		OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
+    if test "$OPENJPEG_DIR" = "2.0" ; then
+        OPENJPEG_DIR="/usr/local"
+        OPENJPEG_VER="2.0"
+        OPENJPEG_VER_INT="20"
+        OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
     fi
-	if test "$OPENJPEG_DIR" = "2.1" ; then
-		OPENJPEG_DIR="/usr/local"
-		OPENJPEG_VER="2.1"
-		OPENJPEG_VER_INT="21"
-		OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
+    if test "$OPENJPEG_DIR" = "2.1" ; then
+        OPENJPEG_DIR="/usr/local"
+        OPENJPEG_VER="2.1"
+        OPENJPEG_VER_INT="21"
+        OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
     fi
-	if test "$OPENJPEG_DIR" = "2.2" ; then
-		OPENJPEG_DIR="/usr/local"
-		OPENJPEG_VER="2.2"
-		OPENJPEG_VER_INT="22"
-		OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
+    if test "$OPENJPEG_DIR" = "2.2" ; then
+        OPENJPEG_DIR="/usr/local"
+        OPENJPEG_VER="2.2"
+        OPENJPEG_VER_INT="22"
+        OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
     fi
-	if test "$OPENJPEG_DIR" = "2.3" ; then
-		OPENJPEG_DIR="/usr/local"
-		OPENJPEG_VER="2.3"
-		OPENJPEG_VER_INT="23"
-		OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
+    if test "$OPENJPEG_DIR" = "2.3" ; then
+        OPENJPEG_DIR="/usr/local"
+        OPENJPEG_VER="2.3"
+        OPENJPEG_VER_INT="23"
+        OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
     fi
-	if test "$OPENJPEG_DIR" = "2.4" ; then
-		OPENJPEG_DIR="/usr/local"
-		OPENJPEG_VER="2.4"
-		OPENJPEG_VER_INT="24"
-		OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
+    if test "$OPENJPEG_DIR" = "2.4" ; then
+        OPENJPEG_DIR="/usr/local"
+        OPENJPEG_VER="2.4"
+        OPENJPEG_VER_INT="24"
+        OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
     fi
-	if test "$OPENJPEG_DIR" = "2.5" ; then
-		OPENJPEG_DIR="/usr/local"
-		OPENJPEG_VER="2.5"
-		OPENJPEG_VER_INT="25"
-		OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
+    if test "$OPENJPEG_DIR" = "2.5" ; then
+        OPENJPEG_DIR="/usr/local"
+        OPENJPEG_VER="2.5"
+        OPENJPEG_VER_INT="25"
+        OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
     fi
 
     echo "yes   option = $OPENJPEG_DIR"
@@ -425,8 +425,8 @@ ENABLE_WIN="yes"
 
 IS_MINGW=`uname -s|grep MINGW32`
 if test "$IS_MINGW" == "" ; then
-	DISABLE_WIN="yes"
-	ENABLE_WIN="no"
+    DISABLE_WIN="yes"
+    ENABLE_WIN="no"
 fi
 
 AM_CONDITIONAL(DISABLE_WIN, test "$DISABLE_WIN" = "yes")
@@ -436,12 +436,12 @@ AM_CONDITIONAL(ENABLE_WIN,  test "$ENABLE_WIN"  = "yes")
 AC_PATH_XTRA
 #if test "$X_CFLAGS" != "" -a "$ENABLE_X11" = "yes" -a "$DISABLE_WIN" = "yes" ; then
 if test "$ENABLE_X11" = "yes" -a "$DISABLE_WIN" = "yes" ; then
-	if test "$X_CFLAGS" = "" ; then
-		X_CFLAGS="-I/usr/include/X11"
-	fi
-	ENABLE_X11="yes"
+    if test "$X_CFLAGS" = "" ; then
+        X_CFLAGS="-I/usr/include/X11"
+    fi
+    ENABLE_X11="yes"
 else
-	ENABLE_X11="no"
+    ENABLE_X11="no"
 fi
 AM_CONDITIONAL(ENABLE_X11, test "$ENABLE_X11" = "yes")
 
