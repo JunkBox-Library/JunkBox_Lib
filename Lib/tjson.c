@@ -33,6 +33,8 @@ tJson*  json_parse(char* pp, int num)
 
 文字列のJSONデータを解釈して，tJsonのツリーを生成する．
 ツリーのトップは JSON_ANCHOR_NODE となる．
+シーケンス処理で書いたので，だらだら．
+あまり複雑なものはパースできない．たぶん．
 
 @param  pp   文字列の JSONデータへのポインタ．
 @param  num  0 配列を処理しない．高速．@n
@@ -91,7 +93,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 
 JSON Main パーサ．@n
 先頭に姉妹ノードがない場合は json にNULLを指定しても可．@n
-処理に json->ctrl を使用（シーケンス処理用．書き換えられる）．@n
+処理に json->ctrl を使用（分割シーケンス処理用．プログラム中で書き換えられる）．@n
 
 @param  json JSONデータへのポインタ．NULLでない場合は，このデータの後に結果が付加される．@n
 @param  pp   パースする文字列．
@@ -115,7 +117,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
     while (*pp!='\0') {
         // 
         if (*pp=='{') {
-            print_message("open  { \n");
+            //print_message("open  { \n");
             pp++;
             //
             if (json->ctrl!=JBXL_JSON_NODE_OPENED) {
@@ -187,7 +189,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 
         //
         else if (*pp=='[') {
-            print_message("open  [ \n");
+            //print_message("open  [ \n");
             pt = skip_char_pair(pp, '[', ']');
             if (*pt=='\0') {
                 json = _json_parse_term(json, pp, pt, "[");
@@ -222,7 +224,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 
         //
         else if (*pp==',') {
-            print_message("next  , \n");
+            //print_message("next  , \n");
             pt = pp + 1;
             // 次の \", \', {, } を見つける
             //while (*pt!='\0' && *pt!='\'' && *pt!='\"' && *pt!='{' && *pt!='}' && *pt!='[') pt++;
@@ -275,7 +277,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 
         //
         else if (*pp==':') {
-            print_message("next  : \n");
+            //print_message("next  : \n");
             pt = pp + 1;
             while (*pt==' ') pt++;
             if (*pt=='\0') {
@@ -330,7 +332,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 
         //
         else if (*pp=='}') {
-            print_message("close } \n");
+            //print_message("close } \n");
             if (json->prev!=NULL) json = json->prev;
             //
             pt = pp = pp + 1;

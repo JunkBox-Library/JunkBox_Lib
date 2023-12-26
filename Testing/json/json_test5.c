@@ -18,7 +18,7 @@ int main()
     
     print_tTree(stdout, json);
     fprintf(stdout, "\n");
-    print_json_opt(stdout, json, "\r\n", "    ");
+    print_json_opt(stdout, json, "\r\n", "  ");
 
     fprintf(stdout, "----------------------------\n");
     Buffer buf;
