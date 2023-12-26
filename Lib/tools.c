@@ -1352,8 +1352,31 @@ char*  dup_str(char* buf)
 }
 
 
-static char  _ToSTR[LDATA];        ///< 作業用（文字変換）
+/**
+int   is_number(unsigned char* str)
 
+文字列が数字かどうか反転する．
+
+@param  検査する文字列
+@return 0: 数字でない．1: 整数．2: 小数点付き数字．
+*/
+int   is_number(unsigned char* str)
+{
+    if (str==NULL) return 0;
+    int i, len = strlen((char*)str);
+
+    int cnt = 0;
+    for (i=0; i<len; i++) {
+        if (str[i]=='.') cnt += 1;
+        else if (str[i]<'0' || str[i]>'9') return 0;
+    }
+    if (cnt>1) return 0;
+    else if (cnt>0) return 2;
+    return 1;
+}
+
+
+static char  _ToSTR[LDATA];        ///< 作業用（文字変換）
 
 /**
 char*  itostr(int n)

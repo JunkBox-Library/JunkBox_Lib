@@ -1,4 +1,4 @@
-﻿
+
 /**
 @brief   Tiny JSON ライブラリ 
 @file    tjson.c
@@ -22,7 +22,6 @@
 
 #include "tjson.h"
 #include "jbxl_state.h"
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,6 +109,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 {
     char*  pt   = NULL;
     tJson* node = NULL;
+    tJson* trgt = NULL;
 
     if (json==NULL) {
         json = new_json_node();
@@ -119,44 +119,56 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
     while (*pp!='\0') {
         // 
         if (*pp=='{') {
+            //print_message("open  { \n");
             pp++;
-            if (json->ctrl!=JBXL_JSON_NODE_OPENED) {
+            //
+            if (json->yngr!=NULL && json->depth>=0) {
+                json = json->yngr;
+                json->ldat.lv = JSON_VALUE_OBJ;
+            }
+            else {
+                node = new_json_node();
+                node->ldat.id = JSON_BRACKET_NODE;
+                node->ldat.lv = JSON_VALUE_OBJ;
+                json = add_tTree_node(json, node);
+            }
+/*
+            //if (json->ctrl!=JBXL_JSON_NODE_OPENED) {
                 // open {
-                if (json->prev==NULL) {
+                //if (json->prev==NULL) {
                     node = new_json_node();
                     node->ldat.id = JSON_BRACKET_NODE;
                     node->ldat.lv = JSON_VALUE_OBJ;
                     json = add_tTree_node(json, node);
                 }
                 else {
-                    if (json->yngr!=NULL) {
-                        json = json->yngr;
-                        json->ldat.lv = JSON_VALUE_OBJ;
-                    }
                 }
-            }
-            json->ctrl = JBXL_NONE;
+*/
+            //}
+            //json->ctrl = JBXL_NONE;
 
-            // 最初の \", \', } を見つける
+            // 次の \", \', {, } を見つける
             pt = pp;
+            while (*pt!='\0' && *pt!='\'' && *pt!='\"' && *pt!='{' && *pt!='}') pt++;
+/*
             while(*pt!='\0') {
                 while(*pt=='\\') pt += 2;
                 if (*pt!='\0') {
                     if (*pt=='\'' || *pt=='\"' || *pt=='}') break;
                     pt++;
                 }
-            }
+            }*/
             if (*pt=='\0') {
                 json = _json_parse_term(json, NULL, NULL, "{");
-                json->ctrl = JBXL_JSON_NODE_OPENED;
+                //json->ctrl = JBXL_JSON_NODE_OPENED;
                 return json;
             }
             //
 
             pp = pt;
-            if (*pp!='}') {     // \" or \'
+            if (*pp=='\"' || *pp=='\'') {
                 char ch = '\"';
-                if (*pt=='\'') ch = '\''; 
+                if (*pp=='\'') ch = '\''; 
                 //
                 pt = pp + 1;
                 while(*pt!='\0') {
@@ -168,7 +180,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
                 }
                 if (*pt=='\0') {
                     json = _json_parse_term(json, pp, pt, "{");
-                    json->ctrl = JBXL_JSON_NODE_OPENED;
+                    //json->ctrl = JBXL_JSON_NODE_OPENED;
                     return json;
                 }
 
@@ -177,7 +189,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
                 node->ldat.key = set_Buffer(pp + 1, len);
                 node->ldat.id  = JSON_DATA_NODE;
                 node->ldat.lv  = JSON_VALUE_NULL;
-                add_tTree_node(json, node);
+                trgt = add_tTree_node(json, node);
 
                 pt = pt + 1; 
                 while(*pt!=',' && *pt!=':' && *pt!='}' && *pt!='\0') pt++; 
@@ -191,55 +203,71 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 
         //
         else if (*pp=='[') {
+            //print_message("open  [ \n");
             pt = skip_char_pair(pp, '[', ']');
             if (*pt=='\0') {
                 json = _json_parse_term(json, pp, pt, "[");
                 return json;
             }
-
-            if (json->next==NULL) { // アンカーのみ
+            if (json->next==NULL || json->depth<0) { // アンカーのみ
                 node = new_json_node();
                 node->ldat.id = JSON_ARRAY_NODE;
                 node->ldat.lv = JSON_VALUE_ARRAY;
                 add_tTree_node(json, node);
             }
-
-            int len = (int)(pt - pp) + 1;
-            Buffer temp = set_Buffer(pp, len);
-            json->yngr->ldat.val = pack_Buffer(temp, '\0');
-            json->yngr->ldat.lv  = JSON_VALUE_ARRAY;
-            free_Buffer(&temp);
+            if (json->yngr!=NULL) {
+                int len = (int)(pt - pp) + 1;
+                Buffer temp = set_Buffer(pp, len);
+                json->yngr->ldat.val = pack_Buffer(temp, '\0');
+                json->yngr->ldat.lv  = JSON_VALUE_ARRAY;
+                free_Buffer(&temp);
+            }
+/*
+            else {
+                node = new_json_node();
+                node->ldat.id = JSON_BRACKET_NODE;
+                node->ldat.lv = JSON_VALUE_OBJ;
+                //node->ldat.id = JSON_ARRAY_NODE;
+                //node->ldat.lv = JSON_VALUE_ARRAY;
+                json = add_tTree_node(json, node);
+            }
+*/
 
             if (num>0) _json_array_parse(json->yngr, num-1);
+            //if (num>0) _json_array_parse(json, num-1);
 
             pt++; 
-            while(*pt!=',' && *pt!='}' && *pt!='{' && *pt!='[' && *pt!='\0') pt++; 
+            while(*pt!=',' && *pt!='}' && *pt!='{' && *pt!='[' && *pt!='\0') pt++;
             if (*pt=='\0') {
                 if (json->depth>0) json->state = JBXL_JSON_PARSE_TERM;
                 return json;    
             }
             //
             pp = pt;
+            //if (json->prev!=NULL) json = json->prev;
         }
 
         //
         else if (*pp==',') {
-            // 最初の \", \', } を見つける
-            pt = pp;
+            //print_message("next  , \n");
+            pt = pp + 1;
+            // 次の \", \', {, } を見つける
+            while (*pt!='\0' && *pt!='\'' && *pt!='\"' && *pt!='{' && *pt!='}' && *pt!='[') pt++;
+            /*
             while(*pt!='\0') {
                 while(*pt=='\\') pt += 2;
                 if (*pt!='\0') {
                     if (*pt=='\'' || *pt=='\"' || *pt=='}') break;
                     pt++;
                 }
-            }
+            }*/
             if (*pt=='\0') {
                 json = _json_parse_term(json, NULL, NULL, ",");
                 return json;
             }
 
             pp = pt;
-            if (*pp!='}') {     // \" or \'
+            if (*pp=='\"' || *pp=='\'') {
                 char ch = '\"';
                 if (*pt=='\'') ch = '\''; 
                 //
@@ -261,7 +289,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
                 node->ldat.key = set_Buffer(pp + 1, len);
                 node->ldat.id  = JSON_DATA_NODE;
                 node->ldat.lv  = JSON_VALUE_NULL;
-                add_tTree_node(json, node);
+                trgt = add_tTree_node(json, node);
 
                 pt = pt + 1; 
                 while(*pt!=',' && *pt!=':' && *pt!='}' && *pt!='\0') pt++; 
@@ -275,8 +303,9 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 
         //
         else if (*pp==':') {
+            //print_message("next  : \n");
             pt = pp + 1;
-            while (*pt==' ' && *pt!='\0') pt++;
+            while (*pt==' ') pt++;
             if (*pt=='\0') {
                 json = _json_parse_term(json, NULL, NULL, ":");
                 return json;
@@ -285,13 +314,13 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 
             if (*pp!='{' && *pp!='[') {
                 while(*pt==' ') pt++;
-                if (*pt!='\0') while (*pt=='\\') pt += 2;
+                //if (*pt!='\0') while (*pt=='\\') pt += 2;
                 //
                 if (*pp=='\'' || *pp=='\"') {
                     pt = skip_string_end(pt);
                     if (*pt!='\0') pt++;
                 }
-                while (*pt!=',' && *pt!='}' && *pt!='\0') pt++;
+                while (*pt!=',' && *pt!='{' && *pt!='}' && *pt!='\0') pt++;
 
                 if (*pt=='\0') {
                     json = _json_parse_term(json, pp, pt, ":");
@@ -302,14 +331,19 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 
                 int len = (int)(pt - pp) + 1 ;
                 Buffer temp = set_Buffer(pp, len);
-                json->yngr->ldat.val = pack_Buffer(temp, '\0');
+                trgt->ldat.val = pack_Buffer(temp, '\0');
                 free_Buffer(&temp);
                 //
-                if (*pp=='\"' || *pp=='\'') json->yngr->ldat.lv = JSON_VALUE_STR;
+                if (*pp=='\"' || *pp=='\'') trgt->ldat.lv = JSON_VALUE_STR;
                 else {
-                    const char* val = (const char*)json->yngr->ldat.val.buf;
-                    if (!strcasecmp("true", val) || !strcasecmp("false", val)) json->yngr->ldat.lv = JSON_VALUE_BOOL;
-                    else  json->yngr->ldat.lv = JSON_VALUE_UNRESOLV;
+                    const char* val = (const char*)trgt->ldat.val.buf;
+                    if (!strcasecmp("true", val) || !strcasecmp("false", val)) trgt->ldat.lv = JSON_VALUE_BOOL;
+                    else {
+                        int num = is_number((unsigned char*)val);
+                        if      (num==1) trgt->ldat.lv = JSON_VALUE_INT;
+                        else if (num==2) trgt->ldat.lv = JSON_VALUE_REAL;
+                        else  trgt->ldat.lv = JSON_VALUE_UNRESOLV;
+                    }
                 }
 
                 pt++;
@@ -320,12 +354,11 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 
         //
         else if (*pp=='}') {
-            if (json->prev!=NULL) {
-                json = json->prev;
-            }
+            //print_message("close } \n");
+            if (json->prev!=NULL) json = json->prev;
+            //
             pt = pp = pp + 1;
-            //while (*pt!=',' && *pt!='}' && *pt!='{' && *pt!='\0') pt++;
-            while (*pt!='}' && *pt!='{' && *pt!='\0') pt++;
+            while (*pt!=',' && *pt!='}' && *pt!='{' && *pt!='\0') pt++;
             if (*pt=='\0' && json->depth>0) {
                 json->state = JBXL_JSON_PARSE_TERM;
                 return json;    
@@ -686,7 +719,7 @@ void  _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* spac
                     cat_s2Buffer(pp->ldat.key.buf, buf);
                     cat_s2Buffer("\": ", buf);
                 }
-                 cat_s2Buffer("[", buf);
+                cat_s2Buffer("[", buf);
                 if (pp->next!=NULL) {
                     if (crlf[0]!='\0') cat_s2Buffer(crlf, buf);
                     _json_to_Buffer(pp->next, buf, crlf, space);
@@ -1246,7 +1279,6 @@ int  _json_check_node_bykey(tJson* pp, char* key, int needval, int nn)
     }
     return nn;
 }
-
 
 
 /**

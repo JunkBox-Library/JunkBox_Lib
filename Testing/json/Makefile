@@ -11,7 +11,8 @@ CPU = Intel
 #
 #
 SUBJ = json_test6 json2 json_test5 json_test4 json_test3 json_test2 json_test
-SUBJ += unlock_overlay_containers ipynb_conv json_file json
+SUBJ += ipynb_conv json_file json
+#SUBJ += unlock_overlay_containers
 #
 all: $(SUBJ)
 

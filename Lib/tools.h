@@ -226,6 +226,8 @@ char*   double_bs(char* fn);                                     ///< 文字列�
 char*   numbering_name(const char* fmt, int n);                  ///< フォーマット fmtに従って，nを含む文字列を作り出す．要 free()
 #define pack_char(s, c)   pack_char_len((s), (c), -1)            ///< pack_char_len()
 
+int     is_number(unsigned char*);                               ///< 数字かどうか判定する（簡易版）．整数(1) と小数点付き数字(2) のみ．
+
 // thread unsafe
 char*   itostr(int n);                                           ///< int を文字に変換する．free() は不要    
 char*   ltostr(long int n);                                      ///< long int を文字に変換する．free() は不要    
