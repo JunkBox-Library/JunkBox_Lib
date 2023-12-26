@@ -14,7 +14,7 @@ int main()
 
     tJson* json;
 
-    json = json_parse(pp, 20);
+    json = json_parse(pp, 2);
     
     print_tTree(stdout, json);
     fprintf(stdout, "\n");

@@ -366,8 +366,8 @@ tJson*  _json_array_parse(tJson* json, int num)
 
 JSONデータの 配列ノードの値（配列データ）を処理する．
 
-@param   json  処理を行う JSON ノードデータ．
-@param   num   処理の残り段数．
+@param   json  配列処理を行う JSON ノードデータ．
+@param   num   配列処理の残り段数．
 @return  処理された JSON ノードデータ．
 */
 tJson*  _json_array_parse(tJson* json, int num)
@@ -392,8 +392,8 @@ JSONデータの 配列ノードの値（配列データ）を処理する．@n
 
 @param   json  JSON ノードデータ．NULLでない場合は，このデータの後に結果が付加される．@n
                NULLでも可．
-@param   pp    処理を行うデータ．
-@param   num   処理の残り段数．
+@param   pp    配列処理を行うデータ．
+@param   num   配列処理の残り段数．
 @return  処理された JSON ノードデータ．
 */
 tJson*  json_array_parse(tJson* json, char* pp, int num)
@@ -740,14 +740,19 @@ void  _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* spac
                     cat_s2Buffer(pp->ldat.key.buf, buf);
                     cat_s2Buffer("\": ", buf);
                 }
-                cat_s2Buffer("[", buf);
-                if (pp->next!=NULL) {
-                    if (crlf[0]!='\0') cat_s2Buffer(crlf, buf);
-                    _json_to_Buffer(pp->next, buf, crlf, space);
-                    if (space[0]!='\0') for(i=0; i<pp->depth; i++) cat_s2Buffer(space, buf);
+                if (pp->ldat.val.buf!=NULL) {
+                    cat_s2Buffer(pp->ldat.val.buf, buf); 
                 }
-                //if (space[0]!='\0') for(i=0; i<pp->depth; i++) cat_s2Buffer(space, buf);
-                cat_s2Buffer("]", buf); 
+                else {
+                    cat_s2Buffer("[", buf);
+                    if (pp->next!=NULL) {
+                        if (crlf[0]!='\0') cat_s2Buffer(crlf, buf);
+                        _json_to_Buffer(pp->next, buf, crlf, space);
+                        if (space[0]!='\0') for(i=0; i<pp->depth; i++) cat_s2Buffer(space, buf);
+                    }
+                    //if (space[0]!='\0') for(i=0; i<pp->depth; i++) cat_s2Buffer(space, buf);
+                    cat_s2Buffer("]", buf); 
+                }
             }
 
             else if (pp->ldat.id==JSON_ARRAY_VALUE_NODE) {
