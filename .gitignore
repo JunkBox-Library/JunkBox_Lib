@@ -33,3 +33,4 @@ config.h.in
 config.log
 config.status
 configure
+html
