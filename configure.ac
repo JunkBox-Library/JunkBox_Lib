@@ -235,19 +235,22 @@ ENABLE_JPEGFNC="no"
 AM_CONDITIONAL(ENABLE_JPEGFNC, test "$ENABLE_JPEGFNC" = "yes")
 
 
-# for openjpeg version
-# openjpeg のバージョンは？
-AC_ARG_ENABLE(openjpeg_ver, AS_HELP_STRING([--enable-openjpeg_ver=OPTION(DIR)], [enable openjpeg function in gLib]), [
-echo -n "checking openjpeg version... "
-ENABLE_OPENJPEGFNC_VER="$enableval"
+# for openjpeg
+# gLib/jp2k_tool.c を含むソースをコンパイルするか？
+AC_ARG_ENABLE(openjpeg, AS_HELP_STRING([--enable-openjpeg=OPTION(DIR)], [enable openjpeg function in gLib]), [
+echo -n "checking enable openjpeg function in gLib... "
+ENABLE_OPENJPEGFNC="$enableval"
 if test "$enableval" = "no" ; then
     echo "no"
 else
-    OPENJPEG_VER="$enableval"
-    OPENJPEG_VER_INT="$enableval"
+    OPENJPEG_DIR=`echo $enableval | awk -F":" '{print $1}'`
+    OPENJPEG_VER=`echo $enableval | awk -F":" '{print $2}'`
 
-    if test "$OPENJPEG_VER" = "yes" ; then
-        OPENJPEG_VER="1.5"
+    # Version
+    if test "$OPENJPEG_VER" = "" ; then
+        OPENJPEG_VER="2.1"
+        OPENJPEG_VER_INT="21"
+        OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
     fi
     if test `awk "BEGIN {print $OPENJPEG_VER < 1.4}"` ; then
         OPENJPEG_VER_INT=`echo $OPENJPEG_VER | sed -e "s/\.//"`
@@ -258,57 +261,30 @@ else
         OPENJPEG_INC=openjpeg-${OPENJPEG_VER}
     fi
 
-    echo "yes   option = $OPENJPEG_VER"
-    ENABLE_OPENJPEG_VER="-DOPENJPEG_VER=${OPENJPEG_VER_INT}"
-    AC_SUBST(ENABLE_OPENJPEG_VER)
-    ENABLE_OPENJPEGFNC_VER="yes"
-    #
-    OPENJPEG_INC_DIR="-I${OPENJPEG_DIR}/include/${OPENJPEG_INC}"
-    OPENJPEG_LIB_DIR="-L${OPENJPEG_DIR}/lib"
-    ENABLE_OPENJPEG="-DENABLE_OPENJPEG"
-    AC_SUBST(OPENJPEG_INC_DIR)
-    AC_SUBST(OPENJPEG_LIB_DIR)
-    AC_SUBST(ENABLE_OPENJPEG)
-    ENABLE_OPENJPEGFNC="yes"
-fi
-],[
-# default
-echo "checking enable openjpeg function in gLib... no"
-ENABLE_OPENJPEGFNC_VER="no"
-])
-AM_CONDITIONAL(ENABLE_OPENJPEGFNC_VER, test "ENABLE_OPENJPEGFNC_VER" = "yes")
-
-
-# for openjpeg
-# gLib/jp2k_tool.c を含むソースをコンパイルするか？
-AC_ARG_ENABLE(openjpeg, AS_HELP_STRING([--enable-openjpeg=OPTION(DIR)], [enable openjpeg function in gLib]), [
-echo -n "checking enable openjpeg function in gLib... "
-ENABLE_OPENJPEGFNC="$enableval"
-if test "$enableval" = "no" ; then
-    echo "no"
-else
-    OPENJPEG_DIR="$enableval"
-    if test "$OPENJPEG_DIR" = "yes" ; then
+    # Directory
+    if test "$OPENJPEG_DIR" = "" -o "$OPENJPEG_DIR" = "yes" ; then
         OPENJPEG_DIR="/usr"
     fi
-    echo "yes   sdir = $OPENJPEG_DIR"
     if test ! -d $OPENJPEG_DIR ; then
         AC_MSG_ERROR([openjpeg top directory $OPENJPEG_DIR is not exist.])
         ENABLE_OPENJPEGFNC="no"
     else
+        echo "yes   sdir = $OPENJPEG_DIR, ver = $OPENJPEG_VER"
         OPENJPEG_INC_DIR="-I${OPENJPEG_DIR}/include/${OPENJPEG_INC}"
         OPENJPEG_LIB_DIR="-L${OPENJPEG_DIR}/lib"
         ENABLE_OPENJPEG="-DENABLE_OPENJPEG"
         AC_SUBST(OPENJPEG_INC_DIR)
         AC_SUBST(OPENJPEG_LIB_DIR)
         AC_SUBST(ENABLE_OPENJPEG)
+        #
+        ENABLE_OPENJPEG_VER="-DOPENJPEG_VER=${OPENJPEG_VER_INT}"
+        AC_SUBST(ENABLE_OPENJPEG_VER)
         ENABLE_OPENJPEGFNC="yes"
     fi
 fi
 ],[
 # default
 echo "checking enable openjpeg function in gLib... no"
-ENABLE_OPENJPEGFNC="no"
 ])
 AM_CONDITIONAL(ENABLE_OPENJPEGFNC, test "$ENABLE_OPENJPEGFNC" = "yes")
 
