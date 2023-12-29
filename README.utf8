@@ -7,10 +7,7 @@ Japanese Text only.
                                              http://www.nsl.tuis.ac.jp/
                                              mailto:iseki@rsch.tuis.ac.jp
 
-
-
-
-１．説明
+1. 説明
 
 　これは C言語でプログラムを作成する時のライブラリ集です．ライブラリは Lib, xLib, gLibの３つの
 のディレクトリに分かれており，それぞれ以下のような分類になっています．
@@ -25,8 +22,7 @@ Japanese Text only.
   このソフトウェアの最新バージョンに関しては ChangeLog を読んでください．
 
 
-
-２．ライセンス＆免責
+2. ライセンス＆免責
 
   BSD License.
 

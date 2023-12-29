@@ -5,8 +5,6 @@
                                              http://www.nsl.tuis.ac.jp/
                                              mailto:iseki@rsch.tuis.ac.jp
 
-
-
 Explanation
 
   This software is C Language Libraries for software developmen.
@@ -19,11 +17,9 @@ Explanation
   Documentations of libraries in Doc directories are Japanese only. Sorry.
 
 
-
 Latest Version
 
   Please read ChangeLog 
-
 
 
 License.
@@ -44,6 +40,4 @@ Address of thanks.
   This work is part of OpenLDAP Software <http://www.openldap.org/>.
 
   Thank you very much!!!
-
-
 
