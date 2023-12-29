@@ -13,7 +13,8 @@ make
 cd ../..
 ```
 
-## Manual 
-- http://polaris.star-dust.jp/doxygen/JunkBox_Lib
+## Documents
+- [Wiki](https://polaris.star-dust.jp/pukiwiki/?JunkBox_Lib)
+- [Doxygen Manual](http://polaris.star-dust.jp/doxygen/JunkBox_Lib)
 
   
