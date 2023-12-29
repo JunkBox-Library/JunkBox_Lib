@@ -1,6 +1,4 @@
-
  How to Compile
-
 
  Compile
 
@@ -8,7 +6,6 @@
         $ cd JunkBox_Lib
         $ ./configure [options]
         $ make        
-
 
         configure options
         --enable-debug          enable debug mode function 
@@ -27,15 +24,12 @@
         --enable-openjpeg=OPTN  enable OpenJpeg function. OPTN is directory or OpenJpeg version (2.0or 2.1). Default durectory is /usr/local
                                 Default version is 2.0
 
-
 Ex.) ./configure --enable-jpeg --enable-ssl --enable-openjpeg=2.1 --enable-ldap --enable-mysql=/usr/local/mysql
 Ex.) ./configure --enable-jpeg --enable-ssl --enable-ldap --enable-debug
 
 
-
 -----------------------------------------------------------------------------
 Japanese
-
 
  コンパイル．
 
@@ -43,6 +37,7 @@ Japanese
         $ cd JunkBox_Lib
     $ ./configure  [オプション]
     $ make
+
 
     make install は行わない．
 
@@ -63,8 +58,5 @@ Japanese
         --enable-openjpeg=OPTN  OpenJpeg の機能を使用する．デフォルトは使用しない．OPTNはディレクトリか，OpenJpegのバージョン（2.0, 2.1）．
                                 デフォルトのディレクトリは /usr/local デフォルトのバージョンは 2.0
 
-
-
-例： ./configure --enable-jpeg --enable-ssl --enable-openjpeg=2.1 --enable-ldap --enable-mysql
-
+    例： ./configure --enable-jpeg --enable-ssl --enable-openjpeg=2.1 --enable-ldap --enable-mysql
 
