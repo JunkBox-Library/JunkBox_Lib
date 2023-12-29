@@ -12,3 +12,8 @@ cd C++Lib
 make
 cd ../..
 ```
+
+## Manual 
+- http://polaris.star-dust.jp/doxygen/JunkBox_Lib
+
+  
