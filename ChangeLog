@@ -8,7 +8,7 @@ v1.9.1
 
 
 v1.9.0
-    fix tjson.c ([ で始まる場合)
+    fix tjson.c ([ で始まる場合). 色々書き直し．
     引数変更
         unsigned char*  decode_base64_filename(unsigned char* buf, int* sz)
         unsigned char*  encode_base64_filename(unsigned char* buf, int sz)
