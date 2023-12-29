@@ -47,7 +47,6 @@ void  cleanup_network(void)
 
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Berkeley Socket
 //
@@ -134,7 +133,6 @@ int  _udp_server_socket(int port, struct addrinfo** sv_addr, int family)
 }
 
 
-
 /**
 int  _udp_server_socket_setopt(int port, int opt, const void* optval, int optlen, struct addrinfo** sv_addr, int family) 
 
@@ -219,7 +217,6 @@ int  _udp_server_socket_setopt(int port, int opt, const void* optval, int optlen
 }
 
 
-
 /**
 int  _udp_client_socket(char* hostname, int port, struct addrinfo** sv_addr, int family)
 
@@ -270,7 +267,6 @@ int  _udp_client_socket(char* hostname, int port, struct addrinfo** sv_addr, int
 }
 
 
-
 /**
 int  _udp_bind(int sofd, int port, int family) 
 
@@ -314,7 +310,6 @@ int  _udp_bind(int sofd, int port, int family)
     freeaddrinfo(address);
     return sofd;
 }
-
 
 
 /**
@@ -379,7 +374,6 @@ int  _udp_bind_setopt(int sofd, int port, int opt, const void* optval, int optle
     freeaddrinfo(address);
     return sofd;
 }
-
 
 
 /**
@@ -461,7 +455,6 @@ int  _tcp_server_socket(int port, int family)
     freeaddrinfo(address);
     return sofd;
 }
-
 
 
 /**
@@ -550,7 +543,6 @@ int  _tcp_server_socket_setopt(int port, int opt, const void* optval, int optlen
 }
 
 
-
 /**
 int  _tcp_server_bind(int port, int family) 
 
@@ -622,7 +614,6 @@ int  _tcp_server_bind(int port, int family)
     freeaddrinfo(address);
     return sofd;
 }
-
 
 
 /**
@@ -702,7 +693,6 @@ int  _tcp_server_bind_setopt(int port, int opt, const void* optval, int optlen, 
 }
 
 
-
 /**
 int  _tcp_client_socket(char* hostname, int port, int family) 
 
@@ -754,7 +744,6 @@ int  _tcp_client_socket(char* hostname, int port, int family)
     freeaddrinfo(address);
     return sofd;
 }
-
 
 
 /**
@@ -829,7 +818,6 @@ int  _tcp_client_bind_socket(char* hostname, int sport, int cport, int family)
 }
 
 
-
 /**
 int  _tcp_bind(int sofd, int port, int family)  
 
@@ -876,7 +864,6 @@ int  _tcp_bind(int sofd, int port, int family)
     freeaddrinfo(address);
     return sofd;
 }
-
 
 
 /**
@@ -943,7 +930,6 @@ int  _tcp_bind_setopt(int sofd, int port, int opt, const void* optval, int optle
 }
 
 
-
 /*
 int  _tcp_connect(int sofd, char* hostname, int port, int family) 
 
@@ -994,7 +980,6 @@ int  _tcp_connect(int sofd, char* hostname, int port, int family)
 }
 
 
-
 /**
 int  accept_intr(int sock, struct sockaddr* cl_addr, socklen_t* cdlen)
 
@@ -1020,7 +1005,6 @@ int accept_intr(int sock, struct sockaddr* cl_addr, socklen_t* cdlen)
 
     return nsofd;
 }
-
 
 
 /**
@@ -1085,6 +1069,7 @@ int   set_block_socket(int sock)
 #endif
     return sock;
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -1160,7 +1145,6 @@ int  get_valid_tcp_client_socket(int min, int max, char* hname, unsigned short s
 
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // Communication
 // 
@@ -1196,7 +1180,6 @@ int  udp_recv(int sock, char* rmsg, int size, struct addrinfo* sv_addr)
 }
 
 
-
 /**
 int  udp_send(int sock, char* smsg, int size, struct addrinfo* sv_addr)
 
@@ -1228,7 +1211,6 @@ int  udp_send(int sock, char* smsg, int size, struct addrinfo* sv_addr)
 }
 
 
-
 /**
 int  tcp_recv(int sock, char* rmsg, int size)
 
@@ -1252,7 +1234,6 @@ int  tcp_recv(int sock, char* rmsg, int size)
     if (cc<0) cc = JBXL_NET_RECV_ERROR;
     return cc;
 }
-
 
 
 /**
@@ -1279,7 +1260,6 @@ int  tcp_send(int sock, char* smsg, int size)
     if (cc<0) cc = JBXL_NET_SEND_ERROR;
     return cc;
 }
-
 
 
 /**
@@ -1317,7 +1297,6 @@ int  udp_recv_wait(int sock, char* rmsg, int size, struct addrinfo* sv_addr, int
 }
 
 
-
 /**
 int  tcp_recv_wait(int sock, char* mesg, int sz, int tm)
 
@@ -1353,7 +1332,6 @@ int  tcp_recv_wait(int sock, char* mesg, int sz, int tm)
 }
 
 
-
 /**
 int  tcp_send_mesgln(int sock, char* mesg)
 
@@ -1382,7 +1360,6 @@ int  tcp_send_mesgln(int sock, char* mesg)
     if (cc<0) cc = JBXL_NET_SEND_ERROR;
     return cc;
 }
-
 
 
 /**
@@ -1453,7 +1430,6 @@ int  tcp_recv_mstream(int sock, char* mesg, int sz, mstream* sb, int tm)
 }
 
 
-
 /**
 int   recv_wait(int sock, int tm)
 
@@ -1486,7 +1462,6 @@ int   recv_wait(int sock, int tm)
 
     return FD_ISSET(sock, &mask);     
 }
-
 
 
 /**
@@ -1530,7 +1505,6 @@ int   recv_wait_twin(int sock1, int sock2, int tm)
 }
 
 
-
 /**
 int   send_wait(int sock, int tm)
 
@@ -1563,7 +1537,6 @@ int   send_wait(int sock, int tm)
 
     return FD_ISSET(sock, &mask);     
 }
-
 
 
 
@@ -1621,7 +1594,6 @@ struct sockaddr*  make_sockaddr_bynum(unsigned char* addr, int port, int family)
 }
 
 
-
 /**
 struct sockaddr*  make_sockaddr_bystr(const char* addr, int port)
 
@@ -1657,7 +1629,6 @@ struct sockaddr*  make_sockaddr_bystr(const char* addr, int port)
     sa  = make_sockaddr_bynum(num, port, family);
     return sa;
 }
-
 
 
 /**
@@ -1703,7 +1674,6 @@ char*  get_hostname_bynum(unsigned char* num, int family)
 }
 
 
-
 /**
 char*  get_hostname_bystr(const char* addr) 
 
@@ -1743,7 +1713,6 @@ char*  get_hostname_bystr(const char* addr)
     memcpy(hname, htemp, len+1);
     return hname;    
 }
-
 
 
 /**
@@ -1801,7 +1770,6 @@ char*  _get_hostname(const char* addr, int family)
 }
 
 
-
 /**
 char*  get_ipaddr_byname(const char* hostname, int family)
 
@@ -1832,7 +1800,6 @@ char*  get_ipaddr_byname(const char* hostname, int family)
     free(ipnum);
     return ip;
 }
-
 
 
 /**
@@ -1882,7 +1849,6 @@ unsigned char*  get_ipaddr_byname_num(const char* hostname, int family)
     freeaddrinfo(address);
     return ip;
 }
-
 
 
 #ifdef WIN32
@@ -2036,7 +2002,6 @@ char*  get_myipaddr(int family)
     return haddr;    
 }
 
-
 #endif
 
 
@@ -2083,7 +2048,6 @@ unsigned char*  get_myipaddr_num(int family)
 
     return haddr;    
 }
-
 
 
 /**
@@ -2164,7 +2128,6 @@ char*  _get_localip_bydest(const char* dest, int family)
 }
 
 
-
 /**
 char*  get_mynetaddr(int family)
 
@@ -2202,7 +2165,6 @@ char*  get_mynetaddr(int family)
 }
 
 
-
 /**
 unsigned char*  get_mynetaddr_num(int family)
 
@@ -2235,7 +2197,6 @@ unsigned char*  get_mynetaddr_num(int family)
     free(ip);
     return net;
 }
-
 
 
 
@@ -2305,7 +2266,6 @@ int  is_same_sockaddr(struct sockaddr* addr1, struct sockaddr* addr2)
 }
 
 
-
 /**
 int  is_same_network(char* addr1, char* addr2, char* mask)
 
@@ -2354,7 +2314,6 @@ int  is_same_network(char* addr1, char* addr2, char* mask)
 }
 
 
-
 /**
 int  is_same_network_num(unsigned char* addr1, unsigned char* addr2, unsigned char* mask, int family)
 
@@ -2389,7 +2348,6 @@ int  is_same_network_num(unsigned char* addr1, unsigned char* addr2, unsigned ch
     }
     return TRUE;
 }
-
 
 
 /**
@@ -2517,7 +2475,6 @@ unsigned char*  to_address_num(char* addr, int mode, int mask, int family)
 }
 
 
-
 /**
 char*  to_address_char(unsigned char* addr, int mask, int family)
 
@@ -2564,7 +2521,6 @@ char*  to_address_char(unsigned char* addr, int mask, int family)
 }
 
 
-
 /**
 void  udp_hole_punching(int sock, struct sockaddr_in addr, int nm)
 
@@ -2586,7 +2542,6 @@ void  udp_hole_punching(int sock, struct addrinfo* addr, int nm)
 
     return;
 }
-
 
 
 
@@ -2634,7 +2589,6 @@ int  udp_recv_sockaddr_in(int sock, char* rmsg, int size, struct sockaddr_in* sv
 }
 
 
-
 int  udp_send_sockaddr_in(int sock, char* smsg, int size, struct sockaddr_in* sv_addr)
 {
     int cc;
@@ -2645,7 +2599,6 @@ int  udp_send_sockaddr_in(int sock, char* smsg, int size, struct sockaddr_in* sv
 
     return cc;
 }
-
 
 
 int  udp_recv_wait_sockaddr_in(int sock, char* rmsg, int size, struct sockaddr_in* sv_addr, int tm)
@@ -2660,7 +2613,6 @@ int  udp_recv_wait_sockaddr_in(int sock, char* rmsg, int size, struct sockaddr_i
     }
     return cc;
 }
-
 
 
 struct sockaddr_in  get_sockaddr_in(char* hostname, unsigned short cport)
@@ -2685,7 +2637,6 @@ struct sockaddr_in  get_sockaddr_in(char* hostname, unsigned short cport)
 }
 
 
-
 struct sockaddr_in  get_sockaddr_in_bynum(char* ipnum, unsigned short cport)
 {
     struct sockaddr_in  ss_addr;
@@ -2697,7 +2648,6 @@ struct sockaddr_in  get_sockaddr_in_bynum(char* ipnum, unsigned short cport)
 
     return ss_addr;
 }
-
 
 
 struct sockaddr_in  get_local_sockaddr_in(unsigned short cport)
@@ -2715,7 +2665,6 @@ struct sockaddr_in  get_local_sockaddr_in(unsigned short cport)
 
     return ss_addr;
 }
-
 
 
 /**
@@ -2750,7 +2699,6 @@ char*  get_ipaddr_ipv4(struct in_addr sin_addr)
 }
 
 
-
 /**
 unsigned char*  get_ipaddr_num_ipv4(struct in_addr sin_addr)
 
@@ -2780,7 +2728,6 @@ unsigned char*  get_ipaddr_num_ipv4(struct in_addr sin_addr)
 }
 
 
-
 /**
 void  udp_hole_punching_sockaddr_in(int sock, struct sockaddr_in addr, int nm)
 
@@ -2804,12 +2751,10 @@ void  udp_hole_punching_sockaddr_in(int sock, struct sockaddr_in addr, int nm)
 }
 
 
-
 /** @def  get_ipaddr_byname_ipv4
 
 ホスト名から IPv4 アドレスを獲得する．
 */
-
 
 
 /** @def  get_localip_bydest_ipv4
@@ -2818,12 +2763,10 @@ void  udp_hole_punching_sockaddr_in(int sock, struct sockaddr_in addr, int nm)
 */
 
 
-
 /** @def  get_myipaddr_num_ipv4
 
 ループバックでないインターフェイスのIPアドレスとネットマスクを返す．@n
 */
-
 
 
 /** @def  get_myipaddr_ipv4
@@ -2833,12 +2776,10 @@ void  udp_hole_punching_sockaddr_in(int sock, struct sockaddr_in addr, int nm)
 */
 
 
-
 /** @def  get_mynetaddr_ipv4
 
 自分のネットワークアドレスを返す
 */
-
 
 
 /** @def  get_mynetaddr_num_ipv4
@@ -2847,12 +2788,10 @@ void  udp_hole_punching_sockaddr_in(int sock, struct sockaddr_in addr, int nm)
 */
 
 
-
 /** @def  is_same_network_num_ipv4
 
 数字型アドレス が同じネットワークに属しているかどうかチェックする．
 */
-
 
 
 /** @def  is_same_network
@@ -2860,7 +2799,6 @@ void  udp_hole_punching_sockaddr_in(int sock, struct sockaddr_in addr, int nm)
 文字型アドレス が同じネットワークに属しているかどうかチェックする．@n
 アドレスはFQDNでも可．
 */
-
 
 
 /** @def  to_address_num8_ipv4
@@ -2874,7 +2812,6 @@ CIDER形式にも対応．ただし，ネットマスク部の妥当性はチェ
 */
 
 
-
 /** @def  to_address_char8_ipv4
 
 数字型の IPアドレス n 8Byteを文字型の　[IPアドレス]/[ネットマスク]　に変換する．
@@ -2883,7 +2820,6 @@ n は必ずネットマスクの情報を含み，長さが 8Byteでないとい
 恐らくセグメンテーションエラーを起こす．@n
 to_address_num8()と対で使うのが安全．
 */
-
 
 
 /** @def  to_address_num4_ipv4
@@ -2895,7 +2831,6 @@ to_address_num8()と対で使うのが安全．
 */
 
 
-
 /** @def  to_address_char4_ipv4
 
 数字型の IPアドレス 4Byteを文字型の [IPアドレス] に変換する．
@@ -2903,6 +2838,4 @@ to_address_num8()と対で使うのが安全．
 IPアドレスは必ず長さが 4Byte（32bit）でないといけない．4Byteより少ない場合は恐らくセグメンテーションエラーを起こす．@n
 to_address_num4() と対で使うのが安全．
 */
-
-
 

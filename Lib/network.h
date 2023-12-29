@@ -4,7 +4,7 @@
 
 
 /** 
-@brief   ネットワーク用ライブラリヘッダ
+@brief   ネットワーク用ライブラリヘッダ for IPv4/IPv6
 @file    network.h
 @author  Fumi.Iseki (C)
 */

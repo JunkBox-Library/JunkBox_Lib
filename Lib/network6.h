@@ -61,7 +61,6 @@
 //#define  NET_MAX_IF_NUM       10      ///< 取り扱うネットワークインターフェイスの最大数
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 // for WinSock
 
@@ -270,7 +269,6 @@ int   is_same_network_num(unsigned char* addr1, unsigned char* addr2, unsigned c
 void  udp_hole_punching(int sock, struct addrinfo* addr, int num);  ///
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 // for IPv4 only 
 
@@ -330,6 +328,7 @@ void   udp_hole_punching_sockaddr_in(int sock, struct sockaddr_in addr, int nm);
         struct in6_addr sin6_addr;  // 128bit
         __uint32_t  sin6_scope_id;  // 32bit
     };
+
 
     struct addrinfo {
         int              ai_flags;
