@@ -1467,7 +1467,7 @@ Buffer  erase_bBuffer(Buffer buf, char* bin, int len)
     if (bin==NULL) return res;
     Buffer wrk = make_Buffer(buf.vldsz + 1);
 
-    if (len<0) len = strlen(bin);
+    if (len<0) len = (int)strlen(bin);
     for (i=0; i<len; i++) {
         cc = bin[i];
         n  = 0;

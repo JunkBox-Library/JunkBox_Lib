@@ -1363,7 +1363,7 @@ int   is_number(unsigned char* str)
 int   is_number(unsigned char* str)
 {
     if (str==NULL) return 0;
-    int i, len = strlen((char*)str);
+    int i, len = (int)strlen((char*)str);
 
     int cnt = 0;
     for (i=0; i<len; i++) {
