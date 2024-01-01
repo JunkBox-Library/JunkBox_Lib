@@ -104,6 +104,7 @@ typedef struct _RasHead {
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // 共通ヘッダ
+//    x86 と x64 でサイズが変化するので注意！
 //
 typedef struct _CmnHead {
     int kind;               ///< Kind of Graphics Format

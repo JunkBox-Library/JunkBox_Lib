@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief    グラフィック用ファイル入出力関数
 @file     gio.c
 @version  3.1
@@ -65,7 +64,6 @@ int  write_wsg_file(const char* fname, WSGraph gr)
 }
 
 
-
 /**
 int  write_ras_file(const char* fname, WSGraph gr)
 
@@ -111,7 +109,6 @@ int  write_ras_file(const char* fname, WSGraph gr)
     free(hd.buf);
     return ret;
 }
-
 
 
 /**
@@ -181,7 +178,6 @@ int  write_file_rb(const char* fname, WSGraph gr, IRBound rb)
     free(hd.buf);
     return ret;
 }
-
 
 
 /**
@@ -277,7 +273,6 @@ WSGraph  read_wsg_file(const char* fname)
 }
 
 
-
 /**
 WSGraph  read_ras_file(const char* fn)
 
@@ -343,7 +338,6 @@ WSGraph  read_ras_file(const char* fn)
     gd.state = JBXL_NORMAL;
     return gd;
 }
-
 
 
 /**
@@ -443,7 +437,6 @@ WSGraph  read_wsg_file_rb(const char* fname, IRBound* rb)
     gr.state = JBXL_NORMAL;
     return gr;
 }
-
 
 
 
@@ -557,7 +550,6 @@ int  write_ras_file_obit(const char* fn, CmnHead* hd, int obit)
 }
 
 
-
 /**
 int  write_ct_file(const char* fn, CmnHead* hd)
 
@@ -669,7 +661,6 @@ int  write_ct_file(const char* fn, CmnHead* hd)
 }
 
 
-
 /**
 int  write_cmn_file(const char* fn, CmnHead* hd)
 
@@ -699,7 +690,6 @@ int  write_cmn_file(const char* fn, CmnHead* hd)
 }
 
 
-
 /**
 CmnHead  read_xxx_file(const char* fn)
 
@@ -716,11 +706,15 @@ CmnHead  read_xxx_file(const char* fn)
 @retval JBXL_GRAPH_OPFILE_ERROR @b xsizeメンバ: ファイルオープンエラー．
 @retval JBXL_GRAPH_MEMORY_ERROR @b xsizeメンバ: メモリエラー．
 @retval JBXL_GRAPH_HEADER_ERROR @b xsizeメンバ: ヘッダエラー．
+
+@bug x86 と x64 では CmnHead のサイズが異なるので，データファイルには基本的に互換性がない．@n
+参考：sizeof(CmnHead) = x86: 32Byte, x64: 44Byte ただしパッティングで 48Byte @n
+現状は小手先でごまかしている．
 */
 CmnHead  read_xxx_file(const char* fn)
 {
     FILE*   fp;
-    int  i, fsz, hsz;
+    int  i;
     sWord*  wptr;
     CmnHead hd;
     size_t rs;
@@ -728,19 +722,25 @@ CmnHead  read_xxx_file(const char* fn)
 
     init_CmnHead(&hd);
 
-    fsz = file_size(fn);
+    int fsz = file_size(fn);
     if ((fp=fopen(fn,"rb"))==NULL) {
         hd.xsize = JBXL_GRAPH_OPFILE_ERROR;
         return hd;
     }
 
-    hsz = sizeof(CmnHead);
+    int hsz = sizeof(CmnHead);
     fseek(fp,0,0);
     rs = fread(&hd, hsz, 1, fp);
     ntoh_st(&hd, 4);
 
     if (hd.kind>=0 && hd.kind<=NUM_KDATA) { 
         hd.zsize = Max(hd.zsize, 1);
+
+#ifdef __code_model_32__
+        if (fsz == (int)(hsz+hd.bsize+hd.lsize) + 12) hsz = 48;     // x86
+#else
+        if (fsz == (int)(hsz+hd.bsize+hd.lsize) - 12) hsz = 36;     // x64
+#endif
         if (fsz == (int)(hsz+hd.bsize+hd.lsize)) {
             fseek(fp, hsz, 0);
             hd.buf   = (uByte*)malloc(hd.bsize);
@@ -782,7 +782,6 @@ CmnHead  read_xxx_file(const char* fn)
 }
 
 
-
 /**
 CmnHead  read_cmn_header(const char* fn)
 
@@ -794,6 +793,10 @@ CmnHead  read_cmn_header(const char* fn)
 @retval HEADER_NONE @b kindメンバ: ヘッダ種別無し
 @retval JBXL_GRAPH_OPFILE_ERROR @b xsizeメンバ: ファイルオープンエラー．
 @retval JBXL_GRAPH_MEMORY_ERROR @b xsizeメンバ: メモリエラー．
+
+@bug x86 と x64 では CmnHead のサイズが異なるので，データファイルには基本的に互換性がない．@n
+参考：sizeof(CmnHead) = x86: 32Byte, x64: 44Byte ただしパッティングで 48Byte @n
+現状は小手先でごまかしている．
 */
 CmnHead  read_cmn_header(const char* fn)
 {
@@ -804,14 +807,23 @@ CmnHead  read_cmn_header(const char* fn)
 
     init_CmnHead(&hd);
 
+    int fsz = file_size(fn);
     if ((fp=fopen(fn,"rb"))==NULL) {
         hd.xsize = JBXL_GRAPH_OPFILE_ERROR;
         return hd;
     }
 
-    rs = fread(&hd, sizeof(CmnHead), 1, fp);
-    fclose(fp);
+    int hsz = sizeof(CmnHead);
+    fseek(fp, 0, 0);
+    rs = fread(&hd, hsz, 1, fp);
     ntoh_st(&hd, 4);
+
+#ifdef __code_model_32__
+    if (fsz == (int)(hsz+hd.bsize+hd.lsize) + 12) hsz = 48;     // x86
+#else
+    if (fsz == (int)(hsz+hd.bsize+hd.lsize) - 12) hsz = 36;     // x64
+#endif
+    fseek(fp, hsz, 0);
 
     if (hd.bsize>0) {
         hd.buf = (uByte*)malloc(hd.bsize);
@@ -826,10 +838,10 @@ CmnHead  read_cmn_header(const char* fn)
         hd.bsize = 0;
         hd.buf = NULL;
     }
+    fclose(fp);
 
     return hd;
 }
-
 
 
 /**
@@ -843,6 +855,10 @@ CmnHead  read_cmn_file(const char* fn)
 @retval HEADER_NONE @b kindメンバ: ヘッダ種別無し
 @retval JBXL_GRAPH_OPFILE_ERROR @b xsizeメンバ: ファイルオープンエラー．
 @retval JBXL_GRAPH_MEMORY_ERROR @b xsizeメンバ: メモリエラー．
+
+@bug x86 と x64 では CmnHead のサイズが異なるので，データファイルには基本的に互換性がない．@n
+参考：sizeof(CmnHead) = x86: 32Byte, x64: 44Byte ただしパッティングで 48Byte @n
+現状は小手先でごまかしている．
 */
 CmnHead  read_cmn_file(const char* fn)
 {
@@ -851,6 +867,7 @@ CmnHead  read_cmn_file(const char* fn)
     size_t rs;
     UNUSED(rs);
 
+    int fsz = file_size(fn);
     init_CmnHead(&hd);
 
     if ((fp=fopen(fn,"rb"))==NULL) {
@@ -858,9 +875,17 @@ CmnHead  read_cmn_file(const char* fn)
         return hd;
     }
     
-    rs = fread(&hd, sizeof(CmnHead), 1, fp);
-    fclose(fp);
+    int hsz = sizeof(CmnHead);
+    fseek(fp, 0, 0);
+    rs = fread(&hd, hsz, 1, fp);
     ntoh_st(&hd, 4);
+
+#ifdef __code_model_32__
+    if (fsz == (int)(hsz+hd.bsize+hd.lsize) + 12) hsz = 48;     // x86
+#else
+    if (fsz == (int)(hsz+hd.bsize+hd.lsize) - 12) hsz = 36;     // x64
+#endif
+    fseek(fp, hsz, 0);
 
     if (hd.bsize>0) {
         hd.buf = (uByte*)malloc(hd.bsize);
@@ -876,7 +901,7 @@ CmnHead  read_cmn_file(const char* fn)
         hd.buf = NULL;
     }
 
-    if (hd.lsize<=0) hd.lsize = file_size(fn)-sizeof(CmnHead)-hd.bsize;
+    if (hd.lsize<=0) hd.lsize = file_size(fn) - hsz - hd.bsize;
     hd.grptr = (uByte*)malloc(hd.lsize);
     if (hd.grptr==NULL) {
         free_CmnHead(&hd);
@@ -884,10 +909,10 @@ CmnHead  read_cmn_file(const char* fn)
         return hd;
     }
     rs = fread(hd.grptr, hd.lsize, 1, fp);
+    fclose(fp);
 
     return hd;
 }
-
 
 
 
@@ -974,7 +999,6 @@ CmnHead  read_user_data(FILE* fp, CmnHead* chd)
 }
 
 
-
 /**
 CmnHead  read_ras_data(FILE* fp)
 
@@ -1050,7 +1074,6 @@ CmnHead  read_ras_data(FILE* fp)
 }
 
 
-
 /**
 CmnHead  read_ct_data(FILE* fp)
 
@@ -1109,7 +1132,6 @@ CmnHead  read_ct_data(FILE* fp)
 
     return hd;
 }
-
 
 
 
@@ -1281,7 +1303,6 @@ int  dicom_header(FILE* fp, int fsize, int* dsize, int* xsize, int* ysize, int* 
 }
 
 
-
 /**
 WSGraph  read_dicom_file(const char* fn)
 
@@ -1347,5 +1368,4 @@ WSGraph  read_dicom_file(const char* fn)
     vp.state = JBXL_NORMAL;
     return vp;
 }
-
 

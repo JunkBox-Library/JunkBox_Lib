@@ -5,215 +5,216 @@ rewrite configure.ac, doxygen.conf
 working now ..... v1.9.1
 
 v1.9.1
-
+	read_xxx_file(), read_cmn_header(), read_cmn_file() for x64
+	C++Lib: readXHead(), readXHeadFile(), readCmnHeadFile() for x64
 
 v1.9.0
-    fix tjson.c ([ で始まる場合). 色々書き直し．
-    引数変更
-        unsigned char*  decode_base64_filename(unsigned char* buf, int* sz)
-        unsigned char*  encode_base64_filename(unsigned char* buf, int sz)
-        Buffer  encode_base64_filename_Buffer(Buffer buf) 
-        Buffer  decode_base64_filename_Buffer(Buffer buf)
-    OpenSSL 3.0 で deprecated となっているDH関連の関数を xLib/dh_tool.c へ
+	fix tjson.c ([ で始まる場合). 色々書き直し．
+	引数変更
+	    unsigned char*  decode_base64_filename(unsigned char* buf, int* sz)
+	    unsigned char*  encode_base64_filename(unsigned char* buf, int sz)
+	    Buffer  encode_base64_filename_Buffer(Buffer buf) 
+	    Buffer  decode_base64_filename_Buffer(Buffer buf)
+	OpenSSL 3.0 で deprecated となっているDH関連の関数を xLib/dh_tool.c へ
 
 
 v1.8.2 '23/08/30
-    FBRTL_ -> JBXL_FIO_  at Lib/xtools.h
-    Support Chain Certificate: xLib/ssl_tool.c
-        ssl_server_setup(char* crt_fn, char* key_fn) -> ssl_server_setup(char* crt_fn, char* key_fn, char* chn_fn)
-    ANCHOR : -9999999 ->  9999999
-    ttree, tjson, txml の ANCHORノードの depth を -1 に設定
+	FBRTL_ -> JBXL_FIO_  at Lib/xtools.h
+	Support Chain Certificate: xLib/ssl_tool.c
+	    ssl_server_setup(char* crt_fn, char* key_fn) -> ssl_server_setup(char* crt_fn, char* key_fn, char* chn_fn)
+	ANCHOR : -9999999 ->  9999999
+	ttree, tjson, txml の ANCHORノードの depth を -1 に設定
 
 
 v1.8.1  '22/04/20
-    rewrite doxygen format
-    Union* -> union*
-    ringbuffer -> ringBuffer
-    rectangle -> rectAngle
-    delete /\*\*/ for doxygen
-    tjson.c v1.2
+	rewrite doxygen format
+	Union* -> union*
+	ringbuffer -> ringBuffer
+	rectangle -> rectAngle
+	delete /\*\*/ for doxygen
+	tjson.c v1.2
 
 
 v1.8.0  '21 8/14
-    add Lib/tjson.c, xLib/asn1_tool.c
-    int2DER() -> int2BIN()
-    _ipv4() -> _sockaddr_in()
-    _TAG -> _NODE
-    _tag -> _node
-    tag_ -> node_
-    tListdata -> tList_data
-    get_first_node_name() -> get_first_xml_nodename()
-    ssl_server_socket() -> ssl_server_setup() + ssl_server_socket()
-    ssl_client_socket() -> ssl_client_setup() + ssl_client_socket()
-    tool.c/skip_char()->skip_chars(), add skip_char(), skip_char_pair()
-    tjson.c v1.1 support of array
+	add Lib/tjson.c, xLib/asn1_tool.c
+	int2DER() -> int2BIN()
+	_ipv4() -> _sockaddr_in()
+	_TAG -> _NODE
+	_tag -> _node
+	tag_ -> node_
+	tListdata -> tList_data
+	get_first_node_name() -> get_first_xml_nodename()
+	ssl_server_socket() -> ssl_server_setup() + ssl_server_socket()
+	ssl_client_socket() -> ssl_client_setup() + ssl_client_socket()
+	tool.c/skip_char()->skip_chars(), add skip_char(), skip_char_pair()
+	tjson.c v1.1 support of array
 
 
 v1.7.0 '21 6/6
-    isnet を isnet_server と isnet_client に分解
-    ssl_tool, ldap_tool, isnet_client の大域変数を削除
-    回転系の関数名に Ext を挿入．　
-    DEBUG_ERR -> DEBUG_ERROR
-    
+	isnet を isnet_server と isnet_client に分解
+	ssl_tool, ldap_tool, isnet_client の大域変数を削除
+	回転系の関数名に Ext を挿入．　
+	DEBUG_ERR -> DEBUG_ERROR
+	
 
 v1.6.0 '20 11/23
-    PRINT_MESG を修正して再導入
-    default の 型を float -> double
-    JBXL State System
-    関数名変更
-        search_key_tList() -> buffer_key_tList()
-        search_key_value_tList() -> buffer_key_value_tList()
-    IPv6 対応
-        IPv4 専用関数は  ..._ipv4() へ変更
+	PRINT_MESG を修正して再導入
+	default の 型を float -> double
+	JBXL State System
+	関数名変更
+	    search_key_tList() -> buffer_key_tList()
+	    search_key_value_tList() -> buffer_key_value_tList()
+	IPv6 対応
+	    IPv4 専用関数は  ..._ipv4() へ変更
 
 
 v1.5.3
-    Support OpenSSL v1.1.0/v1.1.1
-    MagaDebug の廃止
-    PRINT_MESG の廃止
-    IPv6 対応（一部）
+	Support OpenSSL v1.1.0/v1.1.1
+	MagaDebug の廃止
+	PRINT_MESG の廃止
+	IPv6 対応（一部）
 
 
 v1.5.2
-    Bug Fix
-    Tab -> Space
+	Bug Fix
+	Tab -> Space
 
 
 v1.5.1
-    C++:
-        デバッグ関数の見直し
-            DEBUG_MESG, DEBUG_ESC, DEBUG_LOG の廃止
-            print_messageln の廃止
-            PRINT_MESG 追加
-        xtools++ を廃止して，toos++ に統合
+	C++:
+	    デバッグ関数の見直し
+	        DEBUG_MESG, DEBUG_ESC, DEBUG_LOG の廃止
+	        print_messageln の廃止
+	        PRINT_MESG 追加
+	    xtools++ を廃止して，toos++ に統合
 
 
 v1.5.0  '14 10/23
-    C++: 
-        for oarconv v1.0.0
-        autoconf 対応
-        Meshライブラリの追加
-        JPEG 2000ライブラリの追加．読み込みのみ．
-        Collada用ライブラリの追加．書き出しのみ．
-        BREPLib の書き直し
-    Lib:
-        Doc の廃止
-        txml.c: XML生成関数の強化．メモリリークバグの修正．
-        JPEG 2000ライブラリの追加．読み込みのみ．
+	C++: 
+	    for oarconv v1.0.0
+	    autoconf 対応
+	    Meshライブラリの追加
+	    JPEG 2000ライブラリの追加．読み込みのみ．
+	    Collada用ライブラリの追加．書き出しのみ．
+	    BREPLib の書き直し
+	Lib:
+	    Doc の廃止
+	    txml.c: XML生成関数の強化．メモリリークバグの修正．
+	    JPEG 2000ライブラリの追加．読み込みのみ．
 
 
 v1.4.2  '14 8/3        
-    Lib:
-        decode_base64() のバグを修正
-        print_logfile() 追加
+	Lib:
+	    decode_base64() のバグを修正
+	    print_logfile() 追加
 
-    xLib:
-        ssl_tool.c エラー処理．バグ修正．
+	xLib:
+	    ssl_tool.c エラー処理．バグ修正．
 
 
 v1.4.1  '12 11/25
-    xLib    gz_tool.c の gz_decode_* を書き直し
+	xLib    gz_tool.c の gz_decode_* を書き直し
 
 
 v1.4.0  '12 11/8
-    doxygen 対応
-    Lib:
-        replace_str() 追加
-        pack_Buffer() 追加
-        tlist.c から ttree.c を分離
-        txml.c    閉じていない XML対応
-    xLib:
-        bvh_tool.c の追加
-        http(s)_tools
-            HTTP の chunked モードのバグを修正
-    gLib:
-        RBound -> IRBoud
+	doxygen 対応
+	Lib:
+	    replace_str() 追加
+	    pack_Buffer() 追加
+	    tlist.c から ttree.c を分離
+	    txml.c    閉じていない XML対応
+	xLib:
+	    bvh_tool.c の追加
+	    http(s)_tools
+	        HTTP の chunked モードのバグを修正
+	gLib:
+	    RBound -> IRBoud
 
 
 v1.3.1  '12 7/21
-    network, xtools
-        XXX_recv_mesg() -> XXX_recv_wait()
-        XXX_recv_sBuffer() -> XXX_recv_Buffer_wait()
-    http(s)_tools
-        HTTP の chunked モードを正確に処理 (含む gzip Content-Encoding)
-    tools
-        dup_string() を再録
-        itostr() を追加
-    C++Lib:
-        OpenNiTool.cpp
+	network, xtools
+	    XXX_recv_mesg() -> XXX_recv_wait()
+	    XXX_recv_sBuffer() -> XXX_recv_Buffer_wait()
+	http(s)_tools
+	    HTTP の chunked モードを正確に処理 (含む gzip Content-Encoding)
+	tools
+	    dup_string() を再録
+	    itostr() を追加
+	C++Lib:
+	    OpenNiTool.cpp
 
 
 v1.3.0  '11 9/30
-    LDAP support
-    Lib
-        tools.c: debug_message -> DEBUG_MESG,  etc.etc.
-        tlist.c: add_tList() -> insert_tList()
-                 add add_tList_end()
-    xLib
-        add: ldap_tool.c
-        http(s)_tool.c 受信データが HTTP(S)でない場合の処理を追加
+	LDAP support
+	Lib
+	    tools.c: debug_message -> DEBUG_MESG,  etc.etc.
+	    tlist.c: add_tList() -> insert_tList()
+	             add add_tList_end()
+	xLib
+	    add: ldap_tool.c
+	    http(s)_tool.c 受信データが HTTP(S)でない場合の処理を追加
 
 
 v1.2.4  '11 6/30
-    Lib: tools.c
-        read_file(), weite_file(), hexstr2i() 追加
-    gLib
-        変更：
-            read_file()  -> read_wsg_file()
-            write_file() -> write_wsg_file()
-            xread_file() -> read_xxx_file()
-            tiff_tool.c, tiff_tool.h 追加
+	Lib: tools.c
+	    read_file(), weite_file(), hexstr2i() 追加
+	gLib
+	    変更：
+	        read_file()  -> read_wsg_file()
+	        write_file() -> write_wsg_file()
+	        xread_file() -> read_xxx_file()
+	        tiff_tool.c, tiff_tool.h 追加
 
 
 v1.2.3  '10 10/17
-    xLib/http(s)_tool.c の save_http(s)_xml() を修正
+	xLib/http(s)_tool.c の save_http(s)_xml() を修正
 
 
 v1.2.2  '10 7/28
-    https_tool.c, http_tool.c
-        HTTP/1.0 対応
-        1.2.0->1.2.1 でのバグ修正
-    biffer.c 
-        cat_Buffer(), copy_Buffer() が凄く遅かったのを修正. 自己比 2,000倍 :-)
+	https_tool.c, http_tool.c
+	    HTTP/1.0 対応
+	    1.2.0->1.2.1 でのバグ修正
+	biffer.c 
+	    cat_Buffer(), copy_Buffer() が凄く遅かったのを修正. 自己比 2,000倍 :-)
 
 
 v1.2.1  '10 6/30
-    https_tool.c  save_https_xml() xml以外の場合の対処
-    http_tool.c
-        dump_http_header() 追加
-        set_host_header() -> set_http_host_header()
-        get_http_protocol_num() -> get_http_status_num()
+	https_tool.c  save_https_xml() xml以外の場合の対処
+	http_tool.c
+	    dump_http_header() 追加
+	    set_host_header() -> set_http_host_header()
+	    get_http_protocol_num() -> get_http_status_num()
 
 
 v1.2.0  '10 4/25
-    C++ 対応．(C++Lib)
-    network.c, xtools.c の MS Windows対応
-    get_http_protocol_num() (http_tool.c) 追加
-    https_tool.c, http_tool.c で len==HTTP_HEADER_UNKNOWN_LEN の場合の処理を追加
-    decompline_Buffer_dim() (xtools.c) を追加．
-    xLib/http(s)_tool.c の send_http(s)_headerで ONモードに時，コンテンツのサイズが正確に取れないバグを修正．
-        同時に protcol.c のrestore_protocol_header()も修正
-    xLib/sip_tool.c の replace_sip_contact() の修正
-    xLib/http_tool.c の decomp_url()を Lib/xtools.c へ．comp_url() 作成．decomp_hostport() の戻り値を intに変更．
-    decomp_url()の引数に protocol を追加
+	C++ 対応．(C++Lib)
+	network.c, xtools.c の MS Windows対応
+	get_http_protocol_num() (http_tool.c) 追加
+	https_tool.c, http_tool.c で len==HTTP_HEADER_UNKNOWN_LEN の場合の処理を追加
+	decompline_Buffer_dim() (xtools.c) を追加．
+	xLib/http(s)_tool.c の send_http(s)_headerで ONモードに時，コンテンツのサイズが正確に取れないバグを修正．
+	    同時に protcol.c のrestore_protocol_header()も修正
+	xLib/sip_tool.c の replace_sip_contact() の修正
+	xLib/http_tool.c の decomp_url()を Lib/xtools.c へ．comp_url() 作成．decomp_hostport() の戻り値を intに変更．
+	decomp_url()の引数に protocol を追加
 
 
 v1.1.2  '09 11/12
 
 
 v1.1.1  '09 4/30
-    jpeg_tool.c の追加．libjpeg
-    gio.c, gdata.c, gmt.c の見直し．
+	jpeg_tool.c の追加．libjpeg
+	gio.c, gdata.c, gmt.c の見直し．
 
 
 v1.1.0  '09 3/2
-    fdb.c
-        NDBM形式の記述から，Berkeley DBの記述に変更．インターフェイスの変更．
-        ファイル名を bdb_tool.c にして xLibへ移動
+	fdb.c
+	    NDBM形式の記述から，Berkeley DBの記述に変更．インターフェイスの変更．
+	    ファイル名を bdb_tool.c にして xLibへ移動
 
 
 v1.0.0  '09 2/25
-    Branch from TUIS_Lib v3.5.0
+	Branch from TUIS_Lib v3.5.0
 
 
 
@@ -221,159 +222,159 @@ v1.0.0  '09 2/25
 TUIS_Lib
 
 v3.5.0  '09 2/23
-    sl_voice_relay β 対応
-    Lib:
-        xtools.c
-            buffer_tool.c を統合
-            Buffer型配列を導入
-        buffer.c
-            replace_sBuffer_bystr() のバグを修正
-        network.c
-            get_valid_...._socket(), save_https_xml() を sl_proxy(sl_tools.c) から移動
-            select() 中に割り込みがあった場合の対応．
-        txml.c 
-            関数名や機能の見直し．v3.4と互換なし
-            多重ツリーの容認と xml_parse_seq() の見直し
-        tlist.c
-            check_match_tTree() の find_tTree_end() を find_tList_end() に変更
-            bck -> rsv
-        tools.c
-            bck -> rsv
-            set_sigsegv_handler() のバグを修正．
-    xLib:
-        buffer_tool.c
-            Lib へ移動し，xtools.c へ統合．
-        http(s)_tool.c
-            関数を追加: recv_http(s)_Buffer, send_http(s)_Buffer
-            select() 中に割り込みがあった場合の対応．
-        protocol.c
-            汎用(SMTP, SIP, HTTP)で使えるように整備．smtp_tool.c, http(s)_tool.c の変更
-        mime_tool.c
-            smtp_tool.c から分離
-        sip_tool.c
-            追加
+	sl_voice_relay β 対応
+	Lib:
+	    xtools.c
+	        buffer_tool.c を統合
+	        Buffer型配列を導入
+	    buffer.c
+	        replace_sBuffer_bystr() のバグを修正
+	    network.c
+	        get_valid_...._socket(), save_https_xml() を sl_proxy(sl_tools.c) から移動
+	        select() 中に割り込みがあった場合の対応．
+	    txml.c 
+	        関数名や機能の見直し．v3.4と互換なし
+	        多重ツリーの容認と xml_parse_seq() の見直し
+	    tlist.c
+	        check_match_tTree() の find_tTree_end() を find_tList_end() に変更
+	        bck -> rsv
+	    tools.c
+	        bck -> rsv
+	        set_sigsegv_handler() のバグを修正．
+	xLib:
+	    buffer_tool.c
+	        Lib へ移動し，xtools.c へ統合．
+	    http(s)_tool.c
+	        関数を追加: recv_http(s)_Buffer, send_http(s)_Buffer
+	        select() 中に割り込みがあった場合の対応．
+	    protocol.c
+	        汎用(SMTP, SIP, HTTP)で使えるように整備．smtp_tool.c, http(s)_tool.c の変更
+	    mime_tool.c
+	        smtp_tool.c から分離
+	    sip_tool.c
+	        追加
 
 
 v3.4.4  '08 10/6
-    Lib:
-        txml.c
-            print_xml() -> print_sister_xml() 変更
-            print_xml() 追加
-            del_sister_xml() 追加
+	Lib:
+	    txml.c
+	        print_xml() -> print_sister_xml() 変更
+	        print_xml() 追加
+	        del_sister_xml() 追加
 
 
 v3.4.3  '08 10/5
-    Lib:
-        tools.c
-            err_message()の廃止．nop_func()の廃止．
-        tlist.c 
-            del_tList_node() で引数の型を tList*に変更．引数にはNULLを代入しない．
-            なぜならdel_tList_node(pp->next)が壊れるので．また，prevポインタを返さないように変更．
-            free_tList_node() で引数の型を tList** に変更．引数に NULLを代入して返すため．
-    xLib:
-        http_tool.c
-            crlfCount を関数(get_http_header_list)内へ．
-    Makefile.am: コンパイルオプションに -fPIC を追加
+	Lib:
+	    tools.c
+	        err_message()の廃止．nop_func()の廃止．
+	    tlist.c 
+	        del_tList_node() で引数の型を tList*に変更．引数にはNULLを代入しない．
+	        なぜならdel_tList_node(pp->next)が壊れるので．また，prevポインタを返さないように変更．
+	        free_tList_node() で引数の型を tList** に変更．引数に NULLを代入して返すため．
+	xLib:
+	    http_tool.c
+	        crlfCount を関数(get_http_header_list)内へ．
+	Makefile.am: コンパイルオプションに -fPIC を追加
 
 
 v3.4.2  '08 7/25
-    Lib:
-        ldb.c -> fdb.c
-        tools.c
-            シグナル関係の関数の見直し．
-    xLib:
-        http(s)_tool.c
-            recv_http(s)_file() 受信したデータがヘッダのみの場合の通知引数を追加
+	Lib:
+	    ldb.c -> fdb.c
+	    tools.c
+	        シグナル関係の関数の見直し．
+	xLib:
+	    http(s)_tool.c
+	        recv_http(s)_file() 受信したデータがヘッダのみの場合の通知引数を追加
 
 
 v3.4.1  '08 7/16
-    xLib: https_tool.c, http_tool.c のバグ取り
+	xLib: https_tool.c, http_tool.c のバグ取り
 
 
 v3.4.0  '08 3/20
-    Lib:
-        tlist.c の大幅改訂．
-            関数名の変更
-                new_tList  -> new_tList_node
-                make_tList -> make_tList_node
-                del_tList  -> del_tList_node
-                free_tList -> free_tList_node
-                add_tList* -> add_tList_node*
-                その他色々．
-            tTree の導入
-        lxml.c の廃止．txml.c(簡易XMLパーサ) の導入（互換なし）
-    xLib:
-        sl_relay から関数の移動 decomp_url() -> http_tool.c
+	Lib:
+	    tlist.c の大幅改訂．
+	        関数名の変更
+	            new_tList  -> new_tList_node
+	            make_tList -> make_tList_node
+	            del_tList  -> del_tList_node
+	            free_tList -> free_tList_node
+	            add_tList* -> add_tList_node*
+	            その他色々．
+	        tTree の導入
+	    lxml.c の廃止．txml.c(簡易XMLパーサ) の導入（互換なし）
+	xLib:
+	    sl_relay から関数の移動 decomp_url() -> http_tool.c
 
 
 v3.3.0  '08 2/4
-    手持ちの C++ライブラリと結合(まだ実験的)
-        関数名，変数名の変更(Lib) バッティングのため
-            matrix.c: Vector -> vector,  Matrix -> matrix
-            tlist.c : List -> tList
-                     _indextList -> _index_tList
-                     _intList -> _in_tList
-                     _BuffertList -> _Buffer_tList
-                     _ftList -> _tList
-    Lib:
-        tools.c: is_little_endian(), is_big_endian() 追加
-    xLib:
-        https_tool.c: recv_https_header(int sofd, SSL* ssl, tList** pl)
-                      -> recv_https_header(int sofd, SSL* ssl, tList** pl, FILE* fp)
-        http_tool.c : recv_http_header(int sofd, tList** pl)
-                      -> recv_http_header(int sofd, tList** pl, FILE* fp)
+	手持ちの C++ライブラリと結合(まだ実験的)
+	    関数名，変数名の変更(Lib) バッティングのため
+	        matrix.c: Vector -> vector,  Matrix -> matrix
+	        tlist.c : List -> tList
+	                 _indextList -> _index_tList
+	                 _intList -> _in_tList
+	                 _BuffertList -> _Buffer_tList
+	                 _ftList -> _tList
+	Lib:
+	    tools.c: is_little_endian(), is_big_endian() 追加
+	xLib:
+	    https_tool.c: recv_https_header(int sofd, SSL* ssl, tList** pl)
+	                  -> recv_https_header(int sofd, SSL* ssl, tList** pl, FILE* fp)
+	    http_tool.c : recv_http_header(int sofd, tList** pl)
+	                  -> recv_http_header(int sofd, tList** pl, FILE* fp)
 
 
 v3.2.3  '08 1/9
-    Lib: get_localip_bydest() 追加
+	Lib: get_localip_bydest() 追加
 
 
 v3.2.2  '07 12/1
-    Lib:
-        buffer.c: copy_Buffer, cat_Buffer でバイナリを扱えないバグを修正
-        tools.c : dump(unsigned char*, int) -> fdump(File*, unsigned char*, int);
-                  追加　strncasebckcmp() 
-        tlist.c : 追加  strncasecmp_List(), strncasebckcmp_List(), strncasecmp_List_bystr()
-                        strncasebckcmp_List_bystr(), strstrcase_List(),  strstrcase_List_bystr() 
-    xLib: 
-        http*_tool.c: 追加 send_http*_header()
-                      変更 recv_http*_file()
-                      サーチ関係を strncase.... に
+	Lib:
+	    buffer.c: copy_Buffer, cat_Buffer でバイナリを扱えないバグを修正
+	    tools.c : dump(unsigned char*, int) -> fdump(File*, unsigned char*, int);
+	              追加　strncasebckcmp() 
+	    tlist.c : 追加  strncasecmp_List(), strncasebckcmp_List(), strncasecmp_List_bystr()
+	                    strncasebckcmp_List_bystr(), strstrcase_List(),  strstrcase_List_bystr() 
+	xLib: 
+	    http*_tool.c: 追加 send_http*_header()
+	                  変更 recv_http*_file()
+	                  サーチ関係を strncase.... に
 
 
 v3.2.1
-    SSL/TLS通信完全対応
-    Second Life Cache Server 対応
-    その他
+	SSL/TLS通信完全対応
+	Second Life Cache Server 対応
+	その他
 
 
 v3.0.1 - v3.1.1
-    v.2 以前のものとは一部非互換
-    画像情報論（授業）対応
-    Second Life Proxy Server 対応
-    zlib 対応
-    SSL/TLS通信対応（クライアントのみ）
-    Lib:
-        common.h: Byte 型 を sByte型へ変更（zlib.h と被るので）
-        buffer  : Buffer型の vldsz の初期値を 0 から -1 へ変更
-        tools   : dump() の出力を stdout に変更．アスキーコード出力追加
-        tlist   : del_List() のバグを修正
-    gLib:
-        全面的メンテナンス(授業用)
-    xLib:
-        バグフィックス
-        gz_tool   : zlib 対応関数の作成
-        ssl_tool  : SSL関係の関数を追加
-        http_tool : 全面的メンテナンス
-        https_tool: 追加
+	v.2 以前のものとは一部非互換
+	画像情報論（授業）対応
+	Second Life Proxy Server 対応
+	zlib 対応
+	SSL/TLS通信対応（クライアントのみ）
+	Lib:
+	    common.h: Byte 型 を sByte型へ変更（zlib.h と被るので）
+	    buffer  : Buffer型の vldsz の初期値を 0 から -1 へ変更
+	    tools   : dump() の出力を stdout に変更．アスキーコード出力追加
+	    tlist   : del_List() のバグを修正
+	gLib:
+	    全面的メンテナンス(授業用)
+	xLib:
+	    バグフィックス
+	    gz_tool   : zlib 対応関数の作成
+	    ssl_tool  : SSL関係の関数を追加
+	    http_tool : 全面的メンテナンス
+	    https_tool: 追加
 
 
 v2.0  '07 1/9
-    autoconf 対応．
-    バグフィックス
-    xLib:
-        isnet   : NOCHLNGコマンドを KEYEXコマンドへ統合
-        ssl_tool: CBCモードでの暗号化時のイニシャルベクター(IV)の取り扱いを正確に記述（Java対応）
-    Lib:
-        network : accept_intr() を追加
+	autoconf 対応．
+	バグフィックス
+	xLib:
+	    isnet   : NOCHLNGコマンドを KEYEXコマンドへ統合
+	    ssl_tool: CBCモードでの暗号化時のイニシャルベクター(IV)の取り扱いを正確に記述（Java対応）
+	Lib:
+	    network : accept_intr() を追加
 

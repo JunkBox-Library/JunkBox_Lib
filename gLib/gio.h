@@ -8,11 +8,14 @@
 @version  3.1
 @date     2007 6/27
 @author   Fumi.Iseki (C)
+
+@bug x86 と x64 では CmnHead のサイズが異なるので，x86 と x64 でデータファイルには基本的に互換性がない．@n
+参考：sizeof(CmnHead) = x86: 32Byte, x64: 44Byte ただしパッティングで 48Byte @n
+現状は  read_xxx_file(), read_cmn_file() および read_cmn_header() については 小手先でごまかしている．
 */
 
 
 #include "gdata.h"
-
 
 
 extern  IRBound ExRBound;
@@ -25,7 +28,6 @@ int   write_ras_file(const char* fn, WSGraph gr);
 WSGraph read_wsg_file   (const char* fn);
 WSGraph read_wsg_file_rb(const char* fn, IRBound* rb);
 WSGraph read_ras_file   (const char* fn);
-
 
 int   write_cmn_file(const char* fn, CmnHead* hd);
 int   write_ct_file (const char* fn, CmnHead* hd); 
@@ -44,7 +46,4 @@ WSGraph  read_dicom_file(const char* fn);
 
 
 #endif
-
-
-
 

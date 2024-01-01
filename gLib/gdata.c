@@ -20,7 +20,7 @@ int     ChkRZxy  = OFF;     // RZxy　が設定されているなら ON, 設定�
 /**
 void  free_CmnHead(CmnHead* hd)
 
-共通ヘッダのメモリ領域を開放する．cmnHead.kind は HEADER_NONE になる．
+共通ヘッダのメモリ領域を開放する．CmnHead.kind は HEADER_NONE になる．
 init_CmnHead()を内包している．
 
 @param  hd  開放する共通ヘッダ
@@ -39,7 +39,7 @@ void  free_CmnHead(CmnHead* hd)
 /**
 void  init_CmnHead(CmnHead* hd)
 
-共通ヘッダのメモリ領域を初期化する．cmnHead.kind は HEADER_NONE になる．
+共通ヘッダのメモリ領域を初期化する．CmnHead.kind は HEADER_NONE になる．
 
 @param  hd  初期化する共通ヘッダ
 */
