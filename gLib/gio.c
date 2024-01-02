@@ -740,6 +740,8 @@ CmnHead  read_xxx_file(const char* fn)
     fseek(fp,0,0);
     rs = fread(&hd.entry, hsz, 1, fp);
     ntoh_st(&hd.entry, 4);
+    hd.buf = NULL;
+    hd.grptr = NULL;
 
     if (hd.kind>=0 && hd.kind<=NUM_KDATA) { 
         hd.zsize = Max(hd.zsize, 1);
@@ -820,6 +822,8 @@ CmnHead  read_cmn_header(const char* fn)
     fseek(fp, 0, 0);
     rs = fread(&hd.entry, hsz, 1, fp);
     ntoh_st(&hd.entry, 4);
+    hd.buf = NULL;
+    hd.grptr = NULL;
 
     if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 4 ) hsz = 36;     // x86 file
     if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 16) hsz = 48;     // x64 file
@@ -876,6 +880,8 @@ CmnHead  read_cmn_file(const char* fn)
     fseek(fp, 0, 0);
     rs = fread(&hd.entry, hsz, 1, fp);
     ntoh_st(&hd.entry, 4);
+    hd.buf = NULL;
+    hd.grptr = NULL;
 
     if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 4 ) hsz = 36;     // x86 file
     if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 16) hsz = 48;     // x64 file
