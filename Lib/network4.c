@@ -6,13 +6,11 @@
 
 このファイルは現在使用されていません．
 バージョンのチェックの為だけに残されています．
-新しいファイルは network.c (network6.c) をご覧ください．
+新しいファイルは network.c (for IPv4/IPv6) をご覧ください．
 */
-
 
 #include "network.h"
 #include <time.h>
-
 
 
 /**

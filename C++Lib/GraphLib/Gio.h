@@ -21,7 +21,6 @@ JPEG については JpegTool.cpp 参照．
 #include "Gdata.h"
 
 
-
 //
 namespace jbxl {
 
@@ -33,11 +32,11 @@ namespace jbxl {
 ---
 @par Common形式
 @code
-    CmnHead  cmhd   : common header. 36Byte. 
-    Graphic  Header : 画像データ固有のヘッダ
-    Graphic  Data   : データ
+    CmnHead_Entry  cmhd   : common header. 36Byte. 
+    Graphic        Header : 画像データ固有のヘッダ
+    Graphic        Data   : データ
 @endcode
-任意の画像データを保存する時，その画像データに識別ヘッダ(CmnHead) を付けて保存したもの．
+任意の画像データを保存する時，その画像データに識別ヘッダ(CmnHead_Entry) を付けて保存したもの．
 
 @par UN_KNOWN_DATA
 
@@ -55,9 +54,9 @@ namespace jbxl {
 
 @par CT_DATA
 @code
-    CmnHead  cmhd : common header. 36Byte. （省略可）
-    CTHead   cthd : CT header (Moon Header). 64Byte. メンバは Word型. 
-    Graphic  Data : データ
+    CmnHead_Entry  cmhd : common header. 36Byte. （省略可）
+    CTHead         cthd : CT header (Moon Header). 64Byte. メンバは Word型. 
+    Graphic        Data : データ
 @endcode
 Common Headerは省略可．@n
 いわゆる Moon型のヘッダを持つ CT画像データ．現在は CT画像を保存する場合は，デフォルトでこの型で保存される．@n
@@ -66,20 +65,15 @@ CTHead の cthd.anydata[0]に画素間隔，cthd.anydata[1]に画像間隔が 1/
 
 @par CT_3DM    
 @code
-    CmnHead  cmhd : common header. 36Byte. 
-    CTHead   cthd : CT header (Moon Header). 64Byte. 
-    Graphic  Data : データ
+    CmnHead_Entry  cmhd : common header. 36Byte. 
+    CTHead         cthd : CT header (Moon Header). 64Byte. 
+    Graphic        Data : データ
 @endcode
 3Dの CTデータを保存する場合に使用されるデータの型．
 CTHead の cthd.anydata[0]に画素間隔，cthd.anydata[1]に画像間隔が 1/RZXY_RATE mm単位で保存されている場合がある．@n
 メモリ内で使用する場合（CmnHeadに格納された場合）は CT_Data と区別されない．
 
 @par CT_3D_VOL
-
-@bug Common形式の画素深度が 24,32bitの場合のエンディアン処理が未実装
-@bug x86 と x64 では CmnHead のサイズが異なるので，x86 と x64 でデータファイルには基本的に互換性がない．@n
-参考：sizeof(CmnHead) = x86: 32Byte, x64: 44Byte ただしパッティングで 48Byte @n
-現状は readXHead(), readXHeadFile() および readCmnHeadFile() については 小手先でごまかしている．
 
 */    
     

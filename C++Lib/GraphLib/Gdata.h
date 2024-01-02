@@ -237,7 +237,6 @@ template <typename T>  void  MSGraph<T>::set(int x, int y, int z, T v, T b, doub
 }
 
 
-
 /**
 template <typename T> void  MSGraph<T>::getm(int x, int y, int z, T v)
 
@@ -269,7 +268,6 @@ template <typename T> void  MSGraph<T>::getm(int x, int y, int z, T v)
         for (int i=0; i<xs*ys*zs; i++) gp[i] = (T)v;
     }
 }
-
 
 
 /**
@@ -336,7 +334,6 @@ template <typename T> void  MSGraph<T>::contrast(T low, T high)
 }
 
 
-
 /**
 template <typename T>  void  MSGraph<T>::fill(T v) 
 
@@ -348,7 +345,6 @@ template <typename T>  void  MSGraph<T>::fill(T v)
     min = max = v;
     return;
 }
-
 
 
 /**
@@ -364,7 +360,6 @@ template <typename T>  void  MSGraph<T>::clear(T v)
 }
 
 
-
 /**
 template <typename T>  void  MSGraph<T>::clear(void) 
 
@@ -378,7 +373,6 @@ template <typename T>  void  MSGraph<T>::clear(void)
 }
 
 
-
 /**
 template <typename T>  void  MSGraph<T>::free(void) 
 
@@ -390,7 +384,6 @@ template <typename T>  void  MSGraph<T>::free(void)
     init();
     return;
 }
-
 
 
 /**
@@ -443,7 +436,6 @@ template <typename T> T  MSGraph<T>::get_vPoint(double x, double y, double z, in
 }
 
 
-
 /**
 template <typename T>  void  MSGraph<T>::set_vPoint(double x, double y, double z, T cc, int mode)
 
@@ -483,7 +475,6 @@ template <typename T>  void  MSGraph<T>::set_vPoint(double x, double y, double z
     }
     return;
 }
-
 
 
 /**
@@ -542,7 +533,6 @@ template <typename T> void  MSGraph<T>::setWindow(double x1, double y1, double x
 }
 
 
-
 /**
 3D空間にビューポートを設定する．
 
@@ -576,7 +566,6 @@ template <typename T> void  MSGraph<T>::setWindow3D(double x1, double y1, double
     wZeroY = Min(y1, y2);
     wZeroZ = Max(z1, z2);
 }
-
 
 
 // オペレータ
@@ -613,7 +602,6 @@ template <typename T>  MSGraph<T> MSGraph<T>::operator= (ExMSGraph<T>& s)
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 // 簡易表示インターフェイス
 //
@@ -628,7 +616,6 @@ public:
     virtual void  displayNew (MSGraph<T> vp) {}
     virtual void  displayNext(MSGraph<T> vp) {}
 };
-
 
 
 
@@ -797,7 +784,6 @@ template <typename T>  MSGraph<T> copyCmnHead2MSGraph(CmnHead hd, unsigned int m
 }
 
 
-
 /**
 template <typename T>  CmnHead  copyMSGraph2CmnHead(MSGraph<T>& vp, unsigned int mode=MG2CH_NORMAL, bool cnt=false)
 
@@ -952,7 +938,6 @@ template <typename T>  CmnHead  copyMSGraph2CmnHead(MSGraph<T>& vp, unsigned int
 }
 
 
-
 // 2D画像の拡大・縮小
 //
 template <typename T>  MSGraph<T>  scalingMSGraph2D(MSGraph<T> vp, double scale)
@@ -1005,7 +990,6 @@ template <typename T>  MSGraph<T>  scalingMSGraph2D(MSGraph<T> vp, double scale)
         
     return xp;
 }
-
 
 
 

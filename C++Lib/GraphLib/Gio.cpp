@@ -333,6 +333,7 @@ CmnHead  jbxl::readMoonFile(const char* fn, bool no_ntoh)
     }
 
     hd = readMoonData(fp, fsz, no_ntoh);
+    fclose(fp);
     return hd;
 }
 
@@ -595,8 +596,8 @@ MSGraph<sWord>   jbxl::readDicomFile(const char* fn)
     }
 
     vp = readDicomData(fp, fsize);
-    fclose(fp);
 
+    fclose(fp);
     return vp;
 }
 
@@ -653,10 +654,6 @@ CmnHead  jbxl::readXHead(const char* fn, CmnHead* chd)
 
 @retval 読み込んだグラフィックデータを記述する共通ヘッダ（データ本体は無し）．@n
         エラーなら kind=HEADER_ERROR となる．
-
-@bug x86 と x64 では CmnHead のサイズが異なるので，データファイルには基本的に互換性がない．@n
-参考：sizeof(CmnHead) = x86: 32Byte, x64: 44Byte ただしパッティングで 48Byte @n
-現状は小手先でごまかしている．
 */
 CmnHead  jbxl::readXHead(const char* fn, CmnHead* chd)
 {
@@ -664,7 +661,7 @@ CmnHead  jbxl::readXHead(const char* fn, CmnHead* chd)
     int    fsz, csz;
     CmnHead hd;
 
-    int hsz = sizeof(CmnHead);
+    int hsz = sizeof(CmnHead_Entry);
     memset(&hd, 0, hsz);
     hd.kind = HEADER_NONE;
 
@@ -695,6 +692,7 @@ CmnHead  jbxl::readXHead(const char* fn, CmnHead* chd)
     //
     fseek(fp, 0, 0);
     fread(&hd, hsz, 1, fp);
+    hd.buf   = NULL;
     hd.grptr = NULL;
     ntoh_st(&hd, 4);
 
@@ -702,27 +700,21 @@ CmnHead  jbxl::readXHead(const char* fn, CmnHead* chd)
     if (hd.kind==RAS_MAGIC) {
         hd.kind = RAS_DATA;
         PRINT_MESG("readXHead: Sun Raster File\n");
-        fclose(fp);
         hd.depth = hd.zsize;
         hd.zsize = 1;
         hd.lsize = file_size(fn) - sizeof(RasHead);
         hd.bsize = 0;
-        hd.buf = NULL;
+        hd.buf   = NULL;
         hd.grptr = NULL;
+        fclose(fp);
         return hd;
     }
 
     // Common ヘッダ
     if (hd.kind > 0 && hd.kind <= NUM_KDATA) {
-#ifdef WIN64
-        if (fsz == (int)(hsz + hd.bsize + hd.lsize) - 12) hsz = 36;     // x64
-#elif WIN32
-        if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 12) hsz = 48;     // x86
-#elif __code_model_32__
-        if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 12) hsz = 48;     // x86
-#else 
-        if (fsz == (int)(hsz + hd.bsize + hd.lsize) - 12) hsz = 36;     // x64
-#endif
+        if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 4 ) hsz = 36;     // x86 file
+        if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 16) hsz = 48;     // x64 file
+        //
         if (fsz == (int)(hsz + hd.bsize + hd.lsize)) {  
             if (hd.zsize<=0) hd.zsize = 1;
             if (hd.bsize>0) {
@@ -860,8 +852,8 @@ CmnHead  jbxl::readXHead(const char* fn, CmnHead* chd)
     if (isJPEGHeader(buf)) {
         PRINT_MESG("readXHead: JPEGデータ形式\n");
         hd.kind = JPEG_RGB_DATA;    // JPEG_RGB_DATA or JPEG_MONO_DATA
-        fclose(fp);
         free_Buffer(&buf);
+        fclose(fp);
         return hd;
     }
 #endif
@@ -986,15 +978,9 @@ CmnHead  jbxl::readXHeadFile(const char* fn, CmnHead* chd, bool cnt)
     // Common形式 
     // データ読み取りでは hd.lsize==0 のファイルサイズ無効（CT_RGN_SL）はまだサポートされていない
     if (hd.kind>0 && hd.kind<=NUM_KDATA) {
-#ifdef WIN64
-        if (fsz == (int)(hsz + hd.bsize + hd.lsize) - 12) hsz = 36;     // x64
-#elif WIN32
-        if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 12) hsz = 48;     // x86
-#elif __code_model_32__
-        if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 12) hsz = 48;     // x86
-#else 
-        if (fsz == (int)(hsz + hd.bsize + hd.lsize) - 12) hsz = 36;     // x64
-#endif
+        if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 4 ) hsz = 36;     // x86 file
+        if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 16) hsz = 48;     // x64 file
+        //
         if (fsz == (int)(hsz + hd.bsize + hd.lsize)) {
             PRINT_MESG("readXHeadFile: Commonデータ形式\n");
             if (hd.zsize <= 0) hd.zsize = 1;
@@ -1027,8 +1013,8 @@ CmnHead  jbxl::readXHeadFile(const char* fn, CmnHead* chd, bool cnt)
         
         // ヘッダのみ
         if (hd.lsize==0) {
-            fclose(fp);
             if (counter!=NULL) counter->PutFill();
+            fclose(fp);
             return hd;
         }
 
@@ -1062,8 +1048,8 @@ CmnHead  jbxl::readXHeadFile(const char* fn, CmnHead* chd, bool cnt)
             }
         }
 
-        fclose(fp);
         if (counter!=NULL) counter->PutFill();
+        fclose(fp);
         return hd;
     }
     memset(&hd, 0, sizeof(CmnHead));
@@ -1348,15 +1334,9 @@ CmnHead  jbxl::readCmnHeadFile(const char* fn, CmnHead* chd, bool cnt)
         ntoh_st(&hd, 4);
         if (hd.zsize<=0) hd.zsize = 1;
 
-#ifdef WIN64
-        if (fsz == (int)(hsz + hd.bsize + hd.lsize) - 12) hsz = 36;     // x64
-#elif WIN32
-        if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 12) hsz = 48;     // x86
-#elif __code_model_32__
-        if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 12) hsz = 48;     // x86
-#else 
-        if (fsz == (int)(hsz + hd.bsize + hd.lsize) - 12) hsz = 36;     // x64
-#endif
+        if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 4 ) hsz = 36;     // x86 file
+        if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 16) hsz = 48;     // x64 file
+        
         // カウンタ
         if (hd.zsize>=10 && cnt) {
             counter = GetUsableGlobalCounter();
@@ -1506,15 +1486,14 @@ int  jbxl::writeCmnHeadFile(const char* fn, CmnHead* hd, bool cnt)
     }
  
     fread((sByte*)&cmd, sizeof(CmnHead), 1, fp);
+    fclose(fp);
     ntoh_st(&cmd, 4);
     if (cmd.xsize!=hd->xsize || cmd.ysize!=hd->ysize || cmd.zsize!=hd->zsize ||
         cmd.bsize!=hd->bsize || cmd.lsize!=hd->lsize || cmd.depth!=hd->depth || cmd.kind!=hd->kind) {
         PRINT_MESG("WRITECMNHEADFILE: エラー：ファイルヘッダ検査：ヘッダ異常\n");
-        fclose(fp);
         return JBXL_GRAPH_HEADER_ERROR;
     }
 
-    fclose(fp);
     return  csize;
 }
 

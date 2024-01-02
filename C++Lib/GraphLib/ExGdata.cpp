@@ -9,7 +9,6 @@
 #include  "ExGdata.h"
 
 
-
 using namespace jbxl;
 
 
@@ -272,5 +271,4 @@ ExCmnHead  ExCmnHead::operator= (CmnHead& s)
 
     return *this;
 }
-
 

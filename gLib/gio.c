@@ -303,11 +303,12 @@ WSGraph  read_ras_file(const char* fn)
         return gd;
     }
 
-    rs = fread(&hd, sizeof(CmnHead), 1, fp);
-    ntoh_st(&hd, 4);
+    rs = fread(&hd.entry, sizeof(CmnHead_Entry), 1, fp);
+    ntoh_st(&hd.entry, 4);
     if (hd.kind!=RAS_MAGIC) {
         //fprintf(stderr,"READ_RAS_FILE: %s is not sunraster. kind = %d\n",fn,hd.kind);
         gd.state = JBXL_GRAPH_HEADER_ERROR;
+        fclose(fp);
         return gd;
     }
 
@@ -470,7 +471,10 @@ int  write_ras_file_obit(const char* fn, CmnHead* hd, int obit)
         unsigned int u;
         memcpy((sByte*)&shd, hd->buf, hd->bsize);
         ptr = (uByte*)malloc(hd->lsize);
-        if (ptr==NULL)  return JBXL_GRAPH_MEMORY_ERROR;
+        if (ptr==NULL) {
+            fclose(fp);
+            return JBXL_GRAPH_MEMORY_ERROR;
+        }
         lsize = hd->lsize;
         for (u=0; u<hd->lsize; u++) ptr[u] = hd->grptr[u];
     }
@@ -482,7 +486,10 @@ int  write_ras_file_obit(const char* fn, CmnHead* hd, int obit)
 
             lsize = hd->xsize*hd->ysize*depth/8;
             buf = (uByte*)malloc(lsize);
-            if (buf==NULL)  return JBXL_GRAPH_MEMORY_ERROR;
+            if (buf==NULL) {
+                 fclose(fp);
+                 return JBXL_GRAPH_MEMORY_ERROR;
+            }
 
             if (obit==8) {
                 int  max = 255; // 8bit mode での最大値 
@@ -528,6 +535,7 @@ int  write_ras_file_obit(const char* fn, CmnHead* hd, int obit)
         ptr = (uByte*)malloc(lsize);
         if (ptr==NULL) {
             if (hd->depth==16) free(buf);
+            fclose(fp);
             return JBXL_GRAPH_MEMORY_ERROR;
         }
 
@@ -590,7 +598,10 @@ int  write_ct_file(const char* fn, CmnHead* hd)
     lsize = hd->xsize*hd->ysize*hd->zsize*dbyte;
     hd->lsize = lsize;
     ptr = (sByte*)malloc(lsize);
-    if (ptr==NULL) return JBXL_GRAPH_MEMORY_ERROR;
+    if (ptr==NULL) {
+        fclose(fp);
+        return JBXL_GRAPH_MEMORY_ERROR;
+    }
 
     if (checkBit(hd->kind, CT_DATA) || checkBit(hd->kind, CT_3DM)) {
         memcpy((sByte*)&chd, hd->buf, hd->bsize);
@@ -645,8 +656,8 @@ int  write_ct_file(const char* fn, CmnHead* hd)
     fseek(fp, 0, 0);
     if (checkBit(hd->kind, CT_3DM)) {
         cmd = *hd;
-        hton_st(&cmd, 4);
-        fwrite(&cmd, sizeof(CmnHead), 1, fp);
+        hton_st(&cmd.entry, 4);
+        fwrite(&cmd.entry, sizeof(CmnHead_Entry), 1, fp);
     }
     fwrite(&chd, sizeof(CTHead), 1, fp);
 
@@ -681,11 +692,12 @@ int  write_cmn_file(const char* fn, CmnHead* hd)
     if ((fp=fopen(fn,"wb"))==NULL) return JBXL_GRAPH_OPFILE_ERROR;
 
     cd = *hd;
-    hton_st(&cd, 4);
-    fwrite(&cd, sizeof(CmnHead), 1, fp);
+    hton_st(&cd.entry, 4);
+    fwrite(&cd.entry, sizeof(CmnHead_Entry), 1, fp);
     if (hd->bsize>0) fwrite(hd->buf, hd->bsize, 1, fp);
     if (hd->lsize>0) fwrite(hd->grptr, hd->lsize, 1, fp);
 
+    fclose(fp);
     return 0;
 }
 
@@ -706,15 +718,11 @@ CmnHead  read_xxx_file(const char* fn)
 @retval JBXL_GRAPH_OPFILE_ERROR @b xsizeメンバ: ファイルオープンエラー．
 @retval JBXL_GRAPH_MEMORY_ERROR @b xsizeメンバ: メモリエラー．
 @retval JBXL_GRAPH_HEADER_ERROR @b xsizeメンバ: ヘッダエラー．
-
-@bug x86 と x64 では CmnHead のサイズが異なるので，データファイルには基本的に互換性がない．@n
-参考：sizeof(CmnHead) = x86: 32Byte, x64: 44Byte ただしパッティングで 48Byte @n
-現状は小手先でごまかしている．
 */
 CmnHead  read_xxx_file(const char* fn)
 {
-    FILE*   fp;
-    int  i;
+    FILE* fp;
+    int   i;
     sWord*  wptr;
     CmnHead hd;
     size_t rs;
@@ -728,26 +736,25 @@ CmnHead  read_xxx_file(const char* fn)
         return hd;
     }
 
-    int hsz = sizeof(CmnHead);
+    int hsz = sizeof(CmnHead_Entry);
     fseek(fp,0,0);
-    rs = fread(&hd, hsz, 1, fp);
-    ntoh_st(&hd, 4);
+    rs = fread(&hd.entry, hsz, 1, fp);
+    ntoh_st(&hd.entry, 4);
 
     if (hd.kind>=0 && hd.kind<=NUM_KDATA) { 
         hd.zsize = Max(hd.zsize, 1);
 
-#ifdef __code_model_32__
-        if (fsz == (int)(hsz+hd.bsize+hd.lsize) + 12) hsz = 48;     // x86
-#else
-        if (fsz == (int)(hsz+hd.bsize+hd.lsize) - 12) hsz = 36;     // x64
-#endif
-        if (fsz == (int)(hsz+hd.bsize+hd.lsize)) {
+        if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 4 ) hsz = 36;     // x86 file
+        if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 16) hsz = 48;     // x64 file
+        //
+        if (fsz == (int)(hsz + hd.bsize + hd.lsize)) {
             fseek(fp, hsz, 0);
             hd.buf   = (uByte*)malloc(hd.bsize);
             hd.grptr = (uByte*)malloc(hd.lsize);
-            if ((hd.bsize>0&&hd.buf==NULL) || hd.grptr==NULL) {
+            if ((hd.bsize>0 && hd.buf==NULL) || hd.grptr==NULL) {
                 init_CmnHead(&hd);
                 hd.xsize = JBXL_GRAPH_HEADER_ERROR;
+                fclose(fp);
                 return hd;
             }
 
@@ -776,8 +783,8 @@ CmnHead  read_xxx_file(const char* fn)
         hd.xsize = hd.ysize = hd.depth = 0;
         hd = read_user_data(fp, &hd);
     }
-    fclose(fp);
 
+    fclose(fp);
     return hd;
 }
 
@@ -793,10 +800,6 @@ CmnHead  read_cmn_header(const char* fn)
 @retval HEADER_NONE @b kindメンバ: ヘッダ種別無し
 @retval JBXL_GRAPH_OPFILE_ERROR @b xsizeメンバ: ファイルオープンエラー．
 @retval JBXL_GRAPH_MEMORY_ERROR @b xsizeメンバ: メモリエラー．
-
-@bug x86 と x64 では CmnHead のサイズが異なるので，データファイルには基本的に互換性がない．@n
-参考：sizeof(CmnHead) = x86: 32Byte, x64: 44Byte ただしパッティングで 48Byte @n
-現状は小手先でごまかしている．
 */
 CmnHead  read_cmn_header(const char* fn)
 {
@@ -806,23 +809,20 @@ CmnHead  read_cmn_header(const char* fn)
     UNUSED(rs);
 
     init_CmnHead(&hd);
-
     int fsz = file_size(fn);
+
     if ((fp=fopen(fn,"rb"))==NULL) {
         hd.xsize = JBXL_GRAPH_OPFILE_ERROR;
         return hd;
     }
 
-    int hsz = sizeof(CmnHead);
+    int hsz = sizeof(CmnHead_Entry);
     fseek(fp, 0, 0);
-    rs = fread(&hd, hsz, 1, fp);
-    ntoh_st(&hd, 4);
+    rs = fread(&hd.entry, hsz, 1, fp);
+    ntoh_st(&hd.entry, 4);
 
-#ifdef __code_model_32__
-    if (fsz == (int)(hsz+hd.bsize+hd.lsize) + 12) hsz = 48;     // x86
-#else
-    if (fsz == (int)(hsz+hd.bsize+hd.lsize) - 12) hsz = 36;     // x64
-#endif
+    if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 4 ) hsz = 36;     // x86 file
+    if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 16) hsz = 48;     // x64 file
     fseek(fp, hsz, 0);
 
     if (hd.bsize>0) {
@@ -830,6 +830,7 @@ CmnHead  read_cmn_header(const char* fn)
         if (hd.buf==NULL) {
             init_CmnHead(&hd);
             hd.xsize = JBXL_GRAPH_MEMORY_ERROR;
+            fclose(fp);
             return hd;
         }
         rs = fread(hd.buf, hd.bsize, 1, fp);
@@ -838,8 +839,8 @@ CmnHead  read_cmn_header(const char* fn)
         hd.bsize = 0;
         hd.buf = NULL;
     }
-    fclose(fp);
 
+    fclose(fp);
     return hd;
 }
 
@@ -855,10 +856,6 @@ CmnHead  read_cmn_file(const char* fn)
 @retval HEADER_NONE @b kindメンバ: ヘッダ種別無し
 @retval JBXL_GRAPH_OPFILE_ERROR @b xsizeメンバ: ファイルオープンエラー．
 @retval JBXL_GRAPH_MEMORY_ERROR @b xsizeメンバ: メモリエラー．
-
-@bug x86 と x64 では CmnHead のサイズが異なるので，データファイルには基本的に互換性がない．@n
-参考：sizeof(CmnHead) = x86: 32Byte, x64: 44Byte ただしパッティングで 48Byte @n
-現状は小手先でごまかしている．
 */
 CmnHead  read_cmn_file(const char* fn)
 {
@@ -867,24 +864,21 @@ CmnHead  read_cmn_file(const char* fn)
     size_t rs;
     UNUSED(rs);
 
-    int fsz = file_size(fn);
     init_CmnHead(&hd);
+    int fsz = file_size(fn);
 
     if ((fp=fopen(fn,"rb"))==NULL) {
         hd.xsize = JBXL_GRAPH_OPFILE_ERROR;
         return hd;
     }
     
-    int hsz = sizeof(CmnHead);
+    int hsz = sizeof(CmnHead_Entry);
     fseek(fp, 0, 0);
-    rs = fread(&hd, hsz, 1, fp);
-    ntoh_st(&hd, 4);
+    rs = fread(&hd.entry, hsz, 1, fp);
+    ntoh_st(&hd.entry, 4);
 
-#ifdef __code_model_32__
-    if (fsz == (int)(hsz+hd.bsize+hd.lsize) + 12) hsz = 48;     // x86
-#else
-    if (fsz == (int)(hsz+hd.bsize+hd.lsize) - 12) hsz = 36;     // x64
-#endif
+    if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 4 ) hsz = 36;     // x86 file
+    if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 16) hsz = 48;     // x64 file
     fseek(fp, hsz, 0);
 
     if (hd.bsize>0) {
@@ -892,6 +886,7 @@ CmnHead  read_cmn_file(const char* fn)
         if (hd.buf==NULL) {
             init_CmnHead(&hd);
             hd.xsize = JBXL_GRAPH_MEMORY_ERROR;
+            fclose(fp);
             return hd;
         }
         rs = fread(hd.buf, hd.bsize, 1, fp);
@@ -906,11 +901,12 @@ CmnHead  read_cmn_file(const char* fn)
     if (hd.grptr==NULL) {
         free_CmnHead(&hd);
         hd.xsize = JBXL_GRAPH_MEMORY_ERROR;
+        fclose(fp);
         return hd;
     }
     rs = fread(hd.grptr, hd.lsize, 1, fp);
-    fclose(fp);
 
+    fclose(fp);
     return hd;
 }
 

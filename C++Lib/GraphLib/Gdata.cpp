@@ -67,4 +67,3 @@ CmnHead  jbxl::getinfo_CmnHead(CmnHead hd)
     return cmnhd;
 }
  
-

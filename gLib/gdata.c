@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief    グラフィックデータ定義
 @file     gdata.c
 @version  3.0
@@ -35,7 +34,6 @@ void  free_CmnHead(CmnHead* hd)
 }
 
 
-
 /**
 void  init_CmnHead(CmnHead* hd)
 
@@ -50,7 +48,6 @@ void  init_CmnHead(CmnHead* hd)
         hd->kind = HEADER_NONE;
     }
 }
-
 
 
 /**
@@ -96,7 +93,6 @@ BSGraph  make_BSGraph(int xs, int ys, int zs)
 }
 
 
-
 /**
 WSGraph  make_WSGraph(int xs, int ys, int zs)
 
@@ -138,7 +134,6 @@ WSGraph  make_WSGraph(int xs, int ys, int zs)
 
     return vp;
 }
-
 
 
 /**
@@ -184,7 +179,6 @@ FSGraph  make_FSGraph(int xs, int ys, int zs)
 }
 
 
-
 /**
 ISGraph  make_ISGraph(int xs, int ys, int zs)
 
@@ -226,7 +220,6 @@ ISGraph  make_ISGraph(int xs, int ys, int zs)
 
     return vp;
 }
-
 
 
 /**
@@ -272,7 +265,6 @@ VSGraph  make_VSGraph(int xs, int ys, int zs)
 }
 
 
-
 /**
 MSGraph  make_MSGraph(int xs, int ys, int zs, int depth)
 
@@ -315,7 +307,6 @@ MSGraph  make_MSGraph(int xs, int ys, int zs, int depth)
     memset(vp.gp, 0, xs*ys*zs*((depth+7)/8));
     return vp;
 }
-
 
 
 /**
@@ -364,7 +355,6 @@ BSGraph* new_BSGraph(int xs, int ys, int zs)
 }
 
 
-
 /**
 WSGraph* new_WSGraph(int xs, int ys, int zs)
 
@@ -409,7 +399,6 @@ WSGraph* new_WSGraph(int xs, int ys, int zs)
 
     return vp;
 }
-
 
 
 /**
@@ -458,7 +447,6 @@ FSGraph* new_FSGraph(int xs, int ys, int zs)
 }
 
 
-
 /**
 ISGraph* new_ISGraph(int xs, int ys, int zs)
 
@@ -505,7 +493,6 @@ ISGraph* new_ISGraph(int xs, int ys, int zs)
 }
 
 
-
 /**
 VSGraph* new_VSGraph(int xs, int ys, int zs)
 
@@ -550,7 +537,6 @@ VSGraph* new_VSGraph(int xs, int ys, int zs)
 
     return vp;
 }
-
 
 
 /**
@@ -600,7 +586,6 @@ MSGraph* new_MSGraph(int xs, int ys, int zs, int depth)
 }
 
 
-
 /**
 ISGraph  W2ISGraph(WSGraph vp)
 
@@ -630,7 +615,6 @@ ISGraph  W2ISGraph(WSGraph vp)
     for (i=0; i<ix.xs*ix.ys*ix.zs; i++) ix.gp[i] = (int)vp.gp[i];
     return ix;
 }
-
 
 
 /**
@@ -664,7 +648,6 @@ FSGraph  W2FSGraph(WSGraph vp)
 }
 
 
-
 /**
 WSGraph  B2WSGraph(BSGraph vp)
 
@@ -694,7 +677,6 @@ WSGraph  B2WSGraph(BSGraph vp)
     for (i=0; i<ix.xs*ix.ys*ix.zs; i++) ix.gp[i] = (sWord)vp.gp[i];
     return ix;
 }
-
 
 
 /**
@@ -728,7 +710,6 @@ WSGraph  I2WSGraph(ISGraph vp)
 }
 
 
-
 /**
 WSGraph  F2WSGraph(FSGraph vp)
 
@@ -760,7 +741,6 @@ WSGraph  F2WSGraph(FSGraph vp)
 }
 
 
-
 /**
 WSGraph  V2FSGraph(VSGraph vp)
 
@@ -783,7 +763,6 @@ FSGraph  V2FSGraph(VSGraph vp)
 
     return ix;
 }
-
 
 
 /**
@@ -809,7 +788,6 @@ WSGraph  V2WSGraph(VSGraph vp)
 }
 
 
-
 /**
 void  init_IRBound(IRBound* rb)
 
@@ -825,7 +803,6 @@ void  init_IRBound(IRBound* rb)
 }
 
 
-
 /**
 void  init_DRBound(DRBound* rb)
 
@@ -839,7 +816,6 @@ void  init_DRBound(DRBound* rb)
     rb->xmin = rb->ymin = rb->zmin = DBL_MAX;
     rb->misc = OFF;
 }
-
 
 
 /**
@@ -858,7 +834,6 @@ void  set_RZxy(double rzm)
 }
 
 
-
 /**
 int  chk_RZxy(void)   
 
@@ -874,5 +849,4 @@ int  chk_RZxy(void)
     }
     return TRUE;
 }
-
 

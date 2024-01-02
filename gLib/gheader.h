@@ -15,18 +15,18 @@
 ---
 @par Common形式
 @code
-    CmnHead  cmhd   : common header. 36Byte. 
-    Graphic　Header : 画像データ固有のヘッダ
-    Graphic  Data   : データ
+    CmnHead_Entry   cmhd   : common header. 36Byte. 
+    Graphic　       Header : 画像データ固有のヘッダ
+    Graphic         Data   : データ
 @endcode
 任意の画像データを保存する時，その画像データに識別ヘッダ(CmnHead) を付けて保存したもの．
 
 @par UN_KNOWN_DATA
 @code
-    CmnHead  cmhd     : common header. 36Byte.　（省略可）
-    Any Graphic       : 任意のグラフィックデータ
-    [Graphic　Header] : 画像データ固有のヘッダ
-    [Graphic  Data]   : データ
+    CmnHead_Entry   cmhd    : common header. 36Byte.　（省略可）
+    Any Graphic             : 任意のグラフィックデータ
+    [Graphic　      Header] : 画像データ固有のヘッダ
+    [Graphic        Data]   : データ
 @endcode
 Common Headerは省略可（省略した場合は，本来のファイル形式）@n
 画像フォーマットを解析できない場合のファイル形式．従って，cmhd はkind以外意味がない．@n
@@ -34,19 +34,19 @@ Common Headerは省略可（省略した場合は，本来のファイル形式�
 
 @par RAS_DATA
 @code
-    CmnHead  cmhd : common header. 36Byte. （省略可）
-    RasHead  rshd : SunRasterのヘッダー．32Byte. メンバは int型. 
-    Graphic  Data : データ
+    CmnHead_Entry   cmhd : common header. 36Byte. （省略可）
+    RasHead         rshd : SunRasterのヘッダー．32Byte. メンバは int型. 
+    Graphic         Data : データ
 @endcode
 Common Headerは省略可．Sun Rasterの一番単純な型(Starndard型)
 
 @par USERSET_DATA
 @code
-    CmnHead  cmhd : common header. 36Byte. （省略可）
-    ANY HEADER    : ユーザ指定のヘッダ． 
-    Graphic  Data : データ
+    CmnHead_Entry   cmhd : common header. 36Byte. （省略可）
+    ANY HEADER           : ユーザ指定のヘッダ． 
+    Graphic         Data : データ
 @endcode
-Common Headerは省略可．また，ANY HEADERが無い場合もある．@n
+Common Headeri Entry は省略可．また，ANY HEADERが無い場合もある．@n
 ヘッダ形式をオペレータ（ユーザ）が指定する場合の型．@n
 ヘッダ情報を設定して，読み込み・書き込みの関数に渡す必要がある．
 
@@ -104,8 +104,41 @@ typedef struct _RasHead {
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // 共通ヘッダ
-//    x86 と x64 でサイズが変化するので注意！
 //
+
+// ファイル用
+typedef struct _CmnHead_Entry {
+    int kind;               ///< Kind of Graphics Format
+    int xsize;              ///< Width of Graphics
+    int ysize;              ///< Height of Graphics
+    int zsize;              ///< For 3D Data
+    int depth;              ///< Color Depth of Graphics       (bit  unit)  
+    unsigned int bsize;     ///< Fllowing buf size or Any Data (byte unit) 
+    unsigned int lsize;     ///< Size of Graphics Data         (byte unit) 
+    int option;             ///< General purpose (pating)
+} CmnHead_Entry;
+
+// 作業用
+// x86 と x64 でサイズが変化するので注意！
+typedef struct _CmnHead {
+    union {
+        CmnHead_Entry entry;
+        struct {
+            int kind;               ///< Kind of Graphics Format
+            int xsize;              ///< Width of Graphics
+            int ysize;              ///< Height of Graphics
+            int zsize;              ///< For 3D Data
+            int depth;              ///< Color Depth of Graphics       (bit  unit)  
+            unsigned int bsize;     ///< Fllowing buf size or Any Data (byte unit) 
+            unsigned int lsize;     ///< Size of Graphics Data         (byte unit) 
+            int option;             ///< General purpose (pating)
+        };
+    };
+    uByte*    buf;          ///< Ture Header buffer  
+    uByte*    grptr;        ///< Pointer to Data 
+} CmnHead;
+
+/*
 typedef struct _CmnHead {
     int kind;               ///< Kind of Graphics Format
     int xsize;              ///< Width of Graphics
@@ -117,6 +150,7 @@ typedef struct _CmnHead {
     uByte* buf;             ///< Ture Header buffer  
     uByte* grptr;           ///< Pointer to Data 
 } CmnHead;
+*/
 
 
 ///////////////////////////////////////////////////////////////////////////////////////

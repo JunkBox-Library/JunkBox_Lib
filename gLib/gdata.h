@@ -172,7 +172,6 @@ void    init_DRBound(DRBound* rb);
 void    free_CmnHead(CmnHead* hd);      // 共通ヘッダのメモリ領域を開放する
 void    init_CmnHead(CmnHead* hd);
 
-
 #define  free_Graph(v)   {if((v)!=NULL){if((v)->gp)free((v)->gp); (v)->gp=NULL; (v)->xs=(v)->ys=(v)->zs=0; (v)->state=JBXL_NORMAL;}}    ///< vのバッファ部を解放する． 
 #define  free_WSGraph(v) {if((v)!=NULL){if((v)->gp)free((v)->gp); (v)->gp=NULL; (v)->xs=(v)->ys=(v)->zs=0; (v)->state=JBXL_NORMAL;}}
 #define  free_BSGraph(v) {if((v)!=NULL){if((v)->gp)free((v)->gp); (v)->gp=NULL; (v)->xs=(v)->ys=(v)->zs=0; (v)->state=JBXL_NORMAL;}}
