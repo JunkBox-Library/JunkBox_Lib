@@ -10,8 +10,6 @@
 */
 
 
-
-
 #ifndef CPLUSPLUS
     #define CPLUSPLUS
 #endif
@@ -19,7 +17,6 @@
 
 #include "common.h"
 #include <string>
-
 
 
 //
@@ -39,11 +36,12 @@ inline  bool  isNull(void* p) {
     return false;
 }
 
-
-
+#ifdef freeNull  // for C
+#undef freeNull
+#endif
 template <typename T> inline void   freeNull(T& p) { if (!jbxl::isNull(p)) ::free(p); p = (T)NULL;}
-template <typename T> inline void deleteNull(T& p) { delete p; p = (T)NULL;}
 
+template <typename T> inline void deleteNull(T& p) { delete p; p = (T)NULL;}
 
 
 #ifndef WIN32
