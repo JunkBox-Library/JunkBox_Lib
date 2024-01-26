@@ -33,7 +33,7 @@ class  MeshObjectData;
 class  MeshObjectNode
 {
 public:
-    Buffer  material_id;            ///< マテリアルを識別するID
+    Buffer  material_id;            ///< マテリアルを識別するID．#MATERIAL_ で始まる．
     bool    same_material;          ///< 他の Node が既に同じマテリアルを使用している．
 
     int     facet_no;               ///< 面番号

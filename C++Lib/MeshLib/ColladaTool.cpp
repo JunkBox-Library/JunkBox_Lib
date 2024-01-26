@@ -25,6 +25,7 @@ void  ColladaXML::init(double meter, int axis, const char* ver)
     initCollada(meter, axis, ver);
     blank_texture = init_Buffer();
 
+    forUnity4  = false;
     forUnity5  = false;
     forUnity3D = true;
 }
@@ -867,7 +868,7 @@ void  ColladaXML::outputFile(const char* fname, const char* path, int mode)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// for UNITY3D
+// for UNITY4
 
 void  ColladaXML::addCenterObject(void)
 {

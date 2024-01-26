@@ -208,7 +208,8 @@ void  MaterialParam::init(void)
     bumpmap.init();
     specmap.init();
 
-    addname = init_Buffer();
+    //addname = init_Buffer();
+    paramstr = init_Buffer();
 
     transparent = 1.0;
     shininess   = 0.0;
@@ -232,7 +233,8 @@ void  MaterialParam::free (void)
     bumpmap.free();
     specmap.free();
 
-    free_Buffer(&addname);
+    //free_Buffer(&addname);
+    free_Buffer(&paramstr);
 
     return;
 }
@@ -246,7 +248,9 @@ void  MaterialParam::dup(MaterialParam m)
     bumpmap.dup(m.bumpmap);
     specmap.dup(m.specmap);
 
-    addname = dup_Buffer(m.addname);
+    //addname = dup_Buffer(m.addname);
+    //paramstr = dup_Buffer(m.paramstr);
+    paramstr = make_Buffer_str(m.getParamString());
 }
 
 
@@ -255,35 +259,19 @@ void  MaterialParam::dup(MaterialParam m)
 */
 void  MaterialParam::setFullName(const char* ext)
 {
+    if (ext==NULL) return;
+
     if (texture.isSetTexture()) {
-        if (addname.buf!=NULL) {
-            texture.addName("_");
-            texture.addName((char*)addname.buf);
-        }
-        if (ext!=NULL) {
-            if (ext[0]!='.') texture.addName(".");
-            texture.addName(ext);
-        }
+        if (ext[0]!='.') texture.addName(".");
+        texture.addName(ext);
     }
     if (bumpmap.isSetTexture()) {
-        if (addname.buf!=NULL) {
-            bumpmap.addName("_");
-            bumpmap.addName((char*)addname.buf);
-        }
-        if (ext!=NULL) {
-            if (ext[0]!='.') bumpmap.addName(".");
-            bumpmap.addName(ext);
-        }
+        if (ext[0]!='.') bumpmap.addName(".");
+        bumpmap.addName(ext);
     }
     if (specmap.isSetTexture()) {
-        if (addname.buf!=NULL) {
-            specmap.addName("_");
-            specmap.addName((char*)addname.buf);
-        }
-        if (ext!=NULL) {
-            if (ext[0]!='.') specmap.addName(".");
-            specmap.addName(ext);
-        }
+        if (ext[0]!='.') specmap.addName(".");
+        specmap.addName(ext);
     }
 }
 
@@ -299,7 +287,7 @@ void  MaterialParam::printParam(FILE* fp)
     if (bumpmap.isSetTexture()) bumpmap.printParam(fp);
     if (specmap.isSetTexture()) specmap.printParam(fp);
 
-    fprintf(fp, "MaterialParam.addname     = %s\n", addname.buf);
+    fprintf(fp, "MaterialParam.paramstr    = %s\n", paramstr.buf);
     fprintf(fp, "MaterialParam.transparent = %f\n", transparent);
     fprintf(fp, "MaterialParam.shininess   = %f\n", shininess);
     fprintf(fp, "MaterialParam.glow        = %f\n", glow);

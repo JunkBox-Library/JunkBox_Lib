@@ -471,7 +471,7 @@ FACETを選択的に処理することはできない．予め FACETに分解し
 bool  MeshObjectData::addData(FacetBaseData* facetdata, MaterialParam* param)
 {
     char* name = NULL;
-    if (param!=NULL) name = param->getAdditionalName();
+    if (param!=NULL) name = param->getParamString();
 
     bool ret = addNode(facetdata, name);
     if (ret && param!=NULL) endplist->setMaterialParam(*param);
@@ -501,10 +501,9 @@ bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<do
     bool ret = importTriData(vct, nrm, map, vnum);
     if (ret) {
         char* name = NULL;
-        if (param!=NULL) name = param->getAdditionalName();
+        if (param!=NULL) name = param->getParamString();
         ret = addNode(name, useBrep);
     }
-
     if (ret && param!=NULL) endplist->setMaterialParam(*param);
 
     return ret;
@@ -526,7 +525,7 @@ bool  MeshObjectData::addData(TriPolyData* tridata, int tnum, int fnum, Material
     bool ret = importTriData(tridata, tnum, fnum);
     if (ret) {
         char* name = NULL;
-        if (param!=NULL) name = param->getAdditionalName();
+        if (param!=NULL) name = param->getParamString();
         ret = addNode(name, useBrep);
     }
     //
@@ -750,6 +749,7 @@ void  MeshObjectData::setMaterialParam(MaterialParam param, int num)
     if (num>=0) {
         while (node!=NULL) {
             if (node->facet_no==num) {
+node->setMaterialID(param.getParamString());
                 node->setMaterialParam(param);
                 return;
             }
@@ -759,6 +759,7 @@ void  MeshObjectData::setMaterialParam(MaterialParam param, int num)
     else {
         while (node!=NULL) {
             if (!node->material_param.enable) {
+node->setMaterialID(param.getParamString());
                 node->setMaterialParam(param);
                 return;
             }

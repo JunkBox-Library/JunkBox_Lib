@@ -147,7 +147,8 @@ bool  isSameTexture(TextureParam a, TextureParam b);     ///< compare texture ma
 class  MaterialParam
 {
 private:
-    Buffer  addname;        ///< テクスチャ追加名．
+    //Buffer  addname;        ///< テクスチャ追加名．
+    Buffer  paramstr;       ///< パラメータ文字列 (Base64文字列)
 
     double  transparent;    ///< テクスチャのアルファチャンネルの係数．
     double  shininess;      ///< 輝き 
@@ -201,9 +202,13 @@ public:
     char*   getBumpMapName(void) { return bumpmap.getName();}       // 禁 free
     char*   getSpecMapName(void) { return specmap.getName();}       // 禁 free
 
-    void    setAdditionalName(const char* name) { if(name!=NULL) copy_s2Buffer(name, &addname);}
-    void    addAdditionalName(const char* name) { if(name!=NULL) cat_s2Buffer (name, &addname);}
-    char*   getAdditionalName(void) { return (char*)addname.buf;}   // 禁 free
+    //void    setAdditionalName(const char* name) { if(name!=NULL) copy_s2Buffer(name, &addname);}
+    //void    addAdditionalName(const char* name) { if(name!=NULL) cat_s2Buffer (name, &addname);}
+    //char*   getAdditionalName(void) { return (char*)addname.buf;}   // 禁 free
+
+    void    setParamString(const char* param) { if(param!=NULL) copy_s2Buffer(param, &paramstr);}
+    void    addParamString(const char* param) { if(param!=NULL) cat_s2Buffer (param, &paramstr);}
+    char*   getParamString(void) { return (char*)paramstr.buf;}   // 禁 free
     //void    setupFullName(const char* extname);
     void    setFullName(const char* extname);
 
@@ -237,8 +242,8 @@ public:
     void    setScaleU(double u) { texture.setScaleU(u);}
     void    setScaleV(double v) { texture.setScaleV(v);}
     void    setRotate(double r) { texture.setRotate(r);}
-    void    setFlipU (bool h)  { texture.setFlipU(h); }
-    void    setFlipV (bool h)  { texture.setFlipV(h); }
+    void    setFlipU (bool h)   { texture.setFlipU(h); }
+    void    setFlipV (bool h)   { texture.setFlipV(h); }
     void    setShift (double u, double v) { texture.setShiftU(u); texture.setShiftV(v);}
     void    setScale (double u, double v) { texture.setScaleU(u); texture.setScaleV(v);}
 

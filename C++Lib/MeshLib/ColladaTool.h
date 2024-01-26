@@ -78,7 +78,8 @@ public:
 
     void    outputFile(const char* fn, const char* path=NULL, int mode=XML_INDENT_FORMAT);
 
-    // for Unity3D
+    // for Unity
+    bool    forUnity4;
     bool    forUnity5;
     bool    forUnity3D;
     void    addCenterObject(void);
