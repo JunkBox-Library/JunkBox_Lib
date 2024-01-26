@@ -4,12 +4,10 @@
 @author   Fumi.Iseki (C)
 */
 
-
 #include  "ColladaTool.h"
 
 
 using namespace jbxl;
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22,7 +20,6 @@ ColladaXML::~ColladaXML(void)
 }
 
 
-
 void  ColladaXML::init(double meter, int axis, const char* ver)
 {
     initCollada(meter, axis, ver);
@@ -33,14 +30,11 @@ void  ColladaXML::init(double meter, int axis, const char* ver)
 }
 
 
-
-
 void  ColladaXML::free(void)
 {
     free_Buffer(&blank_texture);
     del_xml(&xml);
 }
-
 
 
 void  ColladaXML::clear(double meter, int axis, const char* ver)
@@ -50,7 +44,6 @@ void  ColladaXML::clear(double meter, int axis, const char* ver)
 }
 
 
-
 bool  ColladaXML::isBlankTexture(const char* name)
 {
     if (blank_texture.buf==NULL) return false;
@@ -58,7 +51,6 @@ bool  ColladaXML::isBlankTexture(const char* name)
 
     return true;
 }
-
 
 
 
@@ -153,7 +145,6 @@ void  ColladaXML::initCollada(double meter, int axis, const char* ver)
 }
 
 
-
 void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider)
 {
     if (meshdata==NULL) return;
@@ -166,7 +157,6 @@ void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider)
     ::free(geom_id);
     return;
 }
-
 
 
 char*  ColladaXML::addGeometry(MeshObjectData* meshdata)
@@ -208,7 +198,6 @@ char*  ColladaXML::addGeometry(MeshObjectData* meshdata)
 }
 
 
-
 char*  ColladaXML::addVertexSource(tXML* mesh, MeshObjectData* meshdata)
 {
     if (mesh==NULL || meshdata==NULL) return NULL;
@@ -248,7 +237,6 @@ char*  ColladaXML::addVertexSource(tXML* mesh, MeshObjectData* meshdata)
 }
 
 
-
 char*  ColladaXML::addNormalSource(tXML* mesh, MeshObjectData* meshdata)
 {
     if (mesh==NULL || meshdata==NULL) return NULL;
@@ -286,7 +274,6 @@ char*  ColladaXML::addNormalSource(tXML* mesh, MeshObjectData* meshdata)
 
     return _tochar(source_id.buf);
 }
-
 
 
 // UVマップの出力
@@ -342,7 +329,6 @@ char*  ColladaXML::addTexcrdSource(tXML* mesh, MeshObjectData* meshdata)
 }
 
 
-
 char*  ColladaXML::addVerticesPos(tXML* mesh, const char* position_id)
 {
     if (mesh==NULL || position_id==NULL) return NULL;
@@ -362,7 +348,6 @@ char*  ColladaXML::addVerticesPos(tXML* mesh, const char* position_id)
 
     return _tochar(vertex_id.buf);
 }
-
 
 
 void   ColladaXML::addPosTechniqueAccessor(tXML* source, const char* source_array_id, int count)
@@ -389,7 +374,6 @@ void   ColladaXML::addPosTechniqueAccessor(tXML* source, const char* source_arra
 }
 
 
-
 void   ColladaXML::addMapTechniqueAccessor(tXML* source, const char* source_array_id, int count)
 {
     if (source==NULL || source_array_id==NULL) return;
@@ -409,7 +393,6 @@ void   ColladaXML::addMapTechniqueAccessor(tXML* source, const char* source_arra
 
     return;
 }
-
 
 
 // Polylists
@@ -494,7 +477,6 @@ void   ColladaXML::addPolylists(tXML* mesh, MeshObjectData* meshdata, const char
 }
 
 
-
 char*  ColladaXML::addImage(const char* fn)
 {
     if (fn==NULL) return NULL;
@@ -522,7 +504,6 @@ char*  ColladaXML::addImage(const char* fn)
 }
 
 
-
 char*  ColladaXML::addMaterial(const char* material_id)
 {
     if (material_id==NULL) return NULL;
@@ -538,7 +519,6 @@ char*  ColladaXML::addMaterial(const char* material_id)
 
     return _tochar(material_url.buf);
 }
-
 
 
 tXML*  ColladaXML::addEffect(const char* material_url, const char* file_id, MaterialParam mparam)
@@ -656,7 +636,6 @@ tXML*  ColladaXML::addEffect(const char* material_url, const char* file_id, Mate
 }
 
 
-
 void  ColladaXML::addExtraBumpmap(tXML* profile, const char* bump_id)
 {
     if (profile==NULL || bump_id==NULL) return;
@@ -704,7 +683,6 @@ void  ColladaXML::addExtraBumpmap(tXML* profile, const char* bump_id)
 
     return;
 }
-
 
 
 //
@@ -827,7 +805,6 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
 }
 
 
-
 bool  ColladaXML::existSameID(tXML* top, const char* tag, const char* id)
 {
     bool ret = false;
@@ -854,7 +831,6 @@ bool  ColladaXML::existSameID(tXML* top, const char* tag, const char* id)
 
     return ret;
 }
-
 
 
 void  ColladaXML::outputFile(const char* fname, const char* path, int mode)
@@ -890,7 +866,6 @@ void  ColladaXML::outputFile(const char* fname, const char* path, int mode)
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // for UNITY3D
 
@@ -899,7 +874,6 @@ void  ColladaXML::addCenterObject(void)
     addCenterScene();
     return;
 }
-
 
 
 //

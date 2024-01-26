@@ -1,5 +1,4 @@
-﻿
-#ifndef  __JBXL_CPP_COLLADA_TOOL_H_
+﻿#ifndef  __JBXL_CPP_COLLADA_TOOL_H_
 #define  __JBXL_CPP_COLLADA_TOOL_H_
 
 
@@ -13,7 +12,6 @@
 #include  "MeshObjectData.h"
 
 
-
 namespace jbxl {
 
 
@@ -25,7 +23,6 @@ namespace jbxl {
 #define  COLLADA_X_UP           0
 #define  COLLADA_Y_UP           1
 #define  COLLADA_Z_UP           2
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -129,7 +126,6 @@ inline void  freeColladaXML(ColladaXML*& xml) { if(xml!=NULL) { xml->free(); del
 
 
 }       // namespace
-
 
 #endif
 
