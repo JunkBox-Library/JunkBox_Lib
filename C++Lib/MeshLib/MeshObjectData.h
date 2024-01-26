@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_CPP_MESHOBJECTDATA_H_
+﻿#ifndef  __JBXL_CPP_MESHOBJECTDATA_H_
 #define  __JBXL_CPP_MESHOBJECTDATA_H_
-
 
 #include  "tools++.h"
 #include  "txml.h"
@@ -15,14 +13,12 @@
 #define   MOBJN_MTERIALID_RAND_LEN   6
 
 
-
 namespace jbxl {
 
 
 
 class  MeshObjectNode;
 class  MeshObjectData;
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,7 +91,6 @@ MeshObjectNode*  AddMeshObjectNode(MeshObjectNode* list, MeshObjectNode* node);
 
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MeshObject Data: for Object
 //
@@ -158,7 +153,6 @@ public:
 
 
 inline void  freeMeshObjectData(MeshObjectData*& data) { if(data!=NULL) { data->free(); delete data; data=NULL;} }
-
 
 
 }       // namespace

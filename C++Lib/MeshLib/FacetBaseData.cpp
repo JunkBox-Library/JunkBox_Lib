@@ -46,7 +46,6 @@ void  FacetTriData::init(void)
 }
 
 
-
 void  FacetTriData::execScale(double x, double y, double z)
 {
     v1.x *= x;
@@ -61,7 +60,6 @@ void  FacetTriData::execScale(double x, double y, double z)
 }
 
 
-
 void  FacetTriData::execRotate(Quaternion<double> q)
 {
     v1 = q.execRotation(v1);
@@ -71,7 +69,6 @@ void  FacetTriData::execRotate(Quaternion<double> q)
     n2 = q.execRotation(n2);
     n3 = q.execRotation(n3);
 }
-
 
 
 
@@ -92,7 +89,6 @@ void  FacetBaseData::init(int idx, int num)
 }
 
 
-
 void  FacetBaseData::free(void)
 {
     freeNull(index);
@@ -103,7 +99,6 @@ void  FacetBaseData::free(void)
 
     init();
 }
-
 
 
 bool  FacetBaseData::getm(void)
@@ -121,7 +116,6 @@ bool  FacetBaseData::getm(void)
 
     return true;
 }
-
 
 
 void  FacetBaseData::dup(FacetBaseData a)
@@ -142,7 +136,6 @@ void  FacetBaseData::dup(FacetBaseData a)
 }
 
 
-
 void  FacetBaseData::execScale(Vector<double> scale)
 {
     for (int i=0; i<num_data;  i++) {
@@ -151,7 +144,6 @@ void  FacetBaseData::execScale(Vector<double> scale)
         vertex[i].z *= scale.z;
     }
 }
-
 
 
 void  FacetBaseData::execShift(Vector<double> shift)
@@ -164,7 +156,6 @@ void  FacetBaseData::execShift(Vector<double> shift)
 }
 
 
-
 void  FacetBaseData::execRotate(Quaternion<double> quat)
 {
     for (int i=0; i<num_data; i++) {
@@ -172,7 +163,6 @@ void  FacetBaseData::execRotate(Quaternion<double> quat)
         normal[i] = VectorRotation(normal[i], quat);
     }
 }
-
 
 
 
@@ -188,12 +178,10 @@ void  TriPolyData::init(void)
 }
 
 
-
 void  TriPolyData::dup(TriPolyData a)
 {
     *this = a;
 }
-
 
 
 void  TriPolyData::execScale(Vector<double> scale)
@@ -206,7 +194,6 @@ void  TriPolyData::execScale(Vector<double> scale)
 }
 
 
-
 void  TriPolyData::execShift(Vector<double> shift)
 {
     for (int i=0; i<3; i++) {
@@ -217,7 +204,6 @@ void  TriPolyData::execShift(Vector<double> shift)
 }
 
 
-
 void  TriPolyData::execRotate(Quaternion<double> quat)
 {
     for (int i=0; i<3; i++) {
@@ -225,7 +211,6 @@ void  TriPolyData::execRotate(Quaternion<double> quat)
         normal[i] = VectorRotation(normal[i], quat);
     }
 }
-
 
 
 
@@ -242,7 +227,6 @@ TriPolyData* jbxl::dupTriPolyData(TriPolyData* data, int num)
     for (int i=0; i<num; i++) dup[i].dup(data[i]);
     return dup;
 }
-
 
 
 TriPolyData*  jbxl::joinTriPolyData(TriPolyData*& first, int num_f, TriPolyData*& next, int num_n)
@@ -272,7 +256,6 @@ TriPolyData*  jbxl::joinTriPolyData(TriPolyData*& first, int num_f, TriPolyData*
 }
 
 
-
 void  jbxl::freeTriPolyData(TriPolyData*& tridata, int n)
 {
     if (tridata!=NULL) {
@@ -283,5 +266,4 @@ void  jbxl::freeTriPolyData(TriPolyData*& tridata, int n)
         tridata = NULL;
     }
 }
-
 

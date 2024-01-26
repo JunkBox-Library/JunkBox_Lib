@@ -5,11 +5,9 @@
  Materialパラメータ
 */
 
-
 #include "Vector.h"
 #include "Rotation.h"
 #include "buffer.h"
-
 
 // アルファチャンネル モード
 #define  MATERIAL_ALPHA_NONE          0
@@ -17,13 +15,11 @@
 #define  MATERIAL_ALPHA_MASKING       2
 #define  MATERIAL_ALPHA_EMISSIVE      3     // 未実装
 
-
 // テクスチャのマッピング方法
 #define  MATERIAL_MAPPING_DEFAULT     0
 #define  MATERIAL_MAPPING_PLANAR      2
 #define  MATERIAL_MAPPING_SPHERICAL   4     // 未実装
 #define  MATERIAL_MAPPING_CYLINDRICAL 6     // 未実装
-
 
 //
 #define  MATERIAL_ATTR_LEN           24     // Base64 string len = 32
@@ -46,7 +42,6 @@
 #define  MATERIAL_ATTR_OBJECT        23     // 
 
 
-
 namespace  jbxl {
 
 
@@ -57,7 +52,7 @@ namespace  jbxl {
 class  TextureParam
 {
 private:
-    Buffer  name;           ///< テクスチャ名
+    Buffer   name;           ///< テクスチャ名
 
     double   color[4];       ///< RGBA
 
@@ -145,7 +140,6 @@ bool  isSameTexture(TextureParam a, TextureParam b);     ///< compare texture ma
 
 
 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // MaterialParam  マテリアル用パラメータ
 //
@@ -210,7 +204,8 @@ public:
     void    setAdditionalName(const char* name) { if(name!=NULL) copy_s2Buffer(name, &addname);}
     void    addAdditionalName(const char* name) { if(name!=NULL) cat_s2Buffer (name, &addname);}
     char*   getAdditionalName(void) { return (char*)addname.buf;}   // 禁 free
-    void    setupFullName(const char* extname);
+    //void    setupFullName(const char* extname);
+    void    setFullName(const char* extname);
 
     void    setTransparent(double a) { if(a>1.0) a = 1.0; else if(a<0.0) a = 0.0; transparent = a;}
     void    setShininess(double s)   { if(s>1.0) s = 1.0; else if(s<0.0) s = 0.0; shininess = s;}
@@ -280,16 +275,13 @@ public:
 };
 
 
-
 inline MaterialParam*  newMaterialParam(MaterialParam p) { MaterialParam* m = new MaterialParam(); m->dup(p); return m;}
 
 bool   isSameMaterial(MaterialParam a, MaterialParam b);        ///< compare each texture names and colors
 
 
 
-
 }       // namespace
 
 #endif
-
 

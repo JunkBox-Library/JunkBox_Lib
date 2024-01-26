@@ -38,7 +38,6 @@ void  MeshObjectNode::init(void)
 }
 
 
-
 /**
 @brief ノードにマテリアルパラメータを設定し，他のノードに同じマテリアルが存在するかチャックする．
 */
@@ -72,7 +71,6 @@ void  MeshObjectNode::setMaterialParam(MaterialParam mparam)
 }
 
 
-
 void  MeshObjectNode::setMaterialID(const char* str)
 {
     free_Buffer(&material_id);
@@ -102,7 +100,6 @@ void  MeshObjectNode::setMaterialID(const char* str)
 }
 
 
-
 void  MeshObjectNode::set(int vertex, int polygon, int vcount)
 {
     num_vertex  = vertex;
@@ -114,7 +111,6 @@ void  MeshObjectNode::set(int vertex, int polygon, int vcount)
 }
 
 
-
 void  MeshObjectNode::free(void)
 {
     delMaterialParam();
@@ -122,7 +118,6 @@ void  MeshObjectNode::free(void)
 
     free_value();
 }
-
 
 
 void  MeshObjectNode::free_value(void)
@@ -134,13 +129,11 @@ void  MeshObjectNode::free_value(void)
 }
 
 
-
 void  MeshObjectNode::clear(void)
 {
     this->free();
     init();
 }
-
 
 
 /**
@@ -181,7 +174,6 @@ bool  MeshObjectNode::getm(int vertex, int polygon, int vcount)
 }
 
 
-
 /**
 インデックス化された頂点データを直接 MeshObjectのデータとしてインポートする．
 */
@@ -209,7 +201,6 @@ bool  MeshObjectNode::computeVertexDirect(FacetBaseData* facetdata)
 
     return true;
 }
-
 
 
 /**
@@ -246,7 +237,6 @@ bool  MeshObjectNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>
 
     return true;
 }
-
 
 
 /**
@@ -328,7 +318,6 @@ void  MeshObjectNode::execAffineTrans(UVMap<double>* uvmap, int uvnum)
 }
 
 
-
 /**
 頂点データから，各 nodeの Planar UVマップを生成する
 頂点データ(vertex_value, normal_value) がインポート済みでなければならない．
@@ -373,7 +362,6 @@ UVMap<double>*  MeshObjectNode::generatePlanarUVMap(Vector<double> scale, UVMap<
 
 
 
-
 ///////////////////////////////////////////////////////////////////
 
 void  jbxl::freeMeshObjectList(MeshObjectNode*& node)
@@ -387,7 +375,6 @@ void  jbxl::freeMeshObjectList(MeshObjectNode*& node)
 
     return;
 }
-
 
 
 //
@@ -405,7 +392,6 @@ MeshObjectNode*  jbxl::DelMeshObjectNode(MeshObjectNode* node)
 }
 
 
-
 MeshObjectNode*  jbxl::AddMeshObjectNode(MeshObjectNode* list, MeshObjectNode* node)
 {
     if (list==NULL) return node;
@@ -419,7 +405,6 @@ MeshObjectNode*  jbxl::AddMeshObjectNode(MeshObjectNode* list, MeshObjectNode* n
 
     return node;
 }
-
 
 
 
@@ -448,7 +433,6 @@ void  MeshObjectData::init(const char* name)
 }
 
 
-
 void  MeshObjectData::free(void)
 {
     free_Buffer(&data_name);
@@ -461,7 +445,6 @@ void  MeshObjectData::free(void)
 }
 
 
-
 void  MeshObjectData::free_value(void)
 {
     freeNull(impvtx_value);
@@ -470,13 +453,11 @@ void  MeshObjectData::free_value(void)
 }
 
 
-
 void  MeshObjectData::clear(void)
 {
     this->free();
     init();
 }
-
 
 
 /**
@@ -497,7 +478,6 @@ bool  MeshObjectData::addData(FacetBaseData* facetdata, MaterialParam* param)
 
     return ret;
 }
-
 
 
 /**
@@ -531,7 +511,6 @@ bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<do
 }
 
 
-
 /**
 TriPolyData (三角ポリゴンデータ) を単位としてデータを追加し，MeshObjectのデータを作成する．@n
 num を指定すると，指定されたFACET（面）のデータのみが追加される．これにより面ごとのデータ構造を形成することができる．@n
@@ -558,7 +537,6 @@ bool  MeshObjectData::addData(TriPolyData* tridata, int tnum, int fnum, Material
 
     return ret;
 }
-
 
 
 /**
@@ -610,7 +588,6 @@ bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UV
 
     return true;
 }
-
 
 
 /**
@@ -699,7 +676,6 @@ bool  MeshObjectData::importTriData(TriPolyData* tridata, int tnum, int fnum)
 }
 
 
-
 bool  MeshObjectData::addNode(FacetBaseData* facetdata, const char* name)
 {
     bool ret = false;
@@ -721,7 +697,6 @@ bool  MeshObjectData::addNode(FacetBaseData* facetdata, const char* name)
 
     return ret;
 }
-
 
 
 /**
@@ -762,7 +737,6 @@ bool  MeshObjectData::addNode(const char* name, bool useBrep)
 }
 
 
-
 /**
 void  MeshObjectData::setMaterialParam(MaterialParam param, int num)
 
@@ -796,7 +770,6 @@ void  MeshObjectData::setMaterialParam(MaterialParam param, int num)
 }
 
 
-
 /**
 現在の形状データに，dataを面の一部(Node)として結合させる．アフィン変換のパラメータの違うものは結合できない．
 
@@ -827,6 +800,4 @@ void  MeshObjectData::joinData(MeshObjectData*& data)
 
     return;
 }
-
-
 

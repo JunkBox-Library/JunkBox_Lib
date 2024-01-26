@@ -32,7 +32,6 @@ void  TextureParam::init(void)
 }
 
 
-
 void  TextureParam::free (void)
 {
     free_Buffer(&name);
@@ -41,14 +40,12 @@ void  TextureParam::free (void)
 }
 
 
-
 void  TextureParam::dup(TextureParam t)
 {
     *this = t;
     
     name = dup_Buffer(t.name);
 }
-
 
 
 void  TextureParam::execShift(UVMap<double>* uv, int num)
@@ -60,7 +57,6 @@ void  TextureParam::execShift(UVMap<double>* uv, int num)
 }
 
 
-
 void  TextureParam::execInvShift(UVMap<double>* uv, int num)
 {
     for (int i=0; i<num; i++) {
@@ -68,7 +64,6 @@ void  TextureParam::execInvShift(UVMap<double>* uv, int num)
         uv[i].v -= shiftV;
     }
 }
-
 
 
 void  TextureParam::execScale(UVMap<double>* uv, int num)
@@ -84,7 +79,6 @@ void  TextureParam::execScale(UVMap<double>* uv, int num)
 }
 
 
-
 void  TextureParam::execInvScale(UVMap<double>* uv, int num)
 {
     double uu, vv;
@@ -96,7 +90,6 @@ void  TextureParam::execInvScale(UVMap<double>* uv, int num)
         uv[i].v = vv + 0.5;
     }
 }
-
 
 
 void  TextureParam::execRotate(UVMap<double>* uv, int num)
@@ -114,7 +107,6 @@ void  TextureParam::execRotate(UVMap<double>* uv, int num)
 }
 
 
-
 void  TextureParam::execInvRotate(UVMap<double>* uv, int num)
 {
     double uu, vv;
@@ -130,7 +122,6 @@ void  TextureParam::execInvRotate(UVMap<double>* uv, int num)
 }
 
 
-
 void  TextureParam::execTrans(UVMap<double>* uv, int num)
 {
     //DEBUG_MODE PRINT_MESG("%f %f, %f %f, %f\n", shiftU, shiftV, scaleU, scaleV, rotate);
@@ -144,7 +135,6 @@ void  TextureParam::execTrans(UVMap<double>* uv, int num)
 }
 
 
-
 void  TextureParam::execInvTrans(UVMap<double>* uv, int num)
 {
     if (flipU) { execFlipU(uv, num); flipU = false;}    
@@ -155,7 +145,6 @@ void  TextureParam::execInvTrans(UVMap<double>* uv, int num)
 
     return;
 }
-
 
 
 void  TextureParam::printParam(FILE* fp)
@@ -182,7 +171,6 @@ void  TextureParam::printParam(FILE* fp)
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -205,7 +193,6 @@ bool  jbxl::isSameTexture(TextureParam a, TextureParam b)
 
     return true;
 }
-
 
 
 
@@ -239,7 +226,6 @@ void  MaterialParam::init(void)
 }
 
 
-
 void  MaterialParam::free (void)
 {
     texture.free();
@@ -250,7 +236,6 @@ void  MaterialParam::free (void)
 
     return;
 }
-
 
 
 void  MaterialParam::dup(MaterialParam m)
@@ -265,11 +250,10 @@ void  MaterialParam::dup(MaterialParam m)
 }
 
 
-
 /**
 @param ext 拡張子
 */
-void  MaterialParam::setupFullName(const char* ext)
+void  MaterialParam::setFullName(const char* ext)
 {
     if (texture.isSetTexture()) {
         if (addname.buf!=NULL) {
@@ -304,7 +288,6 @@ void  MaterialParam::setupFullName(const char* ext)
 }
 
 
-
 void  MaterialParam::printParam(FILE* fp)
 {
     if (!enable) {
@@ -331,7 +314,6 @@ void  MaterialParam::printParam(FILE* fp)
     fflush(fp);
     return;
 }
-
 
 
 /**
@@ -390,7 +372,6 @@ char*  MaterialParam::getBase64Params(unsigned char obj, unsigned char cc)
 
     return params;
 }
-
 
 
 

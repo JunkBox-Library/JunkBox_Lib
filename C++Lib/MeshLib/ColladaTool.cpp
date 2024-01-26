@@ -898,4 +898,3 @@ void  ColladaXML::addCenterScene(void)
     return;
 }
 
-
