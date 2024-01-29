@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_CPP_TOOLSPP_H_
+﻿#ifndef  __JBXL_CPP_TOOLSPP_H_
 #define  __JBXL_CPP_TOOLSPP_H_
-
 
 /**
 @brief    ツールライブラリ ヘッダ for C++
@@ -9,11 +7,9 @@
 @author   Fumi.Iseki (C)
 */
 
-
 #include "common++.h"
 #include "tools.h"
 #include "xtools.h"
-
 
 
 //
@@ -50,8 +46,6 @@ public:
 
 
 
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 //
 //
@@ -65,7 +59,6 @@ inline  char*  GetLocalTime(char deli1='-', char deli2='T', char deli3=':', char
     return get_localtime(deli1, deli2, deli3, deli4);
 }
 */
-
 
 
 
@@ -100,7 +93,6 @@ template <typename T> void   del_tList_object(tList** lp)
 
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 // for MS Windows
 
@@ -111,7 +103,6 @@ template <typename T> void   del_tList_object(tList** lp)
 #endif
 
 void  DisPatcher(int sno=0, ...);
-
 
 #endif    // WIN32
 

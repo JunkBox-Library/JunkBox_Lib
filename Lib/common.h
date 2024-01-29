@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_COMMON_HEADER_
+﻿#ifndef  __JBXL_COMMON_HEADER_
 #define  __JBXL_COMMON_HEADER_
-
 
 /** 
 @brief   汎用共通ヘッダ
@@ -10,7 +8,6 @@
 @author  Fumi.Iseki (C)
 @date    2020 11/22
 */
-
 
 #ifdef HAVE_CONFIG_H
     #include "config.h"
@@ -29,7 +26,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -286,14 +282,12 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-
 typedef  unsigned char  uByte;
 typedef  char           sByte;
 typedef  unsigned short uWord;
 typedef  short          sWord;
 typedef  unsigned int   uDWord;
 typedef  int            sDWord;
-
 
 
 /** Parameter

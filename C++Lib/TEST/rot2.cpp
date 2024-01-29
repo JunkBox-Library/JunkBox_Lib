@@ -1,5 +1,4 @@
 ﻿
-
 #include "common++.h"
 #include "Rotation.h"
 
@@ -20,7 +19,6 @@ int main()
     printf("--- Zero Matrix ---------------------\n");
     print_Matrix(stdout, mt2);
     printf("\n\n\n");
-
 
     Vector<double> eul3(1.0, -PI/2., 0.5);
     printf("--- PI/2 Vector ---------------------\n");
@@ -51,5 +49,4 @@ int main()
     printf("--- mt5: Same mt3 and mt4 -----------\n");
     print_Matrix(stdout, mt5);
     printf("\n");
-
 }

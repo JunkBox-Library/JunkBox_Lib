@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_CPP_GRAPHIC_LIBRARY_H_
+﻿#ifndef  __JBXL_CPP_GRAPHIC_LIBRARY_H_
 #define  __JBXL_CPP_GRAPHIC_LIBRARY_H_
-
 
 /**
 @brief    グラフィックライブラリ
@@ -22,7 +20,6 @@
 '04  9/11   ExGdata.cpp     メモリ管理機能付き ExMSGraph, ExCmnHead を定義．
 '04  9/10   Gio.cpp         オペレータ（ユーザ）定義ヘッダファイル読み込み関数 readUserSetData()作成
 */
-
 
 #include  "MathLib.h"
 

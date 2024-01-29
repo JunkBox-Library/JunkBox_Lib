@@ -1,11 +1,8 @@
-﻿
-
-/**
+﻿/**
 @brief    Log用 Ring Buffer ツール
 @file     LogRingBuffer.cpp
 @author   Fumi.Iseki (C)
 */
-
 
 #include "LogRingBuffer.h"
 
@@ -21,7 +18,6 @@ CLogRingBuffer::~CLogRingBuffer(void)
 
     //DEBUG_INFO("DESTRUCTOR: CLogRingBuffer");
 }
-
 
 
 int  CLogRingBuffer::init(int size)
@@ -63,10 +59,8 @@ int  CLogRingBuffer::init(int size)
         kindData = inputSrc = NULL;
         return 1;
     }
-
     return 0;
 }
-
 
 
 void  CLogRingBuffer::clear()
@@ -84,7 +78,6 @@ void  CLogRingBuffer::clear()
 }
 
 
-
 /**
 void  CLogRingBuffer::putRingBuffer(Buffer buf, int input, int kind)
 
@@ -94,7 +87,6 @@ void  CLogRingBuffer::putRingBuffer(Buffer buf, int input, int kind)
 @param input データのタグ LOG_RB_MESG, LOG_RB_INFO, LOG_RB_DEBUG, LOG_RB_WARN, LOG_RB_ERR
 @param kind  データの種類 LOG_RB_UNKNOWN_DATA, LOG_RB_TEXT_DATA, LOG_RB_TEXT_HALF_DATA, LOG_RB_BINARY_DATA, LOG_RB_BINHEX_DATA
 */
-
 void  CLogRingBuffer::putRingBuffer(Buffer buf, int input, int kind)
 {
     int  i,  nxt = 0;
@@ -195,7 +187,6 @@ void  CLogRingBuffer::putRingBuffer(Buffer buf, int input, int kind)
 }
 
 
-
 /**
 void  CLogRingBuffer::rewriteBinHexRingBuffer(int n, int input)
 
@@ -217,7 +208,6 @@ void  CLogRingBuffer::rewriteBinHexRingBuffer(int n, int input)
 
     free_Buffer(&buf);
 }
-
 
 
 /**
@@ -255,7 +245,6 @@ void  CLogRingBuffer::putRingFormat(int input, char* fmt, ...)
 }
 
 
-
 /**
 void  CLogRingBuffer::putRingFormat(int input, char* fmt, va_list args)
 
@@ -287,7 +276,6 @@ void  CLogRingBuffer::putRingFormat(int input, char* fmt, va_list args)
 }
 
 
-
 /**
 Buffer  CLogRingBuffer::getRingBuffer(void)
     
@@ -307,7 +295,6 @@ Buffer  CLogRingBuffer::getRingBuffer(void)
 
     return buf;
 }
-
 
 
 /**

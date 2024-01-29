@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief    グラフィックデータ定義
 @file     Gdata.cpp   
 @author   Fumi.Iseki (C)

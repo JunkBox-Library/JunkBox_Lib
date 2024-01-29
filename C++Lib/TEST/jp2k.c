@@ -15,7 +15,6 @@ int main(int argc, char** argv)
 
     if (argc<2) exit(1);
 
-
     JPEG2KImage jp2 = readJPEG2KFile(argv[1]);
 
     if (jp2.isNull()) printf("SSSSSSSSSSSSSSSSSS\n");
@@ -24,6 +23,4 @@ int main(int argc, char** argv)
 
     return 0;
 }
-
-
 

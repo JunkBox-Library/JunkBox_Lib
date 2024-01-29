@@ -1,14 +1,11 @@
-﻿
-#ifndef  __JBXL_CPP_MEMORY_SIMPLE_GRAPH_H_
+﻿#ifndef  __JBXL_CPP_MEMORY_SIMPLE_GRAPH_H_
 #define  __JBXL_CPP_MEMORY_SIMPLE_GRAPH_H_
-
 
 /**
 @brief    グラフィックデータ定義用ヘッダ for C++
 @file     Graph.h
 @author   Fumi.Iseki (C)
 */
-
 
 #include "Gdata.h"
 
@@ -69,7 +66,6 @@ template <typename T> int         addPaint_MSGraph(MSGraph<T> xp, int x, int y, 
 template <typename T> MSGraph<T>  Density_Filter(MSGraph<T> vp, int size, double rate, int mode=8, int work_color=0);
 template <typename T> MSGraph<T>  Density_Mask(MSGraph<T> vp, double rate, int mode=8, int work_color=0);
 template <typename T> void        delete_noise_MSGraph(MSGraph<T> vp, int size, int mode=8, int work_color=0)
-
 */
 
 
@@ -111,7 +107,6 @@ template <typename T>  Vector<double>  dgree_circle_MSGraph(MSGraph<T> vp)
 
     return vt;
 }
-
 
 
 /**
@@ -171,7 +166,6 @@ template <typename T>  Vector<double>  object_feature_MSGraph(MSGraph<T> vp, int
 }
 
 
-
 /*
 template <typename T>  double  count_around_MSGraph(MSGraph<T> vp)
 
@@ -221,7 +215,6 @@ template <typename T>  double  count_around_MSGraph(MSGraph<T> vp)
 }
 
 
-
 /**
 template <typename T>  int  count_area_MSGraph(MSGraph<T> xp)
 
@@ -236,7 +229,6 @@ template <typename T>  int  count_area_MSGraph(MSGraph<T> xp)
     }
     return ss;
 }
-
 
 
 template <typename T>  int  count_object_MSGraph(MSGraph<T> xp, int mn, int mx)
@@ -278,7 +270,6 @@ template <typename T>  int  count_object_MSGraph(MSGraph<T> xp, int mn, int mx)
 }
 
 
-
 /**
 template <typename T>  RBound<int>  out_around_MSGraph(MSGraph<T> vp, int x, int y, int mode=8)
 
@@ -298,7 +289,6 @@ template <typename T>  RBound<int>  out_around_MSGraph(MSGraph<T> vp, int x, int
 @retval rb.zmax 8近傍モード時の斜めの距離の回数．
 @retval rb.zmin オブジェクトの周囲長．ただし，8近傍モードの場合，斜めの距離も1と数える．@n
                 周囲長を rb.zmin + rb.zmax*{sqrt(2.)-1} で計算する場合もある．
-
 @attention
 1ドットの長さは 1と数える．
 */  
@@ -388,7 +378,6 @@ template <typename T>  RBound<int>  out_around_MSGraph(MSGraph<T> vp, int x, int
 }
 
 
-
 /**
 template <typename T>  RBound<int>  get_boundary_MSGraph(MSGraph<T> vp, T mn, T mx)
 
@@ -414,12 +403,10 @@ template <typename T>  RBound<int>  get_boundary_MSGraph(MSGraph<T> vp, T mn, T 
             }
         }
     }
-
     rb.cutdown(vp.rbound);
 
     return rb;
 }
-
 
 
 /**
@@ -476,7 +463,6 @@ template <typename T, typename R>  void  cat_MSGraph(MSGraph<R> src, MSGraph<T>&
 }
 
 
-
 /**
 template <typename T, typename R>  void  cat_MSGraph(MSGraph<R>* src, MSGraph<T>* dst)
 
@@ -530,7 +516,6 @@ template <typename T, typename R>  void  cat_MSGraph(MSGraph<R>* src, MSGraph<T>
     *dst = vp;
     return;
 }
-
 
 
 /**
@@ -606,7 +591,6 @@ template <typename R, typename T>  void  copy_MSGraph(MSGraph<R>* src, MSGraph<T
 }
 
 
-
 /**
 template <typename T>  MSGraph<T>  dup_MSGraph(MSGraph<R> src)
 
@@ -637,7 +621,6 @@ template <typename T>  MSGraph<T>  dup_MSGraph(MSGraph<T> src)
     
     return vp;
 }
-
 
 
 /**
@@ -671,7 +654,6 @@ template <typename T>  MSGraph<T>*  dup_MSGraph(MSGraph<T>* src)
     
     return vp;
 }
-
 
 
 /**
@@ -725,7 +707,6 @@ template <typename T>  void  ToPola(Vector<T> nv, double& cst, double& snt, doub
 */  
     return;
 }
-
 
 
 /**
@@ -785,14 +766,12 @@ template <typename T, typename R>
 }
 
 
-
 template <typename T>  void  MSGraph_changeColor(MSGraph<T> vp, int f, int t)
 {
     for (int i=0; i<vp.xs*vp.ys*vp.zs; i++) {
         if (vp.gp[i]==(T)f) vp.gp[i] = (T)t;
     }
 }
-
 
 
 /**
@@ -883,7 +862,6 @@ template <typename T>  int  MSGraph_Paint(MSGraph<T> vp, int x, int y, int mn, i
 }
 
 
-
 /**
 template <typename T>  int  MSGraph_Paint3D(MSGraph<T> vp, int x, int y, int z, int mn, int mx, int cc, int mode=8)
 
@@ -940,7 +918,6 @@ template <typename T>  int  MSGraph_Paint3D(MSGraph<T> vp, int x, int y, int z, 
 
     return ss;
 }
-
 
 
 /**
@@ -1005,7 +982,6 @@ template <typename T>  void  MSGraph_Line(MSGraph<T> vp, int x1, int y1, int x2,
 }   
 
 
-
 /**
 template <typename T>  void  MSGraph_Triangle(MSGraph<T> vp, int x1, int y1, int x2, int y2, int x3, int y3, int cc, int mode=OFF) 
 
@@ -1041,7 +1017,6 @@ template <typename T>  void  MSGraph_Triangle(MSGraph<T> vp, int x1, int y1, int
 }
 
 
-
 /**
 template <typename T> void  MSGraph_Box(MSGraph<T> vp, int x1, int y1, int x2, int y2, int cc, int mode=OFF) 
 
@@ -1070,7 +1045,6 @@ template <typename T> void  MSGraph_Box(MSGraph<T> vp, int x1, int y1, int x2, i
     }
     return;
 }
-
 
 
 /**
@@ -1172,7 +1146,6 @@ template <typename T>  void  MSGraph_Line3D(MSGraph<T> vp, int x1, int y1, int z
 }
 
 
-
 /**
 template <typename T>  void  MSGraph_Circle(MSGraph<T> vp, int x, int y, int r, int cc, int mode=OFF)
 
@@ -1272,7 +1245,6 @@ template <typename T>  void  MSGraph_Circle(MSGraph<T> vp, int x, int y, int r, 
 }
 
 
-
 /**
 template <typename T>
 void  MSGraph_Circle3D(MSGraph<T> vp, Vector<> ox, Vector<> ex, int rr, int cc, int mode=OFF)
@@ -1336,7 +1308,6 @@ template <typename T>  void  MSGraph_Pool(MSGraph<T> vp, Vector<> a, Vector<> b,
 }
 
 
-
 /**
 template <typename T>  
 void  MSGraph_Torus(MSGraph<T> vp, Vector<> ox, Vector<> ex, int rr, int ra, int cc)
@@ -1381,7 +1352,6 @@ template <typename T>
 
     return;
 }
-
 
 
 /**
@@ -1445,7 +1415,6 @@ template <typename T>  void  MSGraph_Sphere(MSGraph<T> vp, Vector<> a, int r, in
     }
     return;
 }
-
 
 
 /**
@@ -1557,7 +1526,6 @@ template <typename T>  MSGraph<T>  cut_object_MSGraph(MSGraph<T> vp, int mn, int
 
     return xp;
 }
-
 
 
 /**
@@ -1672,7 +1640,6 @@ template <typename T>  MSGraph<T>  cut_object_MSGraph(MSGraph<T> vp, int mn, int
 }
 
 
-
 /**
 template <typename T>  MSGraph<T>  cut_object_MSGraph(MSGraph<T> vp, RBound<int> rb, bool ecnt=false)
 
@@ -1748,7 +1715,6 @@ template <typename T>  MSGraph<T>  cut_object_MSGraph(MSGraph<T> vp, RBound<int>
 
     return xp;
 }
-
 
 
 /**
@@ -1841,7 +1807,6 @@ template <typename T>  MSGraph<T>  zoom_MSGraph(MSGraph<T> vp, double zm, int mo
 }
 
 
-
 /**
 */
 template <typename T>  MSGraph<T>  reduce_MSGraph(MSGraph<T> vp, double rc, int mode=ON)
@@ -1922,7 +1887,6 @@ template <typename T>  MSGraph<T>  reduce_MSGraph(MSGraph<T> vp, double rc, int 
 }
 
 
-
 /**
 template <typename T>  MSGraph<T>  rotate_MSGraph(MSGraph<T> vp, int xs, int ys, double cst, double snt, int mode=ON)
 
@@ -1981,10 +1945,8 @@ template <typename T>  MSGraph<T>  rotate_MSGraph(MSGraph<T> vp, int xs, int ys,
             }
         }
     }
-
     return vs;
 }
-
 
 
 /**
@@ -1999,7 +1961,6 @@ template <typename T>  MSGraph<T>  rotate_MSGraph(MSGraph<T> vp, double th, int 
     vs = rotate_MSGraph<T>(vp, xys, xys, cst, snt, mode);
     return vs;
 }
-
 
 
 /**
@@ -2051,10 +2012,8 @@ template <typename T>  MSGraph<T>  x_reverse_MSGraph(MSGraph<T> vp, bool ecnt=fa
             }
         }
     }
-
     return wp;
 }
-
 
 
 /**
@@ -2101,7 +2060,6 @@ template <typename T>  void  set_around_MSGraph(MSGraph<T> vp, int cc=0, int siz
     }
 
 }
-
 
 
 /**
@@ -2167,7 +2125,6 @@ template <typename T>  MSGraph<T>  grab_MSGraph(MSGraph<T> vp, int x1, int y1, i
 }
 
 
-
 /**
 template <typename T>  MSGraph<T>*  grab_MSGraph(MSGraph<T>* vp, int x1, int y1, int x2, int y2, int zs=0, int ze=0)
 
@@ -2229,7 +2186,6 @@ template <typename T>  MSGraph<T>* grab_MSGraph(MSGraph<T>* vp, int x1, int y1, 
     xp->rbound.zmax = vp->rbound.zmin + ze;
     return xp;
 }
-
 
 
 /**
@@ -2326,10 +2282,8 @@ template <typename T> int addPaint_MSGraph(MSGraph<T> xp, int x, int y, int mn, 
             }
         }
     }
-
     return num;
 }
-
 
 
 /**
@@ -2408,7 +2362,6 @@ template <typename T> MSGraph<T>   Density_Mask(MSGraph<T> vp, double rate, int 
 }
 
 
-
 /**
 template <typename T> MSGraph<T>   Density_Filter(MSGraph<T> vp, int size, double rate, int mode=8, int work_color=0)
 
@@ -2473,13 +2426,11 @@ template <typename T> MSGraph<T>   Density_Filter(MSGraph<T> vp, int size, doubl
 }
 
 
-
 /**
 template <typename T> void   delete_noise_MSGraph(MSGraph<T> vp, int size, int mode=8, int work_color=0)
 
 背景（vp.zero）に浮かぶ孤立ノイズを除去する．@n
 -work_color〜-1, work_color〜 を作業領域として使用するので，この区間にデータがある場合は誤作動する．
-
 */
 template <typename T> void   delete_noise_MSGraph(MSGraph<T> vp, int size, int mode=8, int work_color=0)
 {
@@ -2531,4 +2482,3 @@ template <typename T> void   delete_noise_MSGraph(MSGraph<T> vp, int size, int m
 
 
 #endif
-

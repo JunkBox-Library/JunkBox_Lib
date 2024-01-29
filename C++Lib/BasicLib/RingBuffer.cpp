@@ -1,19 +1,13 @@
-﻿
-
-/**
+﻿/**
 @brief    汎用リングバッファライブラリ
 @file     RingBuffer.cpp
 @author   Fumi.Iseki (C)
 */
 
-
-
 #include  "RingBuffer.h"
 
 
 using namespace jbxl;
-
-
 
 
 void  CRingBuffer::init_data(void)
@@ -27,7 +21,6 @@ void  CRingBuffer::init_data(void)
     state   = 0;
     enable  = FALSE;
 }
-
 
 
 BOOL  CRingBuffer::init(int ring_size, int data_size)
@@ -53,10 +46,8 @@ BOOL  CRingBuffer::init(int ring_size, int data_size)
     }
 
     if (ret) enable = TRUE;
-
     return ret;
 }
-
 
 
 void  CRingBuffer::free(void)
@@ -75,7 +66,6 @@ void  CRingBuffer::free(void)
 }
 
 
-
 void  CRingBuffer::clear(void)
 {
     for (int i=0; i<bufsz; i++) {
@@ -88,7 +78,6 @@ void  CRingBuffer::clear(void)
 
     return;
 }
-
 
 
 void* CRingBuffer::get(void)
@@ -106,7 +95,6 @@ void* CRingBuffer::get(void)
 }
 
 
-
 void* CRingBuffer::get(int pos)
 {
     pos = epoint + pos;
@@ -115,7 +103,6 @@ void* CRingBuffer::get(int pos)
 
     return buf[pos];
 }
-
 
 
 void  CRingBuffer::put(void* ptr)
@@ -129,7 +116,6 @@ void  CRingBuffer::put(void* ptr)
 }
 
 
-
 void  CRingBuffer::put(void* ptr, int pos)
 {
     pos = epoint + pos;
@@ -140,7 +126,4 @@ void  CRingBuffer::put(void* ptr, int pos)
 
     return;
 }
-
-
-
 

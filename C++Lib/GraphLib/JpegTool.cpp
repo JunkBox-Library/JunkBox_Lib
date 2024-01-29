@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief    JPEGグラフィックデータ ツール for C++ 
 @file     JpegTool.cpp
 @version  0.9
@@ -10,14 +9,12 @@
 this software is based in part on the work of the Independent JPEG Group. http://www.ijg.org/
 */
 
-
 #include "JpegTool.h"
 
 #ifdef ENABLE_JPEGLIB
 
 
 using namespace jbxl;
-
 
 
 /**
@@ -259,7 +256,6 @@ int  jbxl::writeJPEGFile(const char* fname, JPEGImage jp, int qulty)
 
     return ret;
 }
-
 
 
 /**

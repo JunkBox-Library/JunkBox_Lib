@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_CPP_GRAPHIC_IO_H_
+﻿#ifndef  __JBXL_CPP_GRAPHIC_IO_H_
 #define  __JBXL_CPP_GRAPHIC_IO_H_
-
 
 /**
 @brief    グラフィック用ファイル入出力関数ヘッダ  
@@ -11,7 +9,6 @@
 CTファイルへの入出力もサポートする．また，ファイル入出力の統合関数もサポート@n
 JPEG については JpegTool.cpp 参照．
 */
-
 
 #ifdef WIN32
 #pragma warning(disable:4995)

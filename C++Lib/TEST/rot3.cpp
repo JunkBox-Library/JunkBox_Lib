@@ -1,5 +1,4 @@
 ﻿
-
 #include "common++.h"
 #include "Rotation.h"
 
@@ -8,7 +7,6 @@ int main()
 {
     using namespace jbxl;
     printf("\n");
-
 
     Vector<double> eul1(1.0, 1.0, 0.5);
     printf ("vct1 = (%lf, %lf, %lf)\n", eul1.x, eul1.y, eul1.z);

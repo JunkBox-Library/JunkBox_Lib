@@ -1,7 +1,5 @@
-﻿
-#ifndef __JBXLPP_TIFF_TOOL_H_
+﻿#ifndef __JBXLPP_TIFF_TOOL_H_
 #define __JBXLPP_TIFF_TOOL_H_
-
 
 /**
 @brief    TIFF TOOL Header
@@ -11,9 +9,8 @@
 @author   Fumi.Iseki (C)
 
 @attention
-C から C++へ．まだ書き換え中!!
+C から C++へ．まだ書き換え中!!（永遠に書き換え中）
 */
-
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -111,8 +108,5 @@ double       get_tiff_double_field(TIFF_ifd* ifd, int offset);
 int   get_tiff_type_length(short type);
 
 
-
 #endif
-
-
 

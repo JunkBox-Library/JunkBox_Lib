@@ -1,8 +1,5 @@
-﻿
-#ifndef  __JBXL_CPP_NIDEVICE_H_
+﻿#ifndef  __JBXL_CPP_NIDEVICE_H_
 #define  __JBXL_CPP_NIDEVICE_H_
-
-
 
 #ifdef ENABLE_OPENNI2
     #define   OPENNI2_JOINT_NUM     16                  // NiteCEnums.h (15+1) [+1はPELVIS] 
@@ -10,7 +7,6 @@
 #elif defined(ENABLE_OPENNI)
     #define   OPENNI_JOINT_NUM      25                  // XnTypes.h (24+1)    [+1はPELVIS] 
 #endif
-
 
 #define   OPENNI_USERS_NUM          6
 #define   OPENNI_JOINT_CONFIDENCE   0.5
@@ -27,22 +23,18 @@ enum  ONI_EnuDev
 };
 
 
-
 //#define   OPENNI_XGA_MODE
 
 #ifdef  OPENNI_XGA_MODE
-    #define OPENNI_DEPTH_XSIZE  1024    // XN_XGA_X_RES
-    #define OPENNI_DEPTH_YSIZE  768     // XN_XGA_Y_RES
-    #define OPENNI_DEPTH_FPS    15
+    #define OPENNI_DEPTH_XSIZE      1024    // XN_XGA_X_RES
+    #define OPENNI_DEPTH_YSIZE      768     // XN_XGA_Y_RES
+    #define OPENNI_DEPTH_FPS        15
 #else
-    #define OPENNI_DEPTH_XSIZE  640     // XN_VGA_X_RES
-    #define OPENNI_DEPTH_YSIZE  480     // XN_VGA_Y_RES
-    #define OPENNI_DEPTH_FPS    30
+    #define OPENNI_DEPTH_XSIZE      640     // XN_VGA_X_RES
+    #define OPENNI_DEPTH_YSIZE      480     // XN_VGA_Y_RES
+    #define OPENNI_DEPTH_FPS        30
 #endif
 
-
-
-//
 
 #define   NI_STATE_UNKNOWN          -1  
 #define   NI_STATE_DETECT_STOPPED    0
@@ -70,7 +62,6 @@ enum  ONI_EnuDev
 
 
 namespace jbxl {
-
 
 
 

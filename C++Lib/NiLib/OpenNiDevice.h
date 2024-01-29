@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_OPENNI_DEV_H_
+﻿#ifndef  __JBXL_OPENNI_DEV_H_
 #define  __JBXL_OPENNI_DEV_H_
-
 
 #ifdef  ENABLE_OPENNI2
 #ifdef  ENABLE_OPENNI
@@ -9,14 +7,11 @@
 #endif
 #endif
 
-
 #ifdef  ENABLE_OPENNI
-
 
 #ifdef WIN32
 #pragma warning(disable:4996)
 #endif
-
 
 #include  <XnCppWrapper.h>
 #include  <XnUSB.h>
@@ -26,10 +21,8 @@
 #include  "tools++.h"
 #include  "buffer.h"
 
-
 //
 namespace jbxl {
-
 
 
 class  COpenNiDevice
@@ -88,7 +81,6 @@ public:
     XnUserID                dUsers[OPENNI_USERS_NUM];
     XnUInt16                nUsers;
 
-
 public:
     // Capabilities
     BOOL     setup_Tracking(int profile, double smooth);
@@ -133,7 +125,6 @@ public:
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Callback Functions
 
@@ -141,8 +132,6 @@ void  XN_CALLBACK_TYPE userDetect(xn::UserGenerator& user, XnUserID nId, void* c
 void  XN_CALLBACK_TYPE userLost  (xn::UserGenerator& user, XnUserID nId, void* cookie);
 void  XN_CALLBACK_TYPE calibStart(xn::SkeletonCapability& skeleton, XnUserID nId, void* cookie);
 void  XN_CALLBACK_TYPE calibEnd  (xn::SkeletonCapability& skeleton, XnUserID nId, XnBool success, void* cookie);
-
-
 
 
 }       // namespace

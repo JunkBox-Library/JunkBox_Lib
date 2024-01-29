@@ -1,16 +1,13 @@
-﻿
-/**
+﻿/**
 @brief    BVH用 ツール
 @file     BVHTool.cpp
 @author   Fumi.Iseki (C)
 */
 
-
 #include  "BVHTool.h"
 
 
 using namespace jbxl;
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -21,7 +18,6 @@ CBVHTool::~CBVHTool(void)
 
     free_data();
 }
-
 
 
 void  CBVHTool::init()
@@ -44,7 +40,6 @@ void  CBVHTool::init()
 
     flex_joint  = init_Buffer();
 }
-
 
 
 void  CBVHTool::free_data(void)
@@ -73,7 +68,6 @@ void  CBVHTool::free_data(void)
 }
 
 
-
 void  CBVHTool::clear_data(void)
 {
     if (joint_name!=NULL) {
@@ -98,7 +92,6 @@ void  CBVHTool::clear_data(void)
 }
 
 
-
 void  CBVHTool::copy_bvh_data(BVHData* bvh)
 {
     if (bvh==NULL) return;
@@ -114,7 +107,6 @@ void  CBVHTool::copy_bvh_data(BVHData* bvh)
     motion      = bvh->motion;
     offset      = bvh->offset;
 }
-
 
 
 BVHData  CBVHTool::setback_bvh_data(void)
@@ -139,7 +131,6 @@ BVHData  CBVHTool::setback_bvh_data(void)
 
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 
@@ -159,7 +150,6 @@ BOOL  CBVHTool::readFile(char* fname)
 
     return ret;
 }
-    
 
     
 BOOL  CBVHTool::readBVH(FILE* fp)
@@ -182,7 +172,6 @@ BOOL  CBVHTool::readBVH(FILE* fp)
 }
 
 
-
 BOOL  CBVHTool::writeFile(char* fname)
 {
     state = BVH_ERR_INVLD_ARGS;
@@ -195,7 +184,6 @@ BOOL  CBVHTool::writeFile(char* fname)
 
     return TRUE;
 }
-
 
 
 /**
@@ -282,7 +270,6 @@ BOOL  CBVHTool::writeMultiFile(char* fname, int sec, int space)
 }
 
 
-
 BOOL  CBVHTool::printBVH(FILE* fp)
 {
     state = BVH_ERR_INVLD_ARGS;
@@ -297,7 +284,6 @@ BOOL  CBVHTool::printBVH(FILE* fp)
 }
 
 
-
 void  CBVHTool::setHierarchy(tTree* hrchy)
 {
     free_data();
@@ -310,7 +296,6 @@ void  CBVHTool::setHierarchy(tTree* hrchy)
 }
 
 
-
 void  CBVHTool::set_offset(void)
 {
     if (offset==NULL) return;
@@ -318,7 +303,6 @@ void  CBVHTool::set_offset(void)
     int jnum = 0;
     _set_offset(hierarchy, &jnum);
 }
-
 
 
 void  CBVHTool::_set_offset(tTree* tree, int* jnum)
@@ -343,12 +327,8 @@ void  CBVHTool::_set_offset(tTree* tree, int* jnum)
             //
         } while(tree!=NULL);
     }
-
     return;
-
-
 }
-
 
 
 
@@ -386,14 +366,12 @@ void  CBVHTool::get_bvh_params()
 
     _get_bvh_params(hierarchy, &ch, &jn);
 
-    //
     channel_idx[0] = 0;
     for (int j=1; j<joint_num; j++) {
         channel_idx[j] = channel_idx[j-1] + channel_num[j-1];   
     }
-
+    return;
 }
-
 
 
 void  CBVHTool::_get_bvh_params(tTree* tree, int** ch, Buffer** jn)
@@ -415,7 +393,6 @@ void  CBVHTool::_get_bvh_params(tTree* tree, int** ch, Buffer** jn)
             (*jn)++;
             /////////////////////////////////////////
 
-
             if (tree->next!=NULL) {
                 _get_bvh_params(tree->next, ch, jn);
             }
@@ -423,10 +400,8 @@ void  CBVHTool::_get_bvh_params(tTree* tree, int** ch, Buffer** jn)
             //
         } while(tree!=NULL);
     }
-
     return;
 }
-
 
 
 
@@ -459,7 +434,6 @@ Vector<double>*  CBVHTool::getPosData(int frame)
                 break;
             }
         }
-
         //
         vect[j].set(0.0, 0.0, 0.0);
 
@@ -474,10 +448,8 @@ Vector<double>*  CBVHTool::getPosData(int frame)
             }
         }
     }
-
     return vect;
 }
-
 
 
 Quaternion<double>*  CBVHTool::getQuaternion(int frame)
@@ -494,7 +466,6 @@ Quaternion<double>*  CBVHTool::getQuaternion(int frame)
     
     double d2r = PI/180.0;
     int frm = frame*channels;
-
     //
     for (int j=0; j<joint_num; j++) {
         //
@@ -515,7 +486,6 @@ Quaternion<double>*  CBVHTool::getQuaternion(int frame)
                 break;
             }
         }
-
         //
         if (exstf) {
             Quaternion<double> q1(1.0, 0.0, 0.0, 0.0, 1.0);
@@ -543,14 +513,11 @@ Quaternion<double>*  CBVHTool::getQuaternion(int frame)
                     else if (tpchr[5]=='Z') q1.setRotation(th, ex);
                 }
             }
-
             quat[j] = q3*q2*q1;
         }
-
     }
     return quat;
 }
-
 
 
 Vector<double>*  CBVHTool::getPosOffset(void)
@@ -568,11 +535,8 @@ Vector<double>*  CBVHTool::getPosOffset(void)
         vect[j].z = vt.z;
         vect[j].n = vt.n;
     }
-
     return vect;
 }
-
-
 
 
 
@@ -612,7 +576,6 @@ Matrix<double>*  CBVHTool::getRotMatrix(int frame)
             }
         }
 
-        //
         if (exstf) {
             //
             Vector<double> e;
@@ -665,10 +628,8 @@ Matrix<double>*  CBVHTool::getRotMatrix(int frame)
             mtrx[j].init(2, 3, 3);          // 3x3行列
         }
     }
-
     return mtrx;
 }
 
 */
-
 

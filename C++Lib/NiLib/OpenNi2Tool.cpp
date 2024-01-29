@@ -1,22 +1,17 @@
-﻿
-/**
+﻿/**
 @brief    OpenNI2用 ツール
 @file     OpenNi2Tool.cpp
 @author   Fumi.Iseki (C)
 */
 
-
 #include  "OpenNi2Tool.h"
 #include  "tools++.h"
-
 
 
 #ifdef  ENABLE_OPENNI2
 
 
 using namespace jbxl;
-
-
 
 
 COpenNiTool::COpenNiTool(void)
@@ -31,7 +26,6 @@ COpenNiTool::COpenNiTool(void)
 
     clear_JointsData();
 }
-
 
 
 BOOL  COpenNiTool::init(BOOL use_image)
@@ -53,14 +47,12 @@ BOOL  COpenNiTool::init(BOOL use_image)
 }
 
 
-
 void  COpenNiTool::free(void)
 {
     delete_Device();
 
     free_Buffer(&m_err_mesg);
 }
-
 
 
 void  COpenNiTool::delete_Device(void)
@@ -73,13 +65,11 @@ void  COpenNiTool::delete_Device(void)
 }
 
 
-
 void  COpenNiTool::clear_JointsData(void)
 {
     clear_JointsPosData();
     clear_JointsRotData();
 }
-
 
 
 void  COpenNiTool::clear_JointsPosData(void)
@@ -89,13 +79,11 @@ void  COpenNiTool::clear_JointsPosData(void)
 }
 
 
-
 void  COpenNiTool::clear_JointsRotData(void)
 {
     memset(jointRotData, 0, sizeof(XnMatrix3X3)*OPENNI_JOINT_NUM);
     memset(jointRotConfidence, 0, sizeof(double)*OPENNI_JOINT_NUM);
 }
-
 
 
 nite::UserData* COpenNiTool::get_Avatar(unsigned int id)
@@ -115,7 +103,6 @@ nite::UserData* COpenNiTool::get_Avatar(unsigned int id)
 
     return NULL;
 }
-    
 
 
 
@@ -145,7 +132,6 @@ void  COpenNiTool::get_JointsPositionData(unsigned int nId)
 }
 
 
-
 void  COpenNiTool::get_JointsRotationData(unsigned int nId)
 {
     memset(jointRotData, 0, sizeof(XnMatrix3X3)*OPENNI_JOINT_NUM);
@@ -166,7 +152,6 @@ void  COpenNiTool::get_JointsRotationData(unsigned int nId)
 }
 
 
-
 XnVector3D   COpenNiTool::joint_PositionData(int j)
 { 
     XnVector3D vect;
@@ -177,10 +162,8 @@ XnVector3D   COpenNiTool::joint_PositionData(int j)
     else {
         memset(&vect, 0, sizeof(XnVector3D));
     }
-
     return vect;
 }
-
 
 
 XnMatrix3X3  COpenNiTool::joint_RotationData(int j)
@@ -193,10 +176,8 @@ XnMatrix3X3  COpenNiTool::joint_RotationData(int j)
     else {
         memset(&mtrx, 0, sizeof(XnMatrix3X3));
     }
-
     return mtrx;
 }
-
 
 
 double  COpenNiTool::joint_PositionConfidence(int j)
@@ -211,8 +192,6 @@ double  COpenNiTool::joint_PositionConfidence(int j)
 }
 
 
-
-
 double  COpenNiTool::joint_RotationConfidence(int j)
 { 
     double cnfd = 0.0;
@@ -223,7 +202,6 @@ double  COpenNiTool::joint_RotationConfidence(int j)
 
     return cnfd;
 }
-
 
 
 
@@ -258,7 +236,6 @@ BOOL  COpenNiTool::start_Detection(int profile, double smooth)
 }
 
 
-
 BOOL  COpenNiTool::stop_Detection(void)
 {
     if (device->m_state==NI_STATE_DETECT_STOPPED) {
@@ -277,7 +254,6 @@ BOOL  COpenNiTool::stop_Detection(void)
     
     return TRUE;
 }
-
 
 
 unsigned int  COpenNiTool::get_TrackingUser(void)
@@ -312,10 +288,8 @@ unsigned int  COpenNiTool::get_TrackingUser(void)
             }
         }
     }
-
     return id;
 }
-
 
 
 void  COpenNiTool::set_DenyTrackingSearch(unsigned int user)
@@ -325,7 +299,6 @@ void  COpenNiTool::set_DenyTrackingSearch(unsigned int user)
 
     return;
 }
-
 
 
 
@@ -343,7 +316,6 @@ BOOL  COpenNiTool::backupDevice(void)
     }
     return TRUE;
 }
-
 
 
 BOOL  COpenNiTool::restoreDevice(void)

@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief    C++ ToolBox of Class --->  ClassBox
 @file     ClassBox.cpp
 @author   Fumi.Iseki (C)
@@ -9,7 +8,6 @@
 
 
 using namespace jbxl;
-
 
 
 ////////////////////////////////////////////////////////////////////

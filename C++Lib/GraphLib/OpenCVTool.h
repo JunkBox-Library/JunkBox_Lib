@@ -1,12 +1,9 @@
-﻿
-#ifndef  __JBXL_CPP_OPENCV_TOOl_H_
+﻿#ifndef  __JBXL_CPP_OPENCV_TOOl_H_
 #define  __JBXL_CPP_OPENCV_TOOl_H_
-
 
 #ifndef  ENABLE_OPENCV
 #error "OpenCVTool.h is called, but ENABLE_OPENCV is not defined."
 #endif
-
 
 /**
 @brief    OpenCV用ヘッダ  
@@ -18,7 +15,6 @@
 @attention
 this software uses OpenCV
 */
-
 
 #include "common++.h"
 #include "opencv2/opencv.hpp"
@@ -53,9 +49,7 @@ namespace jbxl {
 // template <typename T, typename R>  MSGraph<T>* _getMSGraph_CvMat_C3(cv::Mat mat)
 // template <typename R, typename T>  int         _linecopy_MAT2MSG_C3(R* src, T* dist, int len, int sz)
 
-
 /**
-
 @param  cascade  識別エンジン
 @param  vp     1plane(channel) MSGraphデータ（つまりモノクロ）へのポインタ
 @param[out]    num 要素の数
@@ -97,10 +91,8 @@ template <typename T>  rectangle*  cvDetectObjects(cv::CascadeClassifier cascade
         data[n].ysize = (int)(r->height*scale); 
         n++;
     }
-
     return data;
 }
-
 
 
 /**
@@ -173,10 +165,8 @@ template <typename R, typename T>  cv::Mat  copyMSGraph2CvMat(MSGraph<T>* vp)
             }
         }
     }
-
     return mat;
 }
-
 
 
 /**
@@ -233,10 +223,8 @@ template <typename T>  MSGraph<T>*  getMSGraphFromCvMat(cv::Mat mat)
         //else if (mat.depth()==CV_32F) vp = getMSGraph_CvMatC3<T, double>(mat);
         //else if (mat.depth()==CV_64F) vp = getMSGraph_CvMatC3<T, double>(mat);
     }
-
     return vp;
 }
-
 
 
 // getMSGraphFromCvMat() の補助関数．
@@ -301,10 +289,8 @@ template <typename T, typename R>  MSGraph<T>*  _getMSGraph_CvMat_C1(cv::Mat mat
         //
         vp->color = GRAPH_COLOR_MONO;
     }
-
     return vp;
 }
-
 
 
 // getMSGraphFromCvMat() の補助関数．
@@ -363,10 +349,8 @@ template <typename T, typename R>  MSGraph<T>*  _getMSGraph_CvMat_C3(cv::Mat mat
             vp->color = _linecopy_MAT2MSG_C3((R*)NULL, (T*)NULL, 0, tsz);       // return color only
         }
     }
-
     return vp;
 }
-
 
 
 // getMSGraphFromCvMat() の補助関数．

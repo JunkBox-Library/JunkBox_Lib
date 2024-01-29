@@ -1,11 +1,9 @@
-﻿
-/**
+﻿/**
 @brief    グラフィックライブラリ for C++
 @file     Graph.cpp
 @author   Fumi.Iseki (C)
 
 */
-
 
 #include "Graph.h"
  
@@ -40,7 +38,6 @@ void  jbxl::rotate_point(int& x, int& y, double sxc, double syc, double dxc, dou
 }
 
 
-
 /**
 void  jbxl::rotate_point_angle(int& x, int& y, double sxc, double syc, double dxc, double dyc, double th)
 
@@ -61,5 +58,4 @@ void  jbxl::rotate_point_angle(int& x, int& y, double sxc, double syc, double dx
 
     return;
 }
-
 

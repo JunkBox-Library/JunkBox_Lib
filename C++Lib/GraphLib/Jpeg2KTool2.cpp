@@ -13,7 +13,6 @@
 this software is based on OpenJPEG. http://www.openjpeg.org/
 */
 
-
 #include "Jpeg2KTool.h"
 
 

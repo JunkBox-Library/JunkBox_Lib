@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_CPP_BASICLIB_H_
+﻿#ifndef  __JBXL_CPP_BASICLIB_H_
 #define  __JBXL_CPP_BASICLIB_H_
-
 
 /**
 @brief    Basic Library for C++
@@ -28,7 +26,6 @@
 #include  "xtools.h"
 
 #include  "ClassBox.h"
-
 
 
 #define  JBXL_BASICLIB_VERSION      "v5.0 stable  '08 8/10" 

@@ -14,7 +14,6 @@ this software is based on OpenJPEG. http://www.openjpeg.org/
 this software does not support OpenJpeg-1.3
 */
 
-
 #include "Jpeg2KTool.h"
 
 

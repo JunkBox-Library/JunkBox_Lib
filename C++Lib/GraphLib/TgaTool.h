@@ -9,7 +9,6 @@
 @author   Fumi.Iseki (C)
 */
 
-
 #include "Gdata.h"
 #include "xtools.h"
 
@@ -217,6 +216,4 @@ template <typename T>  TGAImage  MSGraph2TGAImage(MSGraph<T> vp)
 }       // namespace
 
 
-
 #endif
-

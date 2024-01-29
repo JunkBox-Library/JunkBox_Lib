@@ -7,7 +7,6 @@
 @see     Buffer
 */
 
-
 #include "buffer.h"
 #include "jbxl_state.h"
 
@@ -1756,5 +1755,4 @@ void  push_char_ringStack(Buffer* buf, char cc)
 
     return;
 }
-
 

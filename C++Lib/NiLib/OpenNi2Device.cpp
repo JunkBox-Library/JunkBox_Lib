@@ -4,7 +4,6 @@
 
 #include  "OpenNi2Device.h"
 
-
 #ifdef  ENABLE_OPENNI2
 
 
@@ -46,7 +45,6 @@ COpenNi2Device::COpenNi2Device(void)
 }
 
 
-
 BOOL  COpenNi2Device::init(BOOL use_image)
 {
     m_stream_flg = 0x00; 
@@ -66,10 +64,8 @@ BOOL  COpenNi2Device::init(BOOL use_image)
         else if (!strcasecmp(info.getName(), OPENNI2_DEVICE_KINECT))  m_enu_dev = EnuDev_Kinect;
         else if (!strcasecmp(info.getName(), OPENNI2_DEVICE_ONIFILE)) m_enu_dev = EnuDev_OniFile;
     }
-
     return ret;
 }
-
 
 
 BOOL  COpenNi2Device::init(char* fname, BOOL use_image)
@@ -94,7 +90,6 @@ BOOL  COpenNi2Device::init(char* fname, BOOL use_image)
 }
 
 
-
 void  COpenNi2Device::free(void)
 {
     DEBUG_LOG("COpenNi2Device::free(): deleting Recorder ...");
@@ -112,7 +107,6 @@ void  COpenNi2Device::free(void)
 
     DEBUG_LOG("COpenNi2Device::free(): END");
 }
-
 
 
 
@@ -139,14 +133,12 @@ BOOL  COpenNi2Device::create_Context(char* fname)
         deleteNull(context);
         return FALSE;
     }
-
     //
     //context->setDepthColorSyncEnabled(true);
 
     DEBUG_INFO("COpenNi2Device::create_Context(): created Context.");
     return TRUE;
 }
-
 
 
 BOOL  COpenNi2Device::create_Recorder(char* fname, BOOL use_image)
@@ -191,7 +183,6 @@ BOOL  COpenNi2Device::create_Recorder(char* fname, BOOL use_image)
 }
 
 
-
 BOOL  COpenNi2Device::create_Image(void)
 {
     if (!m_has_camera) return FALSE;
@@ -229,7 +220,6 @@ BOOL  COpenNi2Device::create_Image(void)
 }
 
 
-
 BOOL  COpenNi2Device::create_Depth(void)
 {
     if (context==NULL) {
@@ -265,7 +255,6 @@ BOOL  COpenNi2Device::create_Depth(void)
 }
 
 
-
 BOOL  COpenNi2Device::create_User(void)
 {
     user = new nite::UserTracker();
@@ -284,14 +273,12 @@ BOOL  COpenNi2Device::create_User(void)
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Delete Generators
 
 void  COpenNi2Device::delete_Context(void)
 {
     if (context==NULL || !context->isValid()) return;
-
     //
     context->close();
     delete(context);
@@ -301,11 +288,9 @@ void  COpenNi2Device::delete_Context(void)
 }
 
 
-
 void    COpenNi2Device::delete_Recorder(void)
 {
     if (recorder==NULL || !recorder->isValid()) return;
-
     //
     int prev_state = m_state;
     m_state = NI_STATE_SAVE_WORKING;
@@ -319,7 +304,6 @@ void    COpenNi2Device::delete_Recorder(void)
 
     return;
 }
-
 
 
 void  COpenNi2Device::delete_Image(void)
@@ -340,7 +324,6 @@ void  COpenNi2Device::delete_Image(void)
 }
 
 
-
 void  COpenNi2Device::delete_Depth(void)
 {
     m_stream_num--;
@@ -359,7 +342,6 @@ void  COpenNi2Device::delete_Depth(void)
 }
 
 
-
 void  COpenNi2Device::delete_User(void)
 {
     if (user==NULL || !user->isValid()) return;
@@ -371,7 +353,6 @@ void  COpenNi2Device::delete_User(void)
 
     return;
 }
-
 
 
 
@@ -413,7 +394,6 @@ BOOL  COpenNi2Device::start_Recorde(char* file_name, BOOL use_image)
 }
 
 
-
 void  COpenNi2Device::stop_Recorde(void)
 {
     DEBUG_INFO("COpenNi2Device::delete_Recorder(): Recorder Stopping ...");
@@ -421,7 +401,6 @@ void  COpenNi2Device::stop_Recorde(void)
         delete_Recorder();
     }
 }
-
 
 
 
@@ -437,7 +416,6 @@ BOOL  COpenNi2Device::setup_Tracking(int profile, double smooth)
 
     return FALSE;
 }
-
 
 
 
@@ -488,7 +466,6 @@ void   COpenNi2Device::wait_StreamData(void)
 }
 
 
-
 BOOL  COpenNi2Device::set_ImageData(void) 
 {
     if (image!=NULL) {
@@ -497,7 +474,6 @@ BOOL  COpenNi2Device::set_ImageData(void)
     }
     return FALSE;
 }
-
 
 
 BOOL  COpenNi2Device::set_DepthData(void)
@@ -510,7 +486,6 @@ BOOL  COpenNi2Device::set_DepthData(void)
 }
 
 
-
 BOOL  COpenNi2Device::set_SceneData(void) 
 {
     if (user!=NULL) {
@@ -520,7 +495,6 @@ BOOL  COpenNi2Device::set_SceneData(void)
 
     return FALSE;
 }
-
 
 
 
@@ -547,13 +521,11 @@ Buffer  jbxl::initialize_OpenNI2(void)
 }
 
 
-
 void  jbxl::shutdown_OpenNI2(void)
 { 
     openni::OpenNI::shutdown();
     DEBUG_INFO("jbxl::shutdown_OpenNI2(): shutdown OpenNI2");
 }
-
 
 
 //
@@ -573,12 +545,10 @@ Buffer  jbxl::initialize_NiTE2(void)
 }
 
 
-
 void  jbxl::shutdown_NiTE2(void)
 { 
     nite::NiTE::shutdown();
     DEBUG_INFO("jbxl::shutdown_NiTE2(): shutdown NiTE2");
 }
-
 
 #endif      // ifdef ENABLE_OPENNI2x

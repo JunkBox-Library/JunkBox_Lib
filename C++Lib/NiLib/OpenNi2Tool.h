@@ -7,14 +7,12 @@
 @author   Fumi.Iseki (C)
 */
 
-
 //
 #ifdef ENABLE_OPENNI2
 #ifdef ENABLE_OPENNI
 #undef ENABLE_OPENNI
 #endif
 #endif
-
 
 
 #ifdef ENABLE_OPENNI2
@@ -26,7 +24,6 @@
 
 #include  "OpenNi2Device.h"
 #include  "NiDevice.h"
-
 
 
 namespace jbxl {
@@ -57,7 +54,6 @@ typedef XnVector3D XnPoint3D;
 #define XN_SKEL_PROFILE_UPPER   3
 
 
-
 ///////////////////////////////////////////////////////////
 //
 
@@ -78,7 +74,6 @@ public:
     unsigned int    tracking_user;
     unsigned int    tracking_deny;
 
-
 public:
     BOOL        init(BOOL use_camera);
     void        free(void);
@@ -90,7 +85,6 @@ public:
 
     nite::UserData* get_Avatar(unsigned int id);
 
-
 public:
     // Joints
     void        get_JointsPositionData(unsigned int nId);
@@ -101,7 +95,6 @@ public:
     double      joint_PositionConfidence(int joint);
     double      joint_RotationConfidence(int joint);
 
-
 public:
     // Detection
     BOOL         start_Detection(int profile, double smooth);
@@ -109,7 +102,6 @@ public:
 
     unsigned int get_TrackingUser(void);
     void         set_DenyTrackingSearch(unsigned int user);
-
 
     // Device
     BOOL        backupDevice(void);
@@ -238,19 +230,13 @@ public:
     void    close_USBDevice(void)  { if (device!=NULL) device->close_USB_Device();}
     void    set_LEDColor(int col)  { if (device!=NULL) device->set_LED_Color(col);}
     void    set_TiltMotor(int ang) { if (device!=NULL) device->set_Tilt_Motor(ang);}
-
 };
-
 
 
 }       // namespace
 
 
-
-
 #endif
-
-
 
 #endif  // __JBXL_OPENNI2_TOOL_H_
 
@@ -321,3 +307,4 @@ typedef enum
     NITE_JOINT_RIGHT_FOOT,
 } NiteJointType;
 */
+

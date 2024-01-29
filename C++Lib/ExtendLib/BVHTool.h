@@ -1,13 +1,10 @@
-﻿
-#ifndef  __JBXL_CPP_BVH_TOOL_H_
+﻿#ifndef  __JBXL_CPP_BVH_TOOL_H_
 #define  __JBXL_CPP_BVH_TOOL_H_
-
 
 #include  "tools++.h"
 #include  "bvh_tool.h"
 #include  "Vector.h"
 #include  "Rotation.h"
-
 
 //
 #define  BVH_ERR_FAIL_WRT_MOTION    -1        // モーションデータの書き込み失敗
@@ -15,7 +12,6 @@
 #define  BVH_ERR_FAIL_FOPEN         -3        // ファイルのオープンに失敗
 #define  BVH_ERR_INVLD_ARGS         -4        // 不正な引数（入力値）
 #define  BVH_ERR_FAIL_OP            -5        // 処理失敗
-
 
 
 namespace jbxl {
@@ -42,7 +38,6 @@ public:
 
 //    Buffer*       joint_name;       // ジョイントの名前の配列
 
-
 public:
     //
     void            init(void);
@@ -61,22 +56,20 @@ public:
 
     void            setHierarchy(tTree* hrchy);
 
-
     Vector<double>*     getPosOffset(void);
     Vector<double>*     getPosData(int frame);
     Quaternion<double>* getQuaternion(int frame);
 
 //    Matrix<double>*   getRotMatrix(int frame);
 
-//
 private:
+
 public:
     //
     Buffer*         joint_name;     // ジョイントの名前の配列
     int*            channel_num;    // 各ジョイントのチャンネル数
     int*            channel_idx;    // 各ジョイントのチャンネルの位置（累計）
     Buffer          flex_joint;     // 各ジョイントのチャンネル種別  ex) "PXPYPZRXRYRZRXRYRZ...."
-
 
 private:
     //

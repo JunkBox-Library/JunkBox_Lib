@@ -1,5 +1,4 @@
 ﻿
-
 #include "common++.h"
 #include "Rotation.h"
 
@@ -59,7 +58,6 @@ int main()
     PRINT_MESG("%lf %lf %lf %lf\n", rev.matrix.element(3,1), rev.matrix.element(3,2), rev.matrix.element(3,3),rev.matrix.element(3,4));
     PRINT_MESG("%lf %lf %lf %lf\n", rev.matrix.element(4,1), rev.matrix.element(4,2), rev.matrix.element(4,3),rev.matrix.element(4,4));
     PRINT_MESG("\n");
-
 
     Vector<double> dd = rev.execMatrixTrans(aa);
     Vector<double> cc = rev.execTrans(aa);

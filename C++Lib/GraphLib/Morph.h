@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_CPP_MORPHOLOGY_H_
+﻿#ifndef  __JBXL_CPP_MORPHOLOGY_H_
 #define  __JBXL_CPP_MORPHOLOGY_H_
-
 
 /**
 @brief    モルフォリジーライブラリ
@@ -13,9 +11,7 @@
 このライブラリは，チェックと見直しが必要 '04 8/31
  */
 
-
 #include "Gdata.h"
-
 
 //
 namespace jbxl {
@@ -97,7 +93,6 @@ template <typename T>  MSGraph<T>  opening_morph(MSGraph<T> vp, MSGraph<T> xp, i
             }
         }
     }
-
     return wp;
 }
 
@@ -133,7 +128,6 @@ template <typename T>  bool  point_open_morph(MSGraph<T> vp, int x, int y, int z
             }
         }
     }
-   
     return true;
 }
 
@@ -195,7 +189,6 @@ template <typename T> MSGraph<T>  fat_object_morph(MSGraph<T> vp, MSGraph<T> xp,
             }
         }
     }
-
     return wp;
 }
 
@@ -230,7 +223,6 @@ template <typename T>  bool  point_fat_object_morph(MSGraph<T> vp, int x, int y,
             }
         }
     }
-   
     return false;
 }
 
@@ -273,7 +265,6 @@ template <typename T>  MSGraph<T>  make_element_morph(Parameter32 x)
         DEBUG_MODE PRINT_MESG("MAKE_ELEMENT_MORPH: no support mode = %d\n",m);
         exit(1);
     }
-
     return vp;
 }
 

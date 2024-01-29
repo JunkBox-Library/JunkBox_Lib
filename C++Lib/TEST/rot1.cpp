@@ -1,5 +1,4 @@
 ﻿
-
 #include "common++.h"
 #include "Rotation.h"
 
@@ -11,7 +10,6 @@ int main()
 
     Vector<double> eul1(1.0, 2.0, 1.0);
     Vector<double> eul2 = - eul1;
-
 /*
     Vector4<double> x, y;
 
@@ -28,8 +26,6 @@ int main()
     printf("vct2 = (%lf, %lf, %lf)\n", eul2.x, eul2.y, eul2.z);
     printf("\n");
 */
-
-
     Matrix<double> mt1 = ExtEulerXYZ2RotMatrix(eul1);
     Matrix<double> mt2 = ExtEulerZYX2RotMatrix(eul2);
     Matrix<double> mt3 = mt2*mt1;

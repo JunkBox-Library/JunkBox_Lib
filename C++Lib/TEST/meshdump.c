@@ -1,10 +1,7 @@
-﻿
-/**
+﻿/**
 llmesh データのヘッダテスト用
 
-
 */
-
 
 #include "common.h"
 #include "tools.h"
@@ -38,9 +35,7 @@ int main(int argc, char** argv)
     fread(buf, sz, 1, fp);
     fclose(fp);
 
-
     ////////////////////////////////////////////////
-
     int hdsz  = llsd_bin_get_length(buf, sz);
     tXML* xml = llsd_bin_parse(buf, hdsz); 
     print_xml(stderr, xml, 2);
@@ -56,11 +51,9 @@ int main(int argc, char** argv)
     printf("size   = %d\n", size);
 
     del_xml(&xml);
-
-
     ////////////////////////////////////////////////
-    ::free(buf);
 
+    ::free(buf);
     return 0;
 }
 

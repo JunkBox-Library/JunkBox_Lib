@@ -1,8 +1,6 @@
 ﻿/*
 OAR の objects/*.xml内の TextureEntry タグの処理テスト
-
 */
-
 
 #include "PrimMesher.h"
 
@@ -55,7 +53,6 @@ int main(int argc, char** argv)
             fdump(stdout, text, n);
             free(text);
         }
-
 
         shape.free();
         del_tTree(&sxml);

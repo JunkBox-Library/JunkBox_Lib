@@ -1,8 +1,5 @@
-﻿
-#ifndef  __JBXL_CPP_LOG_RING_BUFFER_H__
+﻿#ifndef  __JBXL_CPP_LOG_RING_BUFFER_H__
 #define  __JBXL_CPP_LOG_RING_BUFFER_H__
-
-
 
 /**
 @brief    Log用 Ring Buffer ツール ヘッダ
@@ -10,10 +7,7 @@
 @author   Fumi.Iseki (C)
 */
 
-
-
 #include "xtools.h"
-
 
 //
 namespace jbxl {
@@ -36,7 +30,6 @@ namespace jbxl {
 #define  LOG_RB_WARNING             3
 #define  LOG_RB_ERR                 4
 #define  LOG_RB_ERROR               4
-
 
 
 class CLogRingBuffer
@@ -84,9 +77,7 @@ protected:
 };
 
 
-
 }       // namespace
-
 
 #endif
 

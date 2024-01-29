@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief    TIFF TOOL
 @file     TiffTool.cpp
 @version  0.9 
@@ -9,7 +8,6 @@
 @attention
 C から C++へ．まだ書き換え中!!
 */
-
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -501,5 +499,4 @@ TIFF_ifd*  find_tiff_ifd(TIFF_ifd* ifd, unsigned short tag)
     }
     return NULL;    
 }
-
 

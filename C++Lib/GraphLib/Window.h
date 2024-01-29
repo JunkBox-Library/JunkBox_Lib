@@ -1,8 +1,5 @@
-﻿
-#ifndef  __JBXL_CPP_WINDOW_H_
+﻿#ifndef  __JBXL_CPP_WINDOW_H_
 #define  __JBXL_CPP_WINDOW_H_
-
-
 
 /**
 @brief    グラフィック用ワールド座標系サポートヘッダ
@@ -11,15 +8,10 @@
 @author   Fumi.Iseki (C)
 */
 
-
-
 #include "Graph.h"
-
-
 
 //
 namespace jbxl {
-
 
 /*
 template <typename T> void  wSetPixel(MSGraph<T> vp, double x, double y, int cc)
@@ -36,7 +28,6 @@ template <typename T> void  wLine3D(MSGraph<T> vp, double x1, double y1, double 
 template <typename T> void  wDraw3D(MSGraph<T>* vp, double x, double y, double z, int cc)
 template <typename T> void  wDraw_rel3D(MSGraph<T>* vp, double x, double y, double z, int cc)
 */
-
 
 
 /**
@@ -56,7 +47,6 @@ template <typename T> void  wSetPixel(MSGraph<T> vp, double x, double y, int cc)
 
     if (i>=0 && i<vp.xs && j>=0 && j<vp.ys) vp.point(i, j) = (T)cc;
 }
-
 
 
 /**
@@ -80,7 +70,6 @@ template <typename T> void  wSetPixel3D(MSGraph<T> vp, double x, double y, doubl
 }
 
 
-
 /**
 template <typename T> T wGetPixel(MSGraph<T> vp, double x, double y)
 
@@ -98,7 +87,6 @@ template <typename T> T wGetPixel(MSGraph<T> vp, double x, double y)
     if (i>=0 && i<vp.xs && j>=0 && j<vp.ys) return vp.point(i, j);
     else  return vp.zero;
 }
-
 
 
 /**
@@ -120,7 +108,6 @@ template <typename T> T     wGetPixel3D(MSGraph<T> vp, double x, double y, doubl
     if (i>=0 && i<vp.xs && j>=0 && j<vp.ys && k>=0 && k<vp.zs) return vp.point(i, j, k);
     else  return vp.zero;
 }
-
 
 
 /**
@@ -146,7 +133,6 @@ template <typename T> void  wLine(MSGraph<T> vp, double x1, double y1, double x2
 
     MSGraph_Line<T>(vp, i1, j1, i2, j2, cc);
 }
-
 
 
 /**
@@ -178,7 +164,6 @@ template <typename T> void  wLine3D(MSGraph<T> vp, double x1, double y1, double 
 }
 
 
-
 template <typename T> void  wCircle3D(MSGraph<T> vp, Vector<double> ox, Vector<double> ex, double rr, int cc, int mode)
 {
     double rate = Max(vp.wRateX, vp.wRateY);
@@ -195,7 +180,6 @@ template <typename T> void  wCircle3D(MSGraph<T> vp, Vector<double> ox, Vector<d
 
     MSGraph_Circle3D(vp, ox, ex, r, cc, mode);
 }
-
 
 
 /**
@@ -215,7 +199,6 @@ template <typename T> void  wDraw(MSGraph<T>* vp, double x, double y, int cc)
 }
 
 
-
 /**
 template <typename T> void  wDraw3D(MSGraph<T>* vp, double x, double y, double z, int cc)
 
@@ -232,7 +215,6 @@ template <typename T> void  wDraw3D(MSGraph<T>* vp, double x, double y, double z
     wLine3D<T>(*vp, vp->wNowX, vp->wNowY, vp->wNowZ, x, y, z, cc);
     vp->wMove(x, y, z);
 }
-
 
 
 /**
@@ -255,7 +237,6 @@ template <typename T> void  wDraw_rel(MSGraph<T>* vp, double x, double y, int cc
 }
 
 
-
 /**
 template <typename T> void  wDraw_rel3D(MSGraph<T>* vp, double x, double y, double z, int cc)
 
@@ -276,7 +257,6 @@ template <typename T> void  wDraw_rel3D(MSGraph<T>* vp, double x, double y, doub
     wLine3D<T>(*vp, vp->wNowX, vp->wNowY, vp->wNowZ, x2, y2, z2, cc);
     vp->wMove(x2, y2, z2);
 }
-
 
 
 }       // namespace

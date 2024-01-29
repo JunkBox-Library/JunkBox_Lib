@@ -1,10 +1,8 @@
-﻿
-/**
+﻿/**
 @brief    ネットワーク用C++ライブラリ
 @file     network++.cpp
 @author   Fumi.Iseki (C)
 */
-
 
 #include  "network++.h"
 
@@ -350,5 +348,4 @@ TCP_Socket*  TCP_Server::accept(void)
      TCP_Socket* tcp = new TCP_Socket(sofd);
      return tcp;
 }
-
 

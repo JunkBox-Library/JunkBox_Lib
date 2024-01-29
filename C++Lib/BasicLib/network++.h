@@ -1,14 +1,11 @@
-﻿
-#ifndef  __JBXL_CPP_NETWORK_H_
+﻿#ifndef  __JBXL_CPP_NETWORK_H_
 #define  __JBXL_CPP_NETWORK_H_
-
 
 /**
 @brief    ネットワーク用C++ライブラリ
 @file     network++.h
 @author   Fumi.Iseki (C)
 */
-
 
 #include "tools++.h"
 #include "network.h"
@@ -55,6 +52,7 @@ public:
 
     void  close(void);
 };
+
 
 
 ///////////////////////////////////////////////////////////////////

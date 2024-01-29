@@ -1,14 +1,11 @@
-﻿
-#ifndef  __JBXL_CPP_EXTEND_GRAPHIC_DATA_H_
+﻿#ifndef  __JBXL_CPP_EXTEND_GRAPHIC_DATA_H_
 #define  __JBXL_CPP_EXTEND_GRAPHIC_DATA_H_
-
 
 /**
 @brief    メモリ管理機能付グラフィックデータ定義用ヘッダ  
 @file     ExGdata.h
 @author   Fumi.Iseki
 */
-
 
 #include  "Gdata.h"
 
@@ -105,14 +102,12 @@ public:
 };
 
 
-
 //
 template <typename T>  void  ExMSGraph<T>::set(RBound<int> rb, T v, T b, double rz, int* rn) {
     set(rb.xmax-rb.xmin+1, rb.ymax-rb.ymin+1, rb.zmax-rb.zmin+1, v, b, rz, rn);
     MSGraph<T>::rbound = rb;
     return;
 }
-
 
 
 //
@@ -137,7 +132,6 @@ template <typename T>  void  ExMSGraph<T>::set(int x, int y, int z, T v, T b, do
 }
 
 
-
 //
 template <typename T>  void  ExMSGraph<T>::setRefer(int* rn)
 {
@@ -147,7 +141,6 @@ template <typename T>  void  ExMSGraph<T>::setRefer(int* rn)
         else                      *refno =  1;
     }
 }
-
 
 
 // グラフィックデータを持いないか？
@@ -165,7 +158,6 @@ template <typename T>  bool  ExMSGraph<T>::isNull(void)
     }
     return false;
 }
-
 
 
 /**
@@ -189,7 +181,6 @@ template <typename T>  void  ExMSGraph<T>::free(void)
     }
     return;
 }
-
 
 
 /**
@@ -218,10 +209,8 @@ template <typename T>  void  ExMSGraph<T>::mfree(bool azero)
             *refno = -1;
         }
     }
-
     return;
 }
-
 
 
 /**
@@ -245,7 +234,6 @@ template <typename T>  void  ExMSGraph<T>::ffree()
     MSGraph<T>::init();     // gp = NULL;
     return;
 }
-
 
 
 // オペレータ
@@ -316,7 +304,6 @@ template <typename T>  ExMSGraph<T> ExMSGraph<T>::operator= (ExMSGraph<T>& s)
 }
 
 
-
 // オペレータ 
 //
 template <typename T>  ExMSGraph<T> ExMSGraph<T>::operator= (MSGraph<T>& s)
@@ -367,7 +354,6 @@ template <typename T>  ExMSGraph<T> ExMSGraph<T>::operator= (MSGraph<T>& s)
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // メモリ管理付 CmnHead
 //
@@ -415,7 +401,6 @@ public:
     ExCmnHead operator= (ExCmnHead& m);
     ExCmnHead operator= (CmnHead& m);
 };
-
 
 
 }       // namespace

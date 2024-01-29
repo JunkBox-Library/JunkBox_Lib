@@ -22,7 +22,6 @@
 
 #ifdef  ENABLE_OPENNI
 
-
 #include  "OpenNiDevice.h"
 
 
@@ -76,7 +75,6 @@ public:
     // Device
     BOOL        backupDevice(void);
     BOOL        restoreDevice(void);
-
 
 protected:
 // Data
@@ -230,7 +228,6 @@ public:
     void  close_USBDevice(void)  { if (device!=NULL) device->close_USB_Device();}
     void  set_LEDColor(int col)  { if (device!=NULL) device->set_LED_Color(col);}
     void  set_TiltMotor(int ang) { if (device!=NULL) device->set_Tilt_Motor(ang);}
-
 };
 
 
@@ -238,10 +235,7 @@ public:
 
 
 
-
 #endif
-
-
 
 #endif  // __JBXL_OPENNI_TOOL_H_
 

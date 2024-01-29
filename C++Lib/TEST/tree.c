@@ -2,7 +2,6 @@
 プリムのTree生成のテスト
 */
 
-
 #include "MeshMerizer.h"
 #include "ColladaTool.h"
 
@@ -51,7 +50,6 @@ int main(int argc, char** argv)
     }
     trino   *= N;
     facetno *= N;
-
 /*
     MeshObjectData* data[4];
     data[0] = new MeshObjectData("Tree1");
@@ -62,7 +60,6 @@ int main(int argc, char** argv)
     AffineTrans affine;
     affine.setScale(0.5, 0.01, 0.5);
 */
-    
     MeshObjectData* data = new MeshObjectData("Tree");
 
     MaterialParam mparam1;
@@ -76,7 +73,6 @@ int main(int argc, char** argv)
     mparam2.scaleV =  0.45;
     mparam3.dup(mparam2);
     mparam3.flipU  =  true;
-
 /*
     for (int i=0; i<4; i++) {
         affine.setRotate(PI_DIV4*i, 0.0, 0.0, 1.0);
@@ -93,7 +89,6 @@ int main(int argc, char** argv)
         data[i]->setMaterial(mparam1);
     }
 */
-
     for (int f=0; f<facetno; f++) {
         data->addData(tridata, trino, f);
     }
@@ -125,6 +120,4 @@ int main(int argc, char** argv)
     
     return 0;
 }
-
-
 

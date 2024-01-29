@@ -1,14 +1,11 @@
-﻿
-#ifndef  __JBXL_CPP_GRAPHIC_DATA_H_
+﻿#ifndef  __JBXL_CPP_GRAPHIC_DATA_H_
 #define  __JBXL_CPP_GRAPHIC_DATA_H_
-
 
 /**
 @brief    グラフィックデータ定義用ヘッダ  
 @file     Gdata.h
 @author   Fumi.Iseki (C)
 */
-
 
 #include "ClassBox.h"
 #include "gheader.h"

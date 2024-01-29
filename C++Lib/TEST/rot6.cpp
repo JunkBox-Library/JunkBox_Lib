@@ -1,5 +1,4 @@
 ﻿
-
 #include "common++.h"
 #include "Rotation.h"
 
@@ -27,7 +26,6 @@ int main()
     printf(" (%lf,%lf,%lf) -> (%lf,%lf,%lf)\n", pnt.x, pnt.y, pnt.z, ppt.x, ppt.y, ppt.z);
     printf("----------------\n\n");
 
-
     //
     vct.set(1.0, 2.0, -3.0);
     qut.setRotation(PI_DIV4, vct);
@@ -37,7 +35,6 @@ int main()
     Vector<double> vt[2];
     Vector<double> eul = qut.getExtEulerZXY(vt);
 
-
     printf("----------------\n");
     printf("Euler1 = %lf %lf %lf\n", vt[0].x, vt[0].y, vt[0].z);
     printf("Euler2 = %lf %lf %lf\n", vt[1].x, vt[1].y, vt[1].z);
@@ -46,11 +43,4 @@ int main()
     qut.setExtEulerZXY(vt[1]);
     printf("QUAT = (%lf, %lf, %lf) %lf\n", qut.x, qut.y, qut.z, qut.s);
     printf("----------------\n");
-
-
-
-
-
-
-
 }

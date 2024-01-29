@@ -2,7 +2,6 @@
 プリムの基本形生成のテスト
 */
 
-
 #include "MeshMerizer.h"
 #include "ColladaTool.h"
 
@@ -75,6 +74,4 @@ int main(int argc, char** argv)
 
     return 0;
 }
-
-
 

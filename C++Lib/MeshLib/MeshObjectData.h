@@ -16,7 +16,6 @@
 namespace jbxl {
 
 
-
 class  MeshObjectNode;
 class  MeshObjectData;
 

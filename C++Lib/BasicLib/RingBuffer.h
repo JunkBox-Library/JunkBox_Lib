@@ -1,22 +1,16 @@
 ﻿#ifndef  __JBXL_CPP_RINGBUFFER_H_
 #define  __JBXL_CPP_RINGBUFFER_H_
 
-
-
 /**
 @brief    汎用リングバッファライブラリ ヘッダ
 @file     RingBuffer.h
 @author   Fumi.Iseki (C)
 */
 
-
-
 #include "tools++.h"
 
 
-
 namespace jbxl {
-
 
 
 class CRingBuffer
@@ -39,7 +33,6 @@ public:
     int     state;
     BOOL    enable;
 
-
 protected:
     void    init_data(void);
 
@@ -52,14 +45,10 @@ public:
     void*   get(int pos);
     void    put(void* ptr);
     void    put(void* ptr, int pos);
-
 };
 
 
-
-
 }        // namespace
-
 
 
 #endif

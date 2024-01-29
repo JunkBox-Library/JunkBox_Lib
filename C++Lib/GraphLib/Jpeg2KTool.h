@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_CPP_JPEG2K_TOOl_H_
+﻿#ifndef  __JBXL_CPP_JPEG2K_TOOl_H_
 #define  __JBXL_CPP_JPEG2K_TOOl_H_
-
 
 /**
 @brief JPEG 2000グラフィックデータ定義用ヘッダ  
@@ -218,11 +216,9 @@ template <typename T>  JPEG2KImage  MSGraph2JPEG2KImage(MSGraph<T> vp)
 }       // namespace
 
 
-
 #endif      // ENABLE_OPENJPEG
 
 #endif      // __JBXL_CPP_JPEG2K_TOOl_H_
-
 
 
  

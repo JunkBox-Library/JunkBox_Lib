@@ -1,5 +1,4 @@
-﻿
-#ifndef  __JBXL_CPP_JPEG_TOOl_H_
+﻿#ifndef  __JBXL_CPP_JPEG_TOOl_H_
 #define  __JBXL_CPP_JPEG_TOOl_H_
 
 /**
@@ -12,7 +11,6 @@
 @attention
 this software is based in part on the work of the Independent JPEG Group. http://www.ijg.org/
 */
-
 
 #include "Gdata.h"
 #include "xtools.h"
@@ -163,7 +161,6 @@ template <typename T>  JPEGImage  MSGraph2JPEGImage(MSGraph<T> vp)
 
 
 }       // namespace
-
 
 
 #endif  // ENABLE_JPEGLIB

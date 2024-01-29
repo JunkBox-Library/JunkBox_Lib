@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_CPP_THINNING_H_
+﻿#ifndef  __JBXL_CPP_THINNING_H_
 #define  __JBXL_CPP_THINNING_H_
-
 
 /**
 @brief    細線化関数
@@ -11,10 +9,8 @@
 @see 信学論D-II, Vol.J79-D-II, pp.1675-1685, 1996.
 */
 
-
 #include "Gmt.h"
 #include "tlist.h"
-
 
 //
 namespace jbxl {
@@ -325,7 +321,6 @@ template <typename T>  bool deletable(MSGraph<T> vp, int n, int c, int d)
 
     return  ret;
 }
-
 
 
 }       // namespace

@@ -1,20 +1,14 @@
 ﻿/**
 
-
-
 */
-
 
 #include  "OpenNiDevice.h"
 #include  "tools++.h"
 
-
 using namespace jbxl;
 
 
-
 #ifdef  ENABLE_OPENNI
-
 
 
 COpenNiDevice::COpenNiDevice(void)
@@ -54,7 +48,6 @@ COpenNiDevice::COpenNiDevice(void)
 }
 
 
-
 BOOL  COpenNiDevice::init(BOOL use_image)
 {
     outputMode.nXRes = OPENNI_DEPTH_XSIZE; 
@@ -72,7 +65,6 @@ BOOL  COpenNiDevice::init(BOOL use_image)
 }
 
 
-
 BOOL  COpenNiDevice::init(char* fname, BOOL use_image)
 {
     m_enu_dev = EnuDev_None;
@@ -81,7 +73,6 @@ BOOL  COpenNiDevice::init(char* fname, BOOL use_image)
         copy_s2Buffer("COpenNiDevice::init ERROR: File name is NULL", &m_err_mesg);
         return FALSE;
     }
-
     //
     BOOL ret = create_Context(fname);
     if (ret) ret = create_Player(TRUE);
@@ -89,7 +80,6 @@ BOOL  COpenNiDevice::init(char* fname, BOOL use_image)
         copy_s2Buffer("COpenNiDevice::init ERROR: create error!!", &m_err_mesg);
         return FALSE;
     }
-    
     //
     xn::NodeInfoList nodeList;
     player->EnumerateNodes(nodeList);
@@ -106,7 +96,6 @@ BOOL  COpenNiDevice::init(char* fname, BOOL use_image)
             if (!ret) break;
         }
     }
-
     //
     if (image!=NULL && use_image) {
         image->GetMapOutputMode(outputMode);
@@ -124,7 +113,6 @@ BOOL  COpenNiDevice::init(char* fname, BOOL use_image)
 }
 
 
-
 void  COpenNiDevice::free(void)
 {
     clear_Tracking();
@@ -139,7 +127,6 @@ void  COpenNiDevice::free(void)
 
     free_Buffer(&m_err_mesg);
 }
-
 
 
 
@@ -164,10 +151,8 @@ BOOL  COpenNiDevice::create_Context(char* fname)
         cat_s2Buffer (::xnGetStatusString(rc), &m_err_mesg);
         return FALSE;
     }
-
     return TRUE;
 }
-
 
 
 BOOL  COpenNiDevice::create_Image(BOOL easy)
@@ -210,7 +195,6 @@ BOOL  COpenNiDevice::create_Image(BOOL easy)
 
     return TRUE;
 }
-
 
 
 BOOL  COpenNiDevice::create_Depth(BOOL easy)
@@ -260,7 +244,6 @@ BOOL  COpenNiDevice::create_Depth(BOOL easy)
 }
 
 
-
 BOOL  COpenNiDevice::create_User(BOOL easy)
 {
     if (context==NULL) {
@@ -297,7 +280,6 @@ BOOL  COpenNiDevice::create_User(BOOL easy)
 }
 
 
-
 BOOL  COpenNiDevice::create_Player(BOOL easy)
 {
     if (context==NULL) {
@@ -327,10 +309,8 @@ BOOL  COpenNiDevice::create_Player(BOOL easy)
         delete_Player();
         return FALSE;
     }
-
     return TRUE;
 }
-
 
 
 
@@ -345,7 +325,6 @@ void  COpenNiDevice::delete_Context(void)
     }
     context = NULL;
 }
-
 
 
 void  COpenNiDevice::delete_Image(void)
@@ -364,7 +343,6 @@ void  COpenNiDevice::delete_Image(void)
 }
 
 
-
 void  COpenNiDevice::delete_Depth(void)
 {
     if (depth!=NULL) {
@@ -379,7 +357,6 @@ void  COpenNiDevice::delete_Depth(void)
     depth   = NULL;
     depthMD = NULL;
 }
-
 
 
 void  COpenNiDevice::delete_User(void)
@@ -398,7 +375,6 @@ void  COpenNiDevice::delete_User(void)
 }
 
 
-
 void   COpenNiDevice::delete_Player(void)
 {
     if (player!=NULL) {
@@ -407,7 +383,6 @@ void   COpenNiDevice::delete_Player(void)
         player = NULL;  
     }   
 }
-
 
 
 
@@ -442,7 +417,6 @@ BOOL  COpenNiDevice::setup_Tracking(int profile, double smooth)
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Clear Capabilities
 
@@ -452,7 +426,6 @@ void  COpenNiDevice::clear_Skeleton(void)
     if (skeleton!=NULL) delete(skeleton);
     skeleton = NULL;
 }
-
 
 
 void  COpenNiDevice::clear_Tracking(void)
@@ -467,7 +440,6 @@ void  COpenNiDevice::clear_Tracking(void)
         }
     }
 }
-
 
 
 
@@ -501,7 +473,6 @@ BOOL  COpenNiDevice::create_Recorder(char* file_name, BOOL use_image)
 }
 
 
-
 void   COpenNiDevice::delete_Recorder(void)
 {
     if (recorder!=NULL) {
@@ -518,8 +489,8 @@ void   COpenNiDevice::delete_Recorder(void)
         m_state = prev_state;
     }   
     recorder = NULL;
+    return;
 }
-
 
 
 BOOL  COpenNiDevice::start_Recorde(char* file_name, BOOL use_image)
@@ -551,12 +522,10 @@ BOOL  COpenNiDevice::start_Recorde(char* file_name, BOOL use_image)
 }
 
 
-
 void  COpenNiDevice::stop_Recorde(void)
 {
     delete_Recorder();
 }
-
 
 
 
@@ -569,7 +538,6 @@ BOOL  COpenNiDevice::open_USB_Device(void)
     if (rc!=XN_STATUS_OK && rc!=XN_STATUS_USB_ALREADY_INIT) return FALSE;
     
 #ifdef WIN32
-
     XnUInt32 count;
     rc = ::xnUSBEnumerateDevices(NI_VID_MICROSOFT, NI_PID_NUI_MOTOR, (const XnUSBConnectionString**)&devPath, &count);
     if (rc!=XN_STATUS_OK) {
@@ -582,20 +550,16 @@ BOOL  COpenNiDevice::open_USB_Device(void)
         ::xnUSBFreeDevicesList(devPath);
         return FALSE;
     }
-
 #else
-
     rc = ::xnUSBOpenDevice(OPENNI_VID_MICROSOFT, OPENNI_PID_NUI_MOTOR, NULL, NULL, &usb_dev);
     if (rc!=XN_STATUS_OK) {
         ::xnUSBShutdown();
         return FALSE;
     }
-
 #endif
 
     return TRUE;
 }
-
 
 
 void  COpenNiDevice::close_USB_Device(void)
@@ -606,17 +570,14 @@ void  COpenNiDevice::close_USB_Device(void)
     }
 
 #ifdef WIN32
-
     if (devPath!=NULL) {
         ::xnUSBFreeDevicesList(devPath);
         devPath = NULL;
     }
-
 #endif
 
     ::xnUSBShutdown();
 }
-
 
 
 void  COpenNiDevice::set_LED_Color(int col)
@@ -629,19 +590,16 @@ void  COpenNiDevice::set_LED_Color(int col)
 }
 
 
-
 void  COpenNiDevice::set_Tilt_Motor(int ang)
 {
     if (usb_dev==NULL) return;
     //if (ang>30 || ang<-30) return;
 
     ::xnUSBSendControl(usb_dev, XN_USB_CONTROL_TYPE_VENDOR, 0x31, (XnUInt16)(ang*2), 0, NULL, 0, 0);
-
     
     Sleep(1000);
     return;
 }
-
 
 
 
@@ -659,13 +617,11 @@ BOOL  COpenNiDevice::setup_CallBacks()
 }
 
 
-
 void  COpenNiDevice::clear_CallBacks()
 {
     unset_UserCallbacks();
     unset_CalibCallbacks();
 }
-
 
 
 BOOL  COpenNiDevice::set_UserCallbacks(xn::UserGenerator::UserHandler newUser, xn::UserGenerator::UserHandler lostUser, void* cookie)
@@ -686,7 +642,6 @@ BOOL  COpenNiDevice::set_UserCallbacks(xn::UserGenerator::UserHandler newUser, x
 }
 
 
-
 BOOL  COpenNiDevice::set_CalibCallbacks(xn::SkeletonCapability::CalibrationStart calibStart, xn::SkeletonCapability::CalibrationEnd calibEnd, void* cookie)
 {
     if (skeleton==NULL) {
@@ -705,7 +660,6 @@ BOOL  COpenNiDevice::set_CalibCallbacks(xn::SkeletonCapability::CalibrationStart
 }
 
 
-
 void  COpenNiDevice::unset_UserCallbacks()
 {
     if (user!=NULL && userCallbacks!=NULL) {
@@ -716,7 +670,6 @@ void  COpenNiDevice::unset_UserCallbacks()
 }
 
 
-
 void  COpenNiDevice::unset_CalibCallbacks()
 {
     if (skeleton!=NULL && calibCallbacks!=NULL) {
@@ -725,7 +678,6 @@ void  COpenNiDevice::unset_CalibCallbacks()
     }
     return;
 }
-
 
 
 
@@ -744,7 +696,6 @@ void  XN_CALLBACK_TYPE jbxl::userDetect(xn::UserGenerator& user, unsigned int nI
 }
 
 
-
 void  XN_CALLBACK_TYPE jbxl::userLost(xn::UserGenerator& user, unsigned int nId, void* cookie)
 {
     DEBUG_INFO("jbxl::userLost(): Lost user. (%d)", nId);
@@ -758,14 +709,12 @@ void  XN_CALLBACK_TYPE jbxl::userLost(xn::UserGenerator& user, unsigned int nId,
 }
 
 
-
 // Calibration
 
 void  XN_CALLBACK_TYPE jbxl::calibStart(xn::SkeletonCapability& skeleton, unsigned int nId, void* cookie)
 {
     DEBUG_INFO("jbxl::calibStart(): Start Calibration. (%d)", nId);
 }
-
 
 
 void  XN_CALLBACK_TYPE jbxl::calibEnd(xn::SkeletonCapability& skeleton, unsigned int nId, XnBool success, void* cookie)

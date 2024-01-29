@@ -1,12 +1,10 @@
-﻿
-/**
+﻿/**
 @brief    TGAグラフィックデータ ツール for C++ 
 @file     TgaTool.cpp
 @version  0.9
 @date     2015 5/9
 @author   Fumi.Iseki (C)
 */
-
 
 #include "TgaTool.h"
 
@@ -261,5 +259,4 @@ int  jbxl::writeTGAData(FILE* fp, TGAImage tga)
 
     return 0;
 }
-
 

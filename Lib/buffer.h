@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_BUFFER_H_
+﻿#ifndef  __JBXL_BUFFER_H_
 #define  __JBXL_BUFFER_H_
-
 
 /** 
 @brief   Buffer型サポートヘッダ
@@ -11,7 +9,6 @@
 @date    2012 7/23
 @see     Buffer
 */
-
 
 #include "tools.h"
 
@@ -150,7 +147,6 @@ int     recalc_strlen_Buffer(Buffer* buf);                              ///< Buf
 Buffer  randstr_Buffer(int n);         //!< 英数字を n個生成
 Buffer  randbit_Buffer(int n);         //!< ビットを n個生成 
 
-
 // ファイルI/O
 int     fgets_Buffer(Buffer* str, FILE* fp);            ///< 拡張fgets．文字列の読み込みに使用する．改行コードは削除する
 int     read_lines_Buffer(Buffer* str, FILE* fp);       ///< 複数文字列行の読み込み．文字列の読み込みに使用する
@@ -159,12 +155,10 @@ Buffer  read_Buffer_file(const char* fn);               ///< ファイル fn の
 Buffer  read_Buffer_data(FILE* fp, int sz);             ///< ファイルポインタ fp から szバイトをBuffer型変数に読み込む．
 int     save_Buffer_file(Buffer buf, char* fn);         ///< ファイル fn へ Buffer型変数の buf部を書き込む
 
-
 // 文字削除
 Buffer  erase_bBuffer(Buffer buf, char* bin, int len);  ///< buf.buf 中にある bin のデータ（各1Byte，順不同）を削除する．
 #define erase_Buffer(b, f)              erase_bBuffer((b), (char*)((f).buf), (f).vldsz) ///< erase_bBuffer()
 #define erase_sBuffer(b, f)             erase_bBuffer((b), (char*)(f), -1)              ///< erase_bBuffer()
-
 
 // 文字列置換
 Buffer  replace_sBuffer_bystr(Buffer buf, const char* frm, const char* tos);        ///< buf.buf中の文字列 frmを tosで置き換えた 新しい Bufferを返す
@@ -172,13 +166,11 @@ int     replace_sBuffer_file(char* fn, Buffer frm, Buffer tos);                 
 #define replace_sBuffer_str(buf, f, t)  replace_sBuffer_bystr((buf), (f), (t))      ///< replace_sBuffer()
 #define replace_sBuffer(buf, f, t)      replace_sBuffer_bystr((buf), (f), (t))      ///< replace_sBuffer()
 
-
 // buf.buf自体を書き換える．
 void    rewrite_sBuffer_bystr(Buffer* buf, const char* frm, const char* tos);       ///< buf.buf自体を書き換えること以外は replace_sBuffer_bystr() と同じ
 #define rewrite_sBuffer_str(b, f, t)  rewrite_sBuffer_bystr((b), (f), (t))          ///< rewrite_sBuffer_bystr()
 #define rewrite_sBuffer(b, f, t)  rewrite_sBuffer_bystr((b), (f), (t))              ///< rewrite_sBuffer_bystr()
 #define rewrite_sBuffer_file(f, fr, to) replace_sBuffer_file((f), (fr), (to))       ///< replace_sBuffer_file()
-
 
 // ヘッダ(書式)付き特殊ファイルI/O
 int     save_Buffer_fp(Buffer, FILE*);                              ///< ファイル fp へ Buffer型変数の buf部を書き込む
@@ -186,11 +178,9 @@ Buffer  read_Buffer_fp(FILE*);                                      ///< ファ�
 int     save_Buffer2_fp(Buffer  key, Buffer  buf, FILE* fp);        ///< ファイル fp へ 2つのBuffer型変数 keyと bufを書き込む
 int     read_Buffer2_fp(Buffer* key, Buffer* buf, FILE* fp);        ///< ファイル fp から 2つのBuffer型変数の keyと bufを読み込む．
 
-
 // Buffer型を利用した 簡易char型リングスタック
 char    pop_char_ringStack(Buffer* buf);                            ///< 簡易 char型 ringStack POP
 void    push_char_ringStack(Buffer* buf, char cc);                  ///< 簡易 char型 ringStack PUSH
-
 
 
 #endif

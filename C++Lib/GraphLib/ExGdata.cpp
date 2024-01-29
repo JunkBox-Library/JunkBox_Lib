@@ -1,13 +1,10 @@
-﻿
-/**
+﻿/**
 @brief    メモリ管理機能付グラフィックデータ定義ライブラリ 
 @file     ExGdata.cpp
 @author   Fumi.Iseki
 */
 
-
 #include  "ExGdata.h"
-
 
 using namespace jbxl;
 

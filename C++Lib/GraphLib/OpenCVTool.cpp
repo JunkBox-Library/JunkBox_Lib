@@ -1,5 +1,4 @@
-﻿
-#ifdef  ENABLE_OPENCV
+﻿#ifdef  ENABLE_OPENCV
 
 /**
 @brief    OpenCV用ヘッダ  
@@ -12,19 +11,10 @@
 this software uses OpenCV
 */
 
-
-
 #include "OpenCVTool.h"
-
 
 using namespace jbxl;
 //using namespace cv;
-
-
-
-
-
-
 
 
 #endif      // ifndef ENABLE_OPENCV

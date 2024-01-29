@@ -1,12 +1,10 @@
-﻿
-/**
+﻿/**
 @brief    細線化関数
 @file     Thinning.cpp
 @author   Fumi.Iseki (C)
 
 @see 信学論D-II, Vol.J79-D-II, pp.1675-1685, 1996.
 */
-
 
 #include  "Thinning.h"
 
@@ -81,7 +79,6 @@ int  jbxl::connectNumber(int* w, int c, int d)
             cn = -1;
         }
     }
-
     return  cn;
 }
 
@@ -221,7 +218,3 @@ bool  jbxl::deletable_5(int* v)
     if (s==0)  return  false;
     else       return  true;
 }
-    
-
-
-

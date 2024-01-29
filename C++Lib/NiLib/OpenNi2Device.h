@@ -1,16 +1,12 @@
-﻿
-#ifndef  __JBXL_OPENNI2_DEV_H_
+﻿#ifndef  __JBXL_OPENNI2_DEV_H_
 #define  __JBXL_OPENNI2_DEV_H_
 
-
 #ifdef  ENABLE_OPENNI2
-
 
 #ifdef WIN32
 //#pragma warning(disable:4996)
 #pragma warning(disable:4005)       // INT8_MIN etc マクロの再定義
 #endif
-
 
 #include  <OpenNI.h>
 #include  <NiTE.h>
@@ -19,7 +15,6 @@
 #include  "common++.h"
 #include  "tools++.h"
 #include  "buffer.h"
-
 
 //
 namespace jbxl {
@@ -39,7 +34,6 @@ namespace jbxl {
 #define   OPENNI2_DEPTH_INDEX       0
 #define   OPENNI2_IMAGE_INDEX       1
 //#define   OPENNI2_AUDIO_INDEX     2
-
 
 
 class  COpenNi2Device
@@ -137,7 +131,6 @@ public:
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////
 //
 
@@ -154,4 +147,3 @@ void    shutdown_NiTE2(void);
 #endif  // ENABLE_OPENNI2
 
 #endif
-

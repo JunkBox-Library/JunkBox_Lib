@@ -1,6 +1,4 @@
-﻿
-#include  "tools++.h"
-
+﻿#include  "tools++.h"
 
 /**
 @brief    ツールライブラリ for C++
@@ -8,12 +6,7 @@
 @author   Fumi.Iseki (C)
 */
 
-
 using namespace jbxl;
-
-
-//
-//
 
 
 #ifdef WIN32
@@ -37,7 +30,6 @@ void  WinDisPatcher(int sno=0, unsigned int signal1, unsigned int signal2, ...);
   例  ：DisPatcher(1, WM_NCLBUTTONDOWN);
         DisPatcher();    DisPatcher(0) と同じ  
 */
-
 void  jbxl::DisPatcher(int signalno, ...)
 {
     int   i;
@@ -69,6 +61,5 @@ void  jbxl::DisPatcher(int signalno, ...)
     va_end(args);
     return;
 }
-
 
 #endif

@@ -1,14 +1,11 @@
 ﻿#ifndef  __JBXL_CPP_GRAPHIC_MATH_H_
 #define  __JBXL_CPP_GRAPHIC_MATH_H_
 
-
 /**
 @brief    MSGraph用 数学ライブラリ ヘッダ in Graph Library
 @file     Gmt.h
 @author   Fumi.Iseki (C)
 */
-
-
 
 #include "Gdata.h"
 
@@ -142,7 +139,6 @@ template <typename R, typename T> MSGraph<R>  Laplacian(MSGraph<T> vp, int mode=
             }
         }
     }
-
     return lp;
 }
 
@@ -364,7 +360,6 @@ template<typename R, typename T>  MSGraph<R>  zSobel(MSGraph<T> vp)
             xp.gp[nx] = (R)(da - (2.*db + dc + dd)/6.);
         }
     }
-
     if (vcounter!=NULL) vcounter->PutFill();
 
     return xp;
@@ -460,7 +455,6 @@ template<typename R, typename T>  MSGraph<R>  xxSobel(MSGraph<T> vp)
         }
         if (vcounter!=NULL) vcounter->StepIt();
     }
-    
     return xp;
 }
 
@@ -1051,7 +1045,5 @@ template <typename R, typename T> MSGraph<R>  MSMaskFilter(MSGraph<R> vp, MSGrap
 }       // namespace
 
 
-
 #endif
  
-

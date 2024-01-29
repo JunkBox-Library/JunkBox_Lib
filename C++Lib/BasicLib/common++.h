@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_CPP_COMMONPP_HEADER_
+﻿#ifndef  __JBXL_CPP_COMMONPP_HEADER_
 #define  __JBXL_CPP_COMMONPP_HEADER_
-
 
 /**
 @brief    Common Header for C++
@@ -9,15 +7,12 @@
 @author   Fumi.Iseki (C)
 */
 
-
 #ifndef CPLUSPLUS
     #define CPLUSPLUS
 #endif
 
-
 #include "common.h"
 #include <string>
-
 
 //
 namespace jbxl {
@@ -49,7 +44,6 @@ template <typename T> inline void deleteNull(T& p) { delete p; p = (T)NULL;}
         #define BOOL int
     #endif
 #endif
-
 
 
 }       // namespace
