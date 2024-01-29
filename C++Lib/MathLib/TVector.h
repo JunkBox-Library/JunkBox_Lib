@@ -1,5 +1,4 @@
-﻿
-#ifndef  __JBXL_CPP_T_VECTOR_H_
+﻿#ifndef  __JBXL_CPP_T_VECTOR_H_
 #define  __JBXL_CPP_T_VECTOR_H_
 
 /**
@@ -27,7 +26,7 @@ template<typename T=double> class TVector
 template<typename T=double> class DllExport TVector : public Vector<T>
 {
 public:
-    T  t;           ///< トレランス
+    T  t;           ///< トレランス．誤差．
 
 public:
     TVector(T X=0, T Y=0, T Z=0, T W=0, double N=0.0, double C=1.0, int D=0) { set(X, Y, Z, W, N, C, D);}
@@ -36,7 +35,6 @@ public:
     void    set(T X, T Y=0, T Z=0, T W=0, double N=0.0, double C=1.0, int D=0);
     void    init() { Vector<T>::init(); t = (T)0;}
 };
-
 
 
 /**
@@ -53,7 +51,6 @@ template <typename T> void TVector<T>::set(T X, T Y, T Z, T W, double N, double 
         Vector<T>::n = (T)sqrt(X*X + Y*Y + Z*Z);
     }
 }
-
 
 
 /**

@@ -1,5 +1,4 @@
-﻿
-#ifndef  __JBXL_CPP_VECTOR_H_
+﻿#ifndef  __JBXL_CPP_VECTOR_H_
 #define  __JBXL_CPP_VECTOR_H_
 
 
@@ -8,7 +7,6 @@
 @file     Vector.h
 @author   Fumi.Iseki (C)
 */
-
 
 
 /*
@@ -23,7 +21,6 @@ template <typename T> inline double VectorAngle(Vector<T> a, Vector<T> b)
 template <typename T> inline Vector<T> NewellMethod(Vector<T> v1, Vector<T> v2, Vector<T> v3)
 template <typename T> inline Vector<T> BSplineInterp4(Vector<T> p0, Vector<T> p1, double t)
 */
-
 
 
 #include "tools++.h"
@@ -86,7 +83,6 @@ public:
 };
 
 
-
 template <typename T> Vector<T> Vector<T>::normalize(void)
 {
     double nrm = (double)sqrt(x*x+y*y+z*z);
@@ -103,7 +99,6 @@ template <typename T> Vector<T> Vector<T>::normalize(void)
 
     return *this;
 }
-
 
 
 /**
@@ -124,7 +119,6 @@ template <typename T> inline void Vector<T>::set(T X, T Y, T Z, double N, double
         n = (double)sqrt(x*x + y*y + z*z);
     }
 }
-
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -195,7 +189,7 @@ template <typename T> inline bool operator == (const Vector<T> v1, const Vector<
 template <typename T> inline bool operator != (const Vector<T> v1, const Vector<T> v2)
 { return (v1.x!=v2.x || v1.y!=v2.y || v1.z!=v2.z); }
 
-//
+
 template <typename T> inline Vector<T> MidPoint(const Vector<T> a, const Vector<T> b)
 { return 0.5*(a+b); }
 
@@ -207,7 +201,6 @@ template <typename T> inline double VectorDist(const Vector<T> a, const Vector<T
     //return (b-a).n;
     return (b-a).norm();
 }
-
 
 
 template <typename T> inline bool operator < (const Vector<T> v1, const Vector<T> v2)
@@ -237,7 +230,6 @@ template <typename T> inline bool same_vector(Vector<T> v1, Vector<T> v2)
     if ((double)d2>t2) return false;
     return true;
 }
-
 
 
 template <typename T> inline Vector<T>* dupVector(Vector<T>* a, int n)
@@ -310,7 +302,6 @@ template <typename T> inline Vector<T> NewellMethod4(Vector<T> v1, Vector<T> v2,
 }
 
 
-
 /**
 4階（3次）Bスプライン曲線補間．
 2次の導関数が両端で 0の条件有り．
@@ -343,7 +334,6 @@ template <typename T> inline Vector<T> BSplineInterp4(Vector<T> p0, Vector<T> p1
 
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 3D多角形座標
 //
@@ -361,12 +351,10 @@ public:
     Vector<T>** point;      // データ
 
 public:
-    
     PCoordinate(void)  { dim = 0; point = NULL;}
     PCoordinate(int n) { init(n);}
 
     virtual ~PCoordinate(void) {}
-
     //
     void  init(int n) {
         dim   = 0;
@@ -404,7 +392,6 @@ public:
 
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 境界構造体
 //
@@ -433,7 +420,6 @@ public:
     }
 
     virtual ~RBound() {}
-
 
     //
     void  set(T XMin=(T)0, T XMax=(T)0, T YMin=(T)0, T YMax=(T)0, T ZMin=(T)0, T ZMax=(T)0, T TMin=(T)0, T TMax=(T)0){
@@ -564,7 +550,6 @@ public:
 };
 
 
-
 /**
 template <typename T> inline bool disJunctBounds(RBound<T> b1, RBound<T> b2)
     
@@ -579,7 +564,6 @@ template <typename T> inline bool disJunctBounds(RBound<T> b1, RBound<T> b2)
             (b1.ymin >= b2.ymax) || (b2.ymin >= b1.ymax) || 
             (b1.zmin >= b2.zmax) || (b2.zmin >= b1.zmax);
 }
-
 
 
 
@@ -613,7 +597,6 @@ public:
 
     template <typename R> UVMap<T>& operator = (const UVMap<R> a) { u=(T)a.u; v=(T)a.v; d=a.d; return *this;}
 };
-
 
 
 

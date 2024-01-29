@@ -1,8 +1,5 @@
-﻿
-#ifndef  __JBXL_CPP_MATRIX_H_
+﻿#ifndef  __JBXL_CPP_MATRIX_H_
 #define  __JBXL_CPP_MATRIX_H_
-
-
 
 /**
 @brief    マトリックス ライブラリヘッダ for C++ 
@@ -11,12 +8,9 @@
 */
 
 
-
 #include "tools++.h"
-
 #include <math.h>
 #include "Vector.h"
-
 
 
 //
@@ -57,7 +51,6 @@ public:
     /// free() は手動で呼び出す．
     void  free() { if(sz!=NULL) ::free(sz); if(mx!=NULL) ::free(mx); init();}   
 };
-
 
 
 /**
@@ -107,7 +100,6 @@ template <typename T>  Matrix<T>::Matrix(int nn, ...)
 }
 
 
-
 /**
 template <typename T>  void  Matrix<T>::init(int nn, ...) 
 
@@ -152,7 +144,6 @@ template <typename T>  void  Matrix<T>::init(int nn, ...)
 }
 
 
-
 /**
 template <typename T>  void  Matrix<T>::getm(int nn, int* size)
   
@@ -194,7 +185,6 @@ template <typename T>  void  Matrix<T>::getm(int nn, int* size)
 }
 
 
-
 /**  
 template <typename T>  T&  Matrix<T>::element(int i, ...) 
 
@@ -234,7 +224,6 @@ template <typename T>  T&  Matrix<T>::element(int i, ...)
 }
 
 
-
 /**
 template <typename T> void   print_Matrix(FILE* fp, Matrix<T> a)
 
@@ -250,7 +239,6 @@ template <typename T> void   print_Matrix(FILE* fp, Matrix<T> a)
         if ((i+1)%a.sz[a.n-1]==0) fprintf(fp, "\n");
     }
 }
-
 
 
 /**
@@ -276,7 +264,6 @@ template <typename T>  Matrix<T>  dup_Matrix(Matrix<T> a)
     //
     return mtx;
 }
-
 
 
 
@@ -353,7 +340,6 @@ template <typename T>  Matrix<T> operator * (const Matrix<T> a, const Matrix<T> 
 }
 
 
-
 /**
 template <typename T>  Matrix<T> operator * (const Matrix<T> a, const Matrix<T> b)
 
@@ -388,14 +374,12 @@ template <typename T>  Vector<T> operator * (const Matrix<T> a, const Vector<T> 
 }
 
 
-
 template <typename T> inline Matrix<T> operator - (const Matrix<T> a)
 {   
     Matrix<T>  c(a.n, a.sz);
     if (c.mx!=NULL) for (int i=0; i<a.r; i++) c.mx[i] = -a.mx[i];
     return c;
 }
-
 
 
 template <typename T> inline Matrix<T> operator + (const Matrix<T> a, const Matrix<T> b)
@@ -409,7 +393,6 @@ template <typename T> inline Matrix<T> operator + (const Matrix<T> a, const Matr
 }
 
 
-
 template <typename T> inline Matrix<T> operator - (const Matrix<T> a, const Matrix<T> b)
 { 
     Matrix<T>  c;
@@ -421,7 +404,6 @@ template <typename T> inline Matrix<T> operator - (const Matrix<T> a, const Matr
 }
 
 
-
 //
 template <typename T, typename R> inline Matrix<T> operator * (const R d, const Matrix<T> a)
 { 
@@ -429,7 +411,6 @@ template <typename T, typename R> inline Matrix<T> operator * (const R d, const 
     if (c.mx!=NULL) for (int i=0; i<a.r; i++) c.mx[i] = (T)(d)*a.mx[i];
     return c;
 }
-
 
 
 //
@@ -441,7 +422,6 @@ template <typename T, typename R> inline Matrix<T> operator * (const Matrix<T> a
 }
 
 
-
 //
 template <typename T, typename R> inline Matrix<T> operator / (const Matrix<T> a, const R d)
 {
@@ -451,14 +431,12 @@ template <typename T, typename R> inline Matrix<T> operator / (const Matrix<T> a
 }
 
 
-
 template <typename T> inline bool operator == (const Matrix<T> v1, const Matrix<T> v2)
 {
     if (!isSameDimension(v1, v2)) return false;
     for (int i=0; i<v1.r; i++) if (v1.mx[i]!=v2.mx[i]) return false;
     return true;
 }
-
 
 
 template <typename T> inline bool isSameDimension(const Matrix<T> v1, const Matrix<T> v2)
@@ -470,6 +448,5 @@ template <typename T> inline bool isSameDimension(const Matrix<T> v1, const Matr
 
 
 }       // namespace
-
 
 #endif 

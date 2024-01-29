@@ -41,9 +41,9 @@ public:
 
 public:
     void    init (double meter=1.0, int axis=COLLADA_Z_UP, const char* ver=NULL);
-    void    init(float  meter, int axis = COLLADA_Z_UP, const char* ver = NULL)  { init((double)meter, axis, ver); }
+    void    init (float  meter,     int axis=COLLADA_Z_UP, const char* ver=NULL) { init((double)meter, axis, ver); }
     void    clear(double meter=1.0, int axis=COLLADA_Z_UP, const char* ver=NULL);
-    void    clear(float  meter, int axis = COLLADA_Z_UP, const char* ver = NULL) { clear((double)meter, axis, ver); }
+    void    clear(float  meter,     int axis=COLLADA_Z_UP, const char* ver=NULL) { clear((double)meter, axis, ver); }
     void    free (void);
 
     void    print(FILE* fp, int mode=XML_INDENT_FORMAT) { print_xml(fp, xml, mode);}

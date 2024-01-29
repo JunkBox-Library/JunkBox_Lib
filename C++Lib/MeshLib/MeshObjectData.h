@@ -44,11 +44,11 @@ public:
     int     num_vertex;             ///< 頂点のデータ数．（vertex_value, normal_value の要素数）
     int     num_texcrd;             ///< テクスチャ画像の座標数．通常は num_vertex に等しい．（texcrd_value の要素数）
 
-    int*    data_index;             ///< インデックスデータ
+    int*    data_index;             ///< インデックスデータ．要素数は num_index
 
-    Vector<double>* vertex_value;   ///< 頂点データの並び
-    Vector<double>* normal_value;   ///< 法線ベクトルエータの並び
-    UVMap<double>*  texcrd_value;   ///< テクスチャマップの並び
+    Vector<double>* vertex_value;   ///< 頂点データの並び．要素数は num_vertex
+    Vector<double>* normal_value;   ///< 法線ベクトルデータの並び．要素数は num_vertex
+    UVMap<double>*  texcrd_value;   ///< テクスチャマップの並び．要素数は num_texcrd
 
     MeshObjectNode* next;
     MeshObjectNode* prev;

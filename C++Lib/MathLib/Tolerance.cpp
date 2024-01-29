@@ -1,11 +1,8 @@
-﻿
-
-/**
+﻿/**
 @brief    各種トレランス
 @file     Tolerance.cpp
 @author   Fumi.Iseki (C)
 */
-
 
 #include "Tolerance.h"
 
@@ -41,5 +38,4 @@ void jbxl::SetSINTolerance(double tol)      { Sin_Tolerance = tol; }
 void jbxl::SetAbsVectorTolerance(double tol){ Abs_Vector_Tolerance = tol; }
 void jbxl::SetAbsVertexTolerance(double tol){ Abs_Vertex_Tolerance = tol; }
 */
-
 

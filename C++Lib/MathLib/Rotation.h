@@ -1,5 +1,4 @@
-﻿
-#ifndef  __JBXL_CPP_QUATERNION_H_
+﻿#ifndef  __JBXL_CPP_QUATERNION_H_
 #define  __JBXL_CPP_QUATERNION_H_
 
 /**
@@ -45,13 +44,13 @@ class  DllExport Quaternion
 template <typename T=double> class  DllExport Quaternion
 {
 public:
-    T    s;
-    T    x;
-    T    y;
-    T    z;
+    T    s;     ///< cos(θ/2)
+    T    x;     ///< x 成分
+    T    y;     ///< y 成分
+    T    z;     ///< z 成分
 
-    T    n;        ///< ノルム
-    T    c;        ///< 信頼度
+    T    n;     ///< ノルム
+    T    c;     ///< 信頼度
 
 public:
     Quaternion(void)  { init();}
@@ -244,7 +243,6 @@ template <typename T> inline Quaternion<T> ExtEulerZXY2Quaternion(Vector<T> e) {
 
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ベクトルの回転，クォータニオン
 //
@@ -269,7 +267,6 @@ template <typename T=double> Quaternion<T>    SlerpQuaternion(Quaternion<T> a, Q
 
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Affine Transfer
 //
@@ -283,7 +280,7 @@ template <typename T=double> Quaternion<T>    SlerpQuaternion(Quaternion<T> a, Q
 template <typename T=double> class  DllExport AffineTrans
 {
 public:
-     Matrix<T>       matrix;        // Matrix(2, 4, 4); 2次元 4x4行列 
+    Matrix<T>        matrix;        // Matrix(2, 4, 4); 2次元 4x4行列 
 
     Vector<T>        shift;
     Vector<T>        scale;
@@ -330,7 +327,6 @@ public:
     bool   isSetScale(void)  { return (scale !=Vector<T>((T)1.0, (T)1.0, (T)1.0));}
     bool   isSetRotate(void) { return (rotate!=Quaternion<T>());}
     bool   isNormal(void)    { if(scale.x>=JBXL_EPS && scale.y>=JBXL_EPS && scale.z>=JBXL_EPS) return true; else return false;}
-
 
     Vector<T> execMatrixTrans(Vector<T> v);
 
@@ -408,7 +404,6 @@ template <typename T> inline AffineTrans<T> operator * (const AffineTrans<T> a, 
 
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // クォータニオン クラス
 //
@@ -428,7 +423,6 @@ template <typename T> void  Quaternion<T>::set(T S, T X, T Y, T Z, T N, T C)
 }
 
 
-
 template <typename T> void  Quaternion<T>::normalize() 
 {
     T nrm = (T)sqrt(s*s + x*x + y*y + z*z);
@@ -444,7 +438,6 @@ template <typename T> void  Quaternion<T>::normalize()
         init();
     }
 }
-
 
 
 /**
@@ -469,7 +462,6 @@ template <typename T> void  Quaternion<T>::setRotation(T e, Vector<T> v)
     n  = (T)v.n;
     c  = (T)1.0;
 }
-
 
 
 /**
@@ -498,7 +490,6 @@ template <typename T> void  Quaternion<T>::setExtEulerYZX(Vector<T> e)
 }
 
 
-
 /// X->Y->Z
 template <typename T> void  Quaternion<T>::setExtEulerXYZ(Vector<T> e)
 {
@@ -514,7 +505,6 @@ template <typename T> void  Quaternion<T>::setExtEulerXYZ(Vector<T> e)
     (*this) = qz*qy*qx;
     if (s<(T)0.0) (*this) = - (*this);
 }
-
 
 
 /// Z->Y->X
@@ -534,7 +524,6 @@ template <typename T> void  Quaternion<T>::setExtEulerZYX(Vector<T> e)
 }
 
 
-
 /// X->Z->Y
 template <typename T> void  Quaternion<T>::setExtEulerXZY(Vector<T> e)
 {
@@ -550,7 +539,6 @@ template <typename T> void  Quaternion<T>::setExtEulerXZY(Vector<T> e)
     (*this) = qy*qz*qx;
     if (s<(T)0.0) (*this) = - (*this);
 }
-
 
 
 /// Y->X->Z
@@ -570,7 +558,6 @@ template <typename T> void  Quaternion<T>::setExtEulerYXZ(Vector<T> e)
 }
 
 
-
 /// Z->X->Y
 template <typename T> void  Quaternion<T>::setExtEulerZXY(Vector<T> e)
 {
@@ -586,7 +573,6 @@ template <typename T> void  Quaternion<T>::setExtEulerZXY(Vector<T> e)
     (*this) = qy*qx*qz;
     if (s<(T)0.0) (*this) = - (*this);
 }
-
 
 
 /**
@@ -614,7 +600,6 @@ template <typename T> Matrix<T>  Quaternion<T>::getRotMatrix()
 }
 
 
-
 /// Exec Rotation  qv(~q)
 template <typename T> Vector<T>  Quaternion<T>::execRotation(Vector<T> v)
 {
@@ -629,7 +614,6 @@ template <typename T> Vector<T>  Quaternion<T>::execRotation(Vector<T> v)
 }
 
 
-
 /// Exec Inv Rotation  (~q)vq
 template <typename T> Vector<T>  Quaternion<T>::execInvRotation(Vector<T> v)
 {
@@ -642,7 +626,6 @@ template <typename T> Vector<T>  Quaternion<T>::execInvRotation(Vector<T> v)
 
     return vct;
 }
-
 
 
 
@@ -681,7 +664,6 @@ template <typename T> Matrix<T>  ExtEulerXYZ2RotMatrix(Vector<T> eul)
 }
 
 
-
 template <typename T> Matrix<T>  ExtEulerZYX2RotMatrix(Vector<T> eul)
 {
     Matrix<T> mtx(2, 3, 3);
@@ -705,7 +687,6 @@ template <typename T> Matrix<T>  ExtEulerZYX2RotMatrix(Vector<T> eul)
 
     return mtx;
 }
-
 
 
 template <typename T> Matrix<T>  ExtEulerXZY2RotMatrix(Vector<T> eul)
@@ -733,7 +714,6 @@ template <typename T> Matrix<T>  ExtEulerXZY2RotMatrix(Vector<T> eul)
 }
 
 
-
 template <typename T> Matrix<T>  ExtEulerYZX2RotMatrix(Vector<T> eul)
 {
     Matrix<T> mtx(2, 3, 3);
@@ -757,7 +737,6 @@ template <typename T> Matrix<T>  ExtEulerYZX2RotMatrix(Vector<T> eul)
 
     return mtx;
 }
-
 
 
 template <typename T> Matrix<T>  ExtEulerZXY2RotMatrix(Vector<T> eul)
@@ -785,7 +764,6 @@ template <typename T> Matrix<T>  ExtEulerZXY2RotMatrix(Vector<T> eul)
 }
 
 
-
 template <typename T> Matrix<T>  ExtEulerYXZ2RotMatrix(Vector<T> eul)
 {
     Matrix<T> mtx(2, 3, 3);
@@ -809,7 +787,6 @@ template <typename T> Matrix<T>  ExtEulerYXZ2RotMatrix(Vector<T> eul)
 
     return mtx;
 }
-
 
 
 // Rotation Matrix Elements -> ExtEuler
@@ -1156,7 +1133,6 @@ template <typename T> Vector<T>  RotMatrixElements2ExtEulerZXY(T m12, T m13, T m
 }
 
 
-
 // Rotation Matrix -> ExtEuler
 //
 template <typename T> Vector<T>  RotMatrix2ExtEulerXYZ(Matrix<T> mtx, Vector<T>* vct=NULL)
@@ -1256,7 +1232,6 @@ template <typename T> Vector<T>  RotMatrix2ExtEulerZXY(Matrix<T> mtx, Vector<T>*
 }
 
 
-
 // Quaternion -> ExtEuler
 //
 //template <typename T> Vector<T>  Quaternion2ExtEulerXYZ(Quaternion<T> qut, Vector<T>* vct=NULL)
@@ -1325,7 +1300,6 @@ template <typename T> Vector<T>  Quaternion2ExtEulerZXY(Quaternion<T> qut, Vecto
 }
 
 
-
 // Rotation Matrix -> Quaternion
 //
 template <typename T> Quaternion<T>  RotMatrix2Quaternion(Matrix<T> mtx)
@@ -1336,7 +1310,6 @@ template <typename T> Quaternion<T>  RotMatrix2Quaternion(Matrix<T> mtx)
 
     return qut;
 }
-
 
 
 
@@ -1369,7 +1342,6 @@ template <typename T> Vector<T>  VectorRotation(Vector<T> v, Quaternion<T> q)
 }
 
 
-
 template <typename T> Vector<T>  VectorInvRotation(Vector<T> v, Quaternion<T> q)
 {
     Vector<T> vect;
@@ -1388,7 +1360,6 @@ template <typename T> Vector<T>  VectorInvRotation(Vector<T> v, Quaternion<T> q)
 
     return vect;
 }
-
 
 
 template <typename T> T*  VectorRotation(T* v, Quaternion<T> q)
@@ -1415,7 +1386,6 @@ template <typename T> T*  VectorRotation(T* v, Quaternion<T> q)
 }
 
 
-
 template <typename T> T*  VectorInvRotation(T* v, Quaternion<T> q)
 {
     T x, y, z;
@@ -1438,7 +1408,6 @@ template <typename T> T*  VectorInvRotation(T* v, Quaternion<T> q)
 
     return v;
 }
-
 
 
 template <typename T> Quaternion<T>  V2VQuaternion(Vector<T> a, Vector<T> b)
@@ -1486,7 +1455,6 @@ template <typename T> Quaternion<T>  V2VQuaternion(Vector<T> a, Vector<T> b)
 }
 
 
-
 template <typename T> Quaternion<T>  PPPQuaternion(Vector<T> a, Vector<T> b, Vector<T> c)
 {
     Quaternion<T> qut((T)1.0, (T)0.0, (T)0.0, (T)0.0, (T)1.0);
@@ -1496,7 +1464,6 @@ template <typename T> Quaternion<T>  PPPQuaternion(Vector<T> a, Vector<T> b, Vec
     qut = V2VQuaternion<T>(b-a, c-b);
     return qut;
 }
-
 
 
 template <typename T> Quaternion<T>  VPPQuaternion(Vector<T> a, Vector<T> b, Vector<T> c)
@@ -1510,7 +1477,6 @@ template <typename T> Quaternion<T>  VPPQuaternion(Vector<T> a, Vector<T> b, Vec
 }
 
 
-
 template <typename T> Quaternion<T>  PPVQuaternion(Vector<T> a, Vector<T> b, Vector<T> c)
 {
     Quaternion<T> qut((T)1.0, (T)0.0, (T)0.0, (T)0.0, (T)1.0);
@@ -1520,7 +1486,6 @@ template <typename T> Quaternion<T>  PPVQuaternion(Vector<T> a, Vector<T> b, Vec
     qut = V2VQuaternion<T>(b-a, c);
     return qut;
 }
-
 
 
 /**
@@ -1612,7 +1577,6 @@ template <typename T> Quaternion<T>  SlerpQuaternion(Quaternion<T> qa, Quaternio
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // Affine Transfer
 //
@@ -1625,7 +1589,6 @@ template <typename T> void  AffineTrans<T>::dup(AffineTrans<T> a)
 
     return;
 }
-
 
 
 // 3x3 の回転行列を得る
@@ -1646,7 +1609,6 @@ template <typename T> Matrix<T>  AffineTrans<T>::getRotMatrix(void)
     }
     return mt;
 }
-
 
 
 // 各コンポーテントの成分から，逆変換を定義する．
@@ -1687,7 +1649,6 @@ template <typename T> AffineTrans<T>  AffineTrans<T>::getInvAffine(void)
 }
 
 
-
 // 各コンポーネントから，変換行列を計算する．
 template <typename T> void   AffineTrans<T>::computeMatrix(bool with_scale)
 {
@@ -1720,7 +1681,6 @@ template <typename T> void   AffineTrans<T>::computeMatrix(bool with_scale)
 
     return;
 }
-
 
 
 // 変換行列から，各コンポーネントを再計算する．
@@ -1779,7 +1739,6 @@ template <typename T> void   AffineTrans<T>::computeComponents(void)
 
     return;
 }
-
 
 
 // 変換行列を用いて，ベクトルを変換する．

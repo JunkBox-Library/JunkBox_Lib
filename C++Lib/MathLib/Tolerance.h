@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_CPP_TOLERANCE_H_
+﻿#ifndef  __JBXL_CPP_TOLERANCE_H_
 #define  __JBXL_CPP_TOLERANCE_H_
-
 
 /**
 @brief    各種トレランス ヘッダ
@@ -9,11 +7,8 @@
 @author   Fumi.Iseki (C)
 */
 
-
-
 //
 namespace jbxl {
-
 
 
 // 相対値
@@ -28,11 +23,9 @@ extern double   Abs_Vertex_Tolerance;
 extern double   Collision_Tolerance;        ///< 衝突判定用トレランス
 extern double   Sin_Tolerance;              ///< sinθ==0 
 
-
 // 1に対して 0とするトレランス
 extern double   Zero_Eps;
 extern double   Zero_Eps2;
-
 
 /*
 void SetZeroEPS(double eps);
@@ -57,9 +50,7 @@ inline void SetAbsVectorTolerance(double tol){ Abs_Vector_Tolerance = tol; }
 inline void SetAbsVertexTolerance(double tol){ Abs_Vertex_Tolerance = tol; }
 
 
-
 }       // namespace
-
 
 #endif
 

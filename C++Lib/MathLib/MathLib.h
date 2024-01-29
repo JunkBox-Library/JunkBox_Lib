@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_CPP_MATH_LIBRARY_H_
+﻿#ifndef  __JBXL_CPP_MATH_LIBRARY_H_
 #define  __JBXL_CPP_MATH_LIBRARY_H_
-
 
 /**
 @brief    数学ライブラリ
@@ -19,7 +17,6 @@
 */
 
 #include  "BasicLib.h"
-
 #include  "TVector.h"
 #include  "Rotation.h"
 
