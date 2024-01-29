@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_TRI_BREP_H_
+﻿#ifndef  __JBXL_TRI_BREP_H_
 #define  __JBXL_TRI_BREP_H_
-
 
 /**
 @brief    三角Contour(Facet)用ライブラリ ヘッダ for BREP
@@ -71,4 +69,3 @@ DllExport bool   IsConnectEdges(BREP_WING* wing1, BREP_WING* wing2);
 
 
 #endif
-

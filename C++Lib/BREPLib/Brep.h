@@ -1,7 +1,6 @@
 ﻿#ifndef __JBXL_BREP_H_
 #define __JBXL_BREP_H_
 
-
 /**
 @brief    BREP Library Header
 @file     Brep.h
@@ -11,7 +10,6 @@
 @sa Modified BREPLIBRARY http://breplibrary.sourceforge.net/ 
 @sa The license of this library is subject to the license of BREPLIBRARY.
 */
-
 
 #ifdef WIN32
 #pragma warning(disable:4251)

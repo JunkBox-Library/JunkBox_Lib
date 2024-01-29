@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief    STL ファイル入出力用ライブラリ
 @file     STL.cpp
 @author   Fumi.Iseki (C)
@@ -7,7 +6,6 @@
 @note
 エンディアン無変換
 */
-
 
 #include "STL.h"
 
@@ -61,7 +59,6 @@ DllExport STLData*  jbxl::ReadSTLFile(char* fname, long int* fno)
 }
 
 
-
 /**
 int  jbxl::WriteSTLFile (char* fname, BREP_SOLID* solid, bool ascii) 
 
@@ -100,7 +97,6 @@ DllExport int  jbxl::WriteSTLFile (char* fname, BREP_SOLID_LIST solid_list, bool
     if (nn<0) DEBUG_MODE PRINT_MESG("WriteSTLFile: ファイルオープンエラー．\n");
     return nn;
 }
-
 
 
 /**
@@ -171,7 +167,6 @@ DllExport STLData*  jbxl::ReadSTLFileA(char* fname, long int* fno)
 }
 
 
-
 /**
 STLData*  jbxl::ReadSTLFileB(char* fname, long int* fno) 
 
@@ -214,7 +209,6 @@ DllExport STLData*  jbxl::ReadSTLFileB(char* fname, long int* fno)
 }
  
 
-
 /**
 int  jbxl::WriteSTLFileA(char* fname, BREP_SOLID* solid) 
 
@@ -250,7 +244,6 @@ DllExport int  jbxl::WriteSTLFileA(char* fname, BREP_SOLID* solid)
 
     return nn;
 }
-
 
 
 /**
@@ -294,7 +287,6 @@ DllExport int  jbxl::WriteSTLFileB(char* fname, BREP_SOLID* solid)
 }
 
 
-
 /**
 DllExport int  jbxl::WriteSTLFileA(char* fname, BREP_SOLID_LIST solid_list) 
 
@@ -334,7 +326,6 @@ DllExport int  jbxl::WriteSTLFileA(char* fname, BREP_SOLID_LIST solid_list)
 
     return nn;
 }
-
 
 
 /**
@@ -383,7 +374,6 @@ DllExport int  jbxl::WriteSTLFileB(char* fname, BREP_SOLID_LIST solid_list)
 
     return fno;
 }
-
 
 
 /**

@@ -1,7 +1,6 @@
 ﻿#ifndef  __JBXL_BREPLIB_H_
 #define  __JBXL_BREPLIB_H_
 
-
 /**
 @brief    BREP (Boundary REPresentation model) Library
 @file     BrepLib.h
@@ -13,7 +12,6 @@
 注：Octreeのポリゴンの衝突検出は高速化が不十分．
 */
 
-
 #include  "TriBrep.h"
 #include  "MeshObjectData.h"
 
@@ -21,7 +19,6 @@
 #define  BREPLIB_VERSION    "v2.1.0   '20 11/29" 
 #define  BREPLIB_NAME       "BREPLib" 
 #define  BREPLIB_COPYRIGHT  "by Fumi.Iseki 2003" 
-
 
 
 namespace jbxl {
@@ -55,7 +52,6 @@ inline void  freeBrepSolidList(BrepSolidList*& solids) { if(solids!=NULL){ solid
 
 
 }       // namespace
-
 
 
 #endif

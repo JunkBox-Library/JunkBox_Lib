@@ -1,13 +1,10 @@
-﻿
-/**
+﻿/**
 @brief   BREPライブラリ
 @file    BrepLib.cpp
 @author  Fumi.Iseki (C)
 */
 
-
 #include "BrepLib.h"
-
 
 using namespace jbxl;
 
@@ -22,12 +19,10 @@ BrepSolidList::~BrepSolidList(void)
 }
 
 
-
 void  BrepSolidList::init(void)
 {
     solid_list.clear();
 }
-
 
 
 void  BrepSolidList::free(void)
@@ -39,7 +34,6 @@ void  BrepSolidList::free(void)
 }
 
 
-
 void  BrepSolidList::clear(void)
 {
     BREP_SOLID_LIST::iterator isolid;
@@ -47,7 +41,6 @@ void  BrepSolidList::clear(void)
 
     solid_list.clear();
 }
-
 
 
 
@@ -117,7 +110,6 @@ int  BrepSolidList::addSolid(MeshObjectData* mesh)
 }
 
 
-
 void  BrepSolidList::outputFile(const char* fname, const char* path, bool binfile)
 {
     char* packname = pack_head_tail_char(get_file_name(fname), ' ');
@@ -150,7 +142,6 @@ void  BrepSolidList::outputFile(const char* fname, const char* path, bool binfil
 
     return;
 }
-
 
 
 BREP_SOLID*  BrepSolidList::getMerge(CVCounter* counter)

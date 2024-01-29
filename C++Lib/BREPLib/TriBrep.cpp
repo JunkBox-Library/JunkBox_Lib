@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief    三角Contour(Facet)用ライブラリ 
 @file     TriBrep.cpp
 @author   Fumi.Iseki (C)
@@ -7,7 +6,6 @@
 @attention
 このファイルの関数は Contour(=Facet)が三角形であることを前提とする．
 */
-
 
 #include "TriBrep.h"
 
@@ -51,7 +49,6 @@ DllExport void  jbxl::CreateContoursList(BREP_SOLID* solid)
 }
 
 
-
 /**
 void  jbxl::CreateWingsList(BREP_SOLID* solid)
 
@@ -78,7 +75,6 @@ DllExport void  jbxl::CreateWingsList(BREP_SOLID* solid)
 }
 
 
-
 /**
 void  jbxl::CreateSurplusContoursList(BREP_SOLID* solid)
 
@@ -100,7 +96,6 @@ DllExport void  jbxl::CreateSurplusContoursList(BREP_SOLID* solid)
 }
 
 
-
 /**
 void  jbxl::CreateShortageWingsList(BREP_SOLID* solid)
 
@@ -116,7 +111,6 @@ DllExport void  jbxl::CreateShortageWingsList(BREP_SOLID* solid)
         if ((*iwing)->contour==NULL) solid->shortage_wings.push_back(*iwing);
     }
 }
-
 
 
 
@@ -201,7 +195,6 @@ DllExport void  jbxl::DeleteSurplusContours(BREP_SOLID* solid)
 }
 
 
-
 /**
 void  jbxl::DeleteStraightEdges(BREP_SOLID* solid)
 
@@ -245,7 +238,6 @@ DllExport void  jbxl::DeleteStraightEdges(BREP_SOLID* solid)
 }
 
 
-
 /**
 void  jbxl::DeleteShortageWings(BREP_SOLID* solid) 
 
@@ -277,7 +269,6 @@ DllExport void  jbxl::DeleteShortageWings(BREP_SOLID* solid)
 //  DEBUG_MODE PRINT_MESG("End   DeleteShortageWings\n");
     return;
 }
-
 
 
 #define  JBXL_BREP_MAX_LOOPCNT  20
@@ -328,7 +319,6 @@ DllExport void  jbxl::FillShortageWings(BREP_SOLID* solid, int method, bool mode
 }
 
 
-
 /**
 int  jbxl::FillShortageWings_Next(BREP_SOLID* solid, bool mode)
 
@@ -370,7 +360,6 @@ DllExport int  jbxl::FillShortageWings_Next(BREP_SOLID* solid, bool mode)
 
     return patchno;
 }
-
 
 
 #define  JBXL_BREP_MAX_QUEUESIZE  1
@@ -448,7 +437,6 @@ DllExport int  jbxl::FillShortageWings_Near(BREP_SOLID* solid, bool mode)
 }
 
 
-
 /**
 void  jbxl::SetMinVertex(BREP_VERTEX_LIST* list, BREP_VERTEX* vrtx)
 
@@ -469,7 +457,6 @@ DllExport void  jbxl::SetMinVertex(BREP_VERTEX_LIST* list, BREP_VERTEX* vrtx)
 }
 
 
-
 /**
 BREP_VERTEX*  jbxl::FindConnectEdgeVertex(BREP_VERTEX* vert)
 
@@ -485,7 +472,6 @@ DllExport BREP_VERTEX*  jbxl::FindConnectEdgeVertex(BREP_VERTEX* vert)
     }
     return NULL;
 }
-
 
 
 /**
@@ -530,7 +516,6 @@ DllExport bool  jbxl::PatchupContour(BREP_SHELL* shell, BREP_VERTEX** vert, bool
 
     return  false;
 }
-
 
 
 /**
@@ -595,7 +580,6 @@ DllExport void  jbxl::ReverseContours(BREP_SOLID* solid)
 }
 
 
-
 /**
 void  jbxl::JoinShortageWings(BREP_SOLID* solid)
 
@@ -656,7 +640,6 @@ DllExport void  jbxl::JoinShortageWings(BREP_SOLID* solid)
 
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 
@@ -680,7 +663,6 @@ DllExport int  jbxl::DupEdgeNumber(BREP_CONTOUR* contour)
     }
     return  contour->dup_edge;
 }
-
 
 
 /**
@@ -740,7 +722,6 @@ DllExport BREP_CONTOUR*  jbxl::CreateContourByVector(BREP_FACET* facet, Vector<d
 }
 
 
-
 /**
 BREP_CONTOUR*  jbxl::CreateContourByVertex(BREP_FACET* facet, BREP_VERTEX** vertex)
 
@@ -771,7 +752,6 @@ DllExport BREP_CONTOUR*  jbxl::CreateContourByVertex(BREP_FACET* facet, BREP_VER
 }
 
 
-
 /**
 bool  jbxl::IsIncludeCompleteEdge(BREP_WING* wing)
 
@@ -790,7 +770,6 @@ DllExport bool  jbxl::IsIncludeCompleteEdge(BREP_WING* wing)
     }
     return false;
 }
-
 
 
 /**
@@ -823,7 +802,6 @@ DllExport void  jbxl::FastDeleteFacet(BREP_FACET* facet)
     
     return;
 }
-
 
 
 /**
@@ -895,7 +873,6 @@ DllExport int  jbxl::IsAtLine(BREP_VERTEX** v)
 }
 
 
-
 /**
 bool  jbxl::IsForbiddenEdge(BREP_VERTEX** vert)
 
@@ -932,7 +909,6 @@ DllExport bool  jbxl::IsForbiddenEdge(BREP_VERTEX** vert)
     if (mode==0) return false;
     return true;
 }
-
 
 
 
@@ -1002,7 +978,6 @@ DllExport bool jbxl::IsCollisionContours(BREP_SOLID* solid, BREP_CONTOUR* contou
 }
 
 
-
 /**
 bool  jbxl::CollisionTriContour3D(BREP_CONTOUR* contour1, BREP_CONTOUR* contour2)
 
@@ -1069,7 +1044,6 @@ DllExport bool  jbxl::CollisionTriContour3D(BREP_CONTOUR* contour1, BREP_CONTOUR
 
     return false;
 }
-
 
 
 DllExport bool  jbxl::CollisionTriContour2D(BREP_CONTOUR* contour1, BREP_CONTOUR* contour2)
@@ -1151,7 +1125,6 @@ DllExport bool  jbxl::CollisionTriContour2D(BREP_CONTOUR* contour1, BREP_CONTOUR
 }
 
 
-
 DllExport bool  jbxl::IsInTriangle(BREP_CONTOUR* contour1, BREP_CONTOUR* contour2)
 {
     double  tc, uc, tt, ut;
@@ -1187,7 +1160,6 @@ DllExport bool  jbxl::IsInTriangle(BREP_CONTOUR* contour1, BREP_CONTOUR* contour
 }
 
 
-
 DllExport bool  jbxl::SamePlaneContour(BREP_CONTOUR* contour1, BREP_CONTOUR* contour2, int& lineno)
 {
     double  um, umt, tm, tmt;
@@ -1212,7 +1184,6 @@ DllExport bool  jbxl::SamePlaneContour(BREP_CONTOUR* contour1, BREP_CONTOUR* con
 }
 
 
-
 DllExport int  jbxl::CommonVertex(BREP_CONTOUR* contour1, BREP_CONTOUR* contour2)
 {
     BREP_VERTEX_LIST  vertex_list;
@@ -1235,7 +1206,6 @@ DllExport int  jbxl::CommonVertex(BREP_CONTOUR* contour1, BREP_CONTOUR* contour2
     }
     return cnt;
 }
-
 
 
 /**
@@ -1324,7 +1294,6 @@ DllExport int  jbxl::CreateTriSolidFromSTL(BREP_SOLID* solid, STLData* stldata, 
 
     return fno;
 }
-
 
 
 /**
@@ -1417,7 +1386,6 @@ DllExport int  jbxl::CreateTriSolidFromVector(BREP_SOLID* solid, int vno, Vector
 }
 
 
-
 /**
 void  jbxl::AddVector2TriSolid(BREP_SOLID* solid, BREP_SHELL* shell, Vector<double>* vect, Vector<double>* nrml, UVMap<double>* uvmp, bool dupli)
 
@@ -1469,7 +1437,6 @@ DllExport void  jbxl::AddVector2TriSolid(BREP_SOLID* solid, BREP_SHELL* shell, V
 }
 
 
-
 /**
 int  jbxl::CloseTriSolid(BREP_SOLID* solid, bool check, CVCounter* counter)
 
@@ -1511,11 +1478,9 @@ DllExport int  jbxl::CloseTriSolid(BREP_SOLID* solid, bool check, CVCounter* cou
 }
 
 
-
 DllExport  bool  jbxl::IsConnectEdges(BREP_WING* wing1, BREP_WING* wing2)
 {
     if (GetWingOtherSide(wing1)->vertex==wing2->vertex) return true;
     return false;
 }
-
 

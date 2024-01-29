@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief    BREP ライブリラリ
 @file     Brep.cpp
 @version  1.2.0
@@ -39,7 +38,6 @@ BREP_SOLID::BREP_SOLID()
 }
 
 
-
 /**
 BREP_SOLID::~BREP_SOLID()
 
@@ -49,7 +47,6 @@ BREP_SOLID::~BREP_SOLID()
 {
     if (!freed) FreeData();
 }
-
 
 
 /**
@@ -90,7 +87,6 @@ void BREP_SOLID::FreeData()
 }
 
 
-
 /**
 void  BREP_SOLID::CloseData()
 */
@@ -102,7 +98,6 @@ void  BREP_SOLID::CloseData()
 
     octree->ComputeVerticesNormal();
 }
-
 
 
 /** 
@@ -117,7 +112,6 @@ void  BREP_SOLID::ConnectShell(BREP_SHELL* shell)
         shells.push_back(shell);
     }
 }
-
 
 
 /**
@@ -137,7 +131,6 @@ void  BREP_SOLID::DisconnectShell(BREP_SHELL* shell)
 
 
 
-
 //////////////////////////////////////////////////////////////////////////////////
 // BREP_SHELL 
 //
@@ -149,7 +142,6 @@ BREP_SHELL::BREP_SHELL(BREP_SOLID* pr_solid)
 
     if (solid!=NULL) solid->ConnectShell(this);
 }
-
 
 
 BREP_SHELL::~BREP_SHELL()
@@ -182,14 +174,12 @@ BREP_SHELL::~BREP_SHELL()
 }
 
 
-
 void  BREP_SHELL::CloseData()
 {
     BREP_FACET_LIST::iterator ifacet;
     for (ifacet=facets.begin(); ifacet!=facets.end(); ifacet++) (*ifacet)->CloseData();
     for (ifacet=facets.begin(); ifacet!=facets.end(); ifacet++) rbound.fusion((*ifacet)->rbound);
 }
-
 
 
 //
@@ -200,7 +190,6 @@ void BREP_SHELL::ConnectFacet(BREP_FACET* facet)
         facets.push_back(facet);
     }
 }
-
 
 
 //
@@ -214,7 +203,6 @@ void BREP_SHELL::DisconnectFacet(BREP_FACET* facet)
         facet->shell = NULL;
     }
 }
-
 
 
 
@@ -235,7 +223,6 @@ BREP_FACET::BREP_FACET(BREP_SHELL* pr_shell)
 }
 
 
-
 BREP_FACET::~BREP_FACET()
 {
     if (shell!=NULL) shell->DisconnectFacet(this);
@@ -251,7 +238,6 @@ BREP_FACET::~BREP_FACET()
 }
 
 
-
 void  BREP_FACET::CloseData()
 {
     BREP_CONTOUR_LIST::iterator icon;
@@ -259,7 +245,6 @@ void  BREP_FACET::CloseData()
 
     ComputePlaneEquation();
 }
-
 
 
 //
@@ -272,7 +257,6 @@ void BREP_FACET::ConnectContour(BREP_CONTOUR* contour)
 }
 
 
-
 void BREP_FACET::DisconnectContour(BREP_CONTOUR* contour)
 {
     if (contour!=NULL) {
@@ -283,7 +267,6 @@ void BREP_FACET::DisconnectContour(BREP_CONTOUR* contour)
         contour->facet = NULL;
     }
 }
-
 
 
 /**
@@ -321,7 +304,6 @@ void  BREP_FACET::ComputePlaneEquation()
 
 
 
-
 //////////////////////////////////////////////////////////////////////////////////
 // BREP_CONTOUR
 
@@ -339,7 +321,6 @@ BREP_CONTOUR::BREP_CONTOUR(BREP_FACET* pr_facet)
 }
 
 
-
 //
 BREP_CONTOUR::~BREP_CONTOUR()
 {
@@ -348,13 +329,11 @@ BREP_CONTOUR::~BREP_CONTOUR()
 }
 
 
-
 void  BREP_CONTOUR::CloseData()
 {
     ComputeNormal();
     if (!hasCollisionVector) ComputeDirectRS();
 }
-
 
 
 /** 
@@ -380,7 +359,6 @@ void BREP_CONTOUR::ConnectWing(BREP_WING* new_wing)
 }
 
 
-
 //
 void  BREP_CONTOUR::DisconnectWing(BREP_WING* dis_wing)
 {
@@ -399,7 +377,6 @@ void  BREP_CONTOUR::DisconnectWing(BREP_WING* dis_wing)
     dis_wing->contour = NULL;
     dis_wing->next = dis_wing->prev = NULL;
 }
-
 
 
 /**
@@ -435,7 +412,6 @@ BREP_WING*  BREP_CONTOUR::CreateWing(BREP_VERTEX* vertex1, BREP_VERTEX* vertex2)
 }
 
 
-
 /**
 void BREP_CONTOUR::DestroyWings()
 
@@ -453,7 +429,6 @@ void BREP_CONTOUR::DestroyWings()
     }
     DestroyWing(first);
 }
-
 
 
 //
@@ -474,7 +449,6 @@ void  BREP_CONTOUR::CloseFacet(BREP_FACET* facet, double& emax, double& dmin, do
         next = swing->next;
     } while (next!=wing);
 }
-
 
 
 /**
@@ -498,7 +472,6 @@ void  BREP_CONTOUR::ComputeNormal()
 }
 
 
-
 /**
 void  BREP_CONTOUR::ComputeDirectRS()
 
@@ -519,13 +492,11 @@ void  BREP_CONTOUR::ComputeDirectRS()
 }
 
 
-
 BREP_CONTOUR* CreateContour(BREP_FACET* facet)
 {
     BREP_CONTOUR* contour = new BREP_CONTOUR(facet);
     return contour;
 }
-
 
 
 
@@ -544,7 +515,6 @@ BREP_WING::BREP_WING(BREP_VERTEX* vx)
 
 
 
-
 //////////////////////////////////////////////////////////////////////////////////
 // BREP_EDGE
 //
@@ -560,7 +530,6 @@ BREP_EDGE::BREP_EDGE(BREP_VERTEX* vertex1, BREP_VERTEX* vertex2)
     complete  = false;
     tolerance = Edge_Tolerance;
 }
-
 
 
 BREP_EDGE::~BREP_EDGE()
@@ -586,7 +555,6 @@ BREP_EDGE::~BREP_EDGE()
 }
 
 
-
 void  BREP_EDGE::CloseData()
 {
     // M.Segal, SIGGRAPH '90 p105
@@ -594,7 +562,6 @@ void  BREP_EDGE::CloseData()
     e = Max(e, (wing2->vertex)->tolerance);
     tolerance = Max(e, tolerance);
 }
-
 
 
 
@@ -615,7 +582,6 @@ BREP_VERTEX::BREP_VERTEX()
 }
 
 
-
 BREP_VERTEX::~BREP_VERTEX()
 {
     // Wingリストがまだ空でない!!
@@ -628,7 +594,6 @@ BREP_VERTEX::~BREP_VERTEX()
         delete(forbidden_list);
     }
 }
-
 
 
 //
@@ -645,7 +610,6 @@ void BREP_VERTEX::DisconnectWing(BREP_WING* wing)
 
     wing_list.erase(iwing);
 }
-
 
 
 /**
@@ -667,7 +631,6 @@ void  BREP_VERTEX::ComputeNormal()
 }
 
 
-
 void  BREP_VERTEX::ComputeTolerance()
 {
     double max = Xabs(point.x);
@@ -679,12 +642,10 @@ void  BREP_VERTEX::ComputeTolerance()
 }
 
 
-
 void  BREP_VERTEX::CloseData() 
 {
     ComputeTolerance();
 }
-
 
 
 
@@ -706,7 +667,6 @@ OctreeNode::OctreeNode(BREP_VERTEX* new_vertex, BREP_SOLID* sld)
 }
 
 
-
 OctreeNode::~OctreeNode() 
 {
     for (int i=0; i<8; i++) {
@@ -718,7 +678,6 @@ OctreeNode::~OctreeNode()
         if (solid!=NULL) solid->vertexno--;
     }
 }
-
 
 
 /** 
@@ -759,7 +718,6 @@ OctreeNode* OctreeNode::AddWithUnique(BREP_VERTEX* new_vertex)
 }
 
 
-
 /**
 OctreeNode* OctreeNode::AddWithDuplicates(BREP_VERTEX* new_vertex) 
 
@@ -797,7 +755,6 @@ OctreeNode* OctreeNode::AddWithDuplicates(BREP_VERTEX* new_vertex)
 }
 
 
-
 /**
 OctreeNode* OctreeNode::FindSubtree(BREP_VERTEX* element)
 
@@ -816,7 +773,6 @@ OctreeNode* OctreeNode::FindSubtree(BREP_VERTEX* element)
 }
 
 
-
 //
 void OctreeNode::ComputeVerticesNormal(void)
 {
@@ -827,7 +783,6 @@ void OctreeNode::ComputeVerticesNormal(void)
     }
     if (vertex!=NULL && vertex->calc_normal) vertex->ComputeNormal();
 }
-
 
 
 
@@ -848,7 +803,6 @@ DllExport  void jbxl::ConnectWingToVertex(BREP_WING* wing)
         (wing->vertex)->wing_list.push_back(wing);
     }
 }
-
 
 
 /**
@@ -903,7 +857,6 @@ DllExport BREP_WING* jbxl::CreateWingWithoutContour(BREP_VERTEX* vertex1, BREP_V
 }
 
 
-
 /**
 void jbxl::DestroyWing(BREP_WING* wing)
 */
@@ -919,7 +872,6 @@ DllExport void jbxl::DestroyWing(BREP_WING* wing)
         wing->edge->complete = false;
     }
 }
-
 
 
 /**
@@ -953,7 +905,6 @@ DllExport BREP_EDGE* jbxl::FindEdge(BREP_VERTEX* vertex1, BREP_VERTEX* vertex2)
 }
 
 
-
 /**
 要free
 */
@@ -975,7 +926,6 @@ DllExport  BREP_VERTEX** jbxl::GetOctreeVertices(OctreeNode* octree, long int* v
 }
 
 
-
 long int jbxl::OctreeGetter(OctreeNode* p, BREP_VERTEX** vtx, long int counter)
 {
     if (p->vertex!=NULL) {
@@ -991,7 +941,6 @@ long int jbxl::OctreeGetter(OctreeNode* p, BREP_VERTEX** vtx, long int counter)
 
     return counter;
 }
-
 
 
 /**
@@ -1031,7 +980,6 @@ DllExport BREP_VERTEX*  jbxl::AddVertex2Octree(BREP_VERTEX* vert, OctreeNode* oc
 }
 
 
-
 /**
 */
 DllExport BREP_EDGE* jbxl::CreateEdge(BREP_VERTEX* v1, BREP_VERTEX* v2)
@@ -1043,7 +991,6 @@ DllExport BREP_EDGE* jbxl::CreateEdge(BREP_VERTEX* v1, BREP_VERTEX* v2)
 
     return edge;
 }
-
 
 
 /**
@@ -1070,7 +1017,6 @@ DllExport int jbxl::CompareVertex(BREP_VERTEX* v1, BREP_VERTEX* v2)
 }
 
 
-
 /**
 BREP_WING* jbxl::GetWingOtherSide(BREP_WING* wing)
 
@@ -1082,7 +1028,6 @@ DllExport BREP_WING* jbxl::GetWingOtherSide(BREP_WING* wing)
     //
     return wing->edge->wing1;
 }
-
 
 
 DllExport TVector<double>  jbxl::Vertex2TVector(BREP_VERTEX* v)
