@@ -11,10 +11,10 @@ using namespace jbxl;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// MeshObjectNode クラス
+// MeshFacetNode クラス
 //
 
-void  MeshObjectNode::init(void)
+void  MeshFacetNode::init(void)
 {
     same_material= false;
     material_id  = init_Buffer();
@@ -39,13 +39,13 @@ void  MeshObjectNode::init(void)
 /**
 @brief ノードにマテリアルパラメータを設定し，他のノードに同じマテリアルが存在するかチャックする．
 */
-void  MeshObjectNode::setMaterialParam(MaterialParam mparam)
+void  MeshFacetNode::setMaterialParam(MaterialParam mparam)
 {
     material_param.free();
     material_param.dup(mparam);
     material_param.enable = true;
 
-    MeshObjectNode* node = prev;
+    MeshFacetNode* node = prev;
     while (node!=NULL) {
         if (isSameMaterial(material_param, node->material_param)) {
             setMaterialID(_tochar(node->material_id.buf));
@@ -69,7 +69,7 @@ void  MeshObjectNode::setMaterialParam(MaterialParam mparam)
 }
 
 
-void  MeshObjectNode::setMaterialID(const char* str)
+void  MeshFacetNode::setMaterialID(const char* str)
 {
     free_Buffer(&material_id);
     
@@ -98,7 +98,7 @@ void  MeshObjectNode::setMaterialID(const char* str)
 }
 
 
-void  MeshObjectNode::set(int vertex, int polygon, int vcount)
+void  MeshFacetNode::set(int vertex, int polygon, int vcount)
 {
     num_vertex  = vertex;
     num_texcrd  = num_vertex;
@@ -109,7 +109,7 @@ void  MeshObjectNode::set(int vertex, int polygon, int vcount)
 }
 
 
-void  MeshObjectNode::free(void)
+void  MeshFacetNode::free(void)
 {
     delMaterialParam();
     free_Buffer(&material_id);
@@ -118,7 +118,7 @@ void  MeshObjectNode::free(void)
 }
 
 
-void  MeshObjectNode::free_value(void)
+void  MeshFacetNode::free_value(void)
 {
     freeNull(data_index); 
     freeNull(vertex_value); 
@@ -127,7 +127,7 @@ void  MeshObjectNode::free_value(void)
 }
 
 
-void  MeshObjectNode::clear(void)
+void  MeshFacetNode::clear(void)
 {
     this->free();
     init();
@@ -135,7 +135,7 @@ void  MeshObjectNode::clear(void)
 
 
 /**
-bool  MeshObjectNode::getm(int vertex, int polygon, int vcount)
+bool  MeshFacetNode::getm(int vertex, int polygon, int vcount)
 
 必要なメモリを確保する．
 失敗，成功に係らず，以前のメモリは開放される．
@@ -147,7 +147,7 @@ bool  MeshObjectNode::getm(int vertex, int polygon, int vcount)
 @param polygon  ポリゴンの数
 @param vcount   １ポリゴン当たりの頂点数（固定）
 */
-bool  MeshObjectNode::getm(int vertex, int polygon, int vcount)
+bool  MeshFacetNode::getm(int vertex, int polygon, int vcount)
 {
     free_value();
 
@@ -175,7 +175,7 @@ bool  MeshObjectNode::getm(int vertex, int polygon, int vcount)
 /**
 インデックス化された頂点データを直接 MeshObjectのデータとしてインポートする．
 */
-bool  MeshObjectNode::computeVertexDirect(FacetBaseData* facetdata)
+bool  MeshFacetNode::computeVertexDirect(ContourBaseData* facetdata)
 {
     if (facetdata==NULL) return false;
     if (facetdata->index==NULL || facetdata->vertex==NULL || facetdata->normal==NULL) return false;
@@ -214,7 +214,7 @@ bool  MeshObjectNode::computeVertexDirect(FacetBaseData* facetdata)
 @param vcount ポリゴンの頂点数．通常は 3
 @return インポートに成功したかどうか．
 */
-bool  MeshObjectNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, int impnum, int vcount)
+bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, int impnum, int vcount)
 {
     if (impvtx==NULL || impnrm==NULL) return false;
 
@@ -238,7 +238,7 @@ bool  MeshObjectNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>
 
 
 /**
-bool  MeshObjectNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, int impnum, int vcount)
+bool  MeshFacetNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, int impnum, int vcount)
 
 BREPを使用して，頂点データを処理する．頂点データは再インデックス化される@n
 
@@ -253,7 +253,7 @@ BREPを使用して，頂点データを処理する．頂点データは再イ�
 @param vcount ポリゴンの頂点数．通常は 3
 @return インポートに成功したかどうか．
 */
-bool  MeshObjectNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, int impnum, int vcount)
+bool  MeshFacetNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, int impnum, int vcount)
 {
     if (impvtx==NULL) return false;
 
@@ -305,7 +305,7 @@ bool  MeshObjectNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>
 }
 
 
-void  MeshObjectNode::execAffineTrans(UVMap<double>* uvmap, int uvnum)
+void  MeshFacetNode::execAffineTrans(UVMap<double>* uvmap, int uvnum)
 {
     if (uvmap==NULL) uvmap = texcrd_value;
     if (uvnum==-1)   uvnum = num_texcrd;
@@ -326,7 +326,7 @@ void  MeshObjectNode::execAffineTrans(UVMap<double>* uvmap, int uvnum)
 
 @sa libopenmetaverse OpenMetaverse.Rendering.Meshmerizer:MeshmerizerR.cs
 */
-UVMap<double>*  MeshObjectNode::generatePlanarUVMap(Vector<double> scale, UVMap<double>* uvmap)
+UVMap<double>*  MeshFacetNode::generatePlanarUVMap(Vector<double> scale, UVMap<double>* uvmap)
 {
     if (num_texcrd!=num_vertex) return NULL;
 
@@ -362,35 +362,35 @@ UVMap<double>*  MeshObjectNode::generatePlanarUVMap(Vector<double> scale, UVMap<
 
 ///////////////////////////////////////////////////////////////////
 
-void  jbxl::freeMeshObjectList(MeshObjectNode*& node)
+void  jbxl::freeMeshObjectList(MeshFacetNode*& node)
 {
     if (node==NULL) return;
 
-    MeshObjectNode* next = node->next;
+    MeshFacetNode* next = node->next;
     if (next!=NULL) freeMeshObjectList(next);
 
-    freeMeshObjectNode(node);
+    freeMeshFacetNode(node);
 
     return;
 }
 
 
 //
-MeshObjectNode*  jbxl::DelMeshObjectNode(MeshObjectNode* node)
+MeshFacetNode*  jbxl::DelMeshFacetNode(MeshFacetNode* node)
 {
     if (node==NULL) return NULL;
 
     if (node->prev!=NULL) node->prev->next = node->next;
     if (node->next!=NULL) node->next->prev = node->prev;
             
-    MeshObjectNode* next = node->next;
-    freeMeshObjectNode(node);
+    MeshFacetNode* next = node->next;
+    freeMeshFacetNode(node);
 
     return next;
 }
 
 
-MeshObjectNode*  jbxl::AddMeshObjectNode(MeshObjectNode* list, MeshObjectNode* node)
+MeshFacetNode*  jbxl::AddMeshFacetNode(MeshFacetNode* list, MeshFacetNode* node)
 {
     if (list==NULL) return node;
     if (node==NULL) return list;
@@ -420,8 +420,8 @@ void  MeshObjectData::init(const char* name)
     num_node     = 0;
     num_vcount   = 3;
 
-    nodelist     = NULL;
-    endplist     = NULL;
+    facet     = NULL;
+    facet_end     = NULL;
     affine_trans = NULL;
 
     num_import   = 0;
@@ -438,8 +438,8 @@ void  MeshObjectData::free(void)
 
     delAffineTrans();
 
-    freeMeshObjectList(nodelist);
-    nodelist = endplist = NULL;
+    freeMeshObjectList(facet);
+    facet = facet_end = NULL;
 }
 
 
@@ -459,20 +459,20 @@ void  MeshObjectData::clear(void)
 
 
 /**
-bool  MeshObjectData::addData(FacetBaseData* facetdata, MaterialParam* param)
+bool  MeshObjectData::addData(ContourBaseData* facetdata, MaterialParam* param)
 
-インデックス化された FacetBaseDataを importTriData()を介さずに，直接 Nodeデータに書き込む．@n
-FACETを選択的に処理することはできない．予め FACETに分解しておくか，FACETが1つのみの場合に使用する．
+インデックス化された ContourBaseDataを importTriData()を介さずに，直接 Nodeデータに書き込む．@n
+CONTOUR(ポリゴン)を選択的に処理することはできない．予め CONTOURに分解しておくか，CONTOURが1つのみの場合に使用する．
 
-この後 MeshObjectNode::computeVertexDirect() を使用して頂点データの計算を行う．
+この後 MeshFacetNode::computeVertexDirect() を使用して頂点データの計算を行う．
 */
-bool  MeshObjectData::addData(FacetBaseData* facetdata, MaterialParam* param)
+bool  MeshObjectData::addData(ContourBaseData* contours, MaterialParam* param)
 {
     char* name = NULL;
     if (param!=NULL) name = param->getParamString();
 
-    bool ret = addNode(facetdata, name);
-    if (ret && param!=NULL) endplist->setMaterialParam(*param);
+    bool ret = addNode(contours, name);
+    if (ret && param!=NULL) facet_end->setMaterialParam(*param);
 
     return ret;
 }
@@ -481,11 +481,9 @@ bool  MeshObjectData::addData(FacetBaseData* facetdata, MaterialParam* param)
 /**
 bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, int vnum, MaterialParam* param, bool useBrep)
 
-指定した頂点ベクトルのデータを追加し，MeshObjectのデータ（通常はFACET単位）を作成する．@n
+指定した頂点ベクトルのデータを追加し，MeshObjectのデータ（通常はCONTOUR すなわちポリゴン単位）を作成する．@n
 vct, nrm, map は3個づつ組になって三角ポリゴンを表す．従って vnumは必ず3の倍数になるはず．@n
-FACETを選択的に処理することはできない．予め FACETに分解しておくか，FACETが1つのみの場合に使用する．
-
-その後 MeshObjectNode::computeVertexDirect() または MeshObjectNode::computeVertexByBREP() を使用して頂点データの計算を行う．
+その後 MeshFacetNode::computeVertexDirect() または MeshFacetNode::computeVertexByBREP() を使用して頂点データの計算を行う．
 
 @param vct      追加対象の頂点座標データへのポインタ
 @param nrm      追加対象の頂点の法線ベクトルのデータへのポインタ
@@ -502,25 +500,25 @@ bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<do
         if (param!=NULL) name = param->getParamString();
         ret = addNode(name, useBrep);
     }
-    if (ret && param!=NULL) endplist->setMaterialParam(*param);
+    if (ret && param!=NULL) facet_end->setMaterialParam(*param);
 
     return ret;
 }
 
 
 /**
-TriPolyData (三角ポリゴンデータ) を単位としてデータを追加し，MeshObjectのデータを作成する．@n
-num を指定すると，指定されたFACET（面）のデータのみが追加される．これにより面ごとのデータ構造を形成することができる．@n
+TriPolygonData (三角ポリゴンデータ) を単位としてデータを追加し，MeshObjectのデータを作成する．@n
+pnum を指定すると，指定されたポリゴンデータのみが追加される．これにより面ごとのデータ構造を形成することができる．@n
 
 @param tridata  追加対象の三角ポリゴンデータへのポインタ
 @param tnum     三角ポリゴンデータの数
-@param fnum     追加するデータのFACETの番号（選択的に追加する場合に指定する）．-1以下なら全てのFACETデータを追加する．
+@param pnum     追加するデータのポリゴン番号（選択的に追加する場合に指定する）．-1以下なら全てのポリゴンデータを追加する．
 @param param    マテリアル用パラメータへのポインタ
 @param useBrep  BREPを使用して頂点を配置する．速度は遅くなるが，頂点数（データ量）は減る．
 */
-bool  MeshObjectData::addData(TriPolyData* tridata, int tnum, int fnum, MaterialParam* param, bool useBrep)
+bool  MeshObjectData::addData(TriPolygonData* tridata, int tnum, int pnum, MaterialParam* param, bool useBrep)
 {
-    bool ret = importTriData(tridata, tnum, fnum);
+    bool ret = importTriData(tridata, tnum, pnum);
     if (ret) {
         char* name = NULL;
         if (param!=NULL) name = param->getParamString();
@@ -528,8 +526,8 @@ bool  MeshObjectData::addData(TriPolyData* tridata, int tnum, int fnum, Material
     }
     //
     if (ret) {
-        if (fnum>=0)     endplist->setFacetNo(fnum);
-        if (param!=NULL) endplist->setMaterialParam(*param);
+        if (pnum>=0)     facet_end->setFacetNo(pnum);
+        if (param!=NULL) facet_end->setMaterialParam(*param);
     }
 
     return ret;
@@ -588,35 +586,35 @@ bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UV
 
 
 /**
-TriPolyData (三角ポリゴンデータ) を単位としてデータを取り込む．@n
-num を指定すると，指定されたFACET（面）のデータのみが追加される．これにより面ごとのデータ構造を形成することができる．
+TriPolygonData (三角ポリゴンデータ) を単位としてデータを取り込む．@n
+pnum を指定すると，指定されたポリゴンデータのみが追加される．@n
 
 @param tridata  三角ポリゴンデータへのポインタ
 @param tnum     三角ポリゴンデータの数
-@param fnum     追加するデータのFACETの番号（選択的に追加する番号）．-1以下なら全てのFACETデータを追加する．
+@param pnum     追加するデータの三角ポリゴンの番号（選択的に追加する番号）．-1以下なら全てのポリゴンデータを追加する．
 */
-bool  MeshObjectData::importTriData(TriPolyData* tridata, int tnum, int fnum)
+bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
 {
     if (tridata==NULL) return false;
 
     free_value();
 
-    int pnum = 0;
-    if (fnum>=0) {
+    int num = 0;
+    if (pnum>=0) {
         for (int i=0; i<tnum; i++) {
-            if (tridata[i].facetNum==fnum) pnum++;
+            if (tridata[i].polygonNum==pnum) num++;
         }
-        if (pnum==0) return false;
+        if (num==0) return false;
     }
-    else pnum = tnum;
+    else num = tnum;
 
-    int vnum  = pnum*3;
+    int vnum  = num*3;
     int lsize = sizeof(Vector<double>)*vnum;
 
     impvtx_value = (Vector<double>*)malloc(lsize);
     if (impvtx_value!=NULL) {
         for (int i=0, n=0; i<tnum; i++) {
-            if (tridata[i].facetNum==fnum || fnum<0) {
+            if (tridata[i].polygonNum==pnum || pnum<0) {
                 impvtx_value[n*3]   = tridata[i].vertex[0];
                 impvtx_value[n*3+1] = tridata[i].vertex[1];
                 impvtx_value[n*3+2] = tridata[i].vertex[2];
@@ -631,7 +629,7 @@ bool  MeshObjectData::importTriData(TriPolyData* tridata, int tnum, int fnum)
         impnrm_value = (Vector<double>*)malloc(lsize);
         if (impnrm_value!=NULL) {
             for (int i=0, n=0; i<tnum; i++) {
-                if (tridata[i].facetNum==fnum || fnum<0) {
+                if (tridata[i].polygonNum==pnum || pnum<0) {
                     impnrm_value[n*3]   = tridata[i].normal[0];
                     impnrm_value[n*3+1] = tridata[i].normal[1];
                     impnrm_value[n*3+2] = tridata[i].normal[2];
@@ -651,7 +649,7 @@ bool  MeshObjectData::importTriData(TriPolyData* tridata, int tnum, int fnum)
         impmap_value = (UVMap<double>*)malloc(msize);
         if (impmap_value!=NULL) {
             for (int i=0, n=0; i<tnum; i++) {
-                if (tridata[i].facetNum==fnum || fnum<0) {
+                if (tridata[i].polygonNum==pnum || pnum<0) {
                     impmap_value[n*3]   = tridata[i].texcrd[0];
                     impmap_value[n*3+1] = tridata[i].texcrd[1];
                     impmap_value[n*3+2] = tridata[i].texcrd[2];
@@ -673,19 +671,19 @@ bool  MeshObjectData::importTriData(TriPolyData* tridata, int tnum, int fnum)
 }
 
 
-bool  MeshObjectData::addNode(FacetBaseData* facetdata, const char* name)
+bool  MeshObjectData::addNode(ContourBaseData* facetdata, const char* name)
 {
     bool ret = false;
 
-    MeshObjectNode* node = new MeshObjectNode();
+    MeshFacetNode* node = new MeshFacetNode();
     if (node==NULL) return ret;
     node->setMaterialID(name);
     
     ret = node->computeVertexDirect(facetdata);
 
     if (ret) {
-        if (nodelist==NULL) nodelist = endplist = node;
-        else                endplist = AddMeshObjectNode(endplist, node);
+        if (facet==NULL) facet = facet_end = node;
+        else                facet_end = AddMeshFacetNode(facet_end, node);
         num_node++;
         ttl_index  += node->num_index;
         ttl_vertex += node->num_vertex;
@@ -706,7 +704,7 @@ bool  MeshObjectData::addNode(const char* name, bool useBrep)
     bool ret = false;
     if (impvtx_value==NULL) return ret;
 
-    MeshObjectNode* node = new MeshObjectNode();
+    MeshFacetNode* node = new MeshFacetNode();
     if (node==NULL) return ret;
     node->setMaterialID(name);
 
@@ -718,8 +716,8 @@ bool  MeshObjectData::addNode(const char* name, bool useBrep)
     }
 
     if (ret) {
-        if (nodelist==NULL) nodelist = endplist = node;
-        else                endplist = AddMeshObjectNode(endplist, node);
+        if (facet==NULL) facet = facet_end = node;
+        else                facet_end = AddMeshFacetNode(facet_end, node);
         num_node++;
         ttl_index  += node->num_index;
         ttl_vertex += node->num_vertex;
@@ -742,12 +740,12 @@ void  MeshObjectData::setMaterialParam(MaterialParam param, int num)
 */
 void  MeshObjectData::setMaterialParam(MaterialParam param, int num)
 {
-    MeshObjectNode* node = nodelist;
+    MeshFacetNode* node = facet;
 
     if (num>=0) {
         while (node!=NULL) {
             if (node->facet_no==num) {
-node->setMaterialID(param.getParamString());
+                node->setMaterialID(param.getParamString());
                 node->setMaterialParam(param);
                 return;
             }
@@ -757,7 +755,7 @@ node->setMaterialID(param.getParamString());
     else {
         while (node!=NULL) {
             if (!node->material_param.enable) {
-node->setMaterialID(param.getParamString());
+                node->setMaterialID(param.getParamString());
                 node->setMaterialParam(param);
                 return;
             }
@@ -783,18 +781,18 @@ void  MeshObjectData::joinData(MeshObjectData*& data)
     ttl_texcrd += data->ttl_texcrd;
     num_node   += data->num_node;
 
-    if (endplist==NULL) {   //  最初のデータ
+    if (facet_end==NULL) {   //  最初のデータ
         setAffineTrans(*data->affine_trans);
-        nodelist = data->nodelist;
-        endplist = data->endplist;
+        facet = data->facet;
+        facet_end = data->facet_end;
     }
-    else if (data->nodelist!=NULL) {
-        endplist->next = data->nodelist;
-        data->nodelist->prev = endplist;
-        endplist = data->endplist;
+    else if (data->facet!=NULL) {
+        facet_end->next = data->facet;
+        data->facet->prev = facet_end;
+        facet_end = data->facet_end;
     }
 
-    data->nodelist = NULL;
+    data->facet = NULL;
     freeMeshObjectData(data);
 
     return;

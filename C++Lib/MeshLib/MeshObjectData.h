@@ -6,7 +6,7 @@
 
 #include  "TriBrep.h"
 #include  "Rotation.h"
-#include  "FacetBaseData.h"
+#include  "ContourBaseData.h"
 #include  "MaterialParam.h"
 
 
@@ -16,18 +16,20 @@
 namespace jbxl {
 
 
-class  MeshObjectNode;
+class  MeshFacetNode;
 class  MeshObjectData;
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-// MeshObjectNode: for Facet Data 
+// MeshFacetNode: for Facet Data 
 //
 
 /**
 @brief MeshObject の Polygonデータ（1面）を格納するクラス．リスト構造を取る．
+
+MeshObjectNode -> MeshFacetNode
 */
-class  MeshObjectNode
+class  MeshFacetNode
 {
 public:
     Buffer  material_id;            ///< マテリアルを識別するID．#MATERIAL_ で始まる．
@@ -47,12 +49,12 @@ public:
     Vector<double>* normal_value;   ///< 法線ベクトルデータの並び．要素数は num_vertex
     UVMap<double>*  texcrd_value;   ///< テクスチャマップの並び．要素数は num_texcrd
 
-    MeshObjectNode* next;
-    MeshObjectNode* prev;
+    MeshFacetNode* next;
+    MeshFacetNode* prev;
 
 public:
-    MeshObjectNode(void) { init();}
-    virtual ~MeshObjectNode(void) {}
+    MeshFacetNode(void) { init();}
+    virtual ~MeshFacetNode(void) {}
 
     void    init(void);
     void    free(void);
@@ -74,17 +76,17 @@ public:
     UVMap<double>*  generatePlanarUVMap(Vector<double> scale, UVMap<double>* uvmap=NULL);
 
 public:
-    bool    computeVertexDirect(FacetBaseData* facetdata);
+    bool    computeVertexDirect(ContourBaseData* facetdata);
     bool    computeVertexDirect(Vector<double>* vtx, Vector<double>* nml, UVMap<double>* map, int num, int vcount=3);
     bool    computeVertexByBREP(Vector<double>* vtx, Vector<double>* nml, UVMap<double>* map, int num, int vcount=3);
 };
 
 
-inline void  freeMeshObjectNode(MeshObjectNode*& node) { if(node!=NULL) { node->free(); delete node; node=NULL;} }
-void  freeMeshObjectList(MeshObjectNode*& node);
+inline void  freeMeshFacetNode(MeshFacetNode*& node) { if(node!=NULL) { node->free(); delete node; node=NULL;} }
+void  freeMeshObjectList(MeshFacetNode*& node);
 
-MeshObjectNode*  DelMeshObjectNode(MeshObjectNode* node);
-MeshObjectNode*  AddMeshObjectNode(MeshObjectNode* list, MeshObjectNode* node);
+MeshFacetNode*  DelMeshFacetNode(MeshFacetNode* node);
+MeshFacetNode*  AddMeshFacetNode(MeshFacetNode* list, MeshFacetNode* node);
 
 
 
@@ -93,6 +95,7 @@ MeshObjectNode*  AddMeshObjectNode(MeshObjectNode* list, MeshObjectNode* node);
 //
 
 /**
+class  MeshObjectData
 
 */
 class  MeshObjectData
@@ -106,8 +109,8 @@ public:
     int     num_node;                   ///< テクスチャー単位の面の数（Node の数）
     int     num_vcount;                 ///< 1ポリゴン あたりの頂点数．現在は 3のみサポート
 
-    MeshObjectNode* nodelist;           ///< ノード（テクスチャー単位の面）のデータのリストへのポインタ
-    MeshObjectNode* endplist;           ///< ノード（テクスチャー単位の面）のデータのリストの最後のデータへのポインタ
+    MeshFacetNode* facet;               ///< FACETデータのリストへのポインタ
+    MeshFacetNode* facet_end;           ///< FACETデータのリストの最後のデータへのポインタ
 
     AffineTrans<double>* affine_trans;  ///< アフィン変換．ここで使用するのは，shift, rotate, scale(size) のみ
 
@@ -135,16 +138,16 @@ public:
     void    delAffineTrans(void) { freeAffineTrans(affine_trans);}
 
 public:
-    bool    addData(FacetBaseData* facetdata, MaterialParam* param);
+    bool    addData(ContourBaseData* facetdata, MaterialParam* param);
     bool    addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, int vnum, MaterialParam* param, bool useBrep);
-    bool    addData(TriPolyData* tridata, int tnum, int fnum, MaterialParam* param, bool useBrep);  ///< 処理するFACETを選択できる
+    bool    addData(TriPolygonData* tridata, int tnum, int fnum, MaterialParam* param, bool useBrep);  ///< 処理するFACETを選択できる
 
     void    joinData(MeshObjectData*& data);    ///< data は削除される．
     void    setMaterialParam(MaterialParam param, int num=-1);
     //
-    bool    importTriData(TriPolyData* tridata, int tnum, int fnum=-1);
+    bool    importTriData(TriPolygonData* tridata, int tnum, int fnum=-1);
     bool    importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, int vnum);
-    bool    addNode(FacetBaseData* facetdata, const char* name);
+    bool    addNode(ContourBaseData* facetdata, const char* name);
     bool    addNode(const char* name, bool useBrep);
 };
 

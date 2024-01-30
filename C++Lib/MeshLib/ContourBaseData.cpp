@@ -1,15 +1,15 @@
 ﻿
-#include "FacetBaseData.h"
+#include "ContourBaseData.h"
 
 
 using namespace jbxl;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// FacetTriIndex
+// ContourTriIndex
 //
 
-void  FacetTriIndex::set(int w1, int w2, int w3, int m1, int m2, int m3, int u1, int u2, int u3)
+void  ContourTriIndex::set(int w1, int w2, int w3, int m1, int m2, int m3, int u1, int u2, int u3)
 {
      v1 = w1;  v2 = w2;  v3 = w3;
      n1 = m1;  n2 = m2;  n3 = m3;
@@ -17,7 +17,7 @@ void  FacetTriIndex::set(int w1, int w2, int w3, int m1, int m2, int m3, int u1,
 }
 
 
-void  FacetTriIndex::mlt_set(int d1, int d2, int d3)
+void  ContourTriIndex::mlt_set(int d1, int d2, int d3)
 {
      v1 = d1;  v2 = d2;  v3 = d3;
      n1 = d1;  n2 = d2;  n3 = d3;
@@ -25,14 +25,13 @@ void  FacetTriIndex::mlt_set(int d1, int d2, int d3)
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// FacetTriData
+// ContourTriData
 //
 
-void  FacetTriData::init(void)
+void  ContourTriData::init(void)
 {
-    facetNum = 0;
+    contourNum = 0;
 
     v1.init();
     v2.init();
@@ -46,7 +45,7 @@ void  FacetTriData::init(void)
 }
 
 
-void  FacetTriData::execScale(double x, double y, double z)
+void  ContourTriData::execScale(double x, double y, double z)
 {
     v1.x *= x;
     v1.y *= y;
@@ -60,7 +59,7 @@ void  FacetTriData::execScale(double x, double y, double z)
 }
 
 
-void  FacetTriData::execRotate(Quaternion<double> q)
+void  ContourTriData::execRotate(Quaternion<double> q)
 {
     v1 = q.execRotation(v1);
     v2 = q.execRotation(v2);
@@ -73,10 +72,10 @@ void  FacetTriData::execRotate(Quaternion<double> q)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Facet Base Data
+// Contour Base Data
 //
 
-void  FacetBaseData::init(int idx, int num)
+void  ContourBaseData::init(int idx, int num)
 {
     num_index = idx;
     num_data  = num;
@@ -89,7 +88,7 @@ void  FacetBaseData::init(int idx, int num)
 }
 
 
-void  FacetBaseData::free(void)
+void  ContourBaseData::free(void)
 {
     freeNull(index);
 
@@ -101,7 +100,7 @@ void  FacetBaseData::free(void)
 }
 
 
-bool  FacetBaseData::getm(void)
+bool  ContourBaseData::getm(void)
 {
     index = (int*)malloc(sizeof(int)*num_index);
 
@@ -118,7 +117,7 @@ bool  FacetBaseData::getm(void)
 }
 
 
-void  FacetBaseData::dup(FacetBaseData a)
+void  ContourBaseData::dup(ContourBaseData a)
 {
     num_index = a.num_index;
     num_data  = a.num_data;
@@ -136,7 +135,7 @@ void  FacetBaseData::dup(FacetBaseData a)
 }
 
 
-void  FacetBaseData::execScale(Vector<double> scale)
+void  ContourBaseData::execScale(Vector<double> scale)
 {
     for (int i=0; i<num_data;  i++) {
         vertex[i].x *= scale.x;
@@ -146,7 +145,7 @@ void  FacetBaseData::execScale(Vector<double> scale)
 }
 
 
-void  FacetBaseData::execShift(Vector<double> shift)
+void  ContourBaseData::execShift(Vector<double> shift)
 {
     for (int i=0; i<num_data; i++) {
         vertex[i].x += shift.x;
@@ -156,7 +155,7 @@ void  FacetBaseData::execShift(Vector<double> shift)
 }
 
 
-void  FacetBaseData::execRotate(Quaternion<double> quat)
+void  ContourBaseData::execRotate(Quaternion<double> quat)
 {
     for (int i=0; i<num_data; i++) {
         vertex[i] = VectorRotation(vertex[i], quat);
@@ -170,21 +169,21 @@ void  FacetBaseData::execRotate(Quaternion<double> quat)
 // Triangle Polygon Data
 //
 
-void  TriPolyData::init(void)
+void  TriPolygonData::init(void)
 {
-    facetNum   = -1;
+    polygonNum = -1;
     has_normal = false;
     has_texcrd = false;
 }
 
 
-void  TriPolyData::dup(TriPolyData a)
+void  TriPolygonData::dup(TriPolygonData a)
 {
     *this = a;
 }
 
 
-void  TriPolyData::execScale(Vector<double> scale)
+void  TriPolygonData::execScale(Vector<double> scale)
 {
     for (int i=0; i<3; i++) {
         vertex[i].x *= scale.x;
@@ -194,7 +193,7 @@ void  TriPolyData::execScale(Vector<double> scale)
 }
 
 
-void  TriPolyData::execShift(Vector<double> shift)
+void  TriPolygonData::execShift(Vector<double> shift)
 {
     for (int i=0; i<3; i++) {
         vertex[i].x += shift.x;
@@ -204,7 +203,7 @@ void  TriPolyData::execShift(Vector<double> shift)
 }
 
 
-void  TriPolyData::execRotate(Quaternion<double> quat)
+void  TriPolygonData::execRotate(Quaternion<double> quat)
 {
     for (int i=0; i<3; i++) {
         vertex[i] = VectorRotation(vertex[i], quat);
@@ -217,11 +216,11 @@ void  TriPolyData::execRotate(Quaternion<double> quat)
 //////////////////////////////////////////////////////////////////////////////////
 //
 
-TriPolyData* jbxl::dupTriPolyData(TriPolyData* data, int num)
+TriPolygonData* jbxl::dupTriPolygonData(TriPolygonData* data, int num)
 {
     if (data==NULL) return NULL;
 
-    TriPolyData* dup = (TriPolyData*)malloc(num*sizeof(TriPolyData));
+    TriPolygonData* dup = (TriPolygonData*)malloc(num*sizeof(TriPolygonData));
     if (dup==NULL) return NULL;
 
     for (int i=0; i<num; i++) dup[i].dup(data[i]);
@@ -229,34 +228,34 @@ TriPolyData* jbxl::dupTriPolyData(TriPolyData* data, int num)
 }
 
 
-TriPolyData*  jbxl::joinTriPolyData(TriPolyData*& first, int num_f, TriPolyData*& next, int num_n)
+TriPolygonData*  jbxl::joinTriPolygonData(TriPolygonData*& first, int num_p, TriPolygonData*& next, int num_n)
 {
     if (first==NULL) return next;
     if (next ==NULL) return first;
 
-    TriPolyData* join = (TriPolyData*)malloc((num_f+num_n)*sizeof(TriPolyData));
+    TriPolygonData* join = (TriPolygonData*)malloc((num_p+num_n)*sizeof(TriPolygonData));
     if (join==NULL) return NULL;
     
-    int fnum = 0;
-    for (int i=0; i<num_f; i++) {
+    int num = 0;
+    for (int i=0; i<num_p; i++) {
         join[i].dup(first[i]);
-        if (join[i].facetNum>fnum) fnum = join[i].facetNum;
+        if (join[i].polygonNum>num) num = join[i].polygonNum;
     }
-    fnum += 1;
+    num += 1;
 
     for (int i=0; i<num_n; i++) {
-        join[num_f+i].dup(next[i]);
-        join[num_f+i].facetNum += fnum;
+        join[num_p+i].dup(next[i]);
+        join[num_p+i].polygonNum += num;
     }
 
-    freeTriPolyData(first, num_f);
-    freeTriPolyData(next,  num_n);
+    freeTriPolygonData(first, num_p);
+    freeTriPolygonData(next,  num_n);
 
     return join;
 }
 
 
-void  jbxl::freeTriPolyData(TriPolyData*& tridata, int n)
+void  jbxl::freeTriPolygonData(TriPolygonData*& tridata, int n)
 {
     if (tridata!=NULL) {
         for (int i=0; i<n; i++) {

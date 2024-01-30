@@ -1,9 +1,9 @@
-﻿#ifndef  __JBXL_FACET_BASE_H_
-#define  __JBXL_FACET_BASE_H_
+﻿#ifndef  __JBXL_CONTOUR_BASE_H_
+#define  __JBXL_CONTOUR_BASE_H_
 
 /**
 
-3D Facet用基本データ
+3D Contour用基本データ
 
 */
 
@@ -18,25 +18,24 @@
 namespace  jbxl {
 
 
-class   FacetTriIndex;
-class   FacetTriData;
+class   ContourTriIndex;
+class   ContourTriData;
 
-class   FacetBaseData;
-class   TriPolyData;
+class   ContourBaseData;
+class   TriPolygonData;
 
 
-typedef std::vector<Vector<double> > FACET_VECTOR_ARRAY;
-typedef std::vector<Vector<float> >  FACET_VECTOR_ARRAY32;
-typedef std::vector<FacetTriIndex>   FACET_TRIINDX_ARRAY;
-typedef std::vector<FacetTriData>    FACET_TRIDATA_ARRAY;
-
+typedef std::vector<Vector<double> >   CONTOUR_VECTOR_ARRAY;
+typedef std::vector<Vector<float> >    CONTOUR_VECTOR_ARRAY32;
+typedef std::vector<ContourTriIndex>   CONTOUR_TRIINDX_ARRAY;
+typedef std::vector<ContourTriData>    CONTOUR_TRIDATA_ARRAY;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Index of Triangle Polygon Data
 //
 
-class  FacetTriIndex
+class  ContourTriIndex
 {
 public:
     int  v1,  v2,  v3;  // Vertex Index
@@ -44,44 +43,43 @@ public:
     int uv1, uv2, uv3;  // UVmap  Index
 
 public:
-    FacetTriIndex(int w1=0,int w2=0,int w3=0,int m1=0,int m2=0,int m3=0) { init(w1,w2,w3,m1,m2,m3);}
-    virtual ~FacetTriIndex(void) {}
+    ContourTriIndex(int w1=0,int w2=0,int w3=0,int m1=0,int m2=0,int m3=0) { init(w1,w2,w3,m1,m2,m3);}
+    virtual ~ContourTriIndex(void) {}
 
     void init(int w1=0,int w2=0,int w3=0,int m1=0,int m2=0,int m3=0,int u1=0,int u2=0,int u3=0) { set(w1,w2,w3,m1,m2,m3,u1,u2,u3);}
     void set (int w1=0,int w2=0,int w3=0,int m1=0,int m2=0,int m3=0,int u1=0,int u2=0,int u3=0);
     void mlt_set(int d1=0,int d2=0,int d3=0);
 
 public:
-    Vector<double> SurfaceNormal(FACET_VECTOR_ARRAY* coords) { 
+    Vector<double> SurfaceNormal(CONTOUR_VECTOR_ARRAY* coords) { 
         Vector<double> normal = NewellMethod<double>((*coords)[v1],(*coords)[v2],(*coords)[v3]);
         return normal.normalize();
     }
 
     //
-    Vector<float> SurfaceNormal(FACET_VECTOR_ARRAY32* coords) {
+    Vector<float> SurfaceNormal(CONTOUR_VECTOR_ARRAY32* coords) {
         Vector<float> normal = NewellMethod<float>((*coords)[v1], (*coords)[v2], (*coords)[v3]);
         return normal.normalize();
     }
 };
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// Triangle Polygon Data
+// Triangle Contour Data
 //
 
-class  FacetTriData
+class  ContourTriData
 {
 public:
-    int facetNum;
+    int contourNum;
 
     Vector<double>  v1,  v2,  v3;
     Vector<double>  n1,  n2,  n3;
     UVMap<double>   uv1, uv2, uv3;
 
 public:
-    FacetTriData(int n=0) { init(); facetNum = n;}
-    virtual ~FacetTriData(void) {}
+    ContourTriData(int n=0) { init(); contourNum = n;}
+    virtual ~ContourTriData(void) {}
 
     void  init(void);
 
@@ -93,12 +91,11 @@ public:
 };
 
 
-
 //////////////////////////////////////////////////////////////////////////////////////
-// Facet Base Data (インデックス化されたデータ)
+// Contour Base Data (インデックス化されたデータ)
 //
 
-class  FacetBaseData
+class  ContourBaseData
 {
 public:
     int     num_index;              ///< インデックスの数．(index の要素数）
@@ -111,13 +108,13 @@ public:
     UVMap<double>*  texcrd;         ///< テクスチャマップ
 
 public:
-    FacetBaseData(int idx=0, int num=0) { init(idx, num);}
-    virtual ~FacetBaseData(void) {} 
+    ContourBaseData(int idx=0, int num=0) { init(idx, num);}
+    virtual ~ContourBaseData(void) {} 
 
     void  init(int idx=0, int num=0);
     void  free(void);
     bool  getm(void);
-    void  dup(FacetBaseData a);
+    void  dup(ContourBaseData a);
 
 public:
     void  execScale(Vector<double> scale);
@@ -126,18 +123,19 @@ public:
 };
 
 
-inline void  freeFacetBaseData(FacetBaseData*& facet) { if(facet!=NULL){ facet->free(); delete facet; facet = NULL;}}
-
+inline void  freeContourBaseData(ContourBaseData*& contour) { if(contour!=NULL){ contour->free(); delete contour; contour = NULL;}}
 
 
 //////////////////////////////////////////////////////////////////////////////////////
 //  Triangle Polygon Data
+//      ContourTriIndex と ContourTriData を統合したクラス．
+//      使いやすい方を使用する
 //
 
-class  TriPolyData
+class  TriPolygonData
 {
 public:
-    int             facetNum;       ///< 面番号
+    int             polygonNum;     ///< ポリゴン番号
     bool            has_normal;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
     bool            has_texcrd;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
 
@@ -146,25 +144,26 @@ public:
     UVMap<double>   texcrd[3];
 
 public:
-    TriPolyData(void) { init();}
-    virtual ~TriPolyData(void) {}   
+    TriPolygonData(void) { init();}
+    virtual ~TriPolygonData(void) {}   
 
     void  init(void);
     void  free(void) { init();}
-    void  dup(TriPolyData a);
+    void  dup(TriPolygonData a);
 
 public:
     void  execScale(Vector<double> scale);
     void  execShift(Vector<double> shift);
     void  execRotate(Quaternion<double> quat);
+    void  ComputeTriNormal() { Vector<double> nv = NewellMethod(vertex[0], vertex[1], vertex[2]); nv.normalize(); normal[0] = normal[1] = normal[2] = nv;}
 };
 
 
-TriPolyData* dupTriPolyData(TriPolyData* data, int num);
-TriPolyData* joinTriPolyData(TriPolyData*& first, int num_f, TriPolyData*& next, int num_n);
+TriPolygonData*  dupTriPolygonData(TriPolygonData* data, int num);
+TriPolygonData*  joinTriPolygonData(TriPolygonData*& first, int num_f, TriPolygonData*& next, int num_n);
 
-inline void  freeTriPolyData(TriPolyData*& tridata) { if(tridata!=NULL){ tridata->free(); delete tridata; tridata = NULL;}}
-void  freeTriPolyData(TriPolyData*& tridata, int n);
+inline void   freeTriPolygonData(TriPolygonData*& tridata) { if(tridata!=NULL){ tridata->free(); delete tridata; tridata = NULL;}}
+void   freeTriPolygonData(TriPolygonData*& tridata, int n);
 
 
 

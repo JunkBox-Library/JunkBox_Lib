@@ -7,7 +7,7 @@
 
 #include  "TriBrep.h"
 #include  "Rotation.h"
-#include  "FacetBaseData.h"
+#include  "ContourBaseData.h"
 #include  "MaterialParam.h"
 #include  "MeshObjectData.h"
 
