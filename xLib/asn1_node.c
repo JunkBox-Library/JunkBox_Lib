@@ -60,7 +60,6 @@ const char* _ASN1_NODE_TAG[] =
 };
 
 
-
 void  asn1_id_type(int id, int* type, int* cnst, int* tag)
 {
     if (cnst!=NULL) {
@@ -88,7 +87,6 @@ void  asn1_print_id(FILE* fp, int id)
 
     return;
 }
-    
 
 
 void  asn1_print_tag_value(FILE* fp, int id, Buffer buf)
@@ -109,7 +107,6 @@ void  asn1_print_tag_value(FILE* fp, int id, Buffer buf)
     else if (buf.buf!=NULL) {               // その他
         fprintf(fp, "....... ");
     }
-
     return;
 }
 

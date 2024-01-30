@@ -15,7 +15,6 @@ int  Use_isNet_Ldap     = FALSE;
 int  Use_isNet_Crypt    = FALSE;
 
 
-
 #ifdef ENABLE_LDAP
 JBXL_LDAP_Host* LdapHost = NULL;
 JBXL_LDAP_Dn*   LdapBind = NULL;
@@ -170,7 +169,6 @@ int  command_USERID(Buffer operand, Buffer comment, int sock)
 }
 
 
-
 /**
 int  command_PASSWD(Buffer operand, Buffer comment, int sock)
 
@@ -271,7 +269,6 @@ int  command_PASSWD(Buffer operand, Buffer comment, int sock)
 }
 
 
-
 /**
 int  command_HELLO(Buffer operand, Buffer comment, int sock)
 
@@ -297,7 +294,6 @@ int  command_HELLO(Buffer operand, Buffer comment, int sock)
     cc = tcp_send_crypt_mesg(sock, (char*)"OK\r\n", CRYPT_SharedKey, CRYPT_Type);
     return cc;
 }
-
 
 
 /**
@@ -326,7 +322,6 @@ int  command_BYE(Buffer operand, Buffer comment, int sock)
     //clear_CRYPT_parameter();
     return cc;
 }
-
 
 
 /**
@@ -467,7 +462,6 @@ int  command_KEYEX(Buffer operand, Buffer comment, int sock)
 }
 
 
-
 /**
 int  command_CRYPT(Buffer operand, Buffer comment, int sock)
 
@@ -516,6 +510,4 @@ int  command_CRYPT(Buffer operand, Buffer comment, int sock)
 
     return 0;
 }
-
-
 

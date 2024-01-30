@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_PROTOCOL_H_
+﻿#ifndef  __JBXL_PROTOCOL_H_
 #define  __JBXL_PROTOCOL_H_
-
 
 /**
 @brief   プロトコル解析ライブラリ ヘッダ
@@ -133,6 +131,4 @@ void    print_protocol_header(tList* lp, int content);
 
 tList*  find_protocol_end(tList* lp);
 #endif
-
-
 

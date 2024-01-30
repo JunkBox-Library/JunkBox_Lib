@@ -1,7 +1,6 @@
 ﻿#ifndef  __JBXL_OPEN_X11_H_ 
 #define  __JBXL_OPEN_X11_H_
 
-
 #include "gdata.h"
 
 
@@ -43,11 +42,9 @@ typedef struct {
 } openX;
 
 
-
 #define  MONOC        0
 #define  COLOR        1
 #define  COLOR_NUM  125
-
 
 openX  disp_image(WSGraph gd, int lc, int hc, int cflg);
 void   displayClose(openX xid);
@@ -57,7 +54,6 @@ openX  displayOpen(int xs, int ys, int cflg);
 
 #define disp_close(xd)  displayClose(xd)
 #define check_image(vp) {openX x;x=disp_image((vp),0,0,0);getchar();displayClose(x);}
-
 
 
 #endif  // DISABLE_X11

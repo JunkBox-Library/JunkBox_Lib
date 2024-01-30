@@ -1,5 +1,4 @@
-﻿
-#ifndef  __JBXL_MIME_TOOL_H_
+﻿#ifndef  __JBXL_MIME_TOOL_H_
 #define  __JBXL_MIME_TOOL_H_
 
 /**
@@ -8,7 +7,6 @@
 @author  Fumi.Iseki (C)
 @date    2005 12/25
 */
-
 
 #include "xtools.h"
 
@@ -47,6 +45,4 @@ int    get_mime_enckind(char* str);
 
 
 #endif
-
-
 

@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief   MIMEツール
 @file    mime_tool.c
 @author  Fumi.Iseki (C)
@@ -8,7 +7,6 @@
 
 #include "protocol.h"
 #include "mime_tool.h"
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +51,6 @@ char*  get_mime_boundary(tList* list)
     free_Buffer(&buf);
     return str;
 }
-
 
 
 /**
@@ -142,7 +139,6 @@ tList*  get_mime_filename(FILE* fp, char* bndry)
 }
 
 
-
 /**
 tList*  get_mime_filenameffn(char* fname, char* bndry)
 
@@ -170,7 +166,6 @@ tList*  get_mime_filenameffn(char* fname, char* bndry)
     return lp;
 }
     
-
 
 /**
 char*  decode_mime_rfc2047(char* mime)
@@ -299,10 +294,8 @@ char*  decode_mime_rfc2047(char* mime)
             ppb += len;
         }
     }
-
     return dec;
 }
-
 
 
 /**
@@ -357,7 +350,6 @@ char*  decode_mime_rfc2231(char* mime)
 
     return dec;
 }
-
 
 
 /**
@@ -430,10 +422,8 @@ char*  decode_mime_string(char* mime)
             free(str);
         }
     }
-
     return buf;
 }
-
 
 
 /**
@@ -497,7 +487,6 @@ char*  encode_mime_string(char* str, int kind)
 
     return (char*)mime.buf;
 }
-
 
 
 /**

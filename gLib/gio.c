@@ -6,7 +6,6 @@
 @author   Fumi.Iseki (C)
 */
 
-
 #include "gio.h"
 #include "jbxl_state.h"
 

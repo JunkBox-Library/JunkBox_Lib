@@ -1,11 +1,9 @@
-﻿
-/**
+﻿/**
 @brief   プロトコル解析ライブラリ
 @file    protocol.c
 @author  Fumi.Iseki (C)
 @date    2009 2/5
 */
-
 
 #include "protocol.h"
 
@@ -44,7 +42,6 @@ tList*  get_protocol_header_list(Buffer buf, char deli, int fstline, int rcntnt)
 
     return lp;
 }
-
 
 
 /**
@@ -104,7 +101,6 @@ Buffer  restore_protocol_header(tList* list, char* deli, int mode, int* hdsz)
 }
 
 
-
 /**
 Buffer  restore_protocol_contents(tList* list)
  
@@ -128,7 +124,6 @@ Buffer  restore_protocol_contents(tList* list)
 }
 
 
-
 /**
 void    set_protocol_contents(tList* list, Buffer contents)
 
@@ -150,7 +145,6 @@ void    set_protocol_contents(tList* list, Buffer contents)
 
     return;
 }
-
 
 
 /**
@@ -332,7 +326,6 @@ tList*  get_protocol_header_list_seq(tList* lp, Buffer buf, char deli, int fstli
 }
 
 
-
 /**
 tList*  get_protocol_header_list_file(char* fname, char deli, int fstline, int rcntnt)
 
@@ -357,7 +350,6 @@ tList*  get_protocol_header_list_file(char* fname, char deli, int fstline, int r
 
     return lp;
 }
-
 
 
 
@@ -400,7 +392,6 @@ Buffer  search_protocol_header(tList* list, char* key, int no)
 }
 
 
-
 /**
 Buffer  search_protocol_header_item(tList* list, char* key, int no, char deli, int nm) 
 
@@ -426,7 +417,6 @@ Buffer  search_protocol_header_item(tList* list, char* key, int no, char deli, i
 
     return itm;
 }
-
 
 
 /**
@@ -491,7 +481,6 @@ Buffer  search_protocol_header_value(tList* list, char* key, char* data, int no)
 
     return buf;
 }
-
 
 
 /**
@@ -559,7 +548,6 @@ Buffer  search_protocol_header_partvalue(tList* list, char* key, char* data, int
 
 
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // Set
 
@@ -602,7 +590,6 @@ int  set_protocol_header(tList* list, char* key, char* value, int no, int add_mo
 }
 
 
-
 /**
 int  search_crlfcrlf(char* mesg) 
 
@@ -635,7 +622,6 @@ int  search_crlfcrlf(char* mesg)
 }
 
 
-
 /**
 int  is_header_continue(tList* pp)
 
@@ -648,7 +634,6 @@ int  is_header_continue(tList* pp)
     if (!strcmp((const char*)pp->next->ldat.key.buf, HDLIST_CONTINUE)) return TRUE;
     return FALSE;
 }
-
 
 
 /**
@@ -670,7 +655,6 @@ void  print_protocol_header(tList* pp, int content)
     }
     return;
 }
-
 
 
 /**

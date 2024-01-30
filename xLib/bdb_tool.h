@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_BERKELEY_DB4_H__
+﻿#ifndef  __JBXL_BERKELEY_DB4_H__
 #define  __JBXL_BERKELEY_DB4_H__
-
 
 /**
 @brief   簡易データベースライブラリヘッダ for Berkeley BD4
@@ -40,7 +38,6 @@
 #ifdef ENABLE_BERKELEYDB
 
 
-
 #if ! defined (HAVE_DB_H) && ! defined (HAVE_LIBDB_4_2)
     #error  fdb.h needs Berkley 
 #endif
@@ -50,7 +47,6 @@
 #include <db.h>
 
 #include <fcntl.h>
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -82,5 +78,4 @@ tList*    get_all_fdb_data_file(char* fname);
 #endif    // ENABLE_BERKELEYDB
 
 #endif    // __JBXL_BERKELEY_DB4_H__
-
 

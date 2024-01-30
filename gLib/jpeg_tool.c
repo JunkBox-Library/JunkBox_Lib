@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief    JPEG TOOL
 @file     jpeg_tool.c
 @version  0.9
@@ -9,7 +8,6 @@
 @attention
 this software is based in part on the work of the Independent JPEG Group. http://www.ijg.org/
 */
-
 
 #include "jpeg_tool.h"
 #include "jbxl_state.h"
@@ -90,7 +88,6 @@ JPEGImage  read_jpeg_file(const char* fname)
 }
 
 
-
 /**
 int  write_jpeg_file(const char* fname, JPEGImage jp, int qulty)
 
@@ -157,7 +154,6 @@ int  write_jpeg_file(const char* fname, JPEGImage jp, int qulty)
 }
 
 
-
 /**
 int  write_jpeg_mem(unsigned char** buf, unsigned long* len, JPEGImage jp, int qulty)
 
@@ -222,7 +218,6 @@ int  write_jpeg_mem(unsigned char** buf, unsigned long* len, JPEGImage jp, int q
 }
 
 
-
 /**
 WSGraph  JPEGImage2WSGraph(JPEGImage jp)
 
@@ -255,7 +250,6 @@ WSGraph  JPEGImage2WSGraph(JPEGImage jp)
     vp.state = JBXL_NORMAL;
     return vp;
 }
-
 
 
 /**
@@ -292,7 +286,6 @@ BSGraph  JPEGImage2BSGraph(JPEGImage jp)
 }
 
 
-
 /**
 JPEGImage  WSGraph2JPEGImage(WSGraph vp)
 */
@@ -324,7 +317,6 @@ JPEGImage  WSGraph2JPEGImage(WSGraph vp)
 }
 
 
-
 /**
 JPEGImage  BSGraph2JPEGImage(BSGraph vp)
 */
@@ -354,7 +346,6 @@ JPEGImage  BSGraph2JPEGImage(BSGraph vp)
 
     return jp;
 }
-
 
 
 /**
@@ -397,7 +388,6 @@ JPEGImage  make_JPEGImage(int xs, int ys, int col)
 }
 
 
-
 /**
 void  free_JPEGImage(JPEGImage* jp)
 */
@@ -414,7 +404,6 @@ void  free_JPEGImage(JPEGImage* jp)
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////
 // for libjpeg 6b (http://www.ijg.org/)
 //
@@ -425,7 +414,6 @@ METHODDEF(void)  mem_init_destination(j_compress_ptr cinfo)
 {
     UNUSED(cinfo);
 }
-
 
 
 METHODDEF(boolean)  mem_empty_output_buffer(j_compress_ptr cinfo)
@@ -453,7 +441,6 @@ METHODDEF(boolean)  mem_empty_output_buffer(j_compress_ptr cinfo)
 }
 
 
-
 METHODDEF(void)  mem_term_destination(j_compress_ptr cinfo)
 {
     my_mem_dest_ptr dest = (my_mem_dest_ptr)cinfo->dest;
@@ -461,7 +448,6 @@ METHODDEF(void)  mem_term_destination(j_compress_ptr cinfo)
     *dest->outbuffer = dest->buffer;
     *dest->outsize   = dest->bufsize - dest->pub.free_in_buffer;
 }
-
 
 
 GLOBAL(void)  jpeg_mem_dest(j_compress_ptr cinfo, unsigned char** buf, unsigned long* len)
@@ -487,7 +473,7 @@ GLOBAL(void)  jpeg_mem_dest(j_compress_ptr cinfo, unsigned char** buf, unsigned 
     dest->newbuffer = NULL;
 }
 
-#endif  // JPEG_LIB_VERSION
 
+#endif  // JPEG_LIB_VERSION
 #endif  // DISABLE_JPEGLIB
 

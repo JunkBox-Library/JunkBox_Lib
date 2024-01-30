@@ -1,5 +1,4 @@
-﻿
-#ifndef  __JBXL_INFO_SYSTEM_NET_H_
+﻿#ifndef  __JBXL_INFO_SYSTEM_NET_H_
 #define  __JBXL_INFO_SYSTEM_NET_H_
 
 /**
@@ -16,7 +15,6 @@
 @b KEYEX:   暗号化のためのキーをサーバと交換する RSAは未実装(ssl_tool.cの中で実装される)
 @b CRYPT:   使用する暗号方式をサーバに通知する．現在はまだ，AES128CBC, 3DES3CBC のみサポート
 */
-
 
 #include "password.h"
 #include "cipher.h"

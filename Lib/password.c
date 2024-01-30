@@ -1,5 +1,4 @@
-﻿
-/** 
+﻿/** 
 @brief   パスワードライブラリ
 @file    password.c
 @author  Fumi.Iseki (C)
@@ -8,7 +7,6 @@
 #ifdef CPLUSPLUS
     #undef CPLUSPLUS
 #endif
-
 
 #include  "password.h"
 
@@ -66,7 +64,6 @@ char*   get_passwd(char* user_id)
 }
 
 
-
 #ifdef HAVE_RPCSVC_YPCLNT_H
 
 /**
@@ -113,7 +110,6 @@ char* get_nis_passwdf(char* usrid)
 }
 
 
-
 /**
 struct passwd* getnisnam(char* usrid)
 
@@ -158,7 +154,6 @@ struct passwd* getnisnam(char* usrid)
 #endif        // HAVE_RPCSVC_YPCLNT_H
 
 
-
 /**
 void  free_pw(struct passwd* pw)
 
@@ -181,7 +176,6 @@ void  free_pw(struct passwd* pw)
     freeNull(pw);
     return;
 }
-
 
 
 /**
@@ -239,7 +233,6 @@ char*   x2crypt(char* pass, char* bsalt)
 }
 
 
-
 /**
 int  check_passwd(char* passwd, char* cryptpass)
 
@@ -287,7 +280,6 @@ int  check_passwd(char* passwd, char* cryptpass)
 
     return samepass;
 }
-
 
 
 /**

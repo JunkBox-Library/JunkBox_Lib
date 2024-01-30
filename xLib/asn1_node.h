@@ -1,5 +1,4 @@
-﻿
-#ifndef  __JBXL_JBXL_ASN1_NODE_H_
+﻿#ifndef  __JBXL_JBXL_ASN1_NODE_H_
 #define  __JBXL_JBXL_ASN1_NODE_H_
 
 #include "buffer.h"
@@ -57,7 +56,6 @@
 void  asn1_print_id(FILE* fp, int id);
 void  asn1_id_type(int id, int* type, int* cnst, int* tag);
 void  asn1_print_tag_value(FILE* fp, int tag, Buffer buf);
-
 
 
 #endif        // __JBXL_JBXL_ASN1_TOOL_H_

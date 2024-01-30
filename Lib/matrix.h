@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_MATRIX_LIBRARY_H_
+﻿#ifndef  __JBXL_MATRIX_LIBRARY_H_
 #define  __JBXL_MATRIX_LIBRARY_H_
-
 
 /** 
 @brief   マトリックス＆ベクトルライブラリ ヘッダ
@@ -9,14 +7,11 @@
 @author  Fumi.Iseki (C)
 */
 
-
 #include "common.h"
 #include "mt.h"
 
 #include <math.h>
 #include <float.h>
-
-
 
 #ifndef va_start
     #include <stdarg.h>
@@ -46,7 +41,6 @@ typedef struct _quaternion {
     double z;               ///< z成分
     double n;               ///< ベクトルの大きさ
 } quaternion;
-
 
 
 /**
@@ -86,16 +80,14 @@ typedef struct _matrix {
 #define  sub_ivector(a, b) set_ivector((a).x-(b).x,(a).y-(b).y,(a).z-(b).z)                   ///< ベクトル a, bを引き算して, 結果を整数ベクトルで返す．
 #define  normal_vector(a)  (a).r = sqrt((double)((a).x*(a).x)+(a).y*(a).y+(a).z*(a).z);       ///< ベクトル aの大きさを計算する．
 
+#define Vt(m, i)            ((m).mx[(i)-1])                                                   ///< 1次元マトリックスの i番目の要素を返す．1から数える．
+#define Mx(m, i, j)         ((m).mx[(j)-1+(m).sz[1]*((i)-1)])                                 ///< 2次元マトリックスの(i,j)要素を返す．   1から数える．
 
-#define Vt(m, i)      ((m).mx[(i)-1])                                                         ///< 1次元マトリックスの i番目の要素を返す．1から数える．
-#define Mx(m, i, j)    ((m).mx[(j)-1+(m).sz[1]*((i)-1)])                                      ///< 2次元マトリックスの(i,j)要素を返す．   1から数える．
-
-#define Mx1(m, i)                ((m).mx[(i)-1])                                              ///< 1次元マトリックスの i番目の要素を返す．1から数える．
-#define Mx2(m, i, j)       ((m).mx[(j)-1+(m).sz[1]*((i)-1)])                                  ///< 2次元マトリックスの(i,j)要素を返す．   1から数える．
-#define Mx3(m, i, j, k)    ((m).mx[(k)-1+(m).sz[2]*((j)-1)+(m).sz[1]*(m).sz[2]*((i)-1)])      ///< 3次元マトリックスの(i,j,k)要素を返す． 1から数える．
-#define Mx4(m, i, j, k, l) ((m).mx[(l)-1+(m).sz[3]*((k)-1)+(m).sz[2]*(m).sz[3]*((j)-1) +\
-                            (m).sz[1]*(m).sz[2]*(m).sz[3]*((i)-1)])                           ///< 4次元マトリックスの(i,j,k,l)要素を返す．1から数える．
-
+#define Mx1(m, i)           ((m).mx[(i)-1])                                                   ///< 1次元マトリックスの i番目の要素を返す．1から数える．
+#define Mx2(m, i, j)        ((m).mx[(j)-1+(m).sz[1]*((i)-1)])                                 ///< 2次元マトリックスの(i,j)要素を返す．   1から数える．
+#define Mx3(m, i, j, k)     ((m).mx[(k)-1+(m).sz[2]*((j)-1)+(m).sz[1]*(m).sz[2]*((i)-1)])     ///< 3次元マトリックスの(i,j,k)要素を返す． 1から数える．
+#define Mx4(m, i, j, k, l)  ((m).mx[(l)-1+(m).sz[3]*((k)-1)+(m).sz[2]*(m).sz[3]*((j)-1) +\
+                             (m).sz[1]*(m).sz[2]*(m).sz[3]*((i)-1)])                          ///< 4次元マトリックスの(i,j,k,l)要素を返す．1から数える．
 
 vector   unit_vector(vector a);
 vector   unit_ivector(ivector a);

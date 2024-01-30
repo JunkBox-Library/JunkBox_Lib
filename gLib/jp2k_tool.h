@@ -1,5 +1,4 @@
-﻿
-#ifndef  __JBXL_JP2K_TOOL_H_
+﻿#ifndef  __JBXL_JP2K_TOOL_H_
 #define  __JBXL_JP2K_TOOL_H_
 
 /**
@@ -13,7 +12,6 @@
 @attention
 this software is based on OpenJPEG. http://www.openjpeg.org/
 */
-
 
 #include "xtools.h"
 
@@ -91,14 +89,12 @@ typedef struct
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-
 void      init_jp2k(JP2KImage* jp);
 void      free_jp2k(JP2KImage* jp);
 void      setup_jp2k(JP2KImage* jp);
 int       get_jp2k_format(uByte* header);
 
 JP2KImage read_jp2k_file(const char* fname);
-
 
 #if   OPENJPEG_VER <= JP2K_VER_15
 JP2KImage read_jp2k_data(unsigned char* data, int len, int format);
@@ -117,6 +113,5 @@ BSGraph   jp2k_toBSGraph(JP2KImage jp);
 
 
 #endif      // ENABLE_OPENJPEG
-
 #endif      // __JBXL_JP2K_TOOL_H_
 

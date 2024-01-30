@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_TOOLS_HEADER_
+﻿#ifndef  __JBXL_TOOLS_HEADER_
 #define  __JBXL_TOOLS_HEADER_
-
 
 /** 
 @brief   汎用ツールヘッダ
@@ -9,7 +7,6 @@
 @author  Fumi.Iseki (C)
 @date    2020 10/27
 */
-
 
 #include "common.h"
 #include <sys/types.h>

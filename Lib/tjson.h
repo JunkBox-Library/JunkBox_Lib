@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_TINY_JSON_H_
+﻿#ifndef  __JBXL_TINY_JSON_H_
 #define  __JBXL_TINY_JSON_H_
-
 
 /** 
 @brief   Tiny JSON ライブラリヘッダ 
@@ -20,7 +18,6 @@ Tiny JSON tjson.h v1.0 @n
 全てのパターンのパース可能性は保障しない．@n
 */
 
-
 #include "tools.h"
 #include "ttree.h"
 #include "jbxl_state.h"
@@ -34,7 +31,6 @@ Tiny JSON tjson.h v1.0 @n
 #define  JSON_ARRAY_NODE             3              ///< 配列ノード．処理された場合，JSON_ARRAY_VALUE_NODE を子ノードとして持つ．
 #define  JSON_ARRAY_VALUE_NODE       4              ///< 配列の要素データのノード．
 
-
 // 属性値の形式  (ldat.lv)
 #define  JSON_VALUE_UNRESOLV        -1              ///< 属性値の種類は未確定．
 #define  JSON_VALUE_NULL             0              ///< 属性値なし．
@@ -44,7 +40,6 @@ Tiny JSON tjson.h v1.0 @n
 #define  JSON_VALUE_STR              4              ///< 属性値：文字列   
 #define  JSON_VALUE_OBJ              5              ///< 属性値：オブジェクト
 #define  JSON_VALUE_ARRAY            6              ///< 属性値：配列
-
 
 #define  JSON_ONELINE_FORMAT         0              ///< 改行なしの一行にする．
 #define  JSON_CRLF_FORMAT            1              ///< ノードの終わりを CR(0x0d), LF(0x0a)で改行する．
@@ -66,7 +61,6 @@ Tiny JSON tjson.h v1.0 @n
 #define del_json_node(j)        del_tTree_node((j))     ///< JSONデータのノード削除     del_tTree_node()
 #define free_json(j)            free_tTree_node((j))    ///< JSONデータのノードデータを解放     free_tTree_node() 
 #define free_json_node(j)       free_tTree_node((j))    ///< JSONデータのノードデータを解放     free_tTree_node() 
-
 
 
 /** @typedef tJson
@@ -157,7 +151,6 @@ typedef  tTree  tJson;
 typedef  tTree  tJson;
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Parser
 
@@ -182,6 +175,7 @@ void     _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* s
 
 #define  print_tJson(f, j)          print_tTree((f), (j))
 #define  print_tJson_tree(f, j, s)  print_tTree_tree((f), (j), (s))
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Tools

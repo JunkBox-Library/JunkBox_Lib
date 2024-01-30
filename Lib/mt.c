@@ -1,25 +1,18 @@
-﻿
-/** 
+﻿/** 
 @brief   数学用ライブラリ
 @file    mt.c
 @author  Fumi.Iseki (C)
 */
 
-
-
 #include "mt.h"
 
-
-
 double   EPS = 1.0e-6;
-
 
 
 /**
 double  power(double x, double y)
 
 xの y乗 x^yを計算する．
-
 */
 double  power(double x, double y)
 {
@@ -29,12 +22,10 @@ double  power(double x, double y)
 }
 
 
-
 /**
 double  fact(int n)
 
 nの階乗 n! を計算する．n>0 でない場合は 1.0 を返す． 
-
 */
 double  fact(int n)
 {
@@ -46,12 +37,10 @@ double  fact(int n)
 }
     
 
-
 /**
 double  perm(int n, int m)
 
 パームテーション nPm を計算する．
-
 */
 double  perm(int n, int m)
 {
@@ -67,12 +56,10 @@ double  perm(int n, int m)
 }
 
 
-
 /**
 double  comb(int n, int m)
 
 コンビネーション nCm を計算する． 
-
 */
 double  comb(int n, int m)
 {
@@ -87,7 +74,6 @@ double  comb(int n, int m)
 
     return p/c;
 }
-
 
 
 #define  MAX_ITRTN_NEWTON_METHOD  30    ///< ニュートン法で解を求める際の，最大繰り返し回数．

@@ -1,5 +1,4 @@
-﻿
-/** 
+﻿/** 
 @brief   Tiny List 構造ライブラリ
 @file    tlist.c
 @version 
@@ -7,7 +6,6 @@
 @date    2008 2/1
 @see     _tList
 */
-
 
 #include  "tlist.h"
 #include  "jbxl_state.h"
@@ -494,7 +492,6 @@ tList*  add_tList_node_byBuffer(tList* pp, int id, int lv, Buffer key, Buffer va
 }
 
 
-
 /**
 void  set_tList_node_bydata(tList* node, tList_data dat)
 
@@ -511,7 +508,6 @@ void  set_tList_node_bydata(tList* node, tList_data dat)
     free_tList_data(&(node->ldat));
     node->ldat = dat;
 }
-
 
 
 /**
@@ -553,7 +549,6 @@ void  set_tList_node_bystr(tList* pp, int id, int lv, const char* key, const cha
 }
 
 
-
 /**
 void  set_tList_node_byBuffer(tList* pp, int id, int lv, Buffer key, Buffer val, void* ptr, int sz)
 
@@ -593,7 +588,6 @@ void  set_tList_node_byBuffer(tList* pp, int id, int lv, Buffer key, Buffer val,
 }
 
 
-
 /**
 tList*  update_tList_node(tList* pp, tList* pt)
 
@@ -615,7 +609,6 @@ tList*  update_tList_node(tList* pp, tList* pt)
     
     return pm;
 }
-
 
 
 /**
@@ -645,7 +638,6 @@ tList*  update_tList_node_bydata(tList* pp, char* srch, tList_data ldat)
     
     return pm;
 }
-
 
 
 /**
@@ -683,7 +675,6 @@ tList*  update_tList_node_bystr(tList* pp, int id, int lv, const char* key, cons
 }
 
 
-
 /**
 tList*  update_tList_node_byBuffer(tList* pp, int id, int lv, Buffer key, Buffer val, void* ptr, int sz)
 
@@ -715,7 +706,6 @@ tList*  update_tList_node_byBuffer(tList* pp, int id, int lv, Buffer key, Buffer
     
     return pm;
 }
-
 
 
 
@@ -792,7 +782,6 @@ void  del_all_tList(tList** pp)
 }
 
 
-
 /**     
 int  del_tList_key(tList* pl, const char* key, int no)
         
@@ -834,7 +823,6 @@ int  del_tList_key(tList** pl, const char* key, int no)
 }
 
 
-
 /**
 tList*  dup_tList(tList* pp)
 
@@ -864,7 +852,6 @@ tList*  dup_tList(tList* pp)
 }
 
 
-
 /**
 tList*  add_tList_end(tList* pp, tList* pt)
 
@@ -889,7 +876,6 @@ tList*  add_tList_end(tList* pp, tList* pt)
 
     return pp;
 }
-
 
 
 /**
@@ -920,7 +906,6 @@ tList*  insert_tList(tList* pp, tList* pt)
     
     return pt;
 }
-
 
 
 /**
@@ -974,7 +959,6 @@ void  dump_tList(FILE* fp, tList* pp)
 }
 
 
-
 /**
 int  count_tList(tList* pp)
 
@@ -993,7 +977,6 @@ int  count_tList(tList* pp)
     }    
     return cnt;
 }
-
 
 
 
@@ -1016,7 +999,6 @@ tList*  find_tList_top(tList* pl)
 }
 
 
-
 /**
 tList*  find_tList_end(tList* pl)
 
@@ -1036,7 +1018,6 @@ tList*  find_tList_end(tList* pl)
     while (pl->next!=NULL) pl = pl->next;
     return pl;
 }
-
 
 
 
@@ -1082,7 +1063,6 @@ tList*  strncmp_tList(tList* pl, const char* key, int len, int no)
 }
 
 
-
 /**
 tList*  strncasecmp_tList(tList* pl, const char* key, int len, int no)
 
@@ -1119,7 +1099,6 @@ tList*  strncasecmp_tList(tList* pl, const char* key, int len, int no)
     }
     return NULL;
 }
-
 
 
 /**
@@ -1160,7 +1139,6 @@ tList*  strnrvscmp_tList(tList* pl, const char* key, int len, int no)
 }
 
 
-
 /**
 tList*  strncaservscmp_tList(tList* pl, const char* key, int len, int no)
 
@@ -1197,7 +1175,6 @@ tList*  strncaservscmp_tList(tList* pl, const char* key, int len, int no)
     }
     return NULL;
 }
-
 
 
 /**
@@ -1242,7 +1219,6 @@ tList*  strstr_tList(tList* pl, const char* key, int len, int no)
     }
     return NULL;
 }
-
 
 
 /**
@@ -1290,7 +1266,6 @@ tList*  strstrcase_tList(tList* pl, const char* key, int len, int no)
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 // String Compare Back List
 //
@@ -1333,7 +1308,6 @@ tList*  strncmp_back_tList(tList* pl, const char* key, int len, int no)
 }
 
 
-
 /**
 tList*  strncasecmp_back_tList(tList* pl, const char* key, int len, int no)
 
@@ -1370,7 +1344,6 @@ tList*  strncasecmp_back_tList(tList* pl, const char* key, int len, int no)
     }
     return NULL;
 }
-
 
 
 /**
@@ -1411,7 +1384,6 @@ tList*  strnrvscmp_back_tList(tList* pl, const char* key, int len, int no)
 }
 
 
-
 /**
 tList*  strncaservscmp_back_tList(tList* pl, const char* key, int len, int no)
 
@@ -1448,7 +1420,6 @@ tList*  strncaservscmp_back_tList(tList* pl, const char* key, int len, int no)
     }
     return NULL;
 }
-
 
 
 /**
@@ -1495,7 +1466,6 @@ tList*  strstr_back_tList(tList* pl, const char* key, int len, int no)
     }
     return NULL;
 }
-
 
 
 /**
@@ -1545,7 +1515,6 @@ tList*  strstrcase_back_tList(tList* pl, const char* key, int len, int no)
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -1578,7 +1547,6 @@ tList*  search_id_tList(tList* pl, int id, int no)
 }
 
 
-
 /**
 tList*  search_key_tList(tList* pl, const char* key, int no) 
 
@@ -1601,7 +1569,6 @@ tList*  search_key_tList(tList* pl, const char* key, int no)
     
     return pp;
 }
-
 
 
 /**
@@ -1632,7 +1599,6 @@ Buffer  buffer_key_tList(tList* list, const char* key, int no)
     
     return buf;
 }
-
 
 
 /**
@@ -1678,7 +1644,6 @@ Buffer  buffer_key_value_tList(tList* list, const char* key, char* data, int no)
 
     return buf;
 }
-
 
 
 /*
@@ -1732,7 +1697,6 @@ int  set_value_tList(tList* list, const char* key, int no, const char* value, in
 }
 
 
-
 /**
 int  set_value_tList_node(tList* lp, const char* value)
 
@@ -1748,7 +1712,6 @@ int  set_value_tList_node(tList* lp, const char* value)
 
     return TRUE;
 }
-
 
 
 /**
@@ -1799,7 +1762,6 @@ int  replace_value_tList(tList* list, const char* key, int no, const char* srcva
 }
 
 
-
 /**
 int  replace_value_tList_node(tList* lp, const char* srcval, const char* value)
 
@@ -1819,7 +1781,6 @@ int  replace_value_tList_node(tList* lp, const char* srcval, const char* value)
     return TRUE;
 }
     
-
 
 /**
 tList*  awk_tList(char* str, char cc)
@@ -1858,7 +1819,6 @@ tList*  awk_tList(char* str, char cc)
     if (lp!=NULL) lp = find_tList_top(lp);
     return lp;
 }
-
 
 
 /**
@@ -1900,7 +1860,6 @@ tList*  cawk_tList(char* str, char cc)
 }
 
 
-
 /**
 tList*  awk_Buffer_tList(Buffer buf, char cc)
 
@@ -1930,7 +1889,6 @@ tList*  awk_Buffer_tList(Buffer buf, char cc)
     if (lp!=NULL) lp = find_tList_top(lp);
     return lp;
 }
-
 
 
 /**
@@ -2005,7 +1963,6 @@ Buffer  get_Buffer_join_tList(tList* lp, const char* deli)
 
     return buf;
 }
-
 
 
 

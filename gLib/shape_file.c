@@ -1,10 +1,8 @@
-﻿
-/**
+﻿/**
 @brief    SHAPE FILE TOOL
 @file     shape_file.c
 @author   Fumi.Iseki (C)
 */
-
 
 #include  "shape_file.h"
 #include  "jbxl_state.h"
@@ -58,7 +56,6 @@ ShapeIndex* read_shape_index_file(FILE* fp)
     
     return shpidx;
 }
-
 
 
 BSGraph*  read_shape_main_file(ShapeIndex* idx, BSGraph* mp, vector og, vector dd, FILE* fp)
@@ -137,7 +134,6 @@ BSGraph*  read_shape_main_file(ShapeIndex* idx, BSGraph* mp, vector og, vector d
 }
 
 
-
 void  draw_shape_polygon(ShapeIndex* idx, BSGraph* mp, vector og, vector dd, int cc, FILE* fp)
 {
     size_t rs;
@@ -195,6 +191,4 @@ void  draw_shape_polygon(ShapeIndex* idx, BSGraph* mp, vector og, vector dd, int
         sx++;
     }
 }
-
-
 

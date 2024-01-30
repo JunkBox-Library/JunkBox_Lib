@@ -14,7 +14,6 @@ extern int     No_isNet_Chlng;
 extern int     Use_isNet_Ldap;
 extern int     Use_isNet_Crypt;
 
-
 // サーバ側でのコマンド受信処理
 int    command_HELLO  (Buffer operand, Buffer comment, int sock);    // 100
 int    command_BYE    (Buffer operand, Buffer comment, int sock);    // 110

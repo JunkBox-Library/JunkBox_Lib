@@ -1,14 +1,11 @@
-﻿
-/**  
+﻿/**  
 @brief   IP Address Tool
 @file    ipaddr_tool.c
 @author  Fumi Iseki 
 @date    2005 09/21
 */
 
-
 #include "ipaddr_tool.h"
-
 
 /**
 tList*  read_ipaddr_file(char* fn)
@@ -70,7 +67,6 @@ tList*  read_ipaddr_fp(FILE* fp)
 }
 
 
-
 /**
 tList*  to_ipaddress_list(tList* lp)
 
@@ -126,7 +122,6 @@ tList*  to_ipaddress_list(tList* lp)
 }
 
 
-
 /**
 int  is_host_in_list(tList* lp, unsigned char* num, char* hname)
 
@@ -170,7 +165,6 @@ int  is_host_in_list(tList* lp, unsigned char* num, char* hname)
 }
 
 
-
 /**
 int  is_ipaddr_num_in_list(tList* lp, unsigned char* num)
 
@@ -203,7 +197,6 @@ int  is_ipaddr_num_in_list(tList* lp, unsigned char* num)
     
     return FALSE;
 }
-
 
 
 /**

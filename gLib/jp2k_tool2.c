@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief    JP2K TOOL2 with OpenJpeg-2.x
 
 @file     jp2k_tool2.c
@@ -10,7 +9,6 @@
 @attention
 this software is based on OpenJPEG. http://www.openjpeg.org/
 */
-
 
 #include "jp2k_tool.h"
 #include "jbxl_state.h"
@@ -257,7 +255,6 @@ BSGraph  jp2k_toBSGraph(JP2KImage jp)
             }
         }
     }
-
     return vp;
 }
 

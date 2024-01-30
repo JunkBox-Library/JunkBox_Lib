@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief   ZLIB圧縮用ライブラリ
 @file    gz_tool.c
 @author  Fumi.Iseki (C)

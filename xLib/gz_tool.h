@@ -1,14 +1,11 @@
-﻿
-#ifndef  __JBXL_GZPACKING_TOOL_H_
+﻿#ifndef  __JBXL_GZPACKING_TOOL_H_
 #define  __JBXL_GZPACKING_TOOL_H_
-
 
 /**
 @brief   gzツールプログラム ヘッダ  (-lz)
 @file    gz_tool.h
 @author  Fumi.Iseki (C)
 */
-
 
 #include "tools.h"
 #include "buffer.h"

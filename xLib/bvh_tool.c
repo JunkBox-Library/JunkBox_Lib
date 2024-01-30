@@ -1,15 +1,11 @@
-﻿
-
-/**
+﻿/**
 @brief   BVHツールプログラム
 @file    bvh_tool.c
 @author  Fumi.Iseki (C)
 */
 
-
 #include "xtools.h"
 #include "bvh_tool.h"
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////

@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_WINDOW_H_
+﻿#ifndef  __JBXL_WINDOW_H_
 #define  __JBXL_WINDOW_H_
-
 
 /**
 @brief   グラフィック用ワールド座標系サポート ヘッダ
@@ -9,7 +7,6 @@
 @version 2.1
 @author  Fumi.Iseki (C)
  */
-
 
 #include "graph.h"
 

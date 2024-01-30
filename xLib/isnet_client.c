@@ -1,5 +1,4 @@
-﻿
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+﻿/////////////////////////////////////////////////////////////////////////////////////////////////////////
 // クライアント側でのコマンド送信処理
 //
 
@@ -60,7 +59,6 @@ int  send_command_recv_ans(int sock, char* command, int tm, Buffer* key, EVP_CIP
 }
 
 
-
 /** 
 Buffer  recv_mesg_until_end(int sock, int tm, Buffer* key, EVP_CIPHER* cipher)
 
@@ -106,7 +104,6 @@ Buffer  recv_mesg_until_end(int sock, int tm, Buffer* key, EVP_CIPHER* cipher)
 }
 
 
-
 /**
 Buffer  send_algor_recv_spki(int sock, char* algor, int tm, Buffer* key, EVP_CIPHER* cipher)
 
@@ -145,7 +142,6 @@ Buffer  send_algor_recv_spki(int sock, char* algor, int tm, Buffer* key, EVP_CIP
 }
 
 
-
 /**
 int  send_spki_recv_ans(int sock, Buffer mkey, int tm, Buffer* key, EVP_CIPHER* cipher)
 
@@ -174,8 +170,6 @@ int  send_spki_recv_ans(int sock, Buffer mkey, int tm, Buffer* key, EVP_CIPHER* 
 
     return cc;
 }
-
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -334,8 +328,6 @@ int  check_auth(Buffer ahost, int aport, Buffer userid, Buffer passwd, int chmod
 }
 
 
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // クライアント側での暗号開始・終了処理
 //
@@ -423,7 +415,6 @@ int  start_CRYPT_transfer(int sock, int keyex, int cryptm, Buffer ipaddr, char* 
 
     return 0;
 }
-
 
 
 /**

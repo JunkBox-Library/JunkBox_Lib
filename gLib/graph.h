@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_GRAPHIC_HEADER_
+﻿#ifndef  __JBXL_GRAPHIC_HEADER_
 #define  __JBXL_GRAPHIC_HEADER_
-
 
 /**
 @brief    2D & 3D グラフィックライブラリ ヘッダ
@@ -9,7 +7,6 @@
 @version  3.0
 @author   Fumi.Iseki (C)
 */
-
 
 #include "gdata.h"
 

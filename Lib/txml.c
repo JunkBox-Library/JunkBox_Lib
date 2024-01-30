@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief   Tiny XML ライブラリ 
 @file    txml.c
 @version 1.0
@@ -84,7 +83,6 @@ tXML*  xml_parse(char* pp)
 }
 
 
-
 /**
 tXML*  xml_parse_file(const char* fn)
 
@@ -106,7 +104,6 @@ tXML*  xml_parse_file(const char* fn)
 
     return xml;
 }
-
 
 
 /**
@@ -173,7 +170,6 @@ tXML*  xml_parse_seq(tXML* xml, char* pp)
 
     return xml;
 }
-
 
 
 /**
@@ -363,9 +359,9 @@ XMLの開始ノードを処理する．処理できるノードの型は
 注）この関数では，属性部分(*node_attr)の解釈は行われないので，それは xml_parse_attr() で行う必要がある．
 
 @param      pp            ノードへのポインタ．'<' を指すポインタ．
-@param[out] *node_name     ノードの名前を格納するポインタ．要 free
-@param[out] *node_attr     ノードの属性部分を格納するポインタ．処理（解釈）は行われない．要 free
-@param[out] *node_end      ノードが単独で閉じている場合(Empty Tag)は TRUE, そうでない場合は FALSEが格納される．要 free
+@param[out] *node_name    ノードの名前を格納するポインタ．要 free
+@param[out] *node_attr    ノードの属性部分を格納するポインタ．処理（解釈）は行われない．要 free
+@param[out] *node_end     ノードが単独で閉じている場合(Empty Tag)は TRUE, そうでない場合は FALSEが格納される．要 free
 
 @retval  1以上            ノード全体の長さ．0 が返ることは無い．
 @retval  JBXL_XML_PARSE_ERROR  パースエラー
@@ -457,14 +453,13 @@ int  xml_parse_start_node(char* pp, char** node_name, char** node_attr, int* nod
 }
 
 
-
 /**
 int  xml_parse_end_node(char* pp, char** node_name)
 
 XMLの終了ノードを処理する．処理できるノードの型は @</node_name>
     
 @param      pp           ノードへのポインタ．'<' を指すポインタ．
-@param[out] *node_name    ノードの名前を格納するポインタ．要 free
+@param[out] *node_name   ノードの名前を格納するポインタ．要 free
 
 @retval 1以上            ノード全体の長さ．0 が返ることは無い．
 @retval JBXL_XML_PARSE_ERROR  パースエラー
@@ -499,7 +494,6 @@ int  xml_parse_end_node(char* pp, char** node_name)
 
     return nn + 1;
 }
-
 
 
 /**
@@ -549,7 +543,6 @@ int  xml_parse_content(char* pp, char** content)
 
     return nn;
 }
-
 
 
 /**
@@ -641,7 +634,6 @@ tList*  xml_parse_attr(char* pp)
 }
 
 
-
 /**
 int  xml_parse_processing_node(char* pp, char** node_name, char** node_attr)
 
@@ -719,14 +711,13 @@ int  xml_parse_processing_node(char* pp, char** node_name, char** node_attr)
 }
 
 
-
 /**
 int  xml_parse_comment_node(char* pp, char** comment)
 
 XMLのコメントノードを処理する．処理できるノードの型は '<!--comment-->' @n
 xml_parse_data_node() に先立って適用させる必要がある．
 
-@param      pp             ノードへのポインタ．'<' を指すポインタ．
+@param      pp           ノードへのポインタ．'<' を指すポインタ．
 @param[out] *comment     コメント部分がそのまま格納される．要 free
 
 @retval 1以上            ノード全体の長さ．0 が返ることは無い．
@@ -761,7 +752,6 @@ int  xml_parse_comment_node(char* pp, char** comment)
 
     return nn + 3;
 }
-
 
 
 /**
@@ -804,7 +794,6 @@ int  xml_parse_data_node(char* pp, char** data)
 }
 
 
-
 /**
 int  isnot_xml_name(unsigned char* pp)
 
@@ -832,7 +821,6 @@ int  isnot_xml_name(unsigned char* pp)
     
     return FALSE;
 }
-
 
 
 /**
@@ -878,7 +866,6 @@ void   close_xml(tXML* pp)
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Inverse Parse
 //
@@ -918,7 +905,6 @@ Buffer  xml_inverse_parse(tXML* pp, int mode)
 }
 
 
-
 /**
 void  xml_to_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
 
@@ -947,7 +933,6 @@ void  xml_to_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
 
     return;
 }
-
 
 
 /**
@@ -1135,7 +1120,6 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
 }
 
 
-
 /**
 void  xml_close_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
 
@@ -1179,7 +1163,6 @@ void  xml_close_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
 }
 
 
-
 /**
 void  xml_attr_to_Buffer(tList* pp, Buffer* buf)
 
@@ -1204,7 +1187,6 @@ void  xml_attr_to_Buffer(tList* pp, Buffer* buf)
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////
 // Operation
 //
@@ -1219,7 +1201,6 @@ tXML*  init_xml_doc()
     tXML* xml = xml_parse((char*)"<?xml version=\"1.0\" encoding=\"utf-8\"?>");
     return xml;
 }
-
 
 
 /**
@@ -1245,7 +1226,6 @@ tXML*  add_xml_node(tXML* xml, const char* name)
 }
 
 
-
 /**
 tXML*  insert_xml_node(tXML* xml, const char* name)
 
@@ -1269,7 +1249,6 @@ tXML*  insert_xml_node(tXML* xml, const char* name)
 }
 
 
-
 /**
 tXML*  add_xml_content(tXML* xml, const char* content)
 
@@ -1290,7 +1269,6 @@ tXML*  add_xml_content(tXML* xml, const char* content)
   
     return pp;
 }
-
 
 
 /**
@@ -1437,7 +1415,6 @@ tXML*  add_xml_attr_double(tXML* xml, const char* name, double value)
 }
 
 
-
 /**
 char*  get_first_xml_nodename(tXML* xml)
 
@@ -1540,7 +1517,6 @@ Buffer make_xml_attr_bydouble(const char* name, double value)
 }
 
 
-
 /**
 char* xml_get_node_content(tXML* node)
 
@@ -1555,7 +1531,6 @@ char* xml_get_node_content(tXML* node)
     }
     return NULL;
 }
-
 
 
 /**
@@ -1576,7 +1551,6 @@ char* xml_get_node_attr(tXML* node, const char* attr)
     }
     return NULL;
 }
-
 
 
 /**
@@ -1612,10 +1586,8 @@ tXML*  dup_merge_xml(tXML* pp, tXML* tp)
         return pt;
     }
 */
-
     return pp;
 }
-
 
 
 /** @def del_xml 
@@ -1623,11 +1595,9 @@ tXML*  dup_merge_xml(tXML* pp, tXML* tp)
 */
 
 
-
 /** @def del_sisters_xml 
 指定したノード以下のXMLツリー（ppの姉妹を含む）を削除する．
 */
-
 
 
 /** @def del_sisters_children_xml 
@@ -1638,12 +1608,10 @@ tXML*  dup_merge_xml(tXML* pp, tXML* tp)
 */
 
 
-
 /** @def del_all_xml
 XMLツリーの全ノードの削除．ポインタのノードを含むXMLツリー全体を削除する．@n
 ポインタはツリー中であれば，どこを指していても良い．
 */
-
 
 
 /**
@@ -1678,7 +1646,6 @@ void   print_xml(FILE* fp, tXML* pp, int mode)
 }
 
 
-
 /**
 void   print_xml_node(FILE* fp, tXML* pp)
 
@@ -1708,7 +1675,6 @@ void   print_xml_node(FILE* fp, tXML* pp)
 
     return;
 }
-
 
 
 /**
@@ -1749,7 +1715,6 @@ void   print_xml_tree(FILE* fp, tXML* pp, const char* space)
 
     return;
 }
-
 
 
 /**
@@ -1801,7 +1766,6 @@ void   print_sister_xml_tree(FILE* fp, tXML* pp, const char* space)
        
     return;
 }
-
 
 
 
@@ -1864,7 +1828,6 @@ tXML*  get_xml_node(tXML* pp, tXML* pt)
 }
 
 
-
 /**
 int set_xml_node(tXML* pp, tXML* pt, const char* name)
 
@@ -1893,7 +1856,6 @@ int set_xml_node(tXML* pp, tXML* pt, const char* name)
 
     return TRUE;
 }
-
 
 
 /**
@@ -1950,7 +1912,6 @@ int set_xml_end_node(tXML* pp, tXML* pt)
 
     return ret;
 }
-
 
 
 /**
@@ -2017,7 +1978,6 @@ tXML*  get_xml_content(tXML* pp, tXML* pt)
 }
 
 
-
 /**
 int set_xml_content(tXML* pp, tXML* pt, const char* content)
 
@@ -2049,7 +2009,6 @@ int set_xml_content(tXML* pp, tXML* pt, const char* content)
 }
 
 
-
 /**
 int  get_xml_int_content(tXML* pp, tXML* pt)
 
@@ -2063,7 +2022,6 @@ int  get_xml_int_content(tXML* pp, tXML* pt)
     if (node!=NULL) ret = atoi((char*)(node->ldat.key.buf));
     return ret;
 }
-
 
 
 /**
@@ -2081,7 +2039,6 @@ float  get_xml_float_content(tXML* pp, tXML* pt)
 }
 
 
-
 /**
 double  get_xml_double_content(tXML* pp, tXML* pt)
 
@@ -2097,7 +2054,6 @@ double  get_xml_double_content(tXML* pp, tXML* pt)
 }
 
 
-
 /**
 int  get_xml_char_content(tXML* pp, tXML* pt)
 
@@ -2111,7 +2067,6 @@ char*   get_xml_char_content(tXML* pp, tXML* pt)
     if (node!=NULL) ret = (char*)(node->ldat.key.buf);
     return ret;
 }
-
 
 
 /**
@@ -2141,7 +2096,6 @@ tList*  get_xml_attr(tXML* pp, tXML* pt)
 }
 
 
-
 /**
 char*  get_xml_char_attr(tXML* pp, tXML* pt, const char* attr)
 
@@ -2156,7 +2110,6 @@ char*  get_xml_char_attr(tXML* pp, tXML* pt, const char* attr)
     if (node!=NULL) ret = xml_get_node_attr(node, attr);
     return ret;
 }
-
 
 
 /**
@@ -2186,7 +2139,6 @@ int  get_xml_int_attr(tXML* pp, tXML* pt, const char* attr)
 }
 
 
-
 /**
 double  get_xml_double_attr(tXML* pp, tXML* pt, const char* attr)
 
@@ -2212,7 +2164,6 @@ double  get_xml_double_attr(tXML* pp, tXML* pt, const char* attr)
     }
     return ret;
 }
-
 
 
 /**
@@ -2248,7 +2199,6 @@ int  set_xml_attr(tXML* pp, tXML* pt, tList* at)
 }
 
 
-
 /**
 int  replace_xml_content(tXML* pp, tXML* pt, const char* src, const char* dst)
 
@@ -2274,7 +2224,6 @@ int  replace_xml_content(tXML* pp, tXML* pt, const char* src, const char* dst)
 }
 
 
-
 /**
 tXML*  get_xml_node_bystr(tXML* pp, const char* str)
 
@@ -2292,7 +2241,6 @@ tXML*  get_xml_node_bystr(tXML* pp, const char* str)
     del_xml(&tx);
     return tt;
 }
-
 
 
 /**
@@ -2314,7 +2262,6 @@ int  set_xml_node_bystr(tXML* pp, const char* str, const char* val)
 }
 
 
-
 /**
 int  set_xml_end_node_bystr(tXML* pp, const char* str)
 
@@ -2332,7 +2279,6 @@ int  set_xml_end_node_bystr(tXML* pp, const char* str)
     del_xml(&tx);
     return rt;
 }
-
 
 
 /**
@@ -2354,7 +2300,6 @@ tXML*  get_xml_content_bystr(tXML* pp, const char* str)
 }
 
 
-
 /**
 int  get_xml_int_content_bystr(tXML* pp, const char* str)
 
@@ -2369,7 +2314,6 @@ int  get_xml_int_content_bystr(tXML* pp, const char* str)
     if (node!=NULL) ret = atoi((char*)(node->ldat.key.buf));
     return ret;
 }
-
 
 
 /**
@@ -2388,7 +2332,6 @@ float  get_xml_float_content_bystr(tXML* pp, const char* str)
 }
 
 
-
 /**
 double  get_xml_double_content_bystr(tXML* pp, const char* str);
 
@@ -2403,7 +2346,6 @@ double  get_xml_double_content_bystr(tXML* pp, const char* str)
     if (node!=NULL) ret = atof((char*)(node->ldat.key.buf));
     return ret;
 }
-
 
 
 /**
@@ -2421,7 +2363,6 @@ char*   get_xml_char_content_bystr(tXML* pp, const char* str)
     if (node!=NULL) ret = (char*)(node->ldat.key.buf);
     return ret;
 }
-
 
 
 /**
@@ -2443,7 +2384,6 @@ int  set_xml_content_bystr(tXML* pp, const char* str, const char* val)
 }
 
 
-
 /**
 tList*  get_xml_attr_bystr(tXML* pp, const char* str)
 
@@ -2463,7 +2403,6 @@ tList*  get_xml_attr_bystr(tXML* pp, const char* str)
 }
 
 
-
 /**
 char*  get_xml_char_attr_bystr(tXML* pp, const char* str, const char* attr)
 
@@ -2479,7 +2418,6 @@ char*  get_xml_char_attr_bystr(tXML* pp, const char* str, const char* attr)
     if (node!=NULL) ret = xml_get_node_attr(node, attr);
     return ret;
 }
-
 
 
 /**
@@ -2510,7 +2448,6 @@ int  get_xml_int_attr_bystr(tXML* pp, const char* str, const char* attr)
 }
 
 
-
 /**
 double  get_xml_double_attr_bystr(tXML* pp, const char* str, const char* attr)
 
@@ -2539,7 +2476,6 @@ double  get_xml_double_attr_bystr(tXML* pp, const char* str, const char* attr)
 }
 
 
-
 /**
 int  set_xml_attr_bystr(tXML* pp, const char* str, tList* at)
 
@@ -2559,7 +2495,6 @@ int  set_xml_attr_bystr(tXML* pp, const char* str, tList* at)
 }
 
 
-
 /**
 int  replace_xml_content_bystr(tXML*pp, const char* str, const char* src, const char* dst)
 
@@ -2577,7 +2512,6 @@ int  replace_xml_content_bystr(tXML*pp, const char* str, const char* src, const 
     del_xml(&tx);
     return rt;
 }
-
 
 
 
@@ -2617,7 +2551,6 @@ tList*  get_xml_node_list(tXML* pp, tXML* pt)
 
     return lp;
 }
-
 
 
 /**
@@ -2663,7 +2596,6 @@ tList*  get_xml_content_list(tXML* pp, tXML* pt)
 }
 
 
-
 /**
 int  set_xml_content_list(tXML* pp, tXML* pt, const char* content)
 
@@ -2699,7 +2631,6 @@ int  set_xml_content_list(tXML* pp, tXML* pt, const char* content)
 }
 
 
-
 /**
 tList*  get_xml_node_list_bystr(tXML* pp, const char* str)
 
@@ -2718,7 +2649,6 @@ tList*  get_xml_node_list_bystr(tXML* pp, const char* str)
 
     return tt;
 }
-
 
 
 /**
@@ -2741,7 +2671,6 @@ tList*  get_xml_content_list_bystr(tXML* pp, const char* str)
 }
 
 
-
 /**
 int  set_xml_content_list_bystr(tXML* pp, const char* str, const char* content)
 
@@ -2760,7 +2689,6 @@ int  set_xml_content_list_bystr(tXML* pp, const char* str, const char* content)
 
     return rt;
 }
-
 
 
 
@@ -2815,7 +2743,6 @@ int  find_match_xml(tXML* pp, tXML* pt)
 }
 
 
-
 /**
 tXML*  find_match_xml_endlist(tXML* pp, tXML* pt)
 
@@ -2843,7 +2770,6 @@ tXML*  find_match_xml_endlist(tXML* pp, tXML* pt)
     
     return lp;
 }
-
 
 
 /**
@@ -2883,7 +2809,6 @@ tList*  find_match_xml_endlist_rcsv(tXML* pp, tXML* pt, tXML* te)
 }
 
 
-
 /**
 tXML*  find_match_xml_end_node(tXML* pp, tXML* pt)
 
@@ -2915,7 +2840,6 @@ tXML*  find_match_xml_end_node(tXML* pp, tXML* pt)
 
     return tt;
 }
-
 
 
 /**
@@ -2981,7 +2905,6 @@ int  check_match_xml(tXML* tp, tXML* tr)
 
     return FALSE;
 }
-
 
 
 /**
@@ -3053,7 +2976,6 @@ tXML*  cmp_sisters_xml(tXML* tp, tXML* tr)
 
 
 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // Simple Node Functions  (単純な構造のノードの操作)
 //
@@ -3091,7 +3013,6 @@ Buffer  get_node_content(tXML* tp, const char* name, int no)
 }
 
 
-
 /**
 int  get_node_integer(tXML* tp, const char* name, int no)
 
@@ -3112,7 +3033,6 @@ int  get_node_integer(tXML* tp, const char* name, int no)
 }
 
 
-
 /**
 int  return_exist_node(tXML* tp, const char* name, int no, Buffer* content)
 
@@ -3129,7 +3049,6 @@ int   return_exist_node(tXML* tp, const char* name, int no, Buffer* content)
     if (content!=NULL) *content = buf;
     return TRUE;
 }
-
 
 
 /**
@@ -3156,7 +3075,6 @@ int  replace_all_node_integer(tXML* tp, const char* name, int src, int dst)
 
     return n;
 }
-
 
 
 /**
@@ -3188,7 +3106,6 @@ int  replace_all_node_contents(tXML* pp, const char* name, const char* src, cons
 
     return n;
 }
-
 
 
 /**
@@ -3233,7 +3150,6 @@ int  replace_all_node_contents_rcsv(tXML* pp, const char* name, const char* src,
 }
 
 
-
 /**
 int  replace_all_node_byid(tXML* pp, const char* src, const char* dst, int id)
 
@@ -3262,7 +3178,6 @@ int  replace_all_node_byid(tXML* pp, const char* src, const char* dst, int id)
 
     return n;
 }
-
 
 
 /**
@@ -3295,7 +3210,6 @@ int  replace_all_node_byid_rcsv(tXML* pp, const char* src, const char* dst, int 
 
     return n;
 }
-
 
 
 
@@ -3435,7 +3349,6 @@ tXML*   xml_rpc_add_array(tXML* xml, tXML* array)
 }
 
 
-
 /**
 tXML*   xml_rpc_end_array(tXML* xml)
 
@@ -3456,5 +3369,4 @@ tXML*   xml_rpc_end_array(tXML* xml)
 
     return ptr;
 }
-
 

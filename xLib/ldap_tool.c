@@ -11,11 +11,9 @@
 This work is part of OpenLDAP Software <http://www.openldap.org/>.
 */
 
-
 #ifdef CPLUSPLUS
     #undef CPLUSPLUS
 #endif
-
 
 #include "ldap_tool.h"
 #include "jbxl_state.h"
@@ -117,7 +115,6 @@ void  read_ldap_config(char* fn, JBXL_LDAP_Host* ldap_host, JBXL_LDAP_Dn* ldap_b
 
     return;
 }
-
 
 
 /**
@@ -312,7 +309,6 @@ int  check_ldap_passwd(LDAP* ld, JBXL_LDAP_Dn* user, JBXL_LDAP_Dn* ldap_bind)
     ldap_msgfree(res);
     return 0;
 */
-
     ent = ldap_first_entry(ld, res);
     if (ent==NULL) {
         ldap_msgfree(res);
@@ -376,7 +372,6 @@ void  close_ldap_connection(LDAP* ld, JBXL_LDAP_Host** p_ldap_host, JBXL_LDAP_Dn
 
     ldap_unbind_s(ld);
 }
-
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -460,3 +455,4 @@ void  del_LDAP_Dn(JBXL_LDAP_Dn** p_dn)
 
 
 #endif        // DISABLE_LDAP
+

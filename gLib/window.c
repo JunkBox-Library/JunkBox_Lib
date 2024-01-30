@@ -1,11 +1,9 @@
-﻿
-/**
+﻿/**
 @brief   グラフィック用ワールド座標系サポート
 @file    window.c
 @version 2.1
 @author  Fumi.Iseki (C)
 */
-
 
 #include "window.h"
 
@@ -36,7 +34,6 @@ void  setWindow(WSGraph vp, double x1, double y1, double x2, double y2)
 }
 
 
-
 /**
 void  wSetPixel(WSGraph vp, double x, double y, int cc)
 
@@ -56,7 +53,6 @@ void  wSetPixel(WSGraph vp, double x, double y, int cc)
 
     SetPixel(vp, i, j, cc);
 }
-
 
 
 /**
@@ -79,7 +75,6 @@ int  wGetPixel(WSGraph vp, double x, double y)
 
     return GetPixel(vp, i, j);
 }
-
 
 
 /**
@@ -107,7 +102,6 @@ void  wLine(WSGraph vp, double x1, double y1, double x2, double y2, int cc)
 }
 
 
-
 /**
 void  wMove(double x1, double y1) 
 
@@ -121,7 +115,6 @@ void  wMove(double x1, double y1)
     X_Now = x1;
     Y_Now = y1;
 }
-
 
 
 /**
@@ -144,7 +137,6 @@ void  wDraw(WSGraph vp, double x1, double y1, int cc)
 }
 
 
-
 /**
 void  wMove_Rel(double x1, double y1) 
 
@@ -158,7 +150,6 @@ void  wMove_Rel(double x1, double y1)
     X_Now += x1;
     Y_Now += y1;
 }
-
 
 
 /**
@@ -184,5 +175,4 @@ void  wDraw_Rel(WSGraph vp, double x1, double y1, int cc)
     X_Now = x2;
     Y_Now = y2;
 }
-
 

@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_HTTP_TOOL_H_
+﻿#ifndef  __JBXL_HTTP_TOOL_H_
 #define  __JBXL_HTTP_TOOL_H_
-
 
 /** 
 @brief   HTTP ツールライブラリ ヘッダ
@@ -11,7 +9,6 @@
 @attention
 opensslライブラリが無くても使用できるように https_tool とは分離
 */
-
 
 #include "txml.h"
 #include "protocol.h"
@@ -79,7 +76,6 @@ int    send_http_file(int sock, tList*  pl, const char* fn);
 
 int    save_http_xml(int sock, tList** pl, tXML** xml, char** recvfn, const char* wdir, int timeout, int* state);
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Tools
 int    get_http_method(char* data);
@@ -97,18 +93,15 @@ int    get_chunked_size(char* ptr, int* hdsz, int* tlsz);
 char*  get_http_header_date(time_t tm);             // need free()
 Buffer rebuild_http_Buffer(tList* pl, Buffer* buf); // need free()
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // HTTP Proxy
 void   simple_web_proxy(int bofd, char* myip, int tmout);
 int    www2browser_relay(int bofd, int wofd, int btm, int wtm, int keep);
 Buffer http_proxy_header_analyze(tList* pl, Buffer* server, unsigned short* sport, int* timeout, int* keep);
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Alternative Tools
 int    tcp_relay(int sofd, int cofd, int tm);
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Server Side (Junk Code)

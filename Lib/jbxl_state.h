@@ -18,12 +18,9 @@ void    jbxl_fprint_state(FILE* fp, int no);
 void    jbxl_fprint_state_jp(FILE* fp, int no);
 #define jbxl_print_state(no)   jbxl_fprint_state(stderr, (no))
 
-
 void    jbxl_init_state_info(void);
 void    jbxl_add_all_states(void);
 void    jbxl_add_state(int id, const char* smb, const char* str);
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////

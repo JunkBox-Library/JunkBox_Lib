@@ -1,5 +1,4 @@
-﻿
-/** 
+﻿/** 
 @brief   ネットワーク用ライブラリ
 @file    network4.c  for IPv4
 @author  Fumi.Iseki (C)
@@ -274,7 +273,6 @@ int  tcp_server_socket(int port)
 
     return sofd;
 }
-
 
 
 /**
@@ -738,7 +736,6 @@ int  udp_recv(int sock, char* rmsg, int size, struct sockaddr_in* sv_addr)
 }
 
 
-
 /**
 int  udp_send(int sock, char* smsg, int size, struct sockaddr_in* sv_addr)
 
@@ -767,7 +764,6 @@ int  udp_send(int sock, char* smsg, int size, struct sockaddr_in* sv_addr)
 }
 
 
-
 /**
 int  tcp_recv(int sock, char* rmsg, int size)
 
@@ -790,7 +786,6 @@ int  tcp_recv(int sock, char* rmsg, int size)
 
     return cc;
 }
-
 
 
 /**
@@ -816,7 +811,6 @@ int  tcp_send(int sock, char* smsg, int size)
 
     return cc;
 }
-
 
 
 /**
@@ -852,7 +846,6 @@ int  udp_recv_wait(int sock, char* rmsg, int size, struct sockaddr_in* sv_addr, 
 }
 
 
-
 /**
 int  tcp_recv_wait(int sock, char* mesg, int sz, int tm)
 
@@ -885,7 +878,6 @@ int  tcp_recv_wait(int sock, char* mesg, int sz, int tm)
 }
 
 
-
 /**
 int  tcp_send_mesgln(int sock, char* mesg)
 
@@ -914,8 +906,6 @@ int  tcp_send_mesgln(int sock, char* mesg)
     free(buf);
     return cc;
 }
-
-
 
 
 /**
@@ -984,7 +974,6 @@ int  tcp_recv_mstream(int sock, char* mesg, int sz, mstream* sb, int tm)
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // アドレス処理
@@ -1024,7 +1013,6 @@ char*  get_hostname_bynum(unsigned char* num)
 }
 
 
-
 /**
 char*  get_hostname(char* ipaddr) 
 
@@ -1049,7 +1037,6 @@ char*  get_hostname(char* ipaddr)
     return name;    
 }
 
-    
 
 #ifdef WIN32
 
@@ -1183,7 +1170,6 @@ unsigned char*  get_myipaddr_num()
 }
 
 
-
 /**
 char*  get_myipaddr() 
 
@@ -1219,7 +1205,6 @@ char*  get_myipaddr()
 }
 
 #endif
-
 
 
 /**
@@ -1306,7 +1291,6 @@ char*  get_ipaddr(struct in_addr sin_addr)
 }
 
 
-
 /**
 unsigned char*  get_ipaddr_num(struct in_addr sin_addr)
 
@@ -1334,7 +1318,6 @@ unsigned char*  get_ipaddr_num(struct in_addr sin_addr)
 
     return ip;
 }
-
 
 
 /**
@@ -1365,7 +1348,6 @@ char*  get_ipaddr_byname(char* hostname)
 }
 
 
-
 /**
 unsigned char*  get_ipaddr_byname_num(char* hostname)
 
@@ -1390,7 +1372,6 @@ unsigned char*  get_ipaddr_byname_num(char* hostname)
 
     return ip;
 }
-
 
 
 /**
@@ -1420,7 +1401,6 @@ char*  get_mynetaddr()
     free(pp);
     return net;
 }
-
 
 
 /**
@@ -1454,9 +1434,7 @@ unsigned char*  get_mynetaddr_num()
 }
 
 
-
 /**
-
 
 */
 struct sockaddr_in  get_sockaddr(char* hostname, unsigned short cport)
@@ -1481,7 +1459,6 @@ struct sockaddr_in  get_sockaddr(char* hostname, unsigned short cport)
 }
 
 
-
 struct sockaddr_in  get_sockaddr_bynum(char* ipnum, unsigned short cport)
 {
     struct sockaddr_in  ss_addr;
@@ -1493,7 +1470,6 @@ struct sockaddr_in  get_sockaddr_bynum(char* ipnum, unsigned short cport)
 
     return ss_addr;
 }
-
 
 
 struct sockaddr_in  get_local_sockaddr(unsigned short cport)
@@ -1512,7 +1488,6 @@ struct sockaddr_in  get_local_sockaddr(unsigned short cport)
 
     return ss_addr;
 }
-
 
 
 /**
@@ -1551,7 +1526,6 @@ int  is_same_sockaddr(struct sockaddr_in addr1, struct sockaddr_in addr2)
 }
 
 
-
 /**
 int  is_same_network_num(unsigned char* addr1, unsigned char* addr2, unsigned char* mask)
 
@@ -1582,7 +1556,6 @@ int  is_same_network_num(unsigned char* addr1, unsigned char* addr2, unsigned ch
     }
     return TRUE;
 }
-
 
 
 /**
@@ -1624,7 +1597,6 @@ int  is_same_network(char* addr1, char* addr2, char* mask)
     
     return ret;
 }
-
 
 
 /**
@@ -1736,7 +1708,6 @@ unsigned char*  to_address_num8(char* addr, int mode)
 }
 
 
-
 /**
 char*  to_address_char8(unsigned char* n)
 
@@ -1764,7 +1735,6 @@ char*  to_address_char8(unsigned char* n)
 
     return addr;
 }
-
 
 
 /**
@@ -1828,7 +1798,6 @@ unsigned char*  to_address_num4(char* addr, int mode)
 }
 
 
-
 /**
 char*  to_address_char4(unsigned char* n)
 
@@ -1855,7 +1824,6 @@ char*  to_address_char4(unsigned char* n)
 
     return addr;
 }
-
 
 
 /**
@@ -1892,7 +1860,6 @@ int   recv_wait(int sock, int tm)
 }
 
 
-
 int   recv_wait_twin(int sock1, int sock2, int tm)
 {
     int       ret = 0;
@@ -1918,7 +1885,6 @@ int   recv_wait_twin(int sock1, int sock2, int tm)
 
     return ret;
 }
-
 
 
 /**
@@ -1955,7 +1921,6 @@ int   send_wait(int sock, int tm)
 }
 
 
-
 /**
 void  udp_hole_punching(int sock, struct sockaddr_in addr, int nm)
 
@@ -1977,8 +1942,6 @@ void  udp_hole_punching(int sock, struct sockaddr_in addr, int nm)
 
     return;
 }
-
-
 
 
 
@@ -2008,7 +1971,6 @@ int  get_valid_udp_socket(int min, int max, unsigned short* port)
 }
 
 
-
 int  get_valid_tcp_server_socket(int min, int max, unsigned short* port)
 {
     int  i, sock, range;
@@ -2031,7 +1993,6 @@ int  get_valid_tcp_server_socket(int min, int max, unsigned short* port)
 }
 
 
-
 int  get_valid_tcp_client_socket(int min, int max, char* hname, unsigned short sport, unsigned short* cport)
 {
     int  i, sock, range;
@@ -2052,7 +2013,6 @@ int  get_valid_tcp_client_socket(int min, int max, char* hname, unsigned short s
 
     return sock;
 }
-
 
 
 

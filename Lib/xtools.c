@@ -1,5 +1,4 @@
-﻿
-/** 
+﻿/** 
 @brief   汎用拡張ツールプログラム 
 @file    xtools.c
 @version 1.1

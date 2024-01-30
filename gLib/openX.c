@@ -1,11 +1,9 @@
-﻿
-/**
+﻿/**
 @brief    X-Winow 表示用関数
 @file     openX.c
 @version  2.11
 @author   Fumi.Iseki (C)
 */
-
 
 #include "openX.h"
 
@@ -103,7 +101,6 @@ openX  disp_image(WSGraph gd, int lc, int hc, int cflg)
 }
 
 
-
 /**
 void  displayClose(openX xid)
 
@@ -121,7 +118,6 @@ void  displayClose(openX xid)
         xid.id = -1;
     }
 }
-
 
 
 openX  displayOpen(int xs, int ys, int cflg)
@@ -190,7 +186,6 @@ openX  displayOpen(int xs, int ys, int cflg)
     set_color(xid, 0.0, 0.0, 0.0);
     return xid;
 }
-
 
 
 void  set_color(openX xid, double r, double g, double b)

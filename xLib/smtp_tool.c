@@ -49,7 +49,6 @@ char*  get_smtp_rcpt(char* mesg)
     freeNull(pc);
     return pa;
 }
-    
 
 
 /**
@@ -89,7 +88,6 @@ char*   get_smtp_mailbox(char* mesg)
 }
 
 
-
 /**
 int   is_smtp_onecommand(char* mesg, char* com)
 
@@ -112,7 +110,6 @@ int   is_smtp_onecommand(char* mesg, char* com)
     return ret;
 }
     
-
 
 /**
 int  smtp_check_dot(char* mesg) 
@@ -147,8 +144,6 @@ int  smtp_check_dot(char* mesg)
         }
         p++;
     }
-
     return FALSE;
 }
-
 

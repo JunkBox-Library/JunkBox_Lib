@@ -1,5 +1,4 @@
-﻿
-#ifndef  __JBXL_TIFF_TOOL_H_
+﻿#ifndef  __JBXL_TIFF_TOOL_H_
 #define  __JBXL_TIFF_TOOL_H_
 
 /**
@@ -9,7 +8,6 @@
 @date     2010 11/9
 @author   Fumi.Iseki (C)
 */
-
 
 #include "xtools.h"
 #include "gdata.h"
@@ -49,7 +47,6 @@ extern int  TIFF_Swap_Flag;
 #define  TIFF_TYPE_FLOAT        11
 #define  TIFF_TYPE_DOUBLE       12
 
-
 #define  TIFF_TAG_WIDTH         0x0100  // 256
 #define  TIFF_TAG_HEIGHT        0x0101  // 257 
 #define  TIFF_TAG_DEPTH         0x0102  // 258
@@ -85,7 +82,6 @@ extern int  TIFF_Swap_Flag;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-
 TIFF_ifd** read_tiff_file(const char* fname);
 TIFF_ifd*  get_tiff_ifd(unsigned char* buf, int num);
 TIFF_ifd*  find_tiff_ifd(TIFF_ifd* ifd, unsigned short tag);
@@ -102,7 +98,6 @@ unsigned int get_tiff_uint_field(TIFF_ifd* ifd, int offset);
 double       get_tiff_double_field(TIFF_ifd* ifd, int offset);
 
 int   get_tiff_type_length(short type);
-
 
 
 #endif  // __JBXL_TIFF_TOOL_H_

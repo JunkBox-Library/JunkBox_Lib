@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief   Diffie-Hellman用 ライブラリ
 @file    ssl_tool.c
 @author  Fumi.Iseki (C)
@@ -28,7 +27,6 @@ for use in the OpenSSL Toolkit. (http://www.openssl.org/)
 
 #ifdef ENABLE_SSL
 
-
 /*
 ###############################################################################################
 for OpenSSL3
@@ -36,7 +34,6 @@ see https://stackoverflow.com/questions/71551116/openssl-3-diffie-hellman-key-ex
 see https://github.com/eugen15/diffie-hellman-cpp
 ###############################################################################################
 */
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +73,6 @@ int  save_DHspki_with_private(Buffer pki, FILE* fp, DH* dhkey)
 
     return  TRUE;
 }
-
 
 
 /**
@@ -167,7 +163,6 @@ Buffer  read_DHspki_with_private(FILE* fp, DH** p_dhkey)
 }
 
 
-
 /**
 Buffer  get_DHspki_ff(char* filename, int ks, DH** p_dhkey)
 
@@ -232,7 +227,6 @@ Buffer  get_DHspki_ff(char* filename, int ks, DH** p_dhkey)
     //}
     return pki;
 }
-
 
 
 /**
@@ -317,7 +311,6 @@ Buffer  gen_DHspki(int ks, DH** p_dhkey)
 
     return pk;
 }
-
 
 
 /**
@@ -432,7 +425,6 @@ Buffer  gen_DHspki_fs(Buffer pki, DH** p_dhkey)
 }
 
 
-
 /**
 Buffer get_DHsharedkey(Buffer pki, DH* dhkey)
 
@@ -460,7 +452,6 @@ Buffer get_DHsharedkey(Buffer pki, DH* dhkey)
     free_Buffer(&ykey);
     return skey;
 }
-
 
 
 /**
@@ -494,7 +485,6 @@ Buffer  get_DHsharedkey_fY(Buffer ykey, DH* dhkey)
     BN_free(yk);
     return buf;
 }
-
 
 
 /**
@@ -545,7 +535,6 @@ Buffer  get_DHYkey(Buffer param)
 }
 
 
-
 /**
 Buffer  get_DHPkey(Buffer param)
 
@@ -594,7 +583,6 @@ Buffer  get_DHPkey(Buffer param)
     pp.vldsz = lp;
     return pp;
 }
-
 
 
 /**
@@ -650,7 +638,6 @@ Buffer  get_DHGkey(Buffer param)
     pp.vldsz = lp;
     return pp;
 }
-
 
 
 /**
@@ -729,7 +716,6 @@ Buffer  get_DHprivatekey(DH* dhkey)
 
     return pv;
 }
-
 
 
 /**
@@ -826,6 +812,5 @@ Buffer  join_DHpubkey(Buffer param, Buffer key)
     free_Buffer(&pm);
     return pp;
 }
-
 
 #endif

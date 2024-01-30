@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief   SSL暗号用ライブラリ
 @file    ssl_tool.c
 @author  Fumi.Iseki (C)
@@ -130,7 +129,6 @@ int   udp_send_crypt_Buffer_sockaddr_in(int sock, Buffer* data,  struct sockaddr
 }
 
 
-
 int  udp_recv_crypt_Buffer_sockaddr_in(int sock, Buffer* data, struct sockaddr_in* sv, Buffer* key, EVP_CIPHER* cipher)
 {  
     Buffer  buf;
@@ -181,7 +179,6 @@ int   udp_send_crypt_Buffer(int sock, Buffer* data,  struct addrinfo* sv, Buffer
 }
 
 
-
 int  udp_recv_crypt_Buffer(int sock, Buffer* data, struct addrinfo* sv, Buffer* key, EVP_CIPHER* cipher)
 {  
     Buffer  buf;
@@ -208,7 +205,6 @@ int  udp_recv_crypt_Buffer(int sock, Buffer* data, struct addrinfo* sv, Buffer* 
 }
 
 
-
 int  tcp_send_crypt_Buffer(int sock, Buffer* data, Buffer* key, EVP_CIPHER* cipher)
 {
     int  cc = 0;
@@ -227,7 +223,6 @@ int  tcp_send_crypt_Buffer(int sock, Buffer* data, Buffer* key, EVP_CIPHER* ciph
 
     return cc;
 }
-
 
 
 int  tcp_recv_crypt_Buffer(int sock, Buffer* data, Buffer* key, EVP_CIPHER* cipher)
@@ -256,7 +251,6 @@ int  tcp_recv_crypt_Buffer(int sock, Buffer* data, Buffer* key, EVP_CIPHER* ciph
 }
 
 
-
 Buffer  get_plain_Buffer(Buffer data, Buffer* key, EVP_CIPHER* cipher)
 {
     Buffer buf = init_Buffer();
@@ -267,7 +261,6 @@ Buffer  get_plain_Buffer(Buffer data, Buffer* key, EVP_CIPHER* cipher)
 }
 
 
-
 Buffer  get_crypt_Buffer(Buffer data, Buffer* key, EVP_CIPHER* cipher)
 {
     Buffer buf = init_Buffer();
@@ -276,7 +269,6 @@ Buffer  get_crypt_Buffer(Buffer data, Buffer* key, EVP_CIPHER* cipher)
     buf = encode_EVPAPI_Buffer(data, *key, cipher);
     return buf;
 }
-
 
 
 /**
@@ -332,7 +324,6 @@ int  tcp_send_crypt_mesg(int sock, char* mesg, Buffer* key, EVP_CIPHER* cipher)
 }
 
 
-
 /**
 int  tcp_send_crypt_sBuffer(int sock, Buffer* mesg, Buffer* key, EVP_CIPHER* cipher)
 
@@ -384,7 +375,6 @@ int  tcp_send_crypt_sBuffer(int sock, Buffer* mesg, Buffer* key, EVP_CIPHER* cip
 }
 
 
-
 /**
 Buffer  get_plain_message(char* mesg, Buffer* key, EVP_CIPHER* cipher)
 
@@ -415,7 +405,6 @@ Buffer  get_plain_message(char* mesg, Buffer* key, EVP_CIPHER* cipher)
     }
     return buf;
 }
-
 
 
 /**
@@ -450,7 +439,6 @@ Buffer  get_plain_sBuffer(Buffer mesg, Buffer* key, EVP_CIPHER* cipher)
 }
 
 
-
 /**
 Buffer  get_crypt_message(char* mesg, Buffer* key, EVP_CIPHER* cipher)
 
@@ -482,7 +470,6 @@ Buffer  get_crypt_message(char* mesg, Buffer* key, EVP_CIPHER* cipher)
 }
 
 
-
 /**
 Buffer  get_crypt_sBuffer(Buffer mesg, Buffer* key, EVP_CIPHER* cipher)
 
@@ -512,7 +499,6 @@ Buffer  get_crypt_sBuffer(Buffer mesg, Buffer* key, EVP_CIPHER* cipher)
 
     return buf;
 }
-
 
 
 
@@ -564,7 +550,6 @@ int  check_server_spki(Buffer ipaddr, Buffer spki, char* filename)
 }
 
 
-
 /**
 int  save_spki_with_ipaddr(Buffer ipa, Buffer pki, FILE* fp)
 
@@ -595,7 +580,6 @@ int  save_spki_with_ipaddr(Buffer ipa, Buffer pki, FILE* fp)
 
     return  TRUE;
 }
-
 
 
 /**
@@ -631,7 +615,6 @@ Buffer  read_spki_with_ipaddr(Buffer ipa, FILE* fp)
 
     return pki;
 }
-
 
 
 
@@ -672,7 +655,6 @@ EVP_CIPHER* init_EVPAPI_Buffer(int type)
 
     return cipher;
 }
-
 
 
 /**
@@ -721,7 +703,6 @@ Buffer  decode_EVPAPI_Buffer(Buffer buf, Buffer shdkey, EVP_CIPHER* cipher)
     free(ctx);
     return dec;
 }
-
 
 
 /**
@@ -782,7 +763,6 @@ Buffer  encode_EVPAPI_Buffer(Buffer buf, Buffer shdkey, EVP_CIPHER* cipher)
     //EVP_CIPHER_CTX_free(ctx);
     return  enc;
 }
-
 
 
 /**
@@ -859,7 +839,6 @@ SSL_CTX*  ssl_client_setup(char* ca)
 }
 
 
-
 /**
 SSL*  ssl_client_socket(int sock, SSL_CTX* ssl_ctx, int mode)
 
@@ -911,7 +890,6 @@ SSL*  ssl_client_socket(int sock, SSL_CTX* ssl_ctx, int mode)
 
     return ssl;
 }
-
 
 
 /**
@@ -972,7 +950,6 @@ SSL_CTX*  ssl_server_setup(char* crt_fn, char* key_fn, char* chn_fn)
 }
 
 
-
 /**
 int  ssl_add_chain_file(SSL_CTX* ssl_ctx, char* file)
 
@@ -1001,7 +978,6 @@ int  ssl_add_chain_file(SSL_CTX* ssl_ctx, char* file)
 
     return ret;
 }
-
 
 
 /**
@@ -1044,8 +1020,6 @@ int  ssl_read_fullchain_cert_file(SSL_CTX* ssl_ctx, char* file)
 
     return ret;
 }
-
-
 
 
 #define  SSL_ACCEPT_COUNT_MAX  10
@@ -1097,7 +1071,6 @@ SSL*  ssl_server_socket(int sock, SSL_CTX* ssl_ctx)
 }
 
 
-
 /**
 void  ssl_close(SSL* ssl)
 
@@ -1114,7 +1087,6 @@ void  ssl_close(SSL* ssl)
         //if (p!=NULL) SSL_CTX_free(p);
     }
 }
-
 
 
 /**
@@ -1175,7 +1147,6 @@ tList*  ssl_get_cert_info(SSL* ssl)
 
 
 
-
 /////////////////////////////////////////////////////////////////
 // SSL communications
 
@@ -1209,7 +1180,6 @@ int  ssl_recv(SSL* ssl, char* rmsg, int size)
 }
 
 
-
 /**    
 int  ssl_send(SSL* ssl, char* smsg, int size)
      
@@ -1239,7 +1209,6 @@ int  ssl_send(SSL* ssl, char* smsg, int size)
     if (cc<0) cc = JBXL_SSL_SEND_ERROR;
     return cc;
 }
-
 
 
 /**    
@@ -1285,7 +1254,6 @@ int  ssl_recv_wait(int sock, SSL* ssl, char* mesg, int sz, int tm)
 }
 
 
-
 /**    
 int  ssl_send_mesgln(SSL* ssl, char* mesg)
       
@@ -1316,7 +1284,6 @@ int  ssl_send_mesgln(SSL* ssl, char* mesg)
     free(buf);
     return cc;
 }
-
 
 
 /**
@@ -1388,7 +1355,6 @@ int  ssl_recv_mstream(int sock, SSL* ssl, char* mesg, int sz, mstream* sb, int t
 
 
 
-
 /////////////////////////////////////////////////////////////////
 // SSL with Buffer
 
@@ -1423,7 +1389,6 @@ int  ssl_recv_Buffer(SSL* ssl, Buffer* str)
 }
 
 
-
 /**
 int  ssl_send_Buffer(SSL* ssl, Buffer* str)
 
@@ -1448,7 +1413,6 @@ int  ssl_send_Buffer(SSL* ssl, Buffer* str)
     if (cc<0) cc = JBXL_SSL_SEND_ERROR;
     return cc;
 }
-
 
 
 /**
@@ -1486,7 +1450,6 @@ int  ssl_recv_Buffer_wait(int sock, SSL* ssl, Buffer* str, int tm)
 }
 
 
-
 /**
 int  ssl_send_sBuffer(SSL* ssl, Buffer* str)
 
@@ -1510,7 +1473,6 @@ int  ssl_send_sBuffer(SSL* ssl, Buffer* str)
     if (cc<0) cc = JBXL_SSL_SEND_ERROR;
     return cc;
 }
-
 
 
 /**
@@ -1540,7 +1502,6 @@ int  ssl_send_sBufferln(SSL* ssl, Buffer* str)
     if (cc<0) cc = JBXL_SSL_SEND_ERROR;
     return cc;
 }
-
 
 
 /**
@@ -1606,7 +1567,6 @@ int  ssl_recv_mstream_Buffer(int sock, SSL* ssl, Buffer* mesg, mstream* sb, int 
 }
 
 
-
 /**
 int  ssl_recv_lines_Buffer(int sock, SSL* ssl, Buffer* mesg, int tm)
 
@@ -1657,7 +1617,6 @@ int  ssl_recv_lines_Buffer(int sock, SSL* ssl, Buffer* mesg, int tm)
 
 
 
-
 /////////////////////////////////////////////////////////////////
 // SSL / TCP compati communications
 
@@ -1694,7 +1653,6 @@ int  ssl_tcp_recv(int sock, SSL* ssl, char* rmsg, int size)
 }
 
 
-
 /**    
 int  ssl_tcp_send(int sock, SSL* ssl, char* smsg, int size)
      
@@ -1726,7 +1684,6 @@ int  ssl_tcp_send(int sock, SSL* ssl, char* smsg, int size)
     if (cc<0) cc = JBXL_SSL_SEND_ERROR;
     return cc;
 }
-
 
 
 /**    
@@ -1771,7 +1728,6 @@ int  ssl_tcp_recv_wait(int sock, SSL* ssl, char* mesg, int sz, int tm)
 }
 
 
-
 /**    
 int  ssl_tcp_send_mesgln(int sock, SSL* ssl, char* mesg)
       
@@ -1804,7 +1760,6 @@ int  ssl_tcp_send_mesgln(int sock, SSL* ssl, char* mesg)
     free(buf);
     return cc;
 }
-
 
 
 /**
@@ -1875,7 +1830,6 @@ int  ssl_tcp_recv_mstream(int sock, SSL* ssl, char* mesg, int sz, mstream* sb, i
 }
 
 
-
 /**
 int  ssl_tcp_recv_Buffer(int sock, SSL* ssl, Buffer* str)
 
@@ -1909,7 +1863,6 @@ int  ssl_tcp_recv_Buffer(int sock, SSL* ssl, Buffer* str)
 }
 
 
-
 /**
 int  ssl_tcp_send_Buffer(int sock, SSL* ssl, Buffer* str)
 
@@ -1940,7 +1893,6 @@ int  ssl_tcp_send_Buffer(int sock, SSL* ssl, Buffer* str)
     if (cc<0) cc = JBXL_SSL_SEND_ERROR;
     return cc;
 }
-
 
 
 /**
@@ -1976,7 +1928,6 @@ int  ssl_tcp_recv_Buffer_wait(int sock, SSL* ssl, Buffer* str, int tm)
     //print_message("ssl_tcp_recv_Buffer_wait : %s\n", (char*)str->buf);
     return cc;
 }
-
 
 
 /**
@@ -2026,7 +1977,6 @@ int  ssl_tcp_recv_Buffer_tosize(int sock, SSL* ssl, Buffer* str, Buffer* mod, in
     }
     return sz;
 }
-
 
 
 /**
@@ -2084,7 +2034,6 @@ int  ssl_tcp_recv_Buffer_tosize_wait(int sock, SSL* ssl, Buffer* str, Buffer* mo
 }
 
 
-
 /**
 int  ssl_tcp_send_sBuffer(int sock, SSL* ssl, Buffer* str)
 
@@ -2110,7 +2059,6 @@ int  ssl_tcp_send_sBuffer(int sock, SSL* ssl, Buffer* str)
     if (cc<0) cc = JBXL_SSL_SEND_ERROR;
     return cc;
 }
-
 
 
 /**
@@ -2144,7 +2092,6 @@ int  ssl_tcp_send_sBufferln(int sock, SSL* ssl, Buffer* str)
     if (cc<0) cc = JBXL_SSL_SEND_ERROR;
     return cc;
 }
-
 
 
 /**
@@ -2208,7 +2155,6 @@ int  ssl_tcp_recv_mstream_Buffer(int sock, SSL* ssl, Buffer* mesg, mstream* sb, 
 }
 
 
-
 /**
 int  ssl_tcp_recv_lines_Buffer(int sock, SSL* ssl, Buffer* mesg, int tm)
 
@@ -2255,7 +2201,6 @@ int  ssl_tcp_recv_lines_Buffer(int sock, SSL* ssl, Buffer* mesg, int tm)
 
     return mesg->vldsz;
 }
-
 
 
 #endif

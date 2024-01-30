@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_LDAP_TOOL_H_
+﻿#ifndef  __JBXL_LDAP_TOOL_H_
 #define  __JBXL_LDAP_TOOL_H_
-
 
 /**
 @brief   LDAP用ライブラリ ヘッダ

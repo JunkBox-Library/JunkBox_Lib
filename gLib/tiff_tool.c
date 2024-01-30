@@ -1,12 +1,10 @@
-﻿
-/**
+﻿/**
 @brief    TIFF TOOL
 @file     tiff_tool.c
 @version  0.9
 @date     2010 11/9
 @author   Fumi.Iseki (C)
 */
-
 
 #include "tiff_tool.h"
 
@@ -57,7 +55,6 @@ TIFF_ifd**  read_tiff_file(const char* fname)
     freeNull(buf);
     return ptr_ifd;
 }
-
 
 
 /**
@@ -147,7 +144,6 @@ TIFF_ifd*  get_tiff_ifd(unsigned char* buf, int num)
     if (ifd!=NULL) ifd[0].value = offset;
     return ifd;
 }
-
 
 
 void  proc_tiff_ifd(TIFF_ifd* ptr, unsigned char* buf)
@@ -314,7 +310,6 @@ void  proc_tiff_ifd(TIFF_ifd* ptr, unsigned char* buf)
 }
 
 
-
 void  print_tiff_ifd(FILE* fp, TIFF_ifd* ifd, int max_values)
 {
     int  i;
@@ -333,7 +328,6 @@ void  print_tiff_ifd(FILE* fp, TIFF_ifd* ifd, int max_values)
     }
 
 }
-
 
 
 void  print_tiff_ifd_indiv(FILE* fp, TIFF_ifd* ifd, int max_values)
@@ -372,14 +366,12 @@ void  print_tiff_ifd_indiv(FILE* fp, TIFF_ifd* ifd, int max_values)
 }
 
 
-
 void  free_TIFF_ifd(TIFF_ifd* ifd)
 {
     if (ifd==NULL) return;
     freeNull(ifd->ex_value);
     free(ifd);
 }
-
 
 
 void  free_TIFF_ifd_dem(TIFF_ifd** ptr_ifd)
@@ -402,7 +394,6 @@ void  free_TIFF_ifd_dem(TIFF_ifd** ptr_ifd)
 }
 
 
-
 char*  get_tiff_ascii_field(TIFF_ifd* ifd, int offset)
 {
     if (ifd==NULL) return NULL;
@@ -417,7 +408,6 @@ char*  get_tiff_ascii_field(TIFF_ifd* ifd, int offset)
 
     return (char*)(ptr + offset);
 }
-
 
 
 unsigned int  get_tiff_uint_field(TIFF_ifd* ifd, int offset)
@@ -450,7 +440,6 @@ unsigned int  get_tiff_uint_field(TIFF_ifd* ifd, int offset)
 }
 
 
-
 double  get_tiff_double_field(TIFF_ifd* ifd, int offset)
 {
     if (ifd==NULL) return 0.0;
@@ -475,7 +464,6 @@ double  get_tiff_double_field(TIFF_ifd* ifd, int offset)
 }
 
 
-
 int  get_tiff_type_length(short type)
 {
     int  byte_num[] = {0, 1, 1, 2, 4, 8, 1, 1, 2, 4, 8, 4, 8};
@@ -483,7 +471,6 @@ int  get_tiff_type_length(short type)
     if (type>0 && type<13) return byte_num[type];
     return 0;
 }
-
 
 
 TIFF_ifd*  find_tiff_ifd(TIFF_ifd* ifd, unsigned short tag)
@@ -505,5 +492,4 @@ TIFF_ifd*  find_tiff_ifd(TIFF_ifd* ifd, unsigned short tag)
     }
     return NULL;    
 }
-
 

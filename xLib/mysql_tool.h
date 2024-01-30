@@ -1,5 +1,4 @@
-﻿
-#ifndef  DISABLE_MYSQL
+﻿#ifndef  DISABLE_MYSQL
 
 #ifndef  __JBXL_MYSQL_TOOL_H_
 #define  __JBXL_MYSQL_TOOL_H_
@@ -12,8 +11,6 @@
 @par コンパイルオプション
 --I/usr/local/mysql/include -L/usr/local/mysql/lib/mysql -lmysqlclient
 */ 
-
-
 
 //#include "common.h"
 //#include "tlist.h"

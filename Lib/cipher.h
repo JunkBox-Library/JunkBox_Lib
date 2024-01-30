@@ -1,14 +1,11 @@
-﻿
-#ifndef  __JBXL_CIPHER_H_
+﻿#ifndef  __JBXL_CIPHER_H_
 #define  __JBXL_CIPHER_H_
-
 
 /** 
 @brief   暗号用ライブラリヘッダ
 @file    cipher.h
 @author  Fumi.Iseki (C)
 */
-
 
 #include "buffer.h"
 

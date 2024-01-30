@@ -1,14 +1,11 @@
-﻿
-#ifndef  __JBXL_NETWORK_H_
+﻿#ifndef  __JBXL_NETWORK_H_
 #define  __JBXL_NETWORK_H_
-
 
 /** 
 @brief   ネットワーク用ライブラリヘッダ for IPv4/IPv6
 @file    network.h
 @author  Fumi.Iseki (C)
 */
-
 
 #include "tools.h"
 #include "jbxl_state.h"

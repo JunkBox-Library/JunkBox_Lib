@@ -5,7 +5,6 @@
 @author  Fumi.Iseki (C)
 */
 
-
 #ifdef CPLUSPLUS
     #undef CPLUSPLUS
 #endif

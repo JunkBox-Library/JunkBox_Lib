@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_JPEG_TOOL_H_
+﻿#ifndef  __JBXL_JPEG_TOOL_H_
 #define  __JBXL_JPEG_TOOL_H_
-
 
 #include "xtools.h"
 
@@ -47,7 +45,6 @@ typedef struct
 } JPEGImage;
 
 
-
 #if JPEG_LIB_VERSION < 80
 
 typedef struct {
@@ -79,7 +76,6 @@ JPEGImage  BSGraph2JPEGImage(BSGraph vp);
 JPEGImage  make_JPEGImage(int xs, int ys, int col);
 void       free_JPEGImage(JPEGImage* jp);
 
-
 //
 #if JPEG_LIB_VERSION < 80
 
@@ -92,7 +88,6 @@ GLOBAL(void)        jpeg_mem_dest(j_compress_ptr cinfo, unsigned char** buf, uns
 
 
 #endif      // DISABLE_JPEGLIB
-
 #endif      // __JBXL_JPEG_TOOL_H_
 
 

@@ -1,5 +1,4 @@
-﻿
-#ifndef  __JBXL_PASSWORD_H_
+﻿#ifndef  __JBXL_PASSWORD_H_
 #define  __JBXL_PASSWORD_H_
  
 /** 
@@ -8,13 +7,11 @@
 @author  Fumi.Iseki (C)
 */
 
-
 /*
 #ifndef _XOPEN_SOURCE
     #define _XOPEN_SOURCE
 #endif
 */
-
 
 #include "tools.h"
 #include <pwd.h>

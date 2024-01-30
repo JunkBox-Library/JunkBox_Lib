@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief   ISNETプロトコル用ライブラリ
 @file    isnet.c
 @author  Fumi.Iseki (C)
@@ -52,7 +51,6 @@ Buffer  get_command(Buffer msg)
 }
 
 
-
 /**
 Buffer  get_operand(Buffer msg)
 
@@ -73,7 +71,6 @@ Buffer  get_operand(Buffer msg)
 
     return opr;
 }
-
 
 
 /**
@@ -112,7 +109,6 @@ Buffer  get_comment(Buffer msg)
 
     return com;
 }
-
 
 
 #include "isnet_server.c"

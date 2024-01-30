@@ -1,5 +1,4 @@
-﻿
-/** 
+﻿/** 
 @brief   HTTP ツールライブラリ
 @file    http_tool.c
 @author  Fumi.Iseki (C)
@@ -72,7 +71,6 @@ int  send_http_header(int sofd, tList* pp, int mode)
 }
 
 
-
 Buffer  rebuild_http_Buffer(tList* pl, Buffer* buf)
 {
     Buffer rbd;
@@ -101,8 +99,6 @@ Buffer  rebuild_http_Buffer(tList* pl, Buffer* buf)
 
     return rbd;
 }
-
-
 
 
 /**
@@ -149,7 +145,6 @@ int  send_http_Buffer(int sofd, tList* pl, Buffer* buf)
 
     return sz;
 }
-
 
 
 /**
@@ -216,7 +211,6 @@ int  send_http_file(int sofd, tList* pl, const char* fname)
 
     return sz;
 }
-
 
 
 /**
@@ -347,7 +341,6 @@ int  recv_http_header(int sofd, tList** pl, int* len, int tm, FILE* fp, int* sta
 }
 
 
-
 /**
 int  recv_http_content(int sofd, Buffer* buf, int len, int tm, FILE* fp, int* state)
 
@@ -396,7 +389,6 @@ int  recv_http_content(int sofd, Buffer* buf, int len, int tm, FILE* fp, int* st
 
     return sz;
 }
-
 
 
 /**
@@ -481,7 +473,6 @@ int  recv_http_chunked(int sofd, Buffer* buf, int tm, FILE* fp, int* state)
 }
 
 
-
 /**
 int  recv_http_chunked_remain(int sofd, Buffer* buf, int chnksz, int tm)
 
@@ -517,7 +508,6 @@ int  recv_http_chunked_remain(int sofd, Buffer* buf, int chnksz, int tm)
     free_Buffer(&rcv);
     return sz;
 }
-
 
 
 /**
@@ -562,7 +552,6 @@ int  recv_http_closed(int sofd, Buffer* buf, int tm, FILE* fp)
 
     return sz;
 }
-
 
 
 /**
@@ -787,7 +776,6 @@ int  recv_http_file(int sofd, tList** pl, const char* fname, const char* wdir, i
 }
 
 
-
 /**
 int   save_http_xml(int cofd, tList** pl, tXML** xml, char** recvfn, const char* wdir, int timeout, int* state)
 
@@ -842,7 +830,6 @@ int   save_http_xml(int cofd, tList** pl, tXML** xml, char** recvfn, const char*
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Tools
 //
@@ -874,7 +861,6 @@ int  get_http_method(char* data)
 }
 
 
-
 /**
 int  is_http_header_field(tList* pl, char* field, char* value, int n)
 
@@ -904,7 +890,6 @@ int  is_http_header_field(tList* pl, char* field, char* value, int n)
 }
 
 
-
 /**
 int  get_http_header_method(tList* pl)
 
@@ -921,7 +906,6 @@ int  get_http_header_method(tList* pl)
 
     return ret;
 }
-
 
 
 /**
@@ -948,7 +932,6 @@ void  set_http_host_header(tList* pl, char* hname, unsigned short hport)
     free_Buffer(&buf);
     return;
 }
-
 
 
 /**
@@ -984,7 +967,6 @@ void  dump_http_header(FILE* fp, tList* pp)
     }
     return;
 }
-
 
 
 /**
@@ -1029,7 +1011,6 @@ int  get_chunked_size(char* ptr, int* hdsz, int* tlsz)
 }
 
 
-
 // need free()
 char*  get_http_header_date(time_t date) 
 {
@@ -1037,7 +1018,6 @@ char*  get_http_header_date(time_t date)
 
     return buf;
 }
-
 
 
 
@@ -1168,7 +1148,6 @@ void  simple_web_proxy(int bofd, char* myip, int tmout)
 }
 
 
-
 /**
 Buffer  http_proxy_header_analyze(tList* pl, Buffer* server, unsigned short* sport, int* timeout, int* keep)
 
@@ -1241,7 +1220,6 @@ Buffer  http_proxy_header_analyze(tList* pl, Buffer* server, unsigned short* spo
 
     return cmnd;
 }
-
 
 
 /**
@@ -1338,7 +1316,6 @@ int  www2browser_relay(int bofd, int wofd, int btm, int wtm, int keep)
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Alternative Tools
 //
@@ -1421,7 +1398,6 @@ int  tcp_relay(int sofd, int cofd, int tm)
 }
 
 
-
 int  get_http_status_num(tList* pl)
 {
     int pnum = 0;
@@ -1440,7 +1416,6 @@ int  get_http_status_num(tList* pl)
 
     return pnum;
 }
-
 
 
 float  get_http_version_num(tList* pl)
@@ -1472,7 +1447,6 @@ float  get_http_version_num(tList* pl)
 
     return ver;
 }
-
 
 
 
@@ -1526,7 +1500,6 @@ int  send_http_res_file(int sofd, char* fname, int mode)
     free(html);
     return sz;
 }
-
 
 
 void  send_http_passwd_req(int sofd)

@@ -1,14 +1,11 @@
-﻿
-#ifndef  __JBXL_HTTPS_TOOL_H_
+﻿#ifndef  __JBXL_HTTPS_TOOL_H_
 #define  __JBXL_HTTPS_TOOL_H_
-
 
 /** 
 @brief   HTTPS ツールライブラリ ヘッダ
 @file    https_tool.h
 @author  Fumi.Iseki (C)
 */
-
 
 #include "ssl_tool.h"
 #include "http_tool.h"

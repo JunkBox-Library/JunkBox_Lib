@@ -1,5 +1,4 @@
-﻿
-/** 
+﻿/** 
 @brief   Tiny Tree Graph 構造ライブラリ
 @file    ttree.c
 @version 
@@ -7,10 +6,8 @@
 @date    2008 2/1
 */
 
-
 #include  "ttree.h"
 #include  "jbxl_state.h"
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +34,6 @@ tTree*  new_tTree_node(void)
 }
 
 
-
 tTree*  new_tTree_anchor_node(void)
 {
     tTree* pp;
@@ -54,7 +50,6 @@ tTree*  new_tTree_anchor_node(void)
 }
 
 
-
 tTree*  del_tTree_anchor_node(tTree* node)
 {
     tTree* pp = node;
@@ -67,7 +62,6 @@ tTree*  del_tTree_anchor_node(tTree* node)
 
     return pp;    
 }
-
 
 
 /**
@@ -87,7 +81,6 @@ tTree  make_tTree_node(tList_data data)
 
     return pp;
 }
-
 
 
 /**
@@ -126,7 +119,6 @@ tTree*  add_tTree_node(tTree* pp, tTree* node)
 }
 
 
-
 /**
 tTree*  add_tTree_node_bydata(tTree* pp, tList_data ldat) 
 
@@ -162,7 +154,6 @@ tTree*  add_tTree_node_bydata(tTree* pp, tList_data ldat)
 }
 
 
-
 /**
 tTree*  add_tTree_node_byBuffer(tTree* pp, int id, int lv, Buffer key, Buffer val, void* ptr, int sz) 
 
@@ -190,7 +181,6 @@ tTree*  add_tTree_node_byBuffer(tTree* pp, int id, int lv, Buffer key, Buffer va
 }
 
 
-
 /**
 tTree*  add_tTree_node_bystr(tTree* pp, int id, int lv, const char* key, const char* val, void* ptr, int sz) 
 
@@ -216,7 +206,6 @@ tTree*  add_tTree_node_bystr(tTree* pp, int id, int lv, const char* key, const c
 
     return pt;
 }
-
 
 
 /**
@@ -254,7 +243,6 @@ tTree*  insert_tTree_node(tTree* pp, tTree* node)
 }
 
 
-
 /**
 tTree*  insert_tTree_node_bydata(tTree* pp, tList_data ldat) 
 
@@ -287,7 +275,6 @@ tTree*  insert_tTree_node_bydata(tTree* pp, tList_data ldat)
     
     return pt;
 }
-
 
 
 /**
@@ -342,7 +329,6 @@ tTree*  insert_tTree_node_bystr(tTree* pp, int id, int lv, const char* key, cons
 
     return pt;
 }
-
 
 
 /**    
@@ -399,7 +385,6 @@ tTree*  free_tTree_node(tTree* node)
 }
 
 
-
 /**    
 tTree*  del_tTree_node(tTree** node) 
 
@@ -419,7 +404,6 @@ tTree*  del_tTree_node(tTree** node)
 
     return pp;
 }
-
 
 
 /**    
@@ -493,7 +477,6 @@ tTree*  move_tTree_node(tTree* pp, tTree* node)
 }
 
 
-
 /**
 void  replace_all_tTree_node(tTree* pp, char* key, char* src, char* dst, int len)
 
@@ -530,7 +513,6 @@ int  replace_all_tTree_node(tTree* tp, char* key, char* src, char* dst, int len)
 
     return nn;
 }
-
 
 
 
@@ -572,7 +554,6 @@ tTree*  del_tTree(tTree** pp)
 
     return pt;
 }
-
 
 
 /**
@@ -624,7 +605,6 @@ tTree*  del_sisters_tTree(tTree** pp)
 }
 
 
-
 /**
 tTree*  del_sisters_children_tTree(tTree** pp) 
 
@@ -662,7 +642,6 @@ tTree*  del_sisters_children_tTree(tTree** pp)
 }
 
 
-
 /**
 void  del_all_tTree(tTree** pp)
 
@@ -684,7 +663,6 @@ void  del_all_tTree(tTree** pp)
     *pp = NULL;
     return;
 }
-
 
 
 /**
@@ -734,7 +712,6 @@ tTree*  add_tTree(tTree* tp, tTree* tt)
 }
 
 
-
 /**
 tTree*  div_tTree(tTree* tp, tTree* tt)
 
@@ -765,7 +742,6 @@ tTree*  div_tTree(tTree* tt)
 
     return tt;
 }
-
 
 
 /**
@@ -803,7 +779,6 @@ tTree*  dup_merge_tTree(tTree* pp, tTree* tp)
 
     return pp;
 }
-
 
 
 /**
@@ -883,7 +858,6 @@ void  merge_tTree(tTree* tp, tTree* tt)
 }
 
 
-
 /**
 void  exchange_tTree(tTree* tl, tTree* tt)
 
@@ -933,7 +907,6 @@ void  exchange_tTree(tTree* tl, tTree* tt)
 }
 
 
-
 /**
 void  adjust_tTree_depth(tTree* pp)
 
@@ -978,7 +951,6 @@ void  adjust_tTree_depth(tTree* pp)
 }
 
 
-
 /**
 void  print_tTree_tree(FILE* fp, tTree* pp, const char* space)
 
@@ -1019,7 +991,6 @@ void  print_tTree_tree(FILE* fp, tTree* pp, const char* space)
 }
 
 
-
 /**
 void  print_tTree(FILE* fp, tTree* pp)
 
@@ -1054,7 +1025,6 @@ void  print_tTree(FILE* fp, tTree* pp)
 }
 
 
-
 /**
 tTree*  find_tTree_end(tTree* pp)
 
@@ -1069,7 +1039,6 @@ tTree*  find_tTree_end(tTree* pp)
 
     return pp;
 }
-
 
 
 /**
@@ -1095,7 +1064,6 @@ int  count_tTree(tTree* pp)
 
     return cnt;
 }
-
 
 
 
@@ -1139,7 +1107,6 @@ tTree*  strncmp_tTree(tTree* pp, const char* key, int len, int no)
 }
 
 
-
 /**
 tTree*  strncasecmp_tTree(tTree* pp, const char* key, int len, int no)
 
@@ -1174,7 +1141,6 @@ tTree*  strncasecmp_tTree(tTree* pp, const char* key, int len, int no)
 
     return pt;
 }
-
 
 
 /**
@@ -1237,7 +1203,6 @@ tTree*  cmp_sisters_tTree(tTree* tp, tTree* tr)
 
     return ts;
 }
-
 
 
 /**
@@ -1303,7 +1268,6 @@ int  check_match_tTree(tTree* tp, tTree* tr)
 }
 
 
-
 /**
 int find_match_tTree(tTree* pp, tTree* pt)
 
@@ -1348,7 +1312,6 @@ int  find_match_tTree(tTree* pp, tTree* pt)
 }
 
 
-
 /**
 void  clear_tTree_ctrl(tTree* pp)
 
@@ -1364,7 +1327,6 @@ void  clear_tTree_ctrl(tTree* pp)
         pp = pp->ysis;
     }
 }
-
 
 
 /**
@@ -1394,7 +1356,6 @@ tList*  find_match_tTree_endlist(tTree* pp, tTree* pt)
     
     return lp;
 }
-
 
 
 /**
@@ -1433,7 +1394,6 @@ tList*  find_match_tTree_endlist_rcsv(tTree* pp, tTree* pt, tTree* te)
 }
 
 
-
 /**
 void  replace_tTree_node(tTree* pp, tTree* pt)
 
@@ -1467,7 +1427,6 @@ int replace_tTree_node(tTree* pp, tTree* pt)
 
     return ret;
 }
-
 
 
 /**
@@ -1518,7 +1477,6 @@ void  copy_tTree_byctrl(tTree* pt)
 }
 
 
-
 /**
 Buffer  get_value_tTree(tTree* pp, tTree* pt)
 
@@ -1562,7 +1520,6 @@ Buffer  get_value_tTree(tTree* pp, tTree* pt)
 
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 //
 
@@ -1589,7 +1546,6 @@ tTree*  next_strncmp_vertical_tTree(tTree* pp, const char* key, int len, int no,
 }
 
 
-
 /**
 tTree*  next_strncmp_horizon_tTree (tTree* pp, const char* key, int len, int no, int* nn)
 
@@ -1611,7 +1567,6 @@ tTree*  next_strncmp_horizon_tTree(tTree* pp, const char* key, int len, int no, 
 
     return NULL;
 }
-
 
 
 /**
@@ -1637,7 +1592,6 @@ tTree*  next_strncasecmp_vertical_tTree(tTree* pp, const char* key, int len, int
 }
 
 
-
 /**
 tTree*  next_strncasecmp_horizon_tTree (tTree* pp, const char* key, int len, int no, int* nn)
 
@@ -1659,6 +1613,4 @@ tTree*  next_strncasecmp_horizon_tTree(tTree* pp, const char* key, int len, int 
 
     return NULL;
 }
-
-
 

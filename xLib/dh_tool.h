@@ -1,11 +1,8 @@
-﻿
-#ifndef  __JBXL_DH_TOOL_H_
+﻿#ifndef  __JBXL_DH_TOOL_H_
 #define  __JBXL_DH_TOOL_H_
-
 
 #include "xtools.h"
 #include "asn1_tool.h"
-
 
 #ifndef HAVE_OPENSSL_SSL_H
 #ifndef DISABLE_SSL

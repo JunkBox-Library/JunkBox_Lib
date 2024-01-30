@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_LLSD_TOOL_H_
+﻿#ifndef  __JBXL_LLSD_TOOL_H_
 #define  __JBXL_LLSD_TOOL_H_
-
 
 /**
 @brief   LLSD用ライブラリヘッダ（サブセット版）
@@ -11,11 +9,8 @@
 @sa http://www.nsl.tuis.ac.jp/xoops/modules/xpwiki/?LLSD
 */ 
 
-
-
 #include "xtools.h"
 #include "txml.h"
-
 
 #define  LLSD_MAKER_UNDEF       '!'
 #define  LLSD_MAKER_TRUE        '1'

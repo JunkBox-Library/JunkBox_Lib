@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_IP_ADDRESS_TOOL_H_
+﻿#ifndef  __JBXL_IP_ADDRESS_TOOL_H_
 #define  __JBXL_IP_ADDRESS_TOOL_H_
-
 
 /**  
 @brief   IP Address Tool Header
@@ -9,7 +7,6 @@
 @author  Fumi Iseki 
 @date    2005 09/21
 */
-
 
 #include "network.h"
 #include "tlist.h"

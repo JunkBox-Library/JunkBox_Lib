@@ -1,10 +1,8 @@
-﻿
-/**
+﻿/**
 @brief   ASN.1/DER 用ライブラリ
 @file    asn1_tool.c
 @author  Fumi.Iseki (C)
 */
-
 
 #include "asn1_tool.h"
 
@@ -56,7 +54,6 @@ int  skip_DER_node(Buffer param, unsigned char node, int ls, int* lp)
 
     return sz;
 }
-
 
 
 /**
@@ -119,7 +116,6 @@ Buffer  node2DER(Buffer pt, unsigned char node)
 }
 
 
-
 /**
 Buffer  int2bin_DER(long int n)
 
@@ -164,7 +160,6 @@ Buffer  int2bin_DER(long int n)
 }
 
 
-
 long int  bin2int_DER(Buffer buf)
 {
     if (buf.buf==NULL || buf.vldsz==0) return 0;
@@ -187,7 +182,6 @@ long int  bin2int_DER(Buffer buf)
 
     return ret;
 }
-
 
 
 /**
@@ -258,7 +252,6 @@ tDER*  DER_parse(tDER* der, Buffer* buf)
 }
 
 
-
 void  _DER_parse_children(tDER* der, Buffer* buf)
 {
     if (der==NULL) return;
@@ -292,7 +285,6 @@ void  _DER_parse_children(tDER* der, Buffer* buf)
 }
 
 
-
 /**
 int  set_DER_node(tDER* der, unsigned char* buf)
 
@@ -316,7 +308,6 @@ int  set_DER_node(tDER* der, unsigned char* buf)
 
     return cnt;
 }
-
 
 
 /**
@@ -361,7 +352,6 @@ int  get_DER_size(unsigned char* buf, int* valsz)
 
     return cnt;
 }
-
 
 
 /**
@@ -415,7 +405,6 @@ void  print_tDER(FILE* fp, tDER* pp)
 
     return;
 }
-
 
 
 /*

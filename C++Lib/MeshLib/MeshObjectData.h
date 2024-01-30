@@ -25,20 +25,18 @@ class  MeshObjectData;
 //
 
 /**
-
-@brief MeshObject の Polygonデータを格納するクラス．リスト構造を取る．
-
+@brief MeshObject の Polygonデータ（1面）を格納するクラス．リスト構造を取る．
 */
 class  MeshObjectNode
 {
 public:
     Buffer  material_id;            ///< マテリアルを識別するID．#MATERIAL_ で始まる．
     bool    same_material;          ///< 他の Node が既に同じマテリアルを使用している．
+    int     facet_no;               ///< 面（Polygon）番号
 
-    int     facet_no;               ///< 面番号
     MaterialParam material_param;   ///< マテリアルパラメータ
 
-    int     num_index;              ///< 頂点の延べ数．num_polygon*MeshObjectData::num_vcount（data_index の要素数）
+    int     num_index;              ///< 頂点の延べ数．num_polygon*MeshObjectData::num_vcount (num_polygon*3)（data_index の要素数）
     int     num_polygon;            ///< ポリゴンの数
     int     num_vertex;             ///< 頂点のデータ数．（vertex_value, normal_value の要素数）
     int     num_texcrd;             ///< テクスチャ画像の座標数．通常は num_vertex に等しい．（texcrd_value の要素数）
@@ -62,7 +60,7 @@ public:
     void    clear(void);
 
     void    set (int vertex,   int polygon,   int vcount=3);
-    bool    getm(int vertex=0, int polygon=0, int vcount=0);
+    bool    getm(int vertex=0, int polygon=0, int vcount=0);    ///< メモリの確保
 
     //
     void    setFacetNo(int no) { if (no>=0) facet_no = no;}

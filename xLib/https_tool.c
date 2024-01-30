@@ -1,10 +1,8 @@
-﻿
-/** 
+﻿/** 
 @brief   HTTPS ツールライブラリ
 @file    https_tool.c
 @author  Fumi.Iseki (C)
 */
-
 
 #ifdef CPLUSPLUS
     #undef CPLUSPLUS
@@ -51,7 +49,6 @@ int  send_https_header(int sofd, SSL* ssl, tList* pp, int mode)
 }
 
 
-
 /**
 int  send_https_Buffer(int sofd, SSL* ssl, tList* pl, Buffer* buf)
 
@@ -69,7 +66,6 @@ int  send_https_Buffer(int sofd, SSL* ssl, tList* pl, Buffer* buf)
 {
     int sz;
     Buffer snd;
-
  /*
     int nobody = FALSE;
 
@@ -91,14 +87,12 @@ int  send_https_Buffer(int sofd, SSL* ssl, tList* pl, Buffer* buf)
     snd = restore_protocol_header(pl, (char*)": ", OFF, NULL);
     if (!nobody) cat_Buffer(buf, &snd);
 */
-
     snd = rebuild_http_Buffer(pl, buf);
     sz  = ssl_tcp_send_Buffer(sofd, ssl, &snd);
     free_Buffer(&snd);
 
     return sz;
 }
-
 
 
 /**
@@ -166,7 +160,6 @@ int  send_https_file(int sofd, SSL* ssl, tList* pl, const char* fname)
 
     return sz;
 }
-
 
 
 /**
@@ -297,7 +290,6 @@ int  recv_https_header(int sofd, SSL* ssl, tList** pl, int* len, int tm, FILE* f
 }
 
 
-
 /**
 int  recv_https_content(int sofd, SSL* ssl, Buffer* buf, int len, int tm, FILE* fp, int* state)
 
@@ -346,7 +338,6 @@ int  recv_https_content(int sofd, SSL* ssl, Buffer* buf, int len, int tm, FILE* 
     free_Buffer(&rcv);
     return sz;
 }
-
 
 
 /**
@@ -432,7 +423,6 @@ int  recv_https_chunked(int sofd, SSL* ssl, Buffer* buf, int tm, FILE* fp, int* 
 }
 
 
-
 /**
 int  recv_https_chunked_remain(int sofd, SSL* ssl, Buffer* buf, int chnksz, int tm)
 
@@ -469,7 +459,6 @@ int  recv_https_chunked_remain(int sofd, SSL* ssl, Buffer* buf, int chnksz, int 
     free_Buffer(&rcv);
     return sz;
 }
-
 
 
 /**
@@ -515,7 +504,6 @@ int  recv_https_closed(int sofd, SSL* ssl, Buffer* buf, int tm, FILE* fp)
 
     return sz;
 }
-
 
 
 /**
@@ -743,7 +731,6 @@ int  recv_https_file(int sofd, SSL* ssl, tList** pl, const char* fname, const ch
     if (state!=NULL) *state = connect;
     return cc;
 }
-
 
 
 /**

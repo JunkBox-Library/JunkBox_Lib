@@ -1,5 +1,4 @@
-﻿
-/**
+﻿/**
 @brief    JP2K TOOL with OpenJpeg-1.5
 
 @file     jp2k_tool.c
@@ -11,7 +10,6 @@
 this software is based on OpenJPEG. http://www.openjpeg.org/
 this software does not support OpenJpeg-1.3
 */
-
 
 #include "jp2k_tool.h"
 #include "jbxl_state.h"
@@ -43,7 +41,6 @@ void  free_jp2k(JP2KImage* jp)
     }
     init_jp2k(jp);
 }
-
 
 
 void  setup_jp2k(JP2KImage* jp)
@@ -101,7 +98,6 @@ void  setup_jp2k(JP2KImage* jp)
 }
 
 
-
 /**
 JPEG 2000のヘッダからファイルの種類を返す．@n
 ただし，ヘッダから JP2K_FMT_JPTであることは判別できないので，注意する．
@@ -121,7 +117,6 @@ int  get_jp2k_format(uByte* buf)
     }
     return format;
 }
-
 
 
 JP2KImage  read_jp2k_file(const char* fname)
@@ -168,7 +163,6 @@ JP2KImage  read_jp2k_file(const char* fname)
 }
 
 
-
 JP2KImage  read_jp2k_data(unsigned char* data, int len, int format)
 {
     JP2KImage jp;
@@ -212,7 +206,6 @@ JP2KImage  read_jp2k_data(unsigned char* data, int len, int format)
 
     return jp;
 }
-
 
 
 BSGraph  jp2k_toBSGraph(JP2KImage jp)

@@ -1,10 +1,7 @@
-﻿
-#ifndef  __JBXL_SIP_TOOL_H_
+﻿#ifndef  __JBXL_SIP_TOOL_H_
 #define  __JBXL_SIP_TOOL_H_
 
-
 #include "protocol.h"
-
 
 /**
 @brief   SIP用ライブラリヘッダ
@@ -44,7 +41,6 @@ or
     del_tList(&lp);
 @endcode
 */  
-
 
 #define  SIP_NOMAXFORWARDS      1000
 
@@ -86,5 +82,6 @@ unsigned short  get_valid_rtp_pair_sockets(int min, int max, int* rtp, int* rtcp
 // Junk 
 Buffer  replace_sip_via(tList* lp, char* host, unsigned short port, int no);
 int     replace_sip_contact_dstipport(tList* lp, char* ipaddr, unsigned short port);
+
 
 #endif

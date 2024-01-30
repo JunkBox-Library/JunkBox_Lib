@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_GRAPHIC_DEBUG_H_
+﻿#ifndef  __JBXL_GRAPHIC_DEBUG_H_
 #define  __JBXL_GRAPHIC_DEBUG_H_
-
 
 /**
 @brief    グラフィック環境でのデバック用ヘッダ
@@ -9,10 +7,8 @@
 @author   Fumi.Iseki (C) 
 */
 
-
 #include "gio.h"
 #include "openX.h"
-
 
 extern int  DebugMode;
 

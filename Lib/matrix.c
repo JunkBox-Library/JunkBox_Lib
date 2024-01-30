@@ -4,9 +4,7 @@
 @author  Fumi.Iseki (C)
 */
 
-
 #include "matrix.h" 
-
 
 
 /**
@@ -40,7 +38,6 @@ vector  unit_vector(vector a)
 }
 
 
-
 /**
 vector  unit_ivector(ivector a)
  
@@ -72,7 +69,6 @@ vector  unit_ivector(ivector a)
 }
 
 
-
 /**
 vector  set_vector(double x, double y, double z)
  
@@ -93,7 +89,6 @@ vector  set_vector(double x, double y, double z)
     c.n = sqrt(x*x + y*y + z*z);
     return c;
 }
-
 
 
 /**
@@ -118,7 +113,6 @@ ivector  set_ivector(int x, int y, int z)
 }
 
 
-
 /**
 ivector  f2ivector(vector a)
 
@@ -138,7 +132,6 @@ ivector  f2ivector(vector a)
     c.n = sqrt((double)c.x*c.x + c.y*c.y + c.z*c.z);
     return c;
 }
-
 
 
 /**
@@ -161,7 +154,6 @@ vector  i2vector(ivector a)
 }
 
 
-
 /**
 vector  ex_vector(vector a, vector b)
 
@@ -182,7 +174,6 @@ vector  ex_vector(vector a, vector b)
     c.n = sqrt(c.x*c.x+c.y*c.y+c.z*c.z);
     return c;
 }
-
 
 
 /**
@@ -218,7 +209,6 @@ matrix  make_matrix1(int n)
 }
 
 
-
 /**
 imatrix  make_imatrix1(int n)
 
@@ -250,7 +240,6 @@ imatrix  make_imatrix1(int n)
     for (i=0; i<n; i++) a.mx[i] = 0;
     return a;
 }
-
 
 
 /**
@@ -289,7 +278,6 @@ matrix  make_matrix2(int n, int m)
 }
 
 
-
 /**
 imatrix  make_imatrix2(int n, int m)
 
@@ -324,7 +312,6 @@ imatrix  make_imatrix2(int n, int m)
     for (i=0; i<s; i++) a.mx[i] = 0;
     return a;
 }
-
 
 
 /**
@@ -366,7 +353,6 @@ matrix  make_matrix(int n, int* sz)
 }
 
 
-
 /**
 imatrix  make_imatrix(int n, int* sz)
 
@@ -406,7 +392,6 @@ imatrix  make_imatrix(int n, int* sz)
 }
 
 
-
 /**
 void  free_matrix(matrix* a)
 
@@ -422,7 +407,6 @@ void  free_matrix(matrix* a)
     a->mx = NULL;
     a->n  = a->r  = 0;
 }
-
 
 
 /**
@@ -442,7 +426,6 @@ void  free_imatrix(imatrix* a)
 }
 
 
-
 /**  
 double*  get_matrix(matrix mtx, ...) 
 
@@ -482,7 +465,6 @@ double*  get_matrix(matrix mtx, ...)
 }
 
 
-
 /**  
 int*  get_imatrix(imatrix mtx, ...) 
 
@@ -520,7 +502,6 @@ int*  get_imatrix(imatrix mtx, ...)
     if (dx>=mtx.r || dx<0) return NULL;
     return &mtx.mx[dx];
 }
-
 
 
 /**
@@ -545,7 +526,6 @@ void   copy_matrix(matrix src, matrix dst)
 }
 
 
-
 /**
 void   copy_imatrix(imatrix src, imatrix dst)
 
@@ -566,7 +546,6 @@ void   copy_imatrix(imatrix src, imatrix dst)
     for (i=0; i<src.n; i++) dst.sz[i] = src.sz[i];
     for (i=0; i<src.r; i++) dst.mx[i] = src.mx[i];
 }
-
 
 
 /**
@@ -596,7 +575,6 @@ matrix   add_matrix(matrix a, matrix b)
 }
 
 
-
 /**
 imatrix   add_imatrix(imatrix a, imatrix b)
 
@@ -622,7 +600,6 @@ imatrix   add_imatrix(imatrix a, imatrix b)
     for (i=0; i<c.r; i++) c.mx[i] = a.mx[i] + b.mx[i];
     return c;
 }
-
 
 
 /**
@@ -652,7 +629,6 @@ matrix   sub_matrix(matrix a, matrix b)
 }
 
 
-
 /**
 imatrix   sub_imatrix(imatrix a, imatrix b)
 
@@ -678,7 +654,6 @@ imatrix   sub_imatrix(imatrix a, imatrix b)
     for (i=0; i<c.r; i++) c.mx[i] = a.mx[i] - b.mx[i];
     return c;
 }
-
 
 
 /**
@@ -751,7 +726,6 @@ matrix   mlt_matrix(matrix a, matrix b)
 }
 
 
-
 /**
 imatrix   mlt_imatrix(imatrix a, imatrix b)
 
@@ -822,7 +796,6 @@ imatrix   mlt_imatrix(imatrix a, imatrix b)
 }
 
 
-
 /**
 void   print_matrix(FILE* fp, matrix a)
 
@@ -842,7 +815,6 @@ void   print_matrix(FILE* fp, matrix a)
 }
 
 
-
 /**
 void   print_imatrix(FILE* fp, imatrix a)
 
@@ -860,7 +832,6 @@ void   print_imatrix(FILE* fp, imatrix a)
     }
     fprintf(stdout,"\n");
 }
-
 
 
 /**
@@ -957,7 +928,6 @@ matrix  decompQR(matrix xx, imatrix col)
 }
 
 
-
 /**
 matrix minimum2(matrix y, matrix x)
 
@@ -1015,7 +985,6 @@ matrix minimum2(matrix y, matrix x)
 }
 
 
-
 /**
 matrix  trans_matrix(matrix a)
 
@@ -1046,7 +1015,6 @@ matrix  trans_matrix(matrix a)
    }    
    return c; 
 }       
-
 
 
 /**

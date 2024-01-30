@@ -1,11 +1,9 @@
-﻿
-/**
+﻿/**
 @brief    グラフィック用数学ライブラリ＆フィルタ
 @file     gmt.c
 @version  3.0
 @author   Fumi.Iseki (C)
 */
-
 
 #include "gmt.h"
 #include "jbxl_state.h"
@@ -81,7 +79,6 @@ WSGraph  Laplacian(WSGraph vp, int mode)
 }
 
 
-
 /**
 WSGraph  xSobel(WSGraph vp) 
 
@@ -129,7 +126,6 @@ WSGraph  xSobel(WSGraph vp)
 
     return xp;
 }
-
 
 
 /**
@@ -181,7 +177,6 @@ FSGraph  fxSobel(FSGraph vp)
 }
 
 
-
 /**
 WSGraph  ySobel(WSGraph vp) 
 
@@ -228,7 +223,6 @@ WSGraph  ySobel(WSGraph vp)
 
     return xp;
 }
-
 
 
 /**
@@ -278,7 +272,6 @@ FSGraph  fySobel(FSGraph vp)
 
     return xp;
 }
-
 
 
 /**
@@ -345,7 +338,6 @@ WSGraph  zSobel(WSGraph vp)
 }
 
 
-
 /**
 FSGraph  fzSobel(FSGraph vp) 
 
@@ -409,7 +401,6 @@ FSGraph  fzSobel(FSGraph vp)
 
     return xp;
 }
-
 
 
 /**
@@ -487,7 +478,6 @@ WSGraph  xxSobel(WSGraph vp)
 
     return px;
 }
-
 
 
 /**
@@ -568,7 +558,6 @@ FSGraph  fxxSobel(FSGraph vp)
 }
 
 
-
 /**
 WSGraph  yySobel(WSGraph vp) 
 
@@ -643,7 +632,6 @@ WSGraph  yySobel(WSGraph vp)
 
     return py;
 }
-
 
 
 /**
@@ -721,7 +709,6 @@ FSGraph  fyySobel(FSGraph vp)
 
     return py;
 }
-
 
 
 /**
@@ -828,7 +815,6 @@ WSGraph  zzSobel(WSGraph vp)
 
     return pz;
 }
-
 
 
 /**
@@ -938,7 +924,6 @@ FSGraph  fzzSobel(FSGraph vp)
 }
 
 
-
 /**
 VSGraph  vNabra(WSGraph vp) 
 
@@ -1013,7 +998,6 @@ VSGraph  vNabra(WSGraph vp)  // Sobel
 
     return pn;
 }
-
 
 
 /**
@@ -1093,7 +1077,6 @@ VSGraph  vfNabra(FSGraph vp)  // Sobel
 }
 
 
-
 /**
 WSGraph  Nabra(WSGraph vp) 
 
@@ -1165,7 +1148,6 @@ WSGraph  Nabra(WSGraph vp)  // Sobel
 
     return pn;
 }
-
 
 
 /**
@@ -1240,7 +1222,6 @@ FSGraph  fNabra(FSGraph vp)  // Sobel
 
     return pn;
 }
-
 
 
 /**
@@ -1344,7 +1325,6 @@ VSGraph  curvature3D(FSGraph vp)
 }
 
 
-
 /**
 VSGraph  curvature(FSGraph vp)
 
@@ -1416,7 +1396,6 @@ VSGraph  curvature(FSGraph vp)
 }
 
 
-
 /**
 WSGraph  curv2WSGraph(VSGraph xp)
 
@@ -1460,7 +1439,6 @@ WSGraph  curv2WSGraph(VSGraph xp)
 
     return vp;
 }
-
 
 
 /**
@@ -1527,7 +1505,6 @@ WSGraph  WSCurve(WSGraph gx, int mode, int cc)
 }
 
 
-
 /**
 WSGraph  edge_enhance(WSGraph gd, int mode)
 
@@ -1561,7 +1538,6 @@ WSGraph  edge_enhance(WSGraph gd, int mode)
     for (i=0; i<vp.xs*vp.ys; i++) vp.gp[i] = gd.gp[i] - la.gp[i];
     return vp;
 }
-
 
 
 
@@ -1634,7 +1610,6 @@ FMask  gauss_mask(double sig, int ms, int md)
     free(fm);
     return mask; 
 }
-
 
 
 /**
@@ -1711,7 +1686,6 @@ WSGraph  imask(WSGraph xp, FMask mask)
 }
 
 
-
 /**
 WSGraph  median(WSGraph xp, int ms)
 
@@ -1784,7 +1758,6 @@ WSGraph  median(WSGraph xp, int ms)  /* 3D */
     free(me);
     return vp;
 }
-
 
 
 /**
@@ -1896,7 +1869,6 @@ WSGraph  to2d(WSGraph gd, int mode)
 
     return vp;
 }
-
 
 
 /**
@@ -2019,7 +1991,6 @@ WSGraph  euclid_distance(WSGraph vp, int* rr, int bc)
 
     return wp;
 }
-
 
 
 /**

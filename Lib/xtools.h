@@ -1,5 +1,4 @@
-﻿
-#ifndef  __JBXL_EXTEND_TOOLS_H_
+﻿#ifndef  __JBXL_EXTEND_TOOLS_H_
 #define  __JBXL_EXTEND_TOOLS_H_
  
 /** 
@@ -79,7 +78,6 @@ void    add_form_urlenc(Buffer* buf, const char* key, const char* val);         
 
 #define make_hostport(h, p)     comp_hostport((h), (p))                                 ///< comp_hostport()
 #define make_url(t, h, p, d)    comp_url((t), (h), (p), (d))                            ///< comp_url()
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////

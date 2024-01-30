@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_SMTP_TOOLS_H_
+﻿#ifndef  __JBXL_SMTP_TOOLS_H_
 #define  __JBXL_SMTP_TOLLS_H_
-
 
 /**
 @brief   SMTPツールプログラム ヘッダ
@@ -9,7 +7,6 @@
 @author  Fumi.Iseki (C)
 @date    2005 12/25
 */
-
 
 #include  "protocol.h"
 

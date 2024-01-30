@@ -1,11 +1,9 @@
-﻿
-/**
+﻿/**
 @brief    2D & 3D グラフィックライブラリ
 @file     graph.c  
 @version  3.0
 @author   Fumi.Iseki (C)
 */
-
 
 #include "graph.h"
 #include "jbxl_state.h"
@@ -31,7 +29,6 @@ int  get_idat(WSGraph gd, int xx, int yy, int zz)
     }
     return  ret;
 }
-
 
 
 /**
@@ -64,7 +61,6 @@ int   get_wdat(WSGraph gd, double xx, double yy, double zz, IRBound rb)
 }
 
 
-
 /**
 int  get_bdat(BSGraph gd, int xx, int yy, int zz)
 
@@ -87,7 +83,6 @@ int  get_bdat(BSGraph gd, int xx, int yy, int zz)
 }
 
 
-
 /**
 void  set_idat(WSGraph gd, int ix, int iy, int iz, int cc)
 
@@ -104,7 +99,6 @@ void  set_idat(WSGraph gd, int ix, int iy, int iz, int cc)
         gd.gp[iz*gd.xs*gd.ys + iy*gd.xs + ix] = cc;
     }
 }
-
 
 
 /**
@@ -159,7 +153,6 @@ void  set_wdat(WSGraph gd, double xx, double yy, double zz, int cc, IRBound rb)
 }
 
 
-
 /**
 void  set_bdat(BSGraph gd, int ix, int iy, int iz, int cc)
 
@@ -176,7 +169,6 @@ void  set_bdat(BSGraph gd, int ix, int iy, int iz, int cc)
         gd.gp[iz*gd.xs*gd.ys + iy*gd.xs + ix] = cc;
     }
 }
-
 
 
 /**
@@ -234,7 +226,6 @@ void  local2world(WSGraph gd, WSGraph vp, vector ox, vector oz, vector ex, doubl
         *psnf = snf;
     }
 }
-
 
 
 /**
@@ -323,7 +314,6 @@ void  paint(WSGraph vp, int x, int y, int mn, int mx, int c, int m)
 }
 
 
-
 /**
 void  paint3d(WSGraph vp, int x, int y, int z, int mn, int mx, int c, int m)
 
@@ -350,7 +340,6 @@ void  paint3d(WSGraph vp, int x, int y, int z, int mn, int mx, int c, int m)
         if (vp.gp[i]==SWORDMAX) vp.gp[i] = c;
     }
 }
-
 
 
 /**
@@ -394,7 +383,6 @@ void  _paint_3d(WSGraph vp, int x, int y, int z, int mn, int mx, int c, int m)
 
     return;
 }
-
 
 
 /**
@@ -455,7 +443,6 @@ void  bline(BSGraph vp, int x1, int y1, int x2, int y2, int cc)
 }
 
 
-
 /**
 void  line(WSGraph vp, int x1, int y1, int x2, int y2, int cc)
 
@@ -514,7 +501,6 @@ void  line(WSGraph vp, int x1, int y1, int x2, int y2, int cc)
 }
 
 
-
 /**
 void triangle(WSGraph vp, int x1, int y1, int x2, int y2, int x3, int y3, int cc, int mode) 
 
@@ -562,7 +548,6 @@ void triangle(WSGraph vp, int x1, int y1, int x2, int y2, int x3, int y3, int cc
 }
 
 
-
 /**
 int  isinctri(int x1, int y1, int x2, int y2, int x3, int y3, int xx, int yy)
 
@@ -583,7 +568,6 @@ int  isinctri(int x1, int y1, int x2, int y2, int x3, int y3, int xx, int yy)
     if (isCrossLine(x2, y2, x3, y3, xx, yy, cx, cy)<0) return FALSE;
     return TRUE;
 }
-
 
 
 /**
@@ -614,7 +598,6 @@ void  box(WSGraph vp, int x1, int y1, int x2, int y2, int cc, int mode)
     }
     return;
 }
-
 
 
 /**
@@ -707,7 +690,6 @@ void  bline3d(BSGraph gd, int x1, int y1, int z1, int x2, int y2, int z2, int cc
 }
 
 
-
 /**
 void  line3d(WSGraph gd, int x1, int y1, int z1, int x2, int y2, int z2, int cc)
 
@@ -796,7 +778,6 @@ void  line3d(WSGraph gd, int x1, int y1, int z1, int x2, int y2, int z2, int cc)
         }
     }
 }
-
 
 
 /**
@@ -898,7 +879,6 @@ void  circle(WSGraph gd, int x, int y, int r, int cc, int mode)
 }
 
 
-
 /**
 void  circle3d(WSGraph vp, vector ox, vector ex, int rr, int cc, int mode)
 
@@ -926,7 +906,6 @@ void  circle3d(WSGraph gd, vector ox, vector ex, int rr, int cc, int mode)
 
     free(vp.gp);
 }
-
 
 
 /**
@@ -964,7 +943,6 @@ void  pool(WSGraph gd, vector a, vector b, int rr, int cc)
 
     return;
 }
-
 
 
 /**
@@ -1009,7 +987,6 @@ void  torus(WSGraph gd, vector ox, vector ex, int rr, int ra, int cc)
     free(vp.gp);
     return;
 }
-
 
 
 /**
@@ -1085,7 +1062,6 @@ void  sphere(WSGraph vp, vector a, int r, int cc, int mode)
 }
 
 
-
 /**
 WSGraph  x_reverse_wsg(WSGraph vp)
 
@@ -1114,7 +1090,6 @@ WSGraph  x_reverse_wsg(WSGraph vp)
     }
     return wp;
 }
-
 
 
 /**
@@ -1156,7 +1131,6 @@ void  topola(vector nv, double* cst, double* snt, double* csf, double* snf)
     }
     return;
 }
-
 
 
 /**
@@ -1228,7 +1202,6 @@ WSGraph  cut_object(WSGraph vp, int cc, IRBound* rb, int blank)
 }
 
 
-
 /**
 void  set_around(WSGraph vp, int cc)
 
@@ -1254,7 +1227,6 @@ void  set_around(WSGraph vp, int cc)
         vp.gp[px2] = cc;
     }
 }
-
 
 
 /**
@@ -1322,7 +1294,6 @@ WSGraph  zoom_WSGraph(WSGraph vp, int zm, int mode)
 }
 
 
-
 /**
 WSGraph  grab_WSGraph(WSGraph vp, int x1, int y1, int x2, int y2)
 
@@ -1366,7 +1337,6 @@ WSGraph  grab_WSGraph(WSGraph vp, int x1, int y1, int x2, int y2)
 }
 
 
-
 /**
 void  copy_WSGraph(WSGraph src, WSGraph dst)
 
@@ -1391,6 +1361,4 @@ void  copy_WSGraph(WSGraph src, WSGraph dst)
     for (i=sz; i<dsz; i++) dst.gp[i] = 0;
     return;
 }
-
-
 

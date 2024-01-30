@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_TINY_XML_H_
+﻿#ifndef  __JBXL_TINY_XML_H_
 #define  __JBXL_TINY_XML_H_
-
 
 /** 
 @brief   Tiny XML ライブラリヘッダ 
@@ -22,7 +20,6 @@ Tiny XML txml.h v1.0 @n
 <?xml ... ?> 以外の <? ..... ?> と <! .....  > は処理しない（読み込みは行う）@n
 エンティティは処理しない．@n
 */
-
 
 #include "tools.h"
 #include "ttree.h"

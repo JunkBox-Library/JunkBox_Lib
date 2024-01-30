@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_SSL_TOOL_H_
+﻿#ifndef  __JBXL_SSL_TOOL_H_
 #define  __JBXL_SSL_TOOL_H_
-
 
 #include "xtools.h"
 #include "asn1_tool.h"
@@ -21,7 +19,6 @@
 
 
 #ifdef  ENABLE_SSL
-
 
 /**
 @brief   SSL暗号用ライブラリヘッダ
@@ -66,13 +63,10 @@ for use in the OpenSSL Toolkit. (http://www.openssl.org/)
 #define SSL_AES128CBC        1
 #define SSL_3DES3CBC         10
 
-
 #define SSL_IV_SIZE          16
-
 
 //
 int      gen_CRYPT_SharedKey(int keyex, Buffer spki, Buffer* shdkey, void* ptr);
-
 
 // データ（含むバイナリ）送受信用(IPv4)（暗号＋復号）
 int      udp_send_crypt_Buffer_sockaddr_in(int sock, Buffer* data, struct sockaddr_in* sv, Buffer* key, EVP_CIPHER* cipher);
@@ -85,8 +79,6 @@ int      tcp_recv_crypt_Buffer(int sock, Buffer* data, Buffer* key, EVP_CIPHER* 
 
 Buffer   get_plain_Buffer(Buffer data, Buffer* key, EVP_CIPHER* cipher);
 Buffer   get_crypt_Buffer(Buffer data, Buffer* key, EVP_CIPHER* cipher);
-
-
 
 // メッセージ（テキスト）送信用（暗号＋Base64）
 int      tcp_send_crypt_mesg   (int sock, char*   mesg, Buffer* key, EVP_CIPHER* cipher);
@@ -101,19 +93,16 @@ Buffer   get_crypt_sBuffer(Buffer mesg, Buffer* key, EVP_CIPHER* cipher);
 #define  get_plain_sBuffer_str(m, k, c)   get_plain_message((m), (k), (c));
 #define  get_crypt_sBuffer_str(m, k, c)   get_crypt_message((m), (k), (c));
 
-
 // Client's Side Check
 int      check_server_spki(Buffer ip, Buffer spki, char* fn);
 int      save_spki_with_ipaddr(Buffer ipa, Buffer pki, FILE* fp);
 Buffer   read_spki_with_ipaddr(Buffer ipa, FILE* fp);
-
 
 // EVP
 EVP_CIPHER* init_EVPAPI_Buffer(int type);
 Buffer   decode_EVPAPI_Buffer(Buffer buf, Buffer shkey, EVP_CIPHER* cipher);
 Buffer   encode_EVPAPI_Buffer(Buffer buf, Buffer shkey, EVP_CIPHER* cipher);
 void     free_EVP_CIPHER(EVP_CIPHER** p_cipher);
-
 
 // SSL/TLS
 SSL_CTX* ssl_client_setup(char* ca);
@@ -142,7 +131,6 @@ int      ssl_tcp_recv_wait(int sock, SSL* ssl, char* mesg, int sz, int tm);
 int      ssl_tcp_send_mesgln(int sock, SSL* ssl, char* mesg);
 int      ssl_tcp_recv_mstream(int sock, SSL* ssl, char* mesg, int sz, mstream* sb, int tm);
 
-
 /**    
 int  ssl_tcp_send_mesg(int sock, SSL* ssl, char* mesg)
       
@@ -166,7 +154,6 @@ SSL経由でメッセージ(文字列)を送信する．
 @retval -1     失敗した(send()の戻り値)．
 */
 #define ssl_send_mesg(ssl, mesg)  ssl_send((ssl), (mesg), 0)
-
 
 
 // SSL/TLS with Buffer

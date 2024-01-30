@@ -1,13 +1,10 @@
-﻿
-#ifndef  __JBXL_ASN1_TOOL_H_
+﻿#ifndef  __JBXL_ASN1_TOOL_H_
 #define  __JBXL_ASN1_TOOL_H_
-
 
 #include "xtools.h"
 #include "ttree.h"
 
 #include "asn1_node.h"
-
 
 /**
 @brief   ASN.1/DER 用ライブラリヘッダ
@@ -51,7 +48,6 @@ Buffer   node2DER(Buffer, unsigned char);
 int      get_size_toDER(Buffer, unsigned char);
 int      skip_DER_node(Buffer, unsigned char, int, int*);
 
-
 #define  new_DER_node()         new_tTree_node()
 #define  del_DER_node(a)        del_tTree_node((a))
 #define  del_DER(a)             del_tTree((a))
@@ -77,7 +73,6 @@ int      get_DER_size(unsigned char* buf, int* len);
 void     print_tDER(FILE* fp, tDER* pp);
 
 //Buffer* DER_inverse_parse(tDER* pp); 
-
 
 
 #endif        // __JBXL_ASN1_TOOL_H_

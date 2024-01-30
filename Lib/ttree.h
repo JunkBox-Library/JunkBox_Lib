@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_TINY_TREE_H_
+﻿#ifndef  __JBXL_TINY_TREE_H_
 #define  __JBXL_TINY_TREE_H_
-
 
 /** 
 @brief   Tiny Tree Graph 構造ライブラリヘッダ
@@ -11,7 +9,6 @@
 @date    2008 2/1
 @see     tList (_tList), tTree
 */
-
 
 #include "buffer.h"
 #include "tlist.h"
@@ -60,7 +57,6 @@ typedef  tList        tTree;
 #define    TREE_ALREADY_FOUND_NODE_TEMP    111        ///< 一時的に比較対照から外す場合にノード．作業中に設定．
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Tiny Tree Graph Node
 
@@ -106,7 +102,6 @@ tTree*  free_tTree_node(tTree* node); ///< ツリーノードの解放．解放�
 #define dup_tTree_node(p)                    dup_tList_node(p)                                                  ///< dup_tList_node() 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Tiny Tree Graph
 
@@ -134,7 +129,6 @@ tList*  find_tTree_top(tList* p)
 */
 #define find_tTree_top(p)   find_tList_top((p)) ///< find_tList_top()
 tTree*  find_tTree_end(tTree* pp);              ///< ツリーの最終ノードを見つける．
-
 
 // 検索/置換
 tTree*  strncmp_tTree    (tTree* pp, const char*  key, int len, int no);///< ツリーノードのキー値のサーチ

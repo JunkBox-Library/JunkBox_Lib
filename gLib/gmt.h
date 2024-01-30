@@ -1,7 +1,5 @@
-﻿
-#ifndef  __JBXL_GRAPHIC_MATH_H_
+﻿#ifndef  __JBXL_GRAPHIC_MATH_H_
 #define  __JBXL_GRAPHIC_MATH_H_
-
 
 /**
 @brief    グラフィック用数学ライブラリ＆フィルタ ヘッダ
@@ -9,7 +7,6 @@
 @version  3.0
 @author   Fumi.Iseki (C)
 */
-
 
 #include "gdata.h"
 
@@ -34,7 +31,6 @@ typedef struct {
 #define   RIDGE         0x0040
 #define   VALLEY        0x0080
 #define   FLAT          0x0100
-
 
 #define   TOP_VIEW         0
 #define   SIDEZ_VIEW       0

@@ -150,10 +150,10 @@ void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider)
 {
     if (meshdata==NULL) return;
 
-    char* geom_id = addGeometry(meshdata);
+    char* geom_id = addGeometry(meshdata);      // 幾何情報を配置
     if (geom_id==NULL) return;
 
-    addScene(geom_id, meshdata, collider);
+    addScene(geom_id, meshdata, collider);      // Scene への配置（位置，サイズ，回転，コライダー）
 
     ::free(geom_id);
     return;
@@ -686,7 +686,9 @@ void  ColladaXML::addExtraBumpmap(tXML* profile, const char* bump_id)
 }
 
 
-//
+/**
+ Scene への配置（位置，サイズ，回転，コライダー）
+*/
 void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bool collider)
 {
     if (geometry_id==NULL || meshdata==NULL) return;

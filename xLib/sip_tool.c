@@ -712,4 +712,3 @@ int   replace_sip_contact_dstipport(tList* lp, char* ipaddr, unsigned short port
     return TRUE;
 }
 
-

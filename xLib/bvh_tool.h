@@ -1,5 +1,4 @@
-﻿
-#ifndef  __JBXL_BVH_TOOL_H_
+﻿#ifndef  __JBXL_BVH_TOOL_H_
 #define  __JBXL_BVH_TOOL_H_
 
 /**
@@ -8,10 +7,8 @@
 @author  Fumi.Iseki (C)
 */
 
-
 #include "ttree.h"
 #include "matrix.h"
-
 
 //
 #define  BVH_NODE_HIERARCHY 0
@@ -83,7 +80,6 @@ struct _bvh_data
 typedef struct _bvh_data  BVHData;
 
 
-
 ///////////////////////////////////////////////////////////////////////////
 // Basic
 
@@ -94,7 +90,6 @@ void        init_BVHData (BVHData* bvh);
 void        clear_BVHData(BVHData* bvh);
 
 #define     free_BVHData(t)     del_BVHData(t)
-
 
 ///////////////////////////////////////////////////////////////////////////
 // Tiny Tool
@@ -110,7 +105,6 @@ void        bvh_get_parameter(BVHData* bvh);
 void        _bvh_recsv_get_parameter(tTree* tree, BVHData* bvh);
 void        _bvh_space_format(FILE* fp, int depth);
 
-
 ///////////////////////////////////////////////////////////////////////////
 // File I/O
 
@@ -124,7 +118,6 @@ int         bvh_print_hierarchy(FILE* fp, BVHData* bvh);
 int         bvh_print_motion(FILE* fp, BVHData* bvh);
 
 int         _bvh_recsv_print_hierarchy(FILE* fp, tTree* tree);
-
 
 ///////////////////////////////////////////////////////////////////////////
 // Parser
