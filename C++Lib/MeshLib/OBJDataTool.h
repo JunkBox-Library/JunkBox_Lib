@@ -1,6 +1,11 @@
 ﻿#ifndef  __JBXL_CPP_OBJ_TOOL_H_
 #define  __JBXL_CPP_OBJ_TOOL_H_
 
+/**
+  3D OBJ ファイル用ツール
+
+*/
+
 #include  "tools++.h"
 #include  "txml.h"
 
@@ -45,6 +50,7 @@ public:
 
 public:
     void    init(int n); 
+    void    delete_next(void);
 
     void    setAffineTrans(AffineTrans<double> a) { delAffineTrans(); affine_trans = new AffineTrans<double>(); affine_trans->dup(a);}
     void    delAffineTrans(void) { freeAffineTrans(affine_trans);}
@@ -70,10 +76,11 @@ public:
     AffineTrans<double>* uvmap_trans;
 
     OBJFacetGeoNode* next;
-    OBJFacetGeoNode* prev;
+//    OBJFacetGeoNode* prev;
 
 public:
     void    init(void);
+    void    delete_next(void);
 };
 
 
@@ -103,10 +110,11 @@ public:
     Buffer  map_kd;
 
     OBJFacetMtlNode* next;
-    OBJFacetMtlNode* prev;
+//    OBJFacetMtlNode* prev;
 
 public:
     void    init(void);
+    void    delete_next(void);
 };
 
 

@@ -15,22 +15,44 @@ using namespace jbxl;
 
 OBJData::~OBJData(void)
 {
-    //DEBUG_INFO("DESTRUCTOR: OBJData");
+    free_Buffer(&obj_name);
 
     delAffineTrans();
+    affine_trans = NULL;
+
+    delete(geo_node);
+    delete(mtl_node);
+    geo_node = NULL;
+    mtl_node = NULL;
+
+    delete_next();
 }
 
 
 void  OBJData::init(int n)
 {
     obj_name = init_Buffer();
-
-    num_obj = n;
+    collider = true;
+    num_obj  = n;
 
     next = NULL;
     geo_node = NULL;
     mtl_node = NULL;
     affine_trans = NULL;
+}
+
+
+void  OBJData::delete_next(void)
+{
+    OBJData* _next = next;
+
+    while (_next!=NULL) {
+        OBJData* _curr_node = _next;
+        _next = _next->next;
+        _curr_node->next = NULL;
+        delete(_curr_node);
+    }
+    next = NULL;
 }
 
 
@@ -86,12 +108,45 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
 //
 void  OBJFacetGeoNode::init(void)
 {
+    material = init_Buffer();
+
+    vv = vn = NULL;
+    vt = NULL;
+    uvmap_trans = NULL;
+    next = NULL;
 }
 
 
 OBJFacetGeoNode::~OBJFacetGeoNode(void)
 {
+    free_Buffer(&material);
+
+    ::free(vv);
+    ::free(vn);
+    ::free(vt);
+    vv = vn = NULL;
+    vt = NULL;
+
+    freeAffineTrans(uvmap_trans);
+    uvmap_trans = NULL;
+
+    delete_next();
 }
+
+
+void  OBJFacetGeoNode::delete_next(void)
+{
+    OBJFacetGeoNode* _next = next;
+
+    while (_next!=NULL) {
+        OBJFacetGeoNode* _curr_node = _next;
+        _next = _next->next;
+        _curr_node->next = NULL;
+        delete(_curr_node);
+    }
+    next = NULL;
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,10 +154,39 @@ OBJFacetGeoNode::~OBJFacetGeoNode(void)
 //
 void  OBJFacetMtlNode::init(void)
 {
+    material = init_Buffer();
+    map_kd   = init_Buffer();
+
+    memset(&material_param, 0, sizeof(material_param));
+
+    next = NULL;
 }
 
 
 OBJFacetMtlNode::~OBJFacetMtlNode(void)
 {
+    free_Buffer(&material);
+    free_Buffer(&map_kd);
+
+    delete_next();
 }
+
+
+void  OBJFacetMtlNode::delete_next(void)
+{
+    OBJFacetMtlNode* _next = next;
+
+    while (_next!=NULL) {
+        OBJFacetMtlNode* _curr_node = _next;
+        _next = _next->next;
+        _curr_node->next = NULL;
+        delete(_curr_node);
+    }
+    next = NULL;
+}
+
+
+
+
+
 
