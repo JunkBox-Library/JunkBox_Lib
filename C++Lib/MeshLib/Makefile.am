@@ -8,7 +8,7 @@ AM_CFLAGS += @DEBUG@ -DCPLUSPLUS
 AM_CFLAGS += -Wno-class-memaccess
 
 
-SRC = MeshObjectData.cpp MaterialParam.cpp ContourBaseData.cpp ColladaTool.cpp
+SRC = MeshObjectData.cpp MaterialParam.cpp ContourBaseData.cpp ColladaTool.cpp OBJDataTool.cpp
 
 
 CC  = g++

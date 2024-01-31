@@ -128,7 +128,7 @@ inline void  freeContourBaseData(ContourBaseData*& contour) { if(contour!=NULL){
 
 //////////////////////////////////////////////////////////////////////////////////////
 //  Triangle Polygon Data
-//      ContourTriIndex と ContourTriData を統合したクラス．
+//      ContourTriData の別表現
 //      使いやすい方を使用する
 //
 

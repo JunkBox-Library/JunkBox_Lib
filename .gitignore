@@ -34,3 +34,14 @@ config.log
 config.status
 configure
 html
+Testing/json/2datax.json
+Testing/json/ipynb_conv
+Testing/json/json
+Testing/json/json2
+Testing/json/json_file
+Testing/json/json_test
+Testing/json/json_test2
+Testing/json/json_test3
+Testing/json/json_test4
+Testing/json/json_test5
+Testing/json/json_test6
