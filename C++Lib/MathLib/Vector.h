@@ -1,7 +1,6 @@
 ﻿#ifndef  __JBXL_CPP_VECTOR_H_
 #define  __JBXL_CPP_VECTOR_H_
 
-
 /**
 @brief    ベクトルライブラリ for C++
 @file     Vector.h
@@ -28,10 +27,8 @@ template <typename T> inline Vector<T> BSplineInterp4(Vector<T> p0, Vector<T> p1
 #include "Tolerance.h"
 
 
-
 //
 namespace  jbxl {
-
 
 
 #define  VECTOR     Vector

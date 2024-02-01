@@ -19,6 +19,11 @@
 namespace jbxl {
 
 
+#define  OBJDATATOOL_STR_TOOL   "Maked by CBJDataTool in the JunkBox_Lib++ (https://github.com/JunkBox-Library)"
+#define  OBJDATATOOL_STR_AUTHOR "JBXL OBJ Data Tool Library (C) 2024 by Fumi.Iseki"
+#define  OBJDATATOOL_STR_VER    "version 1.0.0, 1 Feb. 2024"
+
+
 class  OBJData;
 class  OBJFacetGeoNode;
 class  OBJFacetMtlNode;
@@ -37,10 +42,9 @@ public:
     virtual ~OBJData(void);
 
 public:
-    Buffer obj_name;
-    bool   collider;
-
-    int num_obj;
+    Buffer  obj_name;
+    bool    collider;
+    int     num_obj;
 
     OBJData* next;
     OBJFacetGeoNode* geo_node;
@@ -50,12 +54,22 @@ public:
 
 public:
     void    init(int n); 
+    void    free(void); 
     void    delete_next(void);
 
-    void    setAffineTrans(AffineTrans<double> a) { delAffineTrans(); affine_trans = new AffineTrans<double>(); affine_trans->dup(a);}
-    void    delAffineTrans(void) { freeAffineTrans(affine_trans);}
+    void    setAffineTrans (AffineTrans<double> a) { delAffineTrans(); affine_trans = new AffineTrans<double>(); affine_trans->dup(a);}
+    void    delAffineTrans (void) { freeAffineTrans(affine_trans);}
+    void    execAffineTrans(void);
+
     void    addObject(MeshObjectData* meshdata, bool collider);
+
+    void    outputFile(const char* fn, const char* path);
+    void    print_obj(FILE* fp);
 };
+
+
+inline void  freeOBJData(OBJData* obj) { if(obj!=NULL) { obj->free(); delete obj; obj=NULL;} }
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -68,7 +82,10 @@ public:
 
 public:
     Buffer  material;
+    int     num_index;
+    int     num_vertex;
 
+    int*    data_index;
     Vector<double>* vv;
     Vector<double>* vn;
     UVMap<double>*  vt;
@@ -80,6 +97,7 @@ public:
 
 public:
     void    init(void);
+    void    free(void); 
     void    delete_next(void);
 };
 
@@ -114,6 +132,7 @@ public:
 
 public:
     void    init(void);
+    void    free(void); 
     void    delete_next(void);
 };
 

@@ -14,9 +14,10 @@
 namespace jbxl {
 
 
+#define  COLLADA_STR_AUTHOR     "JBXL Collada Tool Library (C) 2014 by Fumi.Iseki"
 #define  COLLADA_STR_XMLNS      "http://www.collada.org/2005/11/COLLADASchema"
-#define  COLLADA_STR_AUTHOR     "JBXL Collada Tools Library (C) 2014"
 #define  COLLADA_STR_TOOL       "JunkBox_Lib++ (http://www.nsl.tuis.ac.jp/)"
+#define  COLLADA_STR_VER        "1.4.1"
 
 //
 #define  COLLADA_X_UP           0
@@ -45,7 +46,7 @@ public:
     void    clear(float  meter,     int axis=COLLADA_Z_UP, const char* ver=NULL) { clear((double)meter, axis, ver); }
     void    free (void);
 
-    void    print(FILE* fp, int mode=XML_INDENT_FORMAT) { print_xml(fp, xml, mode);}
+    void    print_dae (FILE* fp, int mode=XML_INDENT_FORMAT) { print_xml(fp, xml, mode);}
     void    print_tree(FILE* fp) { print_xml_tree(fp, xml, "    ");}
 
 public:
@@ -88,8 +89,8 @@ private:
 
 public:
     tXML*   xml;
+    //
     tXML*   collada;
-
     tXML*   asset;
     tXML*   contributor;
     tXML*   author;
@@ -121,7 +122,7 @@ public:
 };
 
 
-inline void  freeColladaXML(ColladaXML*& xml) { if(xml!=NULL) { xml->free(); delete xml; xml=NULL;} }
+inline void  freeColladaXML(ColladaXML*& dae) { if(dae!=NULL) { dae->free(); delete dae; dae=NULL;} }
 
 
 

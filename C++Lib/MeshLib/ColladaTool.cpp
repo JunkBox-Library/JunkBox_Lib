@@ -62,7 +62,7 @@ void  ColladaXML::initCollada(double meter, int axis, const char* ver)
 {
     Buffer buf;
     if (ver!=NULL) buf = make_Buffer_str(ver);
-    else           buf = make_Buffer_str("1.4.1");
+    else           buf = make_Buffer_str(COLLADA_STR_VER);
 
     // COLLADA
     xml     = init_xml_doc();
@@ -854,7 +854,7 @@ void  ColladaXML::outputFile(const char* fname, const char* path, int mode)
     //
     FILE* fp = fopen((char*)out_path.buf, "wb");
     if (fp!=NULL) {
-        print(fp, mode);
+        print_dae(fp, mode);
         fclose(fp);
     }
     free_Buffer(&file_name);

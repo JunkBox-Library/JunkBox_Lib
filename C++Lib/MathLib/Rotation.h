@@ -7,7 +7,6 @@
 @author   Fumi.Iseki (C)
 */
 
-
 #include  "Matrix++.h"
 #include  "Vector.h"
 
@@ -339,7 +338,7 @@ public:
                                                 else           return execScale(execRotate(v));}
     Vector<T> execInvRotateScale(Vector<T> v) { if(!isInverse) return execInvScale(execInvRotate(v));
                                                 else           return execInvRotate(execInvScale(v));}
-
+    //
     Vector<T> execShift(Vector<T> v)    { return Vector<T>(v.x+shift.x, v.y+shift.y, v.z+shift.z, (T)0.0, Min(v.c, shift.c));}
     Vector<T> execInvShift(Vector<T> v) { return Vector<T>(v.x-shift.x, v.y-shift.y, v.z-shift.z, (T)0.0, Min(v.c, shift.c));}
     Vector<T> execScale(Vector<T> v)    { return Vector<T>(v.x*scale.x, v.y*scale.y, v.z*scale.z, (T)0.0, Min(v.c, scale.c));}
@@ -358,10 +357,10 @@ public:
     T* execInvRotateScale(T* v) { if(!isInverse) return execInvScale(execInvRotate(v));
                                   else           return execInvRotate(execInvScale(v));}
 
-    T*    execShift(T* v)    { v[0]+=shift.x; v[1]+=shift.y; v[2]+=shift.z; return v;}
-    T*    execInvShift(T* v) { v[0]-=shift.x; v[1]-=shift.y; v[2]-=shift.z; return v;}
-    T*    execScale(T* v)    { v[0]*=scale.x; v[1]*=scale.y; v[2]*=scale.z; return v;}
-    T*    execInvScale(T* v) { v[0]/=scale.x; v[1]/=scale.y; v[2]/=scale.z; return v;}
+    T*  execShift(T* v)    { v[0]+=shift.x; v[1]+=shift.y; v[2]+=shift.z; return v;}
+    T*  execInvShift(T* v) { v[0]-=shift.x; v[1]-=shift.y; v[2]-=shift.z; return v;}
+    T*  execScale(T* v)    { v[0]*=scale.x; v[1]*=scale.y; v[2]*=scale.z; return v;}
+    T*  execInvScale(T* v) { v[0]/=scale.x; v[1]/=scale.y; v[2]/=scale.z; return v;}
     T*  execRotate(T* v)   { return VectorRotation(v, rotate);}
     T*  execInvRotate(T* v){ return VectorInvRotation(v, rotate);}
 };
