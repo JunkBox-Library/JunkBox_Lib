@@ -33,6 +33,7 @@ typedef std::vector<ContourTriData>    CONTOUR_TRIDATA_ARRAY;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Index of Triangle Polygon Data
+//    ContourTriData を設定するためのインデックス
 //
 
 class  ContourTriIndex
@@ -66,6 +67,8 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Triangle Contour Data
+//    ContourTriIndex をインデックスとした 3角ポリゴンデータ
+//    ex.) tri_data.v1 = XXX[tri_indx.v1];
 //
 
 class  ContourTriData
@@ -103,9 +106,9 @@ public:
     int     vcount;                 ///< ポリゴンの頂点数．通常は3 
 
     int*    index;                  ///< インデックスデータ
-    Vector<double>* vertex;         ///< 頂点データ
-    Vector<double>* normal;         ///< 法線ベクトル
-    UVMap<double>*  texcrd;         ///< テクスチャマップ
+    Vector<double>* vertex;         ///< 頂点データ       vertex[index[0]], vertex[index[1]], vertex[index[2]], ... の順に並ぶ
+    Vector<double>* normal;         ///< 法線ベクトル     normal[index[0]], normal[index[1]], normal[index[2]], ... の順に並ぶ
+    UVMap<double>*  texcrd;         ///< テクスチャマップ texcrd[index[0]], texcrd[index[1]], texcrd[index[2]], ... の順に並ぶ
 
 public:
     ContourBaseData(int idx=0, int num=0) { init(idx, num);}
@@ -129,7 +132,6 @@ inline void  freeContourBaseData(ContourBaseData*& contour) { if(contour!=NULL){
 //////////////////////////////////////////////////////////////////////////////////////
 //  Triangle Polygon Data
 //      ContourTriData の別表現
-//      使いやすい方を使用する
 //
 
 class  TriPolygonData

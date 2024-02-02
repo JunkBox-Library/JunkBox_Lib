@@ -110,7 +110,6 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
         if (facet->material_id.buf[0]=='#') facet->material_id.buf[0] = '_';
         (*_geo_node)->material = dup_Buffer(facet->material_id);
         (*_mtl_node)->material = dup_Buffer(facet->material_id);
-
         (*_mtl_node)->material_param = facet->material_param;
         (*_mtl_node)->same_material  = facet->same_material;
         (*_mtl_node)->map_kd = make_Buffer_bystr(facet->material_param.getTextureName());
