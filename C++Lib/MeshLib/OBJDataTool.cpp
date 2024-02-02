@@ -163,7 +163,7 @@ void  OBJData::outputFile(const char* fname, const char* path)
     //
     FILE* fp = fopen((char*)out_path.buf, "wb");
     if (fp!=NULL) {
-        print_obj(fp);
+        output_obj(fp);
         fclose(fp);
     }
     free_Buffer(&file_name);
@@ -173,7 +173,7 @@ void  OBJData::outputFile(const char* fname, const char* path)
 }
 
 
-void  OBJData::print_obj(FILE* fp)
+void  OBJData::output_obj(FILE* fp)
 {
     if (fp==NULL) return;
 

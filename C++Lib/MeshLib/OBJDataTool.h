@@ -64,7 +64,7 @@ public:
     void    addObject(MeshObjectData* meshdata, bool collider);
 
     void    outputFile(const char* fn, const char* path);
-    void    print_obj(FILE* fp);
+    void    output_obj(FILE* fp);
 };
 
 

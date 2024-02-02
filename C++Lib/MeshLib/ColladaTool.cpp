@@ -854,7 +854,7 @@ void  ColladaXML::outputFile(const char* fname, const char* path, int mode)
     //
     FILE* fp = fopen((char*)out_path.buf, "wb");
     if (fp!=NULL) {
-        print_dae(fp, mode);
+        output_dae(fp, mode);
         fclose(fp);
     }
     free_Buffer(&file_name);

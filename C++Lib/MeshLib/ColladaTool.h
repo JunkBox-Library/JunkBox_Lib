@@ -46,8 +46,9 @@ public:
     void    clear(float  meter,     int axis=COLLADA_Z_UP, const char* ver=NULL) { clear((double)meter, axis, ver); }
     void    free (void);
 
-    void    print_dae (FILE* fp, int mode=XML_INDENT_FORMAT) { print_xml(fp, xml, mode);}
-    void    print_tree(FILE* fp) { print_xml_tree(fp, xml, "    ");}
+    void    outputFile(const char* fn, const char* path=NULL, int mode=XML_INDENT_FORMAT);
+    void    output_dae (FILE* fp, int mode=XML_INDENT_FORMAT) { print_xml(fp, xml, mode);}
+    void    output_tree(FILE* fp) { print_xml_tree(fp, xml, "    ");}
 
 public:
     void    initCollada(double meter, int axis, const char* ver);
@@ -76,8 +77,7 @@ public:
     void    setBlankTexture(const char* name) { if(name!=NULL) blank_texture = make_Buffer_bystr(name);}
     bool    isBlankTexture (const char* name);
 
-    void    outputFile(const char* fn, const char* path=NULL, int mode=XML_INDENT_FORMAT);
-
+public:
     // for Unity
     bool    forUnity4;
     bool    forUnity5;

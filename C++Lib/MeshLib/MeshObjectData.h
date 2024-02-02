@@ -10,10 +10,16 @@
 #include  "MaterialParam.h"
 
 
-#define   MOBJN_MTERIALID_RAND_LEN   6
-
-
 namespace jbxl {
+
+
+#define   MOBJN_MTERIALID_RAND_LEN  6
+
+#define   JBXL_3D_FORMAT_NONE       0
+#define   JBXL_3D_FORMAT_DAE        1
+#define   JBXL_3D_FORMAT_OBJ        2
+#define   JBXL_3D_FORMAT_STL_A      3
+#define   JBXL_3D_FORMAT_STL_B      4
 
 
 class  MeshFacetNode;

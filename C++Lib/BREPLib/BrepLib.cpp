@@ -62,7 +62,6 @@ int  BrepSolidList::addSolid(MeshObjectData* mesh)
 
     MeshFacetNode* node = mesh->facet;
     while (node!=NULL) {
-        //
         for (int num = 0; num < node->num_index - 2; num += 3) {
             BREP_FACET* facet = new BREP_FACET(shell);
             //
