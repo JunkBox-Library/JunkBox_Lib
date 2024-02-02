@@ -176,6 +176,7 @@ void  OBJData::output_obj(FILE* fp)
 {
     if (fp==NULL) return;
 
+    fprintf(fp, "# %s\n", OBJDATATOOL_STR_OBJFL);
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_TOOL);
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_AUTHOR);
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_VER);

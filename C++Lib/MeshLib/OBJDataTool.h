@@ -19,7 +19,9 @@
 namespace jbxl {
 
 
-#define  OBJDATATOOL_STR_TOOL   "Maked by CBJDataTool in the JunkBox_Lib++ (https://github.com/JunkBox-Library)"
+#define  OBJDATATOOL_STR_OBJFL  "OBJ File"
+#define  OBJDATATOOL_STR_MTLFL  "MTL File"
+#define  OBJDATATOOL_STR_TOOL   "Created by CBJDataTool in the JunkBox_Lib++ (https://github.com/JunkBox-Library)"
 #define  OBJDATATOOL_STR_AUTHOR "JBXL OBJ Data Tool Library (C) 2024 by Fumi.Iseki"
 #define  OBJDATATOOL_STR_VER    "version 1.0.0, 1 Feb. 2024"
 
