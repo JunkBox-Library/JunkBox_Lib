@@ -118,6 +118,7 @@ public:
     tXML*   instance_visual_scene;
     tXML*   instance_physics_scene;
 
+    bool    phantom_out;
     Buffer  blank_texture;
 };
 

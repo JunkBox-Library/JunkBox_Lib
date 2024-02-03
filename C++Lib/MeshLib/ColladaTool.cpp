@@ -24,6 +24,7 @@ void  ColladaXML::init(double meter, int axis, const char* ver)
 {
     initCollada(meter, axis, ver);
     blank_texture = init_Buffer();
+    phantom_out = false;
 
     forUnity4  = false;
     forUnity5  = false;

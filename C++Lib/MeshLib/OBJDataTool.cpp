@@ -21,8 +21,8 @@ OBJData::~OBJData(void)
 void  OBJData::init(int n)
 {
     obj_name = init_Buffer();
-    collider = true;
     num_obj  = n;
+    phantom_out = false;
 
     next     = NULL;
     geo_node = NULL;
@@ -76,7 +76,7 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
         ptr_obj->next->setAffineTrans(*meshdata->affine_trans);
     }
     ptr_obj->next->obj_name = dup_Buffer(meshdata->data_name);
-    ptr_obj->next->collider = collider;
+    //ptr_obj->next->collider = collider;
 
     MeshFacetNode* facet = meshdata->facet;
     OBJFacetGeoNode** _geo_node = &(ptr_obj->next->geo_node);
@@ -97,6 +97,7 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
             (*_geo_node)->data_index[i] = facet->data_index[i];
         }
 
+        (*_geo_node)->collider = collider;
         (*_geo_node)->num_vertex = facet->num_vertex;
         (*_geo_node)->vv = (Vector<double>*)malloc(sizeof(Vector<double>)*(*_geo_node)->num_vertex);
         (*_geo_node)->vn = (Vector<double>*)malloc(sizeof(Vector<double>)*(*_geo_node)->num_vertex);
@@ -228,6 +229,7 @@ OBJFacetGeoNode::~OBJFacetGeoNode(void)
 void  OBJFacetGeoNode::init(void)
 {
     material = init_Buffer();
+    collider = true;
     num_index  = 0;
     num_vertex = 0;
 

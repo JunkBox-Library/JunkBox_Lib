@@ -45,7 +45,7 @@ public:
 
 public:
     Buffer  obj_name;
-    bool    collider;
+    bool    phantom_out;
     int     num_obj;
 
     OBJData* next;
@@ -86,6 +86,7 @@ public:
     Buffer  material;
     int     num_index;
     int     num_vertex;
+    bool    collider;
 
     int*    data_index;
     Vector<double>* vv;
