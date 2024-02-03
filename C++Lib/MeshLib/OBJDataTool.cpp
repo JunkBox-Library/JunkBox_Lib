@@ -22,7 +22,7 @@ void  OBJData::init(int n)
 {
     obj_name = init_Buffer();
     num_obj  = n;
-    phantom_out = false;
+    phantom_out = true;
 
     next     = NULL;
     geo_node = NULL;
