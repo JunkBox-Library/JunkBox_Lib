@@ -108,7 +108,7 @@ int  BrepSolidList::addSolid(MeshObjectData* mesh)
 }
 
 
-void  BrepSolidList::outputFile(const char* fname, const char* path, bool binfile)
+void  BrepSolidList::outputFile(const char* fname, const char* path, bool ascii)
 {
     char* packname = pack_head_tail_char(get_file_name(fname), ' ');
     Buffer file_name = make_Buffer_bystr(packname);
@@ -130,11 +130,11 @@ void  BrepSolidList::outputFile(const char* fname, const char* path, bool binfil
     //
     BREP_SOLID* solid = getMerge(NULL);
     if (solid!=NULL) {
-        if (binfile) {
-            WriteSTLFileB((char*)out_path.buf, solid);
+        if (ascii) {
+            writeSTLFileA((char*)out_path.buf, solid);
         }
         else {
-            WriteSTLFileA((char*)out_path.buf, solid);
+            writeSTLFileB((char*)out_path.buf, solid);
         }
         delete(solid);
     }

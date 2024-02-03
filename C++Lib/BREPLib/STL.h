@@ -1,7 +1,6 @@
 ﻿#ifndef __JBXL_STL_H_
 #define __JBXL_STL_H_
 
-
 /**
 @brief    STL ファイル入出力用ライブラリ ヘッダ
 @file     STL.h
@@ -10,7 +9,6 @@
 @note
 エンディアン無変換
 */
-
 
 #include  "Brep.h"
 
@@ -22,7 +20,6 @@ namespace jbxl {
 typedef struct {
     unsigned char tmp[50]; 
 } tmpSTLData;   // 50Byte
-
 
 
 /// 三角形データ用
@@ -37,16 +34,16 @@ typedef struct {
 } STLData;      // 52Byte
 
 
-DllExport STLData* ReadSTLFile (char* fname,  long int* fno);
-DllExport int      WriteSTLFile(char* fname,  BREP_SOLID* solid, bool ascii=false);
-DllExport int      WriteSTLFile(char* fname,  BREP_SOLID_LIST solid_list, bool ascii=false);
+DllExport STLData* readSTLFile (char* fname,  long int* fno);
+DllExport int      writeSTLFile(char* fname,  BREP_SOLID* solid, bool ascii=false);
+DllExport int      writeSTLFile(char* fname,  BREP_SOLID_LIST solid_list, bool ascii=false);
 
-DllExport STLData* ReadSTLFileA (char* fname, long int* fno);
-DllExport STLData* ReadSTLFileB (char* fname, long int* fno);
-DllExport int      WriteSTLFileA(char* fname, BREP_SOLID* solid);
-DllExport int      WriteSTLFileB(char* fname, BREP_SOLID* solid);
-DllExport int      WriteSTLFileA(char* fname, BREP_SOLID_LIST solid_list);
-DllExport int      WriteSTLFileB(char* fname, BREP_SOLID_LIST solid_list);
+DllExport STLData* readSTLFileA (char* fname, long int* fno);
+DllExport STLData* readSTLFileB (char* fname, long int* fno);
+DllExport int      writeSTLFileA(char* fname, BREP_SOLID* solid);
+DllExport int      writeSTLFileB(char* fname, BREP_SOLID* solid);
+DllExport int      writeSTLFileA(char* fname, BREP_SOLID_LIST solid_list);
+DllExport int      writeSTLFileB(char* fname, BREP_SOLID_LIST solid_list);
 
 DllExport void     println_FacetAsciiSTL(BREP_CONTOUR* contour);
 

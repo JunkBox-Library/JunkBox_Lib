@@ -14,13 +14,13 @@ using namespace jbxl;
 
 
 /**
-STLData*  jbxl::ReadSTLFile(char* fname, unsigned int* fno) 
+STLData*  jbxl::readSTLFile(char* fname, unsigned int* fno)
 
 STLファイルを読み込むラッパー関数．アスキー，バイナリを自動判別．
 
 読み込んだファセットの数(fno)を返す．
 */
-DllExport STLData*  jbxl::ReadSTLFile(char* fname, long int* fno) 
+DllExport STLData*  jbxl::readSTLFile(char* fname, long int* fno)
 {
     FILE*  fp;
     struct stat stbuf;
@@ -36,23 +36,23 @@ DllExport STLData*  jbxl::ReadSTLFile(char* fname, long int* fno)
 
     stat(fname, &stbuf);
     if (stbuf.st_size == (*fno)*50+84) {    // ファイルサイズのチェック
-        stldata = ReadSTLFileB(fname, fno); // バイナリファイル
+        stldata = readSTLFileB(fname, fno); // バイナリファイル
     }
     else {
-        stldata = ReadSTLFileA(fname, fno); // アスキーファイル
+        stldata = readSTLFileA(fname, fno); // アスキーファイル
     }
 
     if (stldata==NULL) {
         if (*fno!=0) {
-            DEBUG_MODE PRINT_MESG("ReadSTLFile: メモリの確保に失敗．\n");
+            DEBUG_MODE PRINT_MESG("readSTLFile: メモリの確保に失敗．\n");
         }
         else {
-            DEBUG_MODE PRINT_MESG("ReadSTLFile: データの読み込みに失敗．\n");
+            DEBUG_MODE PRINT_MESG("readSTLFile: データの読み込みに失敗．\n");
         }
     }
     else {
-        DEBUG_MODE PRINT_MESG("ReadSTLFile: file name = %s\n", fname);
-        DEBUG_MODE PRINT_MESG("ReadSTLFile: read facet No. = %d\n", *fno);
+        DEBUG_MODE PRINT_MESG("readSTLFile: file name = %s\n", fname);
+        DEBUG_MODE PRINT_MESG("readSTLFile: read facet No. = %d\n", *fno);
     }
 
     return  stldata;
@@ -60,52 +60,52 @@ DllExport STLData*  jbxl::ReadSTLFile(char* fname, long int* fno)
 
 
 /**
-int  jbxl::WriteSTLFile (char* fname, BREP_SOLID* solid, bool ascii) 
+int  jbxl::writeSTLFile (char* fname, BREP_SOLID* solid, bool ascii)
 
 STLファイルを書き込むラッパー関数．
 
 アスキー，バイナリを指定する．デフォルトはバイナリ(ascii==false)．
 書き込んだファセットの数を返す．
 */
-DllExport int  jbxl::WriteSTLFile (char* fname, BREP_SOLID* solid, bool ascii) 
+DllExport int  jbxl::writeSTLFile (char* fname, BREP_SOLID* solid, bool ascii)
 {
     int nn;
 
-    if (ascii) nn = WriteSTLFileA(fname, solid);
-    else       nn = WriteSTLFileB(fname, solid);
+    if (ascii) nn = writeSTLFileA(fname, solid);
+    else       nn = writeSTLFileB(fname, solid);
 
-    if (nn<0) DEBUG_MODE PRINT_MESG("WriteSTLFile: ファイルオープンエラー．\n");
+    if (nn<0) DEBUG_MODE PRINT_MESG("writeSTLFile: ファイルオープンエラー．\n");
     return nn;
 }
 
 
 /**
-DllExport int  jbxl::WriteSTLFile (char* fname, BREP_SOLID_LIST solid_list, bool ascii) 
+DllExport int  jbxl::writeSTLFile (char* fname, BREP_SOLID_LIST solid_list, bool ascii)
 
 STLファイルを書き込むラッパー関数．
 
 アスキー，バイナリを指定する．デフォルトはバイナリ(ascii==false)．
 書き込んだファセットの数を返す．
 */
-DllExport int  jbxl::WriteSTLFile (char* fname, BREP_SOLID_LIST solid_list, bool ascii) 
+DllExport int  jbxl::writeSTLFile (char* fname, BREP_SOLID_LIST solid_list, bool ascii)
 {
     int nn;
 
-    if (ascii) nn = WriteSTLFileA(fname, solid_list);
-    else       nn = WriteSTLFileB(fname, solid_list);
+    if (ascii) nn = writeSTLFileA(fname, solid_list);
+    else       nn = writeSTLFileB(fname, solid_list);
 
-    if (nn<0) DEBUG_MODE PRINT_MESG("WriteSTLFile: ファイルオープンエラー．\n");
+    if (nn<0) DEBUG_MODE PRINT_MESG("writeSTLFile: ファイルオープンエラー．\n");
     return nn;
 }
 
 
 /**
-STLData*  jbxl::ReadSTLFileA(char* fname, long int* fno) 
+STLData*  jbxl::readSTLFileA(char* fname, long int* fno)
 
 アスキー形式の STLファイルを読み込み，読み込んだファセットの数を返す．@n
 ファイル中の facet, vertex 以外は無視．
 */
-DllExport STLData*  jbxl::ReadSTLFileA(char* fname, long int* fno) 
+DllExport STLData*  jbxl::readSTLFileA(char* fname, long int* fno)
 {
     FILE* fp;
     STLData*  stldata = NULL;
@@ -117,11 +117,11 @@ DllExport STLData*  jbxl::ReadSTLFileA(char* fname, long int* fno)
     *fno = 0;
     fp = fopen(fname, "r");
     if (fp==NULL) return NULL;
-    
+
     fgets(buffer, LBUF, fp);
     while (!feof(fp)) {
         pbuf = buffer;
-        while(*pbuf==' '||*pbuf==CHAR_TAB) pbuf++; 
+        while(*pbuf==' '||*pbuf==CHAR_TAB) pbuf++;
 
         if (!strncasecmp(pbuf, "facet ",  6)) (*fno)++;
         if (!strncasecmp(pbuf, "vertex ", 7)) vno++;
@@ -146,7 +146,7 @@ DllExport STLData*  jbxl::ReadSTLFileA(char* fname, long int* fno)
     fgets(buffer, LBUF, fp);
     while (!feof(fp)) {
         pbuf = buffer;
-        while(*pbuf==' '||*pbuf==CHAR_TAB) pbuf++; 
+        while(*pbuf==' '||*pbuf==CHAR_TAB) pbuf++;
 
         if (!strncasecmp(pbuf, "facet ", 6)) {                      // 法線ベクトル
             sscanf(buffer, "%s %s %f %f %f", dummy, dummy, &vect[0], &vect[1], &vect[2]);
@@ -159,7 +159,7 @@ DllExport STLData*  jbxl::ReadSTLFileA(char* fname, long int* fno)
             j += 3;
             if (j==12) i++;
         }
-        fgets(buffer, LBUF, fp); 
+        fgets(buffer, LBUF, fp);
     }
     fclose(fp);
 
@@ -168,23 +168,23 @@ DllExport STLData*  jbxl::ReadSTLFileA(char* fname, long int* fno)
 
 
 /**
-STLData*  jbxl::ReadSTLFileB(char* fname, long int* fno) 
+STLData*  jbxl::readSTLFileB(char* fname, long int* fno)
 
 バイナリ形式の STLファイルを読み込み，読み込んだファセットの数を返す．
 */
-DllExport STLData*  jbxl::ReadSTLFileB(char* fname, long int* fno) 
+DllExport STLData*  jbxl::readSTLFileB(char* fname, long int* fno)
 {
     FILE* fp;
     char  message[81];          // STLのファイルメッセージ
     tmpSTLData* tmp_stldata;
     STLData*    stldata;
-    STLData*    exdata; 
+    STLData*    exdata;
 
     fp = fopen(fname, "rb");
     if (fp==NULL) return NULL;
     fread(message, 80, 1, fp);
     message[80] = '\0';         // STLのファイルメッセージ(message[]）80Byteは未使用
-    
+
     fread(fno, 4, 1, fp);
     tmp_stldata = (tmpSTLData*)malloc(sizeof(tmpSTLData)*(*fno));
     if (tmp_stldata==NULL) return NULL;
@@ -207,14 +207,14 @@ DllExport STLData*  jbxl::ReadSTLFileB(char* fname, long int* fno)
     free(tmp_stldata);
     return  stldata;
 }
- 
+
 
 /**
-int  jbxl::WriteSTLFileA(char* fname, BREP_SOLID* solid) 
+int  jbxl::writeSTLFileA(char* fname, BREP_SOLID* solid) 
 
 BREP_SOLID のデータをアスキー形式の STLファイルとして書き込む
 */
-DllExport int  jbxl::WriteSTLFileA(char* fname, BREP_SOLID* solid) 
+DllExport int  jbxl::writeSTLFileA(char* fname, BREP_SOLID* solid) 
 {
     FILE* fp;
     int   nn = 0;
@@ -223,7 +223,6 @@ DllExport int  jbxl::WriteSTLFileA(char* fname, BREP_SOLID* solid)
     if (fp==NULL) return -1;
 
     fprintf(fp, "solid %s\n", fname);
-
     BREP_CONTOUR_LIST::iterator icon;
     for (icon=solid->contours.begin(); icon!=solid->contours.end(); icon++){
         fprintf(fp, "facet normal %g %g %g\n", (*icon)->normal.x, (*icon)->normal.y, (*icon)->normal.z);
@@ -235,6 +234,7 @@ DllExport int  jbxl::WriteSTLFileA(char* fname, BREP_SOLID* solid)
             fprintf(fp, "        vertex %g %g %g\n", vect.x, vect.y, vect.z);
             wing = wing->next;
         }
+
         fprintf(fp,"    endloop\n");
         fprintf(fp,"endfacet\n");
         nn++;
@@ -247,16 +247,16 @@ DllExport int  jbxl::WriteSTLFileA(char* fname, BREP_SOLID* solid)
 
 
 /**
-int  jbxl::WriteSTLFileB(char* fname, BREP_SOLID* solid) 
+int  jbxl::writeSTLFileB(char* fname, BREP_SOLID* solid)
 
 BREP_SOLID のデータをバイナリ形式の STLファイルとして書き込む
 */
-DllExport int  jbxl::WriteSTLFileB(char* fname, BREP_SOLID* solid) 
+DllExport int  jbxl::writeSTLFileB(char* fname, BREP_SOLID* solid)
 {
     FILE* fp;
     int   fno;
     char  message[80]="STL Binary Data Program  by Fumi.Iseki";
-    STLData  stldata; 
+    STLData  stldata;
 
     fp = fopen(fname, "wb");
     if (fp==NULL) return -1;
@@ -288,15 +288,15 @@ DllExport int  jbxl::WriteSTLFileB(char* fname, BREP_SOLID* solid)
 
 
 /**
-DllExport int  jbxl::WriteSTLFileA(char* fname, BREP_SOLID_LIST solid_list) 
+DllExport int  jbxl::writeSTLFileA(char* fname, BREP_SOLID_LIST solid_list)
 
 BREP_SOLID のデータをアスキー形式の STLファイルとして書き込む
 */
-DllExport int  jbxl::WriteSTLFileA(char* fname, BREP_SOLID_LIST solid_list) 
+DllExport int  jbxl::writeSTLFileA(char* fname, BREP_SOLID_LIST solid_list)
 {
     FILE* fp;
     int   nn = 0;
-    
+
     fp = fopen(fname, "wa");
     if (fp==NULL) return -1;
 
@@ -309,7 +309,7 @@ DllExport int  jbxl::WriteSTLFileA(char* fname, BREP_SOLID_LIST solid_list)
         for (icon=(*isolid)->contours.begin(); icon!=(*isolid)->contours.end(); icon++){
             fprintf(fp, "facet normal %g %g %g\n", (*icon)->normal.x, (*icon)->normal.y, (*icon)->normal.z);
             fprintf(fp, "    outer loop\n");
-    
+
             BREP_WING* wing = (*icon)->wing;
             for (int i=0; i<3; i++) {
                 Vector<double> vect = wing->vertex->point;
@@ -329,16 +329,16 @@ DllExport int  jbxl::WriteSTLFileA(char* fname, BREP_SOLID_LIST solid_list)
 
 
 /**
-DllExport int  jbxl::WriteSTLFileB(char* fname, BREP_SOLID_LIST solidi_list) 
+DllExport int  jbxl::writeSTLFileB(char* fname, BREP_SOLID_LIST solidi_list)
 
 BREP_SOLID のデータをバイナリ形式の STLファイルとして書き込む
 */
-DllExport int  jbxl::WriteSTLFileB(char* fname, BREP_SOLID_LIST solid_list) 
+DllExport int  jbxl::writeSTLFileB(char* fname, BREP_SOLID_LIST solid_list)
 {
     FILE* fp;
     int   fno = 0;
     char  message[80]="STL Binary Data Program  by Fumi.Iseki";
-    STLData  stldata; 
+    STLData  stldata;
 
     fp = fopen(fname, "wb");
     if (fp==NULL) return -1;
@@ -377,12 +377,12 @@ DllExport int  jbxl::WriteSTLFileB(char* fname, BREP_SOLID_LIST solid_list)
 
 
 /**
-void  jbxl::println_FacetAsciiSTL(BREP_CONTOUR* contour) 
+void  jbxl::println_FacetAsciiSTL(BREP_CONTOUR* contour)
 
 contourの情報を STLのアスキー形式で表示する
-ReadSTLFileA()で読み込み可
+readSTLFileA()で読み込み可
 */
-DllExport void  jbxl::println_FacetAsciiSTL(BREP_CONTOUR* contour) 
+DllExport void  jbxl::println_FacetAsciiSTL(BREP_CONTOUR* contour)
 {
     BREP_WING* wing = contour->wing;
 
@@ -398,7 +398,7 @@ DllExport void  jbxl::println_FacetAsciiSTL(BREP_CONTOUR* contour)
 }
 
 
-DllExport void  jbxl::freeSTL(STLData* stldata) 
+DllExport void  jbxl::freeSTL(STLData* stldata)
 {
     if (stldata!=NULL) free(stldata);
 }
