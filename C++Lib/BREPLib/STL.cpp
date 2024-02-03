@@ -210,19 +210,20 @@ DllExport STLData*  jbxl::readSTLFileB(char* fname, long int* fno)
 
 
 /**
-int  jbxl::writeSTLFileA(char* fname, BREP_SOLID* solid) 
+int  jbxl::writeSTLFileA(char* fname, BREP_SOLID* solid)
 
 BREP_SOLID のデータをアスキー形式の STLファイルとして書き込む
 */
-DllExport int  jbxl::writeSTLFileA(char* fname, BREP_SOLID* solid) 
+DllExport int  jbxl::writeSTLFileA(char* fname, BREP_SOLID* solid)
 {
     FILE* fp;
     int   nn = 0;
-    
+
     fp = fopen(fname, "w");
     if (fp==NULL) return -1;
 
     fprintf(fp, "solid %s\n", fname);
+
     BREP_CONTOUR_LIST::iterator icon;
     for (icon=solid->contours.begin(); icon!=solid->contours.end(); icon++){
         fprintf(fp, "facet normal %g %g %g\n", (*icon)->normal.x, (*icon)->normal.y, (*icon)->normal.z);
@@ -234,7 +235,6 @@ DllExport int  jbxl::writeSTLFileA(char* fname, BREP_SOLID* solid)
             fprintf(fp, "        vertex %g %g %g\n", vect.x, vect.y, vect.z);
             wing = wing->next;
         }
-
         fprintf(fp,"    endloop\n");
         fprintf(fp,"endfacet\n");
         nn++;
@@ -402,5 +402,4 @@ DllExport void  jbxl::freeSTL(STLData* stldata)
 {
     if (stldata!=NULL) free(stldata);
 }
-
 

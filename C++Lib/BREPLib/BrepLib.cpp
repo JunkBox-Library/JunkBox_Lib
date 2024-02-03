@@ -6,15 +6,16 @@
 
 #include "BrepLib.h"
 
+
 using namespace jbxl;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // BrepSolidList
-// 
+//
 
 BrepSolidList::~BrepSolidList(void)
-{ 
+{
     DEBUG_INFO("DESTRUCTOR: BrepSolidList");
 }
 
@@ -43,6 +44,7 @@ void  BrepSolidList::clear(void)
 }
 
 
+
 ////////////////////////////////////////////////////////////////////////////////////////
 //
 
@@ -60,14 +62,16 @@ int  BrepSolidList::addSolid(MeshObjectData* mesh)
     BREP_SHELL* shell = new BREP_SHELL(solid);
 
     MeshFacetNode* node = mesh->facet;
+
     while (node!=NULL) {
+        //
         for (int num = 0; num < node->num_index - 2; num += 3) {
             BREP_FACET* facet = new BREP_FACET(shell);
             //
             int idx0 = node->data_index[num];
             int idx1 = node->data_index[num+1];
             int idx2 = node->data_index[num+2];
-        
+
             vertex[0] = node->vertex_value[idx0];
             vertex[1] = node->vertex_value[idx1];
             vertex[2] = node->vertex_value[idx2];
@@ -126,7 +130,14 @@ void  BrepSolidList::outputFile(const char* fname, const char* path, bool ascii)
     else            out_path = make_Buffer_bystr(path);
     cat_Buffer(&file_name, &out_path);
     change_file_extension_Buffer(&out_path, ".stl");
-    //
+
+    /*
+    if (ascii) {
+        WriteSTLFileA((char*)out_path.buf, solid_list);
+    }
+    else {
+        WriteSTLFileB((char*)out_path.buf, solid_list);
+    }*/
 
     BREP_SOLID* solid = getMerge(NULL);
     if (solid!=NULL) {
@@ -136,8 +147,9 @@ void  BrepSolidList::outputFile(const char* fname, const char* path, bool ascii)
         else {
             writeSTLFileB((char*)out_path.buf, solid);
         }
-        delete(solid);
+        delete solid;
     }
+
     free_Buffer(&file_name);
     free_Buffer(&out_path);
 
