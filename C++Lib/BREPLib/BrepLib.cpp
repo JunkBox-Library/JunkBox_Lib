@@ -205,4 +205,3 @@ BREP_SOLID*  BrepSolidList::getMerge(CVCounter* counter)
 
     return solid;
 }
-

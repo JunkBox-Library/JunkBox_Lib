@@ -7,7 +7,6 @@
 @sa BREPLIBRARY http://breplibrary.sourceforge.net/
 */
 
-
 #include "Brep.h"
 
 
@@ -1042,4 +1041,3 @@ DllExport TVector<double>  jbxl::Vertex2TVector(BREP_VERTEX* v)
     
     return  tv;
 }
-

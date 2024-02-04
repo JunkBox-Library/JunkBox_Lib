@@ -27,11 +27,11 @@ typedef struct {
 ///   v[3] 〜 v[5] : 第１の頂点の X,Y,Z座標   
 ///   v[6] 〜 v[8] : 第２の頂点の X,Y,Z座標   
 ///   v[9] 〜 v[11]: 第３の頂点の X,Y,Z座標
-///   STL Data は 32bit単位 なので float を使用
+//    STL Data は 32bit単位 なので float を使用
 typedef struct {
     float vect[12];
     unsigned short pad; 
-} STLData;      // 52Byte
+} STLData;  // 50Byte
 
 
 DllExport STLData* readSTLFile (char* fname,  long int* fno);

@@ -139,7 +139,7 @@ DllExport STLData*  jbxl::readSTLFileA(char* fname, long int* fno)
     }
 
     // もう一度ファイルをオープンして，データを読み込む．
-    int i=0, j=0;
+    int i = 0, j = 0;
     fp = fopen(fname, "r");
     if (fp==NULL) return NULL;
 
@@ -402,4 +402,3 @@ DllExport void  jbxl::freeSTL(STLData* stldata)
 {
     if (stldata!=NULL) free(stldata);
 }
-

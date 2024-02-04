@@ -1483,4 +1483,3 @@ DllExport  bool  jbxl::IsConnectEdges(BREP_WING* wing1, BREP_WING* wing2)
     if (GetWingOtherSide(wing1)->vertex==wing2->vertex) return true;
     return false;
 }
-
