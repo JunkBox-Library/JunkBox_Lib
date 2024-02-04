@@ -131,14 +131,6 @@ void  BrepSolidList::outputFile(const char* fname, const char* path, bool ascii)
     cat_Buffer(&file_name, &out_path);
     change_file_extension_Buffer(&out_path, ".stl");
 
-    /*
-    if (ascii) {
-        WriteSTLFileA((char*)out_path.buf, solid_list);
-    }
-    else {
-        WriteSTLFileB((char*)out_path.buf, solid_list);
-    }*/
-
     BREP_SOLID* solid = getMerge(NULL);
     if (solid!=NULL) {
         if (ascii) {
