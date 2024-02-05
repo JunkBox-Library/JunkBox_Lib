@@ -1094,6 +1094,7 @@ Buffer  fgets_mstream_Buffer(Buffer buf, mstream* sb)
 }
 
 
+
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // Run Length
 //
@@ -1924,7 +1925,6 @@ void  del_file_extension_Buffer(Buffer* path)
 }
 
 
-
 /**
 ファイルの拡張子を extにする．ファイルに拡張子が無い場合は extを付加する．
 */
@@ -1955,33 +1955,75 @@ void  change_file_extension_Buffer(Buffer* path, const char* ext)
 }
 
 
+/*
+Buffer  relative_path_Buffer(Buffer src, Buffer dst)
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//
+src から dst への相対パスを返す．
 
-/**
-リソースの名前から，ファイルのパスを得る．戻り値は freeしてはいけない．
-
-@param name リソース名
-@param lp   リソースリスト．key部に名前，val部にパスが格納されている．
-@return リソース名に対応したパス．
+//// や \\\\\\ など，ディレクトリ区切り文字が連続した場合の処理は不正確になる．
+片方が絶対パスでもう片方が相対パスの場合，結果は不正確になる．
 */
-char*  get_resource_path(char* name, tList* lp)
+Buffer  relative_path_Buffer(Buffer src, Buffer dst)
 {
-    if (name==NULL) return NULL;
-
-    while (lp!=NULL) {
-        if (!strcasecmp((char*)lp->ldat.key.buf, name)) {
-            return (char*)lp->ldat.val.buf;
-        }
-        lp = lp->next;
+    Buffer rlt = init_Buffer();
+    if (src.buf==NULL || dst.buf==NULL) return rlt; 
+    if (src.buf[0]=='\0') {
+        rlt = dup_Buffer(dst);
+        return rlt;
     }
 
-    return NULL;
+    Buffer path_a = dup_Buffer(src);
+    Buffer path_b = dup_Buffer(dst);
+    //  区切り文字の追加
+    if (path_a.buf[path_a.vldsz-1]!=CHAR_DELI_DIR) cat_s2Buffer(STR_DELI_DIR, &path_a);
+    if (path_b.buf[path_b.vldsz-1]!=CHAR_DELI_DIR) cat_s2Buffer(STR_DELI_DIR, &path_b);
+
+    int  i = 0;
+    char a = path_a.buf[0];
+    char b = path_b.buf[0];
+    while (a==b && a!='\0') {
+        i++;
+        a = path_a.buf[i];
+        b = path_b.buf[i];
+    }   // i : pat_a と path_b の違っている箇所
+    if (a==CHAR_DELI_DIR && i>0) a = path_a.buf[--i];
+    //
+    // 手前の区切り文字
+    while (i>=0 && a!=CHAR_DELI_DIR) a = path_a.buf[--i];
+    i++;    // 区切り文字の次
+
+    int n = 0, h = i;
+    char c = path_a.buf[h];
+    while(c!='\0') {
+        if (c==CHAR_DELI_DIR) n++;
+        c = path_a.buf[++h];
+    }
+    if (h!=i) n++;
+
+    if (n==0) {
+        rlt = make_Buffer_str(STR_CRNT_DIR);
+    }
+    else {
+        for (int j=0; j<n; j++) {
+            cat_s2Buffer(STR_UPST_DIR, &rlt);
+        }
+        cat_s2Buffer(&path_b.buf[i], &rlt);
+    }
+
+    free_Buffer(&path_a);
+    free_Buffer(&path_b);
+    
+    return rlt;
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// ファイルリスト
+
 /**
+tList*  add_resource_list(const char* path, int keylen, tList* list, tList* extn)
+
 ディレクトリ pathを検索して，リソースリストにファイルを追加し，リストの先頭を返す．@n
 リソースリストのキーは，リソースのファイル名の先頭 keylen文字とする．keylenが 0以下ならファイル名全体をキーとする．
 
@@ -2022,5 +2064,29 @@ tList*  add_resource_list(const char* path, int keylen, tList* list, tList* extn
     }
 
     return list;
+}
+
+
+/**
+char*  get_resource_path(char* name, tList* lp)
+
+リソース名（ldat.key.buf）の値から，対象のパス値を得る．戻り値は freeしてはいけない．
+
+@param name リソース名
+@param lp   リソースリスト．key部に名前，val部にパスが格納されている．
+@return リソース名に対応したパス．
+*/
+char*  get_resource_path(char* name, tList* lp)
+{
+    if (name==NULL) return NULL;
+
+    while (lp!=NULL) {
+        if (!strcasecmp((char*)lp->ldat.key.buf, name)) {
+            return (char*)lp->ldat.val.buf;
+        }
+        lp = lp->next;
+    }
+
+    return NULL;
 }
 

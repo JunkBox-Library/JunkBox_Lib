@@ -29,6 +29,16 @@ double dx2(double t)
 int main()
 {
 
+    //Buffer a = make_Buffer_str("/sss/xzzzz/xxx/sssss/bax/xxxa/");
+    //Buffer b = make_Buffer_str("/sss/xzzzz/xxx/sssss/baxx/");
+    //Buffer a = make_Buffer_str("/sss/xzzzz/xxx/sssss/bax/xxxa/");
+    //Buffer b = make_Buffer_str("/asss/xzzzz/xxx/sssss/baxx/");
+    Buffer a = make_Buffer_str("/sss/xzzzz/xxx/sssss/bax");
+    Buffer b = make_Buffer_str("/sss/xzzzz/xxx/sssss/baxx/");
+
+    Buffer c = relative_path_Buffer(a, b);
+    printf("====> %s\n", c.buf);
+
     Buffer buf;
 
     unsigned short sport, vport;

@@ -15,50 +15,51 @@ using namespace jbxl;
 
 OBJData::~OBJData(void)
 {
+    this->free();
 }
 
 
 void  OBJData::init(int n)
 {
-    obj_name = init_Buffer();
-    num_obj  = n;
-    phantom_out = true;
+    this->obj_name = init_Buffer();
+    this->num_obj  = n;
+    this->phantom_out = true;
 
-    next     = NULL;
-    geo_node = NULL;
-    mtl_node = NULL;
-    affine_trans = NULL;
+    this->next     = NULL;
+    this->geo_node = NULL;
+    this->mtl_node = NULL;
+    this->affine_trans = NULL;
 }
 
 
 void  OBJData::free(void)
 {
-    free_Buffer(&obj_name);
+    free_Buffer(&(this->obj_name));
 
     delAffineTrans();
-    affine_trans = NULL;
+    this->affine_trans = NULL;
 
-    delete(geo_node);
-    delete(mtl_node);
-    geo_node = NULL;
-    mtl_node = NULL;
+    delete(this->geo_node);
+    delete(this->mtl_node);
+    this->geo_node = NULL;
+    this->mtl_node = NULL;
 
-    delete_next();
+    this->delete_next();
 }
 
 
 void  OBJData::delete_next(void)
 {
-    if (next==NULL) return;
+    if (this->next==NULL) return;
 
-    OBJData* _next = next;
+    OBJData* _next = this->next;
     while (_next!=NULL) {
         OBJData* _curr_node = _next;
         _next = _next->next;
         _curr_node->next = NULL;
         delete(_curr_node);
     }
-    next = NULL;
+    this->next = NULL;
 }
 
 
@@ -70,13 +71,12 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
     while (ptr_obj->next!=NULL) ptr_obj = ptr_obj->next;
     // 
     ptr_obj->next = new OBJData(-1);
-    num_obj++;
+    this->num_obj++;
 
     if (meshdata->affine_trans!=NULL) { // Grass の場合は NULL
         ptr_obj->next->setAffineTrans(*meshdata->affine_trans);
     }
     ptr_obj->next->obj_name = dup_Buffer(meshdata->data_name);
-    //ptr_obj->next->collider = collider;
 
     MeshFacetNode* facet = meshdata->facet;
     OBJFacetGeoNode** _geo_node = &(ptr_obj->next->geo_node);
@@ -110,10 +110,14 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
 
         if (facet->material_id.buf[0]=='#') facet->material_id.buf[0] = '_';
         (*_geo_node)->material = dup_Buffer(facet->material_id);
+
+        // Material
         (*_mtl_node)->material = dup_Buffer(facet->material_id);
-        (*_mtl_node)->material_param = facet->material_param;
-        (*_mtl_node)->same_material  = facet->same_material;
-        (*_mtl_node)->map_kd = make_Buffer_bystr(facet->material_param.getTextureName());
+        (*_mtl_node)->same_material = facet->same_material;
+        if (!(*_mtl_node)->same_material) {
+            (*_mtl_node)->material_param.dup(facet->material_param);
+            (*_mtl_node)->setup_params();
+        }
 
         _geo_node = &((*_geo_node)->next);
         _mtl_node = &((*_mtl_node)->next);
@@ -124,7 +128,7 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
 
 void  OBJData::execAffineTrans(void)
 {
-    OBJData* obj = next;
+    OBJData* obj = this->next;
     while (obj!=NULL) {
         if (obj->affine_trans!=NULL) {
             OBJFacetGeoNode* facet = obj->geo_node;
@@ -141,12 +145,14 @@ void  OBJData::execAffineTrans(void)
 }
 
 
-void  OBJData::outputFile(const char* fname, const char* path)
+void  OBJData::outputFile(const char* fname, const char* out_path, const char* mtl_dirn)
 {
+    FILE* fp = NULL;
     char* packname = pack_head_tail_char(get_file_name(fname), ' ');
     Buffer file_name = make_Buffer_bystr(packname);
     ::free(packname);
 
+    rewrite_sBuffer_bystr(&file_name, " ", "_");
     rewrite_sBuffer_bystr(&file_name, ":", "_");
     rewrite_sBuffer_bystr(&file_name, "*", "_");
     rewrite_sBuffer_bystr(&file_name, "?", "_");
@@ -155,25 +161,75 @@ void  OBJData::outputFile(const char* fname, const char* path)
     rewrite_sBuffer_bystr(&file_name, ">", "_");
     if (file_name.buf[0]=='.') file_name.buf[0] = '_';
     //
-    Buffer out_path;
-    if (path==NULL) out_path = make_Buffer_bystr("./");
-    else            out_path = make_Buffer_bystr(path);
-    cat_Buffer(&file_name, &out_path);
-    change_file_extension_Buffer(&out_path, ".obj");
+    Buffer obj_path;
+    if (out_path==NULL) obj_path = make_Buffer_bystr("./");
+    else                obj_path = make_Buffer_bystr(out_path);
     //
-    FILE* fp = fopen((char*)out_path.buf, "wb");
+    Buffer rel_path;    //  相対パス
+    if (mtl_dirn==NULL) rel_path = make_Buffer_bystr("");
+    else                rel_path = make_Buffer_bystr(mtl_dirn);
+    //
+    cat_Buffer(&file_name, &rel_path);
+    change_file_extension_Buffer(&rel_path, ".mtl");
+
+    Buffer mtl_path = dup_Buffer(obj_path);
+    cat_Buffer(&rel_path, &mtl_path);
+
+    cat_Buffer(&file_name, &obj_path);
+    change_file_extension_Buffer(&obj_path, ".obj");
+
+    // MTL
+    fp = fopen((char*)mtl_path.buf, "wb");
     if (fp!=NULL) {
-        output_obj(fp);
+        this->output_mtl(fp);
         fclose(fp);
     }
-    free_Buffer(&file_name);
-    free_Buffer(&out_path);
 
+    // OBJECT
+    fp = fopen((char*)obj_path.buf, "wb");
+    if (fp!=NULL) {
+        this->output_obj(fp, (char*)rel_path.buf);
+        fclose(fp);
+    }
+    //
+    free_Buffer(&obj_path);
+    free_Buffer(&mtl_path);
+    free_Buffer(&rel_path);
+    //
     return;
 }
 
 
-void  OBJData::output_obj(FILE* fp)
+void  OBJData::output_mtl(FILE* fp)
+{
+    if (fp==NULL) return;
+
+    fprintf(fp, "# %s\n", OBJDATATOOL_STR_MTLFL);
+    fprintf(fp, "# %s\n", OBJDATATOOL_STR_TOOL);
+    fprintf(fp, "# %s\n", OBJDATATOOL_STR_AUTHOR);
+    fprintf(fp, "# %s\n", OBJDATATOOL_STR_VER);
+
+    OBJData* obj = this->next;
+    while (obj!=NULL) {
+        OBJFacetMtlNode* node = obj->mtl_node;
+        while(node!=NULL) {
+            if (!node->same_material) {
+                fprintf(fp, "#\n");
+                fprintf(fp, "newmtl %s\n", node->material.buf);         // マテリアル名
+
+                fprintf(fp, "Kd %lf %lf %lf\n", node->kd.x, node->kd.y, node->kd.z);
+                fprintf(fp, "d %lf\n", node->dd);
+                //
+                fprintf(fp, "map_Kd %s\n", node->map_kd.buf);           // Texture ファイル名
+            }
+            node = node->next;
+        }
+        obj = obj->next;
+    }
+}
+
+
+void  OBJData::output_obj(FILE* fp, const char* mtl_path)
 {
     if (fp==NULL) return;
 
@@ -181,16 +237,15 @@ void  OBJData::output_obj(FILE* fp)
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_TOOL);
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_AUTHOR);
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_VER);
-    fprintf(fp, "# \n");
 
     int p_num = 1;
-    OBJData* obj = next;
+    OBJData* obj = this->next;
     while (obj!=NULL) {
-        fprintf(fp, "# SHELL\n");
+        fprintf(fp, "# \n# SHELL\n");
         OBJFacetGeoNode* facet = obj->geo_node;
         while(facet!=NULL) {
             fprintf(fp, "# FACET\n");
-            fprintf(fp, "mtllib %s\n", facet->material.buf);    // ファイル名
+            fprintf(fp, "mtllib %s\n", mtl_path);       // ファイル名
 
             for (int i=0; i<facet->num_vertex; i++) {
                 fprintf(fp, "v %lf %lf %lf\n", facet->vv[i].x, facet->vv[i].z, -facet->vv[i].y);
@@ -209,7 +264,7 @@ void  OBJData::output_obj(FILE* fp)
                 fprintf(fp, "%d/%d/%d\n", facet->data_index[i*3+2]+p_num, facet->data_index[i*3+2]+p_num, facet->data_index[i*3+2]+p_num);
             }
             p_num += facet->num_vertex;
-
+            //
             facet = facet->next;
         }
         obj = obj->next;
@@ -222,44 +277,44 @@ void  OBJData::output_obj(FILE* fp)
 //
 OBJFacetGeoNode::~OBJFacetGeoNode(void)
 {
-    free();
+    this->free();
 }
 
 
 void  OBJFacetGeoNode::init(void)
 {
-    material = init_Buffer();
-    collider = true;
-    num_index  = 0;
-    num_vertex = 0;
+    this->material = init_Buffer();
+    this->collider = true;
+    this->num_index  = 0;
+    this->num_vertex = 0;
 
-    data_index = NULL;
-    vv = vn = NULL;
-    vt = NULL;
-    uvmap_trans = NULL;
-    next = NULL;
+    this->data_index = NULL;
+    this->vv = this->vn = NULL;
+    this->vt = NULL;
+    this->uvmap_trans = NULL;
+    this->next = NULL;
 }
 
 
 void OBJFacetGeoNode::free(void)
 {
-    free_Buffer(&material);
-    num_index  = 0;
-    num_vertex = 0;
+    free_Buffer(&(this->material));
+    this->num_index  = 0;
+    this->num_vertex = 0;
 
-    if (data_index!=NULL) ::free(data_index);
-    data_index = NULL;
+    if (this->data_index!=NULL) ::free(this->data_index);
+    this->data_index = NULL;
 
-    if (vv!=NULL) ::free(vv);
-    if (vn!=NULL) ::free(vn);
-    if (vt!=NULL) ::free(vt);
-    vv = vn = NULL;
-    vt = NULL;
+    if (this->vv!=NULL) ::free(this->vv);
+    if (this->vn!=NULL) ::free(this->vn);
+    if (this->vt!=NULL) ::free(this->vt);
+    this->vv = this->vn = NULL;
+    this->vt = NULL;
 
-    freeAffineTrans(uvmap_trans);
-    uvmap_trans = NULL;
+    freeAffineTrans(this->uvmap_trans);
+    this->uvmap_trans = NULL;
 
-    delete_next();
+    this->delete_next();
 }
 
 
@@ -267,14 +322,14 @@ void  OBJFacetGeoNode::delete_next(void)
 {
     if (next==NULL) return;
 
-    OBJFacetGeoNode* _next = next;
+    OBJFacetGeoNode* _next = this->next;
     while (_next!=NULL) {
         OBJFacetGeoNode* _curr_node = _next;
         _next = _next->next;
         _curr_node->next = NULL;
         delete(_curr_node);
     }
-    next = NULL;
+    this->next = NULL;
 }
 
 
@@ -284,38 +339,49 @@ void  OBJFacetGeoNode::delete_next(void)
 //
 OBJFacetMtlNode::~OBJFacetMtlNode(void)
 {
-    free();
+    this->free();
 }
 
 
 void  OBJFacetMtlNode::init(void)
 {
-    material = init_Buffer();
-    map_kd   = init_Buffer();
-    memset(&material_param, 0, sizeof(material_param));
-    next = NULL;
+    this->material = init_Buffer();
+    this->map_kd   = init_Buffer();
+    memset(&(this->material_param), 0, sizeof(this->material_param));
+    this->next = NULL;
 }
 
 
 void  OBJFacetMtlNode::free(void)
 {
-    free_Buffer(&material);
-    free_Buffer(&map_kd);
+    free_Buffer(&(this->material));
+    free_Buffer(&(this->map_kd));
     delete_next();
 }
 
 
 void  OBJFacetMtlNode::delete_next(void)
 {
-    if (next==NULL) return;
+    if (this->next==NULL) return;
 
-    OBJFacetMtlNode* _next = next;
+    OBJFacetMtlNode* _next = this->next;
     while (_next!=NULL) {
         OBJFacetMtlNode* _curr_node = _next;
         _next = _next->next;
         _curr_node->next = NULL;
         delete(_curr_node);
     }
-    next = NULL;
+    this->next = NULL;
+}
+
+
+void  OBJFacetMtlNode::setup_params(void)
+{
+    this->map_kd = make_Buffer_str(this->material_param.getTextureName());
+    
+    this->kd = this->material_param.getColor();
+    this->dd = this->material_param.getAlpha();
+
+    return;
 }
 

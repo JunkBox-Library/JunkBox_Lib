@@ -839,6 +839,7 @@ void  ColladaXML::outputFile(const char* fname, const char* path, int mode)
     Buffer file_name = make_Buffer_bystr(packname);
     ::free(packname);
 
+    rewrite_sBuffer_bystr(&file_name, " ", "_");
     rewrite_sBuffer_bystr(&file_name, ":", "_");
     rewrite_sBuffer_bystr(&file_name, "*", "_");
     rewrite_sBuffer_bystr(&file_name, "?", "_");

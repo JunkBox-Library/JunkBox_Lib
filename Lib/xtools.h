@@ -45,7 +45,6 @@ int     udp_recv_Buffer_wait_sockaddr_in(int sock, Buffer* buf, struct sockaddr_
 
 struct  sockaddr_in  get_sockaddr_in_Buffer(Buffer buf);                                ///< FQDN:port または IPaddress:port の形式の Buffer変数から ソケット情報を得る．IPv4専用
 
-
 // for IPv4/IPv6 
 int     udp_recv_Buffer(int sock, Buffer* buf, struct addrinfo* sv);                    ///< recvform()をラッピングした関数．UDPデータを受信する．
 int     udp_send_Buffer(int sock, Buffer* buf, struct addrinfo* sv);                    ///< sendto() をラッピングした関数．UDP経由でデータを送る．
@@ -65,7 +64,6 @@ int     tcp_send_sBufferln (int sock, Buffer* buf);                             
 int     tcp_recv_mstream_Buffer(int sock, Buffer* buf, mstream* sb, int tm);            ///< TCP経由でメッセージを受信する．バッファリングあり．
 int     tcp_recv_lines_Buffer(int sock, Buffer* buf, int tm);                           ///< TCP経由でメッセージを複数行受信する．簡易バッファリングあり．
 
-
 // URL
 Buffer  comp_hostport(char* ipaddr, unsigned short port);                               ///< ホスト名とポート番号から，"ホスト名:ポート番号" の文字列を生成する．
 int     decomp_hostport(Buffer buf, Buffer* ipaddr, unsigned short* port);              ///< "ホスト名:ポート番号" 形式の文字列から，ホスト名とポート番号を分離する．
@@ -79,13 +77,11 @@ void    add_form_urlenc(Buffer* buf, const char* key, const char* val);         
 #define make_hostport(h, p)     comp_hostport((h), (p))                                 ///< comp_hostport()
 #define make_url(t, h, p, d)    comp_url((t), (h), (p), (d))                            ///< comp_url()
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 // File I/O
 int     save_tagged_Buffer(Buffer buf, FILE* fp, unsigned int mode, int prfm);  ///< Bufferを指定された形式に従ってタグ付きでファイルに保存する．
 Buffer  read_tagged_Buffer(FILE* fp, unsigned int* mode);                       ///< save_tagged_Buffer() で保存したファイルから，Buffer をタグに従って読み込む．
 Buffer  fgets_mstream_Buffer(Buffer buf, mstream* sb);                          ///< メッセージ buf.buf はメッセージストリームに一旦バッファリングされ，この関数により一行ずつ読み出される．
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // RunLength
@@ -97,13 +93,11 @@ Buffer  encode_runlength  (unsigned char* buf, int len);            ///< bufの 
 #define decode_runlength_Buffer(b, s)       decode_runlength((b).buf, (b).vldsz, (s))       ///< decode_runlength()
 #define encode_runlength_Buffer(b)          encode_runlength((b).buf, (b).vldsz)            ///< encode_runlength()
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Ring Buffer
 
 int      put_Buffer_ringBuffer(ringBuffer* rb, Buffer* buf);        ///< リングバッファ rb へ Buffer データを vldszバイト格納する．
 Buffer*  get_Buffer_ringBuffer(ringBuffer* rb, int sz);             ///< リングバッファ rb から szバイトのデータを取り出し，Buffer型データに格納する．要 del_Buffer()
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // 配列
@@ -118,12 +112,10 @@ Buffer* decompline_Buffer_dim(Buffer buf, int mode);    ///< データを行単�
 
 void    del_Buffer_dim(Buffer** buf);                   ///< 配列を削除する．
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 // tList and Buffer
 tList*  get_tList_line_Buffer(Buffer buf, int n);           ///< buf から n行目を取り出して，' ' で分解してリストに格納して返す．
 tList*  get_tList_seq_data_Buffer(Buffer buf, int* ptr);    ///< buf から行データをシーケンシャルに取り出して，それぞれを ' ' で分解してリストに格納して返す．
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Extend tList
@@ -131,7 +123,6 @@ int     set_item_tList(tList* list, char* key, int no, char deli, int nm, char* 
 int     replace_item_tList(tList* list, char* key, int no, char deli, int nm, char* srcval, char* value); ///< key をキーにした no番目のノードに対して replace_item_tList_node() を行う．
 int     set_item_tList_node(tList* list, char deli, int nm, char* value);                   ///< deliを区切りにした nm番目の項目（文字列）に value を設定する
 int     replace_item_tList_node(tList* list, char deli, int nm, char* srcval, char* value); ///< deliを区切りにした nm番目の項目（文字列）の srcval部分を valueで置き換える．
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // File, Directory
@@ -141,11 +132,12 @@ tList*  get_dir_files_rcsv(const char* dirn);                           ///< 指
 void    del_file_extension_Buffer(Buffer* path);                        ///< ファイルの拡張子を削除する．
 void    change_file_extension_Buffer(Buffer* path, const char* ext);    ///< ファイルの拡張子を extにする．ファイルに拡張子が無い場合は extを付加する
 
+Buffer  relative_path_Buffer(Buffer path_a, Buffer path_b);             ///< path_a から path_b への相対パスを返す．
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// Resource List
-char*   get_resource_path(char* name, tList* lp);                       ///< リソースの名前から，ファイルのパスを得る．戻り値は free() してはいけない．
+// Resource (file) List
 tList*  add_resource_list(const char* path, int keylen, tList* list, tList* extn);  ///< ディレクトリ pathを検索して，リソースリストにファイルを追加し，リストの先頭を返す．
+char*   get_resource_path(char* name, tList* lp);                       ///< リソースの名前から，ファイルのパスを得る．戻り値は free() してはいけない．
 
 
 #endif  // __JBXL_EXTEND_TOOLS_H_

@@ -35,7 +35,6 @@ void  TextureParam::init(void)
 void  TextureParam::free (void)
 {
     free_Buffer(&name);
-
     return;
 }
 
@@ -43,7 +42,6 @@ void  TextureParam::free (void)
 void  TextureParam::dup(TextureParam t)
 {
     *this = t;
-    
     name = dup_Buffer(t.name);
 }
 

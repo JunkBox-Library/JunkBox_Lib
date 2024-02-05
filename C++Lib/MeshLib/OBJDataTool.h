@@ -2,7 +2,7 @@
 #define  __JBXL_CPP_OBJ_TOOL_H_
 
 /**
-  3D OBJ ファイル用ツール
+  Wavefront OBJ ファイル用ツール
 
 */
 
@@ -40,7 +40,7 @@ class  OBJFacetMtlNode;
 class  OBJData
 {
 public:
-    OBJData(int n=0) { init(n);}    // デフォルト（n=0）ではアンカーを作る
+    OBJData(int n=0) { this->init(n);}    // デフォルト（n=0）ではアンカーを作る
     virtual ~OBJData(void);
 
 public:
@@ -60,13 +60,14 @@ public:
     void    delete_next(void);
 
     void    setAffineTrans (AffineTrans<double> a) { delAffineTrans(); affine_trans = new AffineTrans<double>(); affine_trans->dup(a);}
-    void    delAffineTrans (void) { freeAffineTrans(affine_trans);}
+    void    delAffineTrans (void) { freeAffineTrans(this->affine_trans);}
     void    execAffineTrans(void);
 
     void    addObject(MeshObjectData* meshdata, bool collider);
 
-    void    outputFile(const char* fn, const char* path);
-    void    output_obj(FILE* fp);
+    void    outputFile(const char* fn, const char* path, const char* texture_path);
+    void    output_mtl(FILE* fp);
+    void    output_obj(FILE* fp, const char* fname);
 };
 
 
@@ -79,7 +80,7 @@ inline void  freeOBJData(OBJData* obj) { if(obj!=NULL) { obj->free(); delete obj
 class  OBJFacetGeoNode
 {
 public:
-    OBJFacetGeoNode() { init();}
+    OBJFacetGeoNode() { this->init();}
     virtual ~OBJFacetGeoNode(void);
 
 public:
@@ -96,7 +97,6 @@ public:
     AffineTrans<double>* uvmap_trans;
 
     OBJFacetGeoNode* next;
-//    OBJFacetGeoNode* prev;
 
 public:
     void    init(void);
@@ -110,17 +110,16 @@ public:
 class  OBJFacetMtlNode
 {
 public:
-    OBJFacetMtlNode() { init();}
+    OBJFacetMtlNode() { this->init();}
     virtual ~OBJFacetMtlNode(void);
 
 public:
     Buffer  material;
-
     bool    same_material;
     MaterialParam material_param;
 
-    Vector<double> ka;
     Vector<double> kd;
+    Vector<double> ka;
     Vector<double> ks;
     Vector<double> ke;
     Vector<double> ni;
@@ -131,12 +130,12 @@ public:
     Buffer  map_kd;
 
     OBJFacetMtlNode* next;
-//    OBJFacetMtlNode* prev;
 
 public:
     void    init(void);
     void    free(void); 
     void    delete_next(void);
+    void    setup_params(void);
 };
 
 

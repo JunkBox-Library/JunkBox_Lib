@@ -52,22 +52,21 @@ namespace  jbxl {
 class  TextureParam
 {
 private:
-    Buffer   name;           ///< テクスチャ名
+    Buffer   name;          ///< テクスチャ名
+    double   color[4];      ///< RGBA
 
-    double   color[4];       ///< RGBA
+    bool     alphaChannel;  ///< テクスチャデータがアルファチャンネルを持っているかどうか．
+    int      alphaMode;     ///< アルファチャンネルのモード
+    double   alphaCutoff;   ///< アルファチャンネルの Cutoff値．alphaMode==MATERIAL_ALPHA_MASKING の場合に有効
 
-    bool     alphaChannel;   ///< テクスチャデータがアルファチャンネルを持っているかどうか．
-    int      alphaMode;      ///< アルファチャンネルのモード
-    double   alphaCutoff;    ///< アルファチャンネルの Cutoff値．alphaMode==MATERIAL_ALPHA_MASKING の場合に有効
+    double   shiftU;        ///< UVマップのシフト  （U方向）
+    double   shiftV;        ///< UVマップのシフト   (V方向)
+    double   scaleU;        ///< UVマップのスケール (U方向)
+    double   scaleV;        ///< UVマップのスケール (V方向)
+    double   rotate;        ///< UVマップの回転
 
-    double   shiftU;         ///< UVマップのシフト  （U方向）
-    double   shiftV;         ///< UVマップのシフト   (V方向)
-    double   scaleU;         ///< UVマップのスケール (U方向)
-    double   scaleV;         ///< UVマップのスケール (V方向)
-    double   rotate;         ///< UVマップの回転
-
-    bool     flipU;          ///< UVマップで U方向の反転を行うか
-    bool     flipV;          ///< UVマップで V方向の反転を行うか
+    bool     flipU;         ///< UVマップで U方向の反転を行うか
+    bool     flipV;         ///< UVマップで V方向の反転を行うか
 
 public:
     TextureParam(void) {}
@@ -108,7 +107,9 @@ public:
     void     setAlphaMode(int m)     { alphaMode = m;}
     void     setAlphaCutoff(double m) { alphaCutoff = m;}
 
+    Vector<double> getColor(void) { return Vector<double>(color[0], color[1], color[2]);}
     double   getColor(int c) { if(c<0) c = 0; else if(c>3) c = 3; return color[c];}
+    double   getAlpha(void)  { return color[3];}
     double   getShiftU(void) { return shiftU;}
     double   getShiftV(void) { return shiftV;}
     double   getScaleU(void) { return scaleU;}
@@ -247,10 +248,12 @@ public:
     void    setShift (double u, double v) { texture.setShiftU(u); texture.setShiftV(v);}
     void    setScale (double u, double v) { texture.setScaleU(u); texture.setScaleV(v);}
 
-    void    setAlphaChannel(bool h) { texture.setAlphaChannel(h);}
-    void    setAlphaMode(int m)     { texture.setAlphaMode(m);}
+    void    setAlphaChannel(bool h)  { texture.setAlphaChannel(h);}
+    void    setAlphaMode(int m)      { texture.setAlphaMode(m);}
     void    setAlphaCutoff(double m) { texture.setAlphaCutoff(m);}
 
+    Vector<double> getColor(void) { return texture.getColor();}
+    double  getAlpha(void)  { return texture.getAlpha();}
     double  getColor(int c) { return texture.getColor(c);}
     double  getShiftU(void) { return texture.getShiftU();}
     double  getShiftV(void) { return texture.getShiftV();}

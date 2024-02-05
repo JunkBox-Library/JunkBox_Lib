@@ -85,7 +85,6 @@
 #define  CODE_SJIS          2           //  
 #define  CODE_UTF8          3           //  
 
-
 #define UNKNOWN_ENDIAN      0
 
 #ifndef LITTLE_ENDIAN
@@ -94,6 +93,17 @@
   #define  PDP_ENDIAN       3412
 #endif
 
+#ifdef WIN32
+  #define  CHAR_DELI_DIR    '\\'
+  #define  STR_DELI_DIR     "\\"
+  #define  STR_CRNT_DIR     ".\\"
+  #define  STR_UPST_DIR     "..\\"
+#else
+  #define  CHAR_DELI_DIR    '/'
+  #define  STR_DELI_DIR     "/"
+  #define  STR_CRNT_DIR     "./"
+  #define  STR_UPST_DIR     "../"
+#endif
 
 
 typedef union _union_val {
@@ -454,7 +464,6 @@ void    fprint_message(FILE*, const char*, ...);            ///< バッファリ
     #define  PRINT_WARN         print_message               ///< 環境依存用の出力関数．print_message()
     #define  PRINT_ERROR        print_message               ///< 環境依存用の出力関数．print_message()
 #endif
-
 
 
 
