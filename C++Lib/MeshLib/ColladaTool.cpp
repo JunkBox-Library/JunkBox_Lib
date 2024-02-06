@@ -26,7 +26,6 @@ void  ColladaXML::init(double meter, int axis, const char* ver)
     blank_texture = init_Buffer();
     phantom_out = true;
 
-    forUnity4   = false;
     forUnity5   = false;
     forUnity3D  = true;
 }
@@ -839,13 +838,7 @@ void  ColladaXML::outputFile(const char* fname, const char* path, int mode)
     Buffer file_name = make_Buffer_bystr(packname);
     ::free(packname);
 
-    rewrite_sBuffer_bystr(&file_name, " ", "_");
-    rewrite_sBuffer_bystr(&file_name, ":", "_");
-    rewrite_sBuffer_bystr(&file_name, "*", "_");
-    rewrite_sBuffer_bystr(&file_name, "?", "_");
-    rewrite_sBuffer_bystr(&file_name, "\"", "_");
-    rewrite_sBuffer_bystr(&file_name, "<", "_");
-    rewrite_sBuffer_bystr(&file_name, ">", "_");
+    canonical_filename_Buffer(&file_name);
     if (file_name.buf[0]=='.') file_name.buf[0] = '_';
     //
     Buffer out_path;

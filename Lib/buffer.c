@@ -1584,10 +1584,32 @@ buf.buf自体を書き換えること以外は replace_sBuffer_bystr() と同じ
 */
 void  rewrite_sBuffer_bystr(Buffer* buf, const char* frm, const char* tos)
 {
+    if (buf==NULL || frm==NULL || tos==NULL) return;
+
     Buffer tmp = replace_sBuffer_bystr(*buf, frm, tos);
     if (tmp.state==JBXL_NORMAL) {
         free_Buffer(buf);
         *buf = tmp;
+    }
+    return;
+}
+
+
+/**
+void  rewrite_Buffer_bychar(Buffer* buf, const char frm, const char toc)
+
+buf.buf中の文字 frmを tosで置き換える．@n
+
+@param  buf  操作する Buffer変数
+@param  frm  変換する文字
+@param  toc  変換後の文字
+*/
+void  rewrite_Buffer_bychar(Buffer* buf, const char frm, const char toc)
+{
+    if (buf==NULL) return;
+
+    for (int i=0; i<buf->vldsz; i++) {
+        if (buf->buf[i]==frm) buf->buf[i] = toc;
     }
     return;
 }

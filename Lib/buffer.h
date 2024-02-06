@@ -172,6 +172,8 @@ void    rewrite_sBuffer_bystr(Buffer* buf, const char* frm, const char* tos);   
 #define rewrite_sBuffer(b, f, t)  rewrite_sBuffer_bystr((b), (f), (t))              ///< rewrite_sBuffer_bystr()
 #define rewrite_sBuffer_file(f, fr, to) replace_sBuffer_file((f), (fr), (to))       ///< replace_sBuffer_file()
 
+void    rewrite_Buffer_bychar(Buffer* buf, const char frm, const char toc);         ///< buf.buf中の文字 frmを tocで置き換える
+
 // ヘッダ(書式)付き特殊ファイルI/O
 int     save_Buffer_fp(Buffer, FILE*);                              ///< ファイル fp へ Buffer型変数の buf部を書き込む
 Buffer  read_Buffer_fp(FILE*);                                      ///< ファイル fp から Buffer型変数の buf部を読み込む

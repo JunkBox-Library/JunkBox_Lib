@@ -79,7 +79,6 @@ public:
 
 public:
     // for Unity
-    bool    forUnity4;
     bool    forUnity5;
     bool    forUnity3D;
     void    addCenterObject(void);

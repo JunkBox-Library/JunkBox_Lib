@@ -2128,8 +2128,8 @@ char* get_file_path(const char* str)
     if (str==NULL || str[0]=='\0') return NULL;
 
     int len = (int)strlen(str);
-    char* path = (char*)malloc(len+1);
-    memcpy(path, str, len+1);
+    char* path = (char*)malloc(len + 1);
+    memcpy(path, str, len + 1);
 
 #ifdef WIN32
     char  cc = '\\';

@@ -117,12 +117,7 @@ void  BrepSolidList::outputFile(const char* fname, const char* path, bool ascii)
     Buffer file_name = make_Buffer_bystr(packname);
     ::free(packname);
 
-    rewrite_sBuffer_bystr(&file_name, ":", "_");
-    rewrite_sBuffer_bystr(&file_name, "*", "_");
-    rewrite_sBuffer_bystr(&file_name, "?", "_");
-    rewrite_sBuffer_bystr(&file_name, "\"", "_");
-    rewrite_sBuffer_bystr(&file_name, "<", "_");
-    rewrite_sBuffer_bystr(&file_name, ">", "_");
+    canonical_filename_Buffer(&file_name);
     if (file_name.buf[0]=='.') file_name.buf[0] = '_';
     //
     Buffer out_path;

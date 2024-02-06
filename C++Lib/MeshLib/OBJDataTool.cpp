@@ -152,13 +152,7 @@ void  OBJData::outputFile(const char* fname, const char* out_path, const char* m
     Buffer file_name = make_Buffer_bystr(packname);
     ::free(packname);
 
-    rewrite_sBuffer_bystr(&file_name, " ", "_");
-    rewrite_sBuffer_bystr(&file_name, ":", "_");
-    rewrite_sBuffer_bystr(&file_name, "*", "_");
-    rewrite_sBuffer_bystr(&file_name, "?", "_");
-    rewrite_sBuffer_bystr(&file_name, "\"", "_");
-    rewrite_sBuffer_bystr(&file_name, "<", "_");
-    rewrite_sBuffer_bystr(&file_name, ">", "_");
+    canonical_filename_Buffer(&file_name);
     if (file_name.buf[0]=='.') file_name.buf[0] = '_';
     //
     Buffer obj_path;
