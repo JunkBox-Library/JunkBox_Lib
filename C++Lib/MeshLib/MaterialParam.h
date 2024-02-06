@@ -72,68 +72,68 @@ public:
     TextureParam(void) {}
     virtual ~TextureParam(void) {}
 
-    void     init (void);
-    void     free (void);
-    void     clear(void) { free(); init();}
+    void    init (void);
+    void    free (void);
+    void    clear(void) { free(); init();}
 
-    void     dup(TextureParam m);
+    void    dup(TextureParam m);
 
-    bool     isSetTexture(void) { return (name.buf!=NULL);}
-    bool     isSetColor  (void) { return (color[0]!=1.0 || color[1]!=1.0 || color[2]!=1.0 || color[3]!=1.0);}
-    bool     isSetAlpha  (void) { return (alphaChannel && (alphaMode==MATERIAL_ALPHA_BLENDING||alphaMode==MATERIAL_ALPHA_MASKING));}
-    bool     isSetParams (void) { return (isSetColor() || isSetAlpha());}
+    bool    isSetTexture(void) { return (name.buf!=NULL);}
+    bool    isSetColor  (void) { return (color[0]!=1.0 || color[1]!=1.0 || color[2]!=1.0 || color[3]!=1.0);}
+    bool    isSetAlpha  (void) { return (alphaChannel && (alphaMode==MATERIAL_ALPHA_BLENDING || alphaMode==MATERIAL_ALPHA_MASKING));}
+    bool    isSetParams (void) { return (isSetColor() || isSetAlpha());}
 
-    bool     isSetShift  (void) { return (shiftU!=0.0 || shiftV!=0.0);}
-    bool     isSetScale  (void) { return (scaleU!=1.0 || scaleV!=1.0);}
-    bool     isSetRotate (void) { return (rotate!=0.0);}
+    bool    isSetShift  (void) { return (shiftU!=0.0 || shiftV!=0.0);}
+    bool    isSetScale  (void) { return (scaleU!=1.0 || scaleV!=1.0);}
+    bool    isSetRotate (void) { return (rotate!=0.0);}
 
-    void     setName(const char* nm) { free_Buffer(&name); if(nm!=NULL) name = make_Buffer_bystr(nm);}
-    char*    getName(void) { return (char*)name.buf;}
-    void     addName(const char* nm) { if(nm!=NULL) cat_s2Buffer(nm, &name);}
+    void    setName(const char* nm) { free_Buffer(&name); if(nm!=NULL) name = make_Buffer_bystr(nm);}
+    char*   getName(void) { return (char*)name.buf;}
+    void    addName(const char* nm) { if(nm!=NULL) cat_s2Buffer(nm, &name);}
 
-    void     setColor(double r, double g, double b, double a=1.0) { color[0] = r; color[1] = g; color[2] = b; color[3] = a;}
-    void     setColor(double v, int c) { if(c<0) c = 0; else if(c>3) c = 3; color[c] = v;}
-    void     setShiftU(double u) { shiftU = u;}
-    void     setShiftV(double v) { shiftV = v;}
-    void     setScaleU(double u) { scaleU = u;}
-    void     setScaleV(double v) { scaleV = v;}
-    void     setRotate(double r) { rotate = r;}
-    void     setFlipU (bool f)  { flipU  = f;}
-    void     setFlipV (bool f)  { flipV  = f;}
-    void     setShift (double u, double v) { shiftU = u; shiftV = v;}
-    void     setScale (double u, double v) { scaleU = u; scaleV = v;}
+    void    setColor(double r, double g, double b, double a=1.0) { color[0] = r; color[1] = g; color[2] = b; color[3] = a;}
+    void    setColor(double v, int c) { if(c<0) c = 0; else if(c>3) c = 3; color[c] = v;}
+    void    setShiftU(double u) { shiftU = u;}
+    void    setShiftV(double v) { shiftV = v;}
+    void    setScaleU(double u) { scaleU = u;}
+    void    setScaleV(double v) { scaleV = v;}
+    void    setRotate(double r) { rotate = r;}
+    void    setFlipU (bool f)   { flipU  = f;}
+    void    setFlipV (bool f)   { flipV  = f;}
+    void    setShift (double u, double v) { shiftU = u; shiftV = v;}
+    void    setScale (double u, double v) { scaleU = u; scaleV = v;}
 
-    void     setAlphaChannel(bool h) { alphaChannel = h;}
-    void     setAlphaMode(int m)     { alphaMode = m;}
-    void     setAlphaCutoff(double m) { alphaCutoff = m;}
+    void    setAlphaChannel(bool h)  { alphaChannel = h;}
+    void    setAlphaMode(int m)      { alphaMode    = m;}
+    void    setAlphaCutoff(double m) { alphaCutoff  = m;}
 
     Vector<double> getColor(void) { return Vector<double>(color[0], color[1], color[2]);}
-    double   getColor(int c) { if(c<0) c = 0; else if(c>3) c = 3; return color[c];}
-    double   getAlpha(void)  { return color[3];}
-    double   getShiftU(void) { return shiftU;}
-    double   getShiftV(void) { return shiftV;}
-    double   getScaleU(void) { return scaleU;}
-    double   getScaleV(void) { return scaleV;}
-    double   getRotate(void) { return rotate;}
+    double  getColor(int c) { if(c<0) c = 0; else if(c>3) c = 3; return color[c];}
+    double  getAlpha(void)  { return color[3];}
+    double  getShiftU(void) { return shiftU;}
+    double  getShiftV(void) { return shiftV;}
+    double  getScaleU(void) { return scaleU;}
+    double  getScaleV(void) { return scaleV;}
+    double  getRotate(void) { return rotate;}
 
-    bool     getAlphaChannel(void) { return alphaChannel;}
-    int      getAlphaMode(void)    { if (color[3]<0.99) return MATERIAL_ALPHA_BLENDING; else return alphaMode;}
-    double   getAlphaCutoff(void)  { return alphaCutoff;}
+    bool    getAlphaChannel(void) { return alphaChannel;}
+    int     getAlphaMode(void)    { if (color[3]<0.99) return MATERIAL_ALPHA_BLENDING; else return alphaMode;}
+    double  getAlphaCutoff(void)  { return alphaCutoff;}
 
-    void     execTrans (UVMap<double>* uv, int n);    ///< Rotate -> Scale -> Shift
-    void     execShift (UVMap<double>* uv, int n);
-    void     execScale (UVMap<double>* uv, int n);
-    void     execRotate(UVMap<double>* uv, int n);
+    void    execTrans (UVMap<double>* uv, int n);    ///< Rotate -> Scale -> Shift
+    void    execShift (UVMap<double>* uv, int n);
+    void    execScale (UVMap<double>* uv, int n);
+    void    execRotate(UVMap<double>* uv, int n);
 
-    void     execInvTrans (UVMap<double>* uv, int n); ///< Shift -> Scale -> Rotate
-    void     execInvShift (UVMap<double>* uv, int n);
-    void     execInvScale (UVMap<double>* uv, int n);
-    void     execInvRotate(UVMap<double>* uv, int n);
+    void    execInvTrans (UVMap<double>* uv, int n); ///< Shift -> Scale -> Rotate
+    void    execInvShift (UVMap<double>* uv, int n);
+    void    execInvScale (UVMap<double>* uv, int n);
+    void    execInvRotate(UVMap<double>* uv, int n);
 
-    void     execFlipU(UVMap<double>* uv, int n) { for(int i=0; i<n; i++) uv[i].u = 1.0 - uv[i].u;}
-    void     execFlipV(UVMap<double>* uv, int n) { for(int i=0; i<n; i++) uv[i].v = 1.0 - uv[i].v;}
+    void    execFlipU(UVMap<double>* uv, int n) { for(int i=0; i<n; i++) uv[i].u = 1.0 - uv[i].u;}
+    void    execFlipV(UVMap<double>* uv, int n) { for(int i=0; i<n; i++) uv[i].v = 1.0 - uv[i].v;}
 
-    void     printParam(FILE* fp);
+    void    printParam(FILE* fp);
 };
 
 
@@ -148,12 +148,11 @@ bool  isSameTexture(TextureParam a, TextureParam b);     ///< compare texture ma
 class  MaterialParam
 {
 private:
-    //Buffer  addname;        ///< テクスチャ追加名．
     Buffer  paramstr;       ///< パラメータ文字列 (Base64文字列)
 
     double  transparent;    ///< テクスチャのアルファチャンネルの係数．
-    double  shininess;      ///< 輝き 
-    double  glow;           ///< 発光:
+    double  shininess;      ///< 輝き   Specular
+    double  glow;           ///< 発光
     double  bright;         ///< 明るさ
     double  glossiness;     ///< 光沢
     double  environment;    ///< 環境光
@@ -203,14 +202,9 @@ public:
     char*   getBumpMapName(void) { return bumpmap.getName();}       // 禁 free
     char*   getSpecMapName(void) { return specmap.getName();}       // 禁 free
 
-    //void    setAdditionalName(const char* name) { if(name!=NULL) copy_s2Buffer(name, &addname);}
-    //void    addAdditionalName(const char* name) { if(name!=NULL) cat_s2Buffer (name, &addname);}
-    //char*   getAdditionalName(void) { return (char*)addname.buf;}   // 禁 free
-
     void    setParamString(const char* param) { if(param!=NULL) copy_s2Buffer(param, &paramstr);}
     void    addParamString(const char* param) { if(param!=NULL) cat_s2Buffer (param, &paramstr);}
-    char*   getParamString(void) { return (char*)paramstr.buf;}   // 禁 free
-    //void    setupFullName(const char* extname);
+    char*   getParamString(void) { return (char*)paramstr.buf;}     // 禁 free
     void    setFullName(const char* extname);
 
     void    setTransparent(double a) { if(a>1.0) a = 1.0; else if(a<0.0) a = 0.0; transparent = a;}
@@ -253,13 +247,14 @@ public:
     void    setAlphaCutoff(double m) { texture.setAlphaCutoff(m);}
 
     Vector<double> getColor(void) { return texture.getColor();}
-    double  getAlpha(void)  { return texture.getAlpha();}
     double  getColor(int c) { return texture.getColor(c);}
+    double  getAlpha(void)  { return texture.getAlpha();}
     double  getShiftU(void) { return texture.getShiftU();}
     double  getShiftV(void) { return texture.getShiftV();}
     double  getScaleU(void) { return texture.getScaleU();}
     double  getScaleV(void) { return texture.getScaleV();}
     double  getRotate(void) { return texture.getRotate();}
+    double  getEffectiveTransparent(void);
 
     bool    getAlphaChannel(void) { return texture.getAlphaChannel();}
     int     getAlphaMode(void)    { return texture.getAlphaMode();}

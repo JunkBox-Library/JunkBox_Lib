@@ -374,8 +374,28 @@ void  OBJFacetMtlNode::setup_params(void)
     this->map_kd = make_Buffer_str(this->material_param.getTextureName());
     
     this->kd = this->material_param.getColor();
-    this->dd = this->material_param.getAlpha();
+    this->ka = Vector<double>(1.0, 1.0, 1.0);
+    this->ks = Vector<double>(1.0, 1.0, 1.0);
 
+    this->dd = this->material_param.getEffectiveTransparent();
+    this->ni = this->material_param.getShininess();
+
+    this->ns = (1.0 - this->material_param.getShininess())*1000;
+
+    this->illum = 9;
+/*
+ 0. Color on and Ambient off
+ 1. Color on and Ambient on
+ 2. Highlight on
+ 3. Reflection on and Ray trace on
+ 4. Transparency: Glass on, Reflection: Ray trace on
+ 5. Reflection: Fresnel on and Ray trace on
+ 6. Transparency: Refraction on, Reflection: Fresnel off and Ray trace on
+ 7. Transparency: Refraction on, Reflection: Fresnel on and Ray trace on
+ 8. Reflection on and Ray trace off
+ 9. Transparency: Glass on, Reflection: Ray trace off
+10. Casts shadows onto invisible surfaces
+*/
     return;
 }
 

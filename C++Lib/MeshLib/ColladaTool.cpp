@@ -614,7 +614,7 @@ tXML*  ColladaXML::addEffect(const char* material_url, const char* file_id, Mate
         append_xml_content(transfloat, dtostr(alpha));
     }
 
-    // shininess 
+    // specular map & shininess 
     if (mparam.isSetShininess()) {
         tXML* specular = add_xml_node(phong, "specular");
         tXML* color = add_xml_node(specular, "color");

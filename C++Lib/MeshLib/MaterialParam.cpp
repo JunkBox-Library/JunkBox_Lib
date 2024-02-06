@@ -206,7 +206,6 @@ void  MaterialParam::init(void)
     bumpmap.init();
     specmap.init();
 
-    //addname = init_Buffer();
     paramstr = init_Buffer();
 
     transparent = 1.0;
@@ -231,7 +230,6 @@ void  MaterialParam::free (void)
     bumpmap.free();
     specmap.free();
 
-    //free_Buffer(&addname);
     free_Buffer(&paramstr);
 
     return;
@@ -246,8 +244,6 @@ void  MaterialParam::dup(MaterialParam m)
     bumpmap.dup(m.bumpmap);
     specmap.dup(m.specmap);
 
-    //addname = dup_Buffer(m.addname);
-    //paramstr = dup_Buffer(m.paramstr);
     paramstr = make_Buffer_str(m.getParamString());
 }
 
@@ -302,6 +298,25 @@ void  MaterialParam::printParam(FILE* fp)
 }
 
 
+double MaterialParam::getEffectiveTransparent(void)
+{
+    int    almode = getAlphaMode();
+    double cutoff = getAlphaCutoff();
+    double transp = transparent;
+    double alpha  = getColor(3);
+    if (alpha<0.99) {
+        almode = MATERIAL_ALPHA_BLENDING;   // Blending Mode
+        cutoff = 0.0;
+        transp = alpha;
+        setAlphaMode(almode);
+        setAlphaCutoff(cutoff);
+    }
+    if (cutoff==0.0 && almode!=MATERIAL_ALPHA_BLENDING) transp = 1.0;    // cutoff==0.0 のときは Blending Modeとするため
+
+    return transp;
+}
+
+
 /**
 マテリアルの各パラメータを Base64で文字列化する．ただし '/' はファイル名として使用できないので，cc に変換される．@n
 戻りポインタは free する必要がある．
@@ -316,31 +331,20 @@ char*  MaterialParam::getBase64Params(unsigned char obj, unsigned char cc)
     double red    = getColor(0);
     double green  = getColor(1);
     double blue   = getColor(2);
-    double alpha  = getColor(3);
+    double transp = getEffectiveTransparent();
     double cutoff = getAlphaCutoff();
-    int   almode = getAlphaMode();
     //
-    double transp = transparent;
-
     short int rotate = (short int)((int)(getRotate()*2000.)%32768);     // 2Byte化
     short int shiftu = (short int)((int)(getShiftU()*2000.)%32768);
     short int shiftv = (short int)((int)(getShiftV()*2000.)%32768);
     short int scaleu = (short int)((int)(getScaleU()*100. )%32768);
     short int scalev = (short int)((int)(getScaleV()*100. )%32768);
 
-    if (alpha<0.99) {
-        almode = MATERIAL_ALPHA_BLENDING;   // Blending Mode
-        cutoff = 0.0;
-        transp = alpha;
-    }
-    //
-    if (cutoff==0.0 && almode==MATERIAL_ALPHA_MASKING) transp = 1.0;    // cutoff==0.0 のときは Blending Modeとするため
-
     memset(attr, 0, MATERIAL_ATTR_LEN);
-    attr[MATERIAL_ATTR_COLOR_RED]   = (uByte)((1.0-red)*255);
-    attr[MATERIAL_ATTR_COLOR_GREEN] = (uByte)((1.0-green)*255);
-    attr[MATERIAL_ATTR_COLOR_BLUE]  = (uByte)((1.0-blue)*255);
-    attr[MATERIAL_ATTR_TRANSPARENT] = (uByte)((1.0-transp)*255);
+    attr[MATERIAL_ATTR_COLOR_RED]   = (uByte)((1.0 - red   )*255);
+    attr[MATERIAL_ATTR_COLOR_GREEN] = (uByte)((1.0 - green )*255);
+    attr[MATERIAL_ATTR_COLOR_BLUE]  = (uByte)((1.0 - blue  )*255);
+    attr[MATERIAL_ATTR_TRANSPARENT] = (uByte)((1.0 - transp)*255);
     attr[MATERIAL_ATTR_ALPHACUTOFF] = (uByte)(cutoff*255);
     attr[MATERIAL_ATTR_SHININESS]   = (uByte)(shininess*255);
     attr[MATERIAL_ATTR_GLOW]        = (uByte)(glow*255);
@@ -348,11 +352,11 @@ char*  MaterialParam::getBase64Params(unsigned char obj, unsigned char cc)
     attr[MATERIAL_ATTR_LIGHT]       = (uByte)(light*255);
     attr[MATERIAL_ATTR_OBJECT]      = (uByte)obj;
     //
-    memcpy(attr+MATERIAL_ATTR_SHIFT_U, &shiftu, 2);
-    memcpy(attr+MATERIAL_ATTR_SHIFT_V, &shiftv, 2);
-    memcpy(attr+MATERIAL_ATTR_SCALE_U, &scaleu, 2);
-    memcpy(attr+MATERIAL_ATTR_SCALE_V, &scalev, 2);
-    memcpy(attr+MATERIAL_ATTR_ROTATE,  &rotate, 2);
+    memcpy(attr + MATERIAL_ATTR_SHIFT_U, &shiftu, 2);
+    memcpy(attr + MATERIAL_ATTR_SHIFT_V, &shiftv, 2);
+    memcpy(attr + MATERIAL_ATTR_SCALE_U, &scaleu, 2);
+    memcpy(attr + MATERIAL_ATTR_SCALE_V, &scalev, 2);
+    memcpy(attr + MATERIAL_ATTR_ROTATE,  &rotate, 2);
 
     char* params = (char*)encode_base64_filename(attr, MATERIAL_ATTR_LEN, cc);  // 要 free   / -> cc
 
