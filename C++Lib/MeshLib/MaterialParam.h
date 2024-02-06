@@ -278,7 +278,7 @@ public:
     void    execFlipU(UVMap<double>* uv, int n) { texture.execFlipU(uv, n);}
     void    execFlipV(UVMap<double>* uv, int n) { texture.execFlipV(uv, n);}
 
-    char*   getBase64Params(unsigned char obj='\0', unsigned char cc='$');
+    char*   getBase64Params(unsigned char obj='\0', unsigned char cc='#');
 //  void    setBase64Params(void);
 };
 

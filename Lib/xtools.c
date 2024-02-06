@@ -2028,6 +2028,7 @@ void  canonical_filename_Buffer(Buffer* fname)
 
     rewrite_Buffer_bychar(fname, ' ', '_');
     rewrite_Buffer_bychar(fname, '!', '_');
+    rewrite_Buffer_bychar(fname, '$', '_');
     rewrite_Buffer_bychar(fname, '&', '_');
     rewrite_Buffer_bychar(fname, '~', '_');
     rewrite_Buffer_bychar(fname, '/', '_');
