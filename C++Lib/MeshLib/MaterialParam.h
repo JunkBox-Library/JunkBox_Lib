@@ -151,7 +151,7 @@ private:
     Buffer  paramstr;       ///< パラメータ文字列 (Base64文字列)
 
     double  transparent;    ///< テクスチャのアルファチャンネルの係数．
-    double  shininess;      ///< 輝き   Specular
+    double  shininess;      ///< 輝き
     double  glow;           ///< 発光
     double  bright;         ///< 明るさ
     double  glossiness;     ///< 光沢
