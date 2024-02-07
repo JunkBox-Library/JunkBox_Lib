@@ -21,7 +21,8 @@ namespace jbxl {
 #define   JBXL_3D_FORMAT_STL_A      3
 #define   JBXL_3D_FORMAT_STL_B      4
 
-#define   JBXL_MATERIAL_PREFIX      "MATERIAL_"
+#define   JBXL_MATERIAL_PREFIX      "#MATERIAL_"
+
 
 class  MeshFacetNode;
 class  MeshObjectData;

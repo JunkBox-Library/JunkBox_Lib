@@ -25,6 +25,9 @@ void  OBJData::init(int n)
     this->num_obj  = n;
     this->phantom_out = true;
 
+    this->forUnity = true;
+    this->forUE    = false;
+
     this->next     = NULL;
     this->geo_node = NULL;
     this->mtl_node = NULL;
@@ -143,7 +146,7 @@ void  OBJData::execAffineTrans(void)
 }
 
 
-void  OBJData::outputFile(const char* fname, const char* out_path, const char* mtl_dirn)
+void  OBJData::outputFile(const char* fname, const char* out_path, const char* tex_dirn, const char* mtl_dirn)
 {
     FILE* fp = NULL;
     char* packname = pack_head_tail_char(get_file_name(fname), ' ');
@@ -157,15 +160,18 @@ void  OBJData::outputFile(const char* fname, const char* out_path, const char* m
     if (out_path==NULL) obj_path = make_Buffer_bystr("./");
     else                obj_path = make_Buffer_bystr(out_path);
     //
-    Buffer rel_path;    //  相対パス
-    if (mtl_dirn==NULL) rel_path = make_Buffer_bystr("");
-    else                rel_path = make_Buffer_bystr(mtl_dirn);
+    Buffer rel_tex;    //  相対パス
+    if (tex_dirn==NULL) rel_tex = make_Buffer_bystr("");
+    else                rel_tex = make_Buffer_bystr(tex_dirn);
+    Buffer rel_mtl;    //  相対パス
+    if (mtl_dirn==NULL) rel_mtl = make_Buffer_bystr("");
+    else                rel_mtl = make_Buffer_bystr(mtl_dirn);
     //
-    cat_Buffer(&file_name, &rel_path);
-    change_file_extension_Buffer(&rel_path, ".mtl");
+    cat_Buffer(&file_name, &rel_mtl);
+    change_file_extension_Buffer(&rel_mtl, ".mtl");
 
     Buffer mtl_path = dup_Buffer(obj_path);
-    cat_Buffer(&rel_path, &mtl_path);
+    cat_Buffer(&rel_mtl, &mtl_path);
 
     cat_Buffer(&file_name, &obj_path);
     change_file_extension_Buffer(&obj_path, ".obj");
@@ -173,29 +179,30 @@ void  OBJData::outputFile(const char* fname, const char* out_path, const char* m
     // MTL
     fp = fopen((char*)mtl_path.buf, "wb");
     if (fp!=NULL) {
-        this->output_mtl(fp);
+        this->output_mtl(fp, (char*)rel_tex.buf);
         fclose(fp);
     }
 
     // OBJECT
     fp = fopen((char*)obj_path.buf, "wb");
     if (fp!=NULL) {
-        this->output_obj(fp, (char*)rel_path.buf);
+        this->output_obj(fp, (char*)rel_mtl.buf);
         fclose(fp);
     }
     //
     free_Buffer(&obj_path);
     free_Buffer(&mtl_path);
-    free_Buffer(&rel_path);
+    free_Buffer(&rel_mtl);
+    free_Buffer(&rel_tex);
     //
     return;
 }
 
 
-void  OBJData::output_mtl(FILE* fp)
+void  OBJData::output_mtl(FILE* fp, const char* tex_dirn)
 {
     if (fp==NULL) return;
-
+    
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_MTLFL);
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_TOOL);
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_AUTHOR);
@@ -207,16 +214,16 @@ void  OBJData::output_mtl(FILE* fp)
         while(node!=NULL) {
             if (!node->same_material) {
                 fprintf(fp, "#\n");
-                fprintf(fp, "newmtl %s\n", node->material.buf);         // マテリアル名
+                fprintf(fp, "newmtl %s\n", node->material.buf+1);         // マテリアル名
 
                 if (node->map_kd.buf!=NULL) {
-                    fprintf(fp, "map_Kd Textures/%s\n", node->map_kd.buf);       // Texture ファイル名
+                    fprintf(fp, "map_Kd %s%s\n", tex_dirn, node->map_kd.buf);       // Texture ファイル名
                 }
                 if (node->map_ks.buf!=NULL) {
-                    fprintf(fp, "map_Ks Texturre/%s\n", node->map_ks.buf);       // Specular Map ファイル名
+                    fprintf(fp, "map_Ks %s%s\n", tex_dirn, node->map_ks.buf);       // Specular Map ファイル名
                 }
                 if (node->map_bump.buf!=NULL) {
-                    fprintf(fp, "map_bump Textures/%s\n", node->map_bump.buf);   // Bump Map ファイル名
+                    fprintf(fp, "map_bump %s%s\n", tex_dirn, node->map_bump.buf);   // Bump Map ファイル名
                 }
 
                 fprintf(fp, "Ka %f %f %f\n", (float)node->ka.x, (float)node->ka.y, (float)node->ka.z);
@@ -250,13 +257,13 @@ void  OBJData::output_obj(FILE* fp, const char* mtl_path)
         fprintf(fp, "# \n# SHELL\n");
         OBJFacetGeoNode* facet = obj->geo_node;
         while(facet!=NULL) {
-            fprintf(fp, "# FACET\n");
+            fprintf(fp, "#\n# FACET\n");
             fprintf(fp, "mtllib %s\n", mtl_path);       // ファイル名
 
             for (int i=0; i<facet->num_vertex; i++) {
                 Vector<float> vv = Vector<float>((float)facet->vv[i].x, (float)facet->vv[i].y, (float)facet->vv[i].z);
-                //fprintf(fp, "v %f %f %f\n", vv.x, vv.z, -vv.y);
-                fprintf(fp, "v %f %f %f\n", vv.x*100.f, vv.y*100.f, vv.z*100.f);         // UE5
+                if (this->forUE) fprintf(fp, "v %f %f %f\n", vv.x*100.f, vv.y*100.f, vv.z*100.f);  // for UE
+                else             fprintf(fp, "v %f %f %f\n", vv.x, vv.z, -vv.y);                   // for Unity
             }
             for (int i=0; i<facet->num_vertex; i++) {
                 UVMap<float> vt = UVMap<float>((float)facet->vt[i].u, (float)facet->vt[i].v);
@@ -264,11 +271,11 @@ void  OBJData::output_obj(FILE* fp, const char* mtl_path)
             }
             for (int i=0; i<facet->num_vertex; i++) {
                 Vector<float> vn = Vector<float>((float)facet->vn[i].x, (float)facet->vn[i].y, (float)facet->vn[i].z);
-                //fprintf(fp, "vn %f %f %f\n", vn.x, vn.z, -vn.y);
-                fprintf(fp, "vn %f %f %f\n", vn.x, vn.y, vn.z);
+                if (this->forUE) fprintf(fp, "vn %f %f %f\n", vn.x, vn.y, vn.z);       // for UE
+                else             fprintf(fp, "vn %f %f %f\n", vn.x, vn.z, -vn.y);      // for Unity
             }
             //
-            fprintf(fp, "usemtl %s\n", facet->material.buf);    // マテリアル名
+            fprintf(fp, "usemtl %s\n", facet->material.buf+1);    // マテリアル名
             for (int i=0; i<facet->num_index/3; i++) {
                 fprintf(fp, "f %d/%d/%d", facet->data_index[i*3  ]+p_num, facet->data_index[i*3  ]+p_num, facet->data_index[i*3  ]+p_num);
                 fprintf(fp, " %d/%d/%d ", facet->data_index[i*3+1]+p_num, facet->data_index[i*3+1]+p_num, facet->data_index[i*3+1]+p_num);

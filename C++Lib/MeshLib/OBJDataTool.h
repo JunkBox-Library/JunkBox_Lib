@@ -33,6 +33,7 @@ class  OBJFacetMtlNode;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //
+
 /**
 先頭のデータはアンカー．
 アンカーでない場合は num_obj == -1
@@ -48,6 +49,9 @@ public:
     bool    phantom_out;
     int     num_obj;
 
+    bool    forUnity;
+    bool    forUE;
+
     OBJData* next;
     OBJFacetGeoNode* geo_node;
     OBJFacetMtlNode* mtl_node;
@@ -59,14 +63,17 @@ public:
     void    free(void); 
     void    delete_next(void);
 
+    void    setUnity(bool b) { this->forUnity = b; this->forUE = !b;}
+    void    setUE(bool b)    { this->forUE = b; this->forUnity = !b;}
+
     void    setAffineTrans (AffineTrans<double> a) { delAffineTrans(); affine_trans = new AffineTrans<double>(); affine_trans->dup(a);}
     void    delAffineTrans (void) { freeAffineTrans(this->affine_trans);}
     void    execAffineTrans(void);
 
     void    addObject(MeshObjectData* meshdata, bool collider);
 
-    void    outputFile(const char* fn, const char* path, const char* texture_path);
-    void    output_mtl(FILE* fp);
+    void    outputFile(const char* fn, const char* out_path, const char* tex_dirn, const char* mtl_dirn);
+    void    output_mtl(FILE* fp, const char* tex_dirn);
     void    output_obj(FILE* fp, const char* fname);
 };
 

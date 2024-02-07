@@ -80,7 +80,7 @@ public:
 public:
     // for Unity
     bool    forUnity5;
-    bool    forUnity3D;
+    bool    forUnity;
     void    addCenterObject(void);
     void    addCenterScene(void);
 
