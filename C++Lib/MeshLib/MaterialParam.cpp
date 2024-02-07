@@ -270,6 +270,26 @@ void  MaterialParam::setFullName(const char* ext)
 }
 
 
+double MaterialParam::getTransparent(void)
+{
+    int    almode = texture.getAlphaMode();
+    double cutoff = texture.getAlphaCutoff();
+    double transp = transparent;
+    double alpha  = texture.getColor(3);
+    if (alpha<0.99) {
+        almode = MATERIAL_ALPHA_BLENDING;   // Blending Mode
+        cutoff = 0.0;
+        transp = alpha;
+        texture.setAlphaMode(almode);
+        texture.setAlphaCutoff(cutoff);
+    }
+    if (cutoff==0.0 && almode!=MATERIAL_ALPHA_BLENDING) transp = 1.0;    // cutoff==0.0 のときは Blending Modeとするため
+    transparent = transp;
+
+    return transp;
+}
+
+
 void  MaterialParam::printParam(FILE* fp)
 {
     if (!enable) {
@@ -298,25 +318,6 @@ void  MaterialParam::printParam(FILE* fp)
 }
 
 
-double MaterialParam::getEffectiveTransparent(void)
-{
-    int    almode = getAlphaMode();
-    double cutoff = getAlphaCutoff();
-    double transp = transparent;
-    double alpha  = getColor(3);
-    if (alpha<0.99) {
-        almode = MATERIAL_ALPHA_BLENDING;   // Blending Mode
-        cutoff = 0.0;
-        transp = alpha;
-        setAlphaMode(almode);
-        setAlphaCutoff(cutoff);
-    }
-    if (cutoff==0.0 && almode!=MATERIAL_ALPHA_BLENDING) transp = 1.0;    // cutoff==0.0 のときは Blending Modeとするため
-
-    return transp;
-}
-
-
 /**
 マテリアルの各パラメータを Base64で文字列化する．ただし '/' はファイル名として使用できないので，cc に変換される．@n
 戻りポインタは free する必要がある．
@@ -328,17 +329,17 @@ char*  MaterialParam::getBase64Params(unsigned char obj, unsigned char cc)
 {
     uByte attr[MATERIAL_ATTR_LEN];
 
-    double red    = getColor(0);
-    double green  = getColor(1);
-    double blue   = getColor(2);
-    double transp = getEffectiveTransparent();
-    double cutoff = getAlphaCutoff();
+    double red    = texture.getColor(0);
+    double green  = texture.getColor(1);
+    double blue   = texture.getColor(2);
+    double transp = getTransparent();
+    double cutoff = texture.getAlphaCutoff();
     //
-    short int rotate = (short int)((int)(getRotate()*2000.)%32768);     // 2Byte化
-    short int shiftu = (short int)((int)(getShiftU()*2000.)%32768);
-    short int shiftv = (short int)((int)(getShiftV()*2000.)%32768);
-    short int scaleu = (short int)((int)(getScaleU()*100. )%32768);
-    short int scalev = (short int)((int)(getScaleV()*100. )%32768);
+    short int rotate = (short int)((int)(texture.getRotate()*2000.)%32768);     // 2Byte化
+    short int shiftu = (short int)((int)(texture.getShiftU()*2000.)%32768);
+    short int shiftv = (short int)((int)(texture.getShiftV()*2000.)%32768);
+    short int scaleu = (short int)((int)(texture.getScaleU()*100. )%32768);
+    short int scalev = (short int)((int)(texture.getScaleV()*100. )%32768);
 
     memset(attr, 0, MATERIAL_ATTR_LEN);
     attr[MATERIAL_ATTR_COLOR_RED]   = (uByte)((1.0 - red   )*255);

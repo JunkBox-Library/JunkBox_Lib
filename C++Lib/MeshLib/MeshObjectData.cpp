@@ -74,12 +74,12 @@ void  MeshFacetNode::setMaterialID(const char* str)
     free_Buffer(&material_id);
     
     if (str!=NULL) {
-        if (str[0]=='#') {
+        if (!strncmp(str, JBXL_MATERIAL_PREFIX, strlen(JBXL_MATERIAL_PREFIX))) {
             material_id = make_Buffer_str(str);
         }
         else {
             Buffer randomstr = make_Buffer_randomstr(MOBJN_MTERIALID_RAND_LEN);
-            material_id = make_Buffer_str("#MATERIAL_");
+            material_id = make_Buffer_str(JBXL_MATERIAL_PREFIX);
             cat_Buffer(&randomstr, &material_id);
             free_Buffer(&randomstr);
             cat_s2Buffer("_", &material_id);
@@ -89,7 +89,7 @@ void  MeshFacetNode::setMaterialID(const char* str)
     //
     else {
         Buffer randomstr = make_Buffer_randomstr(MOBJN_MTERIALID_RAND_LEN);
-        material_id = make_Buffer_str("#MATERIAL_");
+        material_id = make_Buffer_str(JBXL_MATERIAL_PREFIX);
         cat_Buffer(&randomstr, &material_id);
         free_Buffer(&randomstr);
     }
@@ -310,7 +310,7 @@ void  MeshFacetNode::execAffineTrans(UVMap<double>* uvmap, int uvnum)
     if (uvmap==NULL) uvmap = texcrd_value;
     if (uvnum==-1)   uvnum = num_texcrd;
 
-    material_param.execTrans(uvmap, uvnum); 
+    material_param.texture.execTrans(uvmap, uvnum); 
 
     return;
 }

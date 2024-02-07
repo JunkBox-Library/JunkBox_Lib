@@ -11,7 +11,7 @@ using namespace jbxl;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// 
+//
 
 OBJData::~OBJData(void)
 {
@@ -69,7 +69,7 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
 
     OBJData* ptr_obj = this;
     while (ptr_obj->next!=NULL) ptr_obj = ptr_obj->next;
-    // 
+    //
     ptr_obj->next = new OBJData(-1);
     this->num_obj++;
 
@@ -108,10 +108,8 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
             (*_geo_node)->vt[i] = facet->texcrd_value[i];
         }
 
-        if (facet->material_id.buf[0]=='#') facet->material_id.buf[0] = '_';
-        (*_geo_node)->material = dup_Buffer(facet->material_id);
-
         // Material
+        (*_geo_node)->material = dup_Buffer(facet->material_id);
         (*_mtl_node)->material = dup_Buffer(facet->material_id);
         (*_mtl_node)->same_material = facet->same_material;
         if (!(*_mtl_node)->same_material) {
@@ -211,10 +209,24 @@ void  OBJData::output_mtl(FILE* fp)
                 fprintf(fp, "#\n");
                 fprintf(fp, "newmtl %s\n", node->material.buf);         // マテリアル名
 
-                fprintf(fp, "Kd %lf %lf %lf\n", node->kd.x, node->kd.y, node->kd.z);
-                fprintf(fp, "d %lf\n", node->dd);
-                //
-                fprintf(fp, "map_Kd %s\n", node->map_kd.buf);           // Texture ファイル名
+                if (node->map_kd.buf!=NULL) {
+                    fprintf(fp, "map_Kd Textures/%s\n", node->map_kd.buf);       // Texture ファイル名
+                }
+                if (node->map_ks.buf!=NULL) {
+                    fprintf(fp, "map_Ks Texturre/%s\n", node->map_ks.buf);       // Specular Map ファイル名
+                }
+                if (node->map_bump.buf!=NULL) {
+                    fprintf(fp, "map_bump Textures/%s\n", node->map_bump.buf);   // Bump Map ファイル名
+                }
+
+                fprintf(fp, "Ka %f %f %f\n", (float)node->ka.x, (float)node->ka.y, (float)node->ka.z);
+                fprintf(fp, "Kd %f %f %f\n", (float)node->kd.x, (float)node->kd.y, (float)node->kd.z);
+                fprintf(fp, "Ks %f %f %f\n", (float)node->ks.x, (float)node->ks.y, (float)node->ks.z);
+
+                fprintf(fp, "d %f\n",  (float)node->dd);
+                fprintf(fp, "Ni %f\n", (float)node->ni);
+
+                fprintf(fp, "illum %d\n", node->illum);
             }
             node = node->next;
         }
@@ -242,13 +254,18 @@ void  OBJData::output_obj(FILE* fp, const char* mtl_path)
             fprintf(fp, "mtllib %s\n", mtl_path);       // ファイル名
 
             for (int i=0; i<facet->num_vertex; i++) {
-                fprintf(fp, "v %lf %lf %lf\n", facet->vv[i].x, facet->vv[i].z, -facet->vv[i].y);
+                Vector<float> vv = Vector<float>((float)facet->vv[i].x, (float)facet->vv[i].y, (float)facet->vv[i].z);
+                //fprintf(fp, "v %f %f %f\n", vv.x, vv.z, -vv.y);
+                fprintf(fp, "v %f %f %f\n", vv.x*100.f, vv.y*100.f, vv.z*100.f);         // UE5
             }
             for (int i=0; i<facet->num_vertex; i++) {
-                fprintf(fp, "vt %lf %lf\n", facet->vt[i].u, facet->vt[i].v);
+                UVMap<float> vt = UVMap<float>((float)facet->vt[i].u, (float)facet->vt[i].v);
+                fprintf(fp, "vt %f %f\n", vt.u, vt.v);
             }
             for (int i=0; i<facet->num_vertex; i++) {
-                fprintf(fp, "vn %lf %lf %lf\n", facet->vn[i].x, facet->vn[i].z, -facet->vn[i].y);
+                Vector<float> vn = Vector<float>((float)facet->vn[i].x, (float)facet->vn[i].y, (float)facet->vn[i].z);
+                //fprintf(fp, "vn %f %f %f\n", vn.x, vn.z, -vn.y);
+                fprintf(fp, "vn %f %f %f\n", vn.x, vn.y, vn.z);
             }
             //
             fprintf(fp, "usemtl %s\n", facet->material.buf);    // マテリアル名
@@ -329,7 +346,7 @@ void  OBJFacetGeoNode::delete_next(void)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// 
+//
 //
 OBJFacetMtlNode::~OBJFacetMtlNode(void)
 {
@@ -339,9 +356,22 @@ OBJFacetMtlNode::~OBJFacetMtlNode(void)
 
 void  OBJFacetMtlNode::init(void)
 {
+    same_material  = false;
+
     this->material = init_Buffer();
     this->map_kd   = init_Buffer();
+    this->map_ks   = init_Buffer();
+    this->map_bump = init_Buffer();
     memset(&(this->material_param), 0, sizeof(this->material_param));
+    
+    ka = Vector<double>(1.0, 1.0, 1.0);
+    kd = Vector<double>(1.0, 1.0, 1.0);
+    ks = Vector<double>(1.0, 1.0, 1.0);
+
+    dd = 1.0;
+    ni = 1.0;
+    illum = 2;
+
     this->next = NULL;
 }
 
@@ -350,6 +380,11 @@ void  OBJFacetMtlNode::free(void)
 {
     free_Buffer(&(this->material));
     free_Buffer(&(this->map_kd));
+    free_Buffer(&(this->map_ks));
+    free_Buffer(&(this->map_bump));
+
+    this->material_param.free();
+
     delete_next();
 }
 
@@ -371,16 +406,54 @@ void  OBJFacetMtlNode::delete_next(void)
 
 void  OBJFacetMtlNode::setup_params(void)
 {
-    this->map_kd = make_Buffer_str(this->material_param.getTextureName());
-    
-    this->kd = this->material_param.getColor();
+    char options[L_128];
+
+    TextureParam texture = this->material_param.texture;
+    TextureParam specmap = this->material_param.specmap;
+    TextureParam bumpmap = this->material_param.bumpmap;
+
+    if (texture.isSetTexture()) {       // map_Kd
+        double shiftU = texture.getShiftU();
+        double shiftV = texture.getShiftV();
+        double scaleU = texture.getScaleU();
+        double scaleV = texture.getScaleV();
+        double rotate = texture.getRotate();
+        snprintf(options, L_128, " -o %lf %lf -s %lf %lf -r %lf ", shiftU, shiftV, scaleU, scaleV, rotate);
+        //this->map_kd = make_Buffer_str(options);
+        this->map_kd = make_Buffer_str("");
+        cat_s2Buffer(texture.getName(), &(this->map_kd));
+    }
+    if (specmap.isSetTexture()) {       // map_Ks
+        double shiftU = specmap.getShiftU();
+        double shiftV = specmap.getShiftV();
+        double scaleU = specmap.getScaleU();
+        double scaleV = specmap.getScaleV();
+        double rotate = specmap.getRotate();
+        snprintf(options, L_128, " -o %lf %lf -s %lf %lf -r %lf ", shiftU, shiftV, scaleU, scaleV, rotate);
+        //this->map_ks = make_Buffer_str(options);
+        this->map_ks = make_Buffer_str("");
+        cat_s2Buffer(specmap.getName(), &(this->map_ks));
+    }
+    if (bumpmap.isSetTexture()) {       // map_bump
+        double shiftU = bumpmap.getShiftU();
+        double shiftV = bumpmap.getShiftV();
+        double scaleU = bumpmap.getScaleU();
+        double scaleV = bumpmap.getScaleV();
+        double rotate = bumpmap.getRotate();
+        snprintf(options, L_128, " -o %lf %lf -s %lf %lf -r %lf ", shiftU, shiftV, scaleU, scaleV, rotate);
+        //this->map_bump = make_Buffer_str(options);
+        this->map_bump = make_Buffer_str("");
+        cat_s2Buffer(bumpmap.getName(), &(this->map_bump));
+    }
+
     this->ka = Vector<double>(1.0, 1.0, 1.0);
-    this->ks = Vector<double>(1.0, 1.0, 1.0);
+    //this->ka = texture.getColor();
+    this->kd = texture.getColor();
+    this->ks = specmap.getColor();
 
-    this->dd = this->material_param.getEffectiveTransparent();
-    this->ni = this->material_param.getShininess();
-
-    this->ns = (1.0 - this->material_param.getShininess())*1000;
+    this->dd = this->material_param.getTransparent();
+    this->ni = this->material_param.getShininess()*10.;
+    if (this->ni<1.0) this->ni = 1.0;
 
     this->illum = 9;
 /*

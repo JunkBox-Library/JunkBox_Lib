@@ -21,6 +21,7 @@ namespace jbxl {
 #define   JBXL_3D_FORMAT_STL_A      3
 #define   JBXL_3D_FORMAT_STL_B      4
 
+#define   JBXL_MATERIAL_PREFIX      "MATERIAL_"
 
 class  MeshFacetNode;
 class  MeshObjectData;
@@ -41,7 +42,7 @@ MeshObjectNode -> MeshFacetNode
 class  MeshFacetNode
 {
 public:
-    Buffer  material_id;            ///< マテリアルを識別するID．#MATERIAL_ で始まる．
+    Buffer  material_id;            ///< マテリアルを識別するID．JBXL_MATERIAL_PREFIX で始まる．
     bool    same_material;          ///< 他の Node が既に同じマテリアルを使用している．
     int     facet_no;               ///< 面（Polygon）番号
 

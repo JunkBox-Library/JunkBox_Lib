@@ -585,7 +585,7 @@ tXML*  ColladaXML::addEffect(const char* material_url, const char* file_id, Mate
     }
 
     // color
-    if (mparam.isSetColor()) {
+    if (mparam.texture.isSetColor()) {
         bool no_texture = true;
         if (diffuse!=NULL) no_texture = false;
         //
@@ -599,7 +599,7 @@ tXML*  ColladaXML::addEffect(const char* material_url, const char* file_id, Mate
         tXML* color = add_xml_node(diffuse, "color");
         //add_xml_attr_str(color, "sid", "diffuse");
         for (int i=0; i<4; i++) {
-            double col = mparam.getColor(i);
+            double col = mparam.texture.getColor(i);
             if (forUnity3D && col==0.0) col = 0.0001;
             append_xml_content(color, dtostr(col));
         }
@@ -607,7 +607,7 @@ tXML*  ColladaXML::addEffect(const char* material_url, const char* file_id, Mate
 
     // transparency (alpha channel) 
     if (mparam.isTransparency()) {
-        double alpha = Min(mparam.getTransparent(), mparam.getColor(3));
+        double alpha = Min(mparam.getTransparent(), mparam.texture.getColor(3));
         if (forUnity3D && alpha<0.01) alpha = 0.01;
         tXML* transparency = add_xml_node(phong, "transparency");
         tXML* transfloat   = add_xml_node(transparency, "float");

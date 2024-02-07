@@ -118,16 +118,19 @@ public:
     bool    same_material;
     MaterialParam material_param;
 
+    Buffer  map_kd;
+    Buffer  map_ks;
+    Buffer  map_bump;
+
     Vector<double> kd;
     Vector<double> ka;
     Vector<double> ks;
-    Vector<double> ke;
-    Vector<double> ni;
-    Vector<double> ns;
+    //Vector<double> ke;
+    //Vector<double> ns;
 
     double  dd;
+    double  ni;
     int     illum;
-    Buffer  map_kd;
 
     OBJFacetMtlNode* next;
 

@@ -29,17 +29,17 @@
 #define  MATERIAL_ATTR_COLOR_BLUE     2
 #define  MATERIAL_ATTR_TRANSPARENT    3
 #define  MATERIAL_ATTR_ALPHACUTOFF    4
-#define  MATERIAL_ATTR_SHININESS      5 
+#define  MATERIAL_ATTR_SHININESS      5
 #define  MATERIAL_ATTR_GLOW           6
-#define  MATERIAL_ATTR_BRIGHT         7 
+#define  MATERIAL_ATTR_BRIGHT         7
 #define  MATERIAL_ATTR_LIGHT          8
 // 9-12 予備
 #define  MATERIAL_ATTR_SHIFT_U       13     // short 2Byte
 #define  MATERIAL_ATTR_SHIFT_V       15     // short 2Byte
-#define  MATERIAL_ATTR_SCALE_U       17     // short 2Byte  
+#define  MATERIAL_ATTR_SCALE_U       17     // short 2Byte
 #define  MATERIAL_ATTR_SCALE_V       19     // short 2Byte
 #define  MATERIAL_ATTR_ROTATE        21     // short 2Byte
-#define  MATERIAL_ATTR_OBJECT        23     // 
+#define  MATERIAL_ATTR_OBJECT        23     //
 
 
 namespace  jbxl {
@@ -69,7 +69,7 @@ private:
     bool     flipV;         ///< UVマップで V方向の反転を行うか
 
 public:
-    TextureParam(void) {}
+    TextureParam(void) { name = init_Buffer();}
     virtual ~TextureParam(void) {}
 
     void    init (void);
@@ -171,7 +171,7 @@ public:
 
 public:
     MaterialParam(void) { init();}
-    virtual ~MaterialParam(void) {} 
+    virtual ~MaterialParam(void) {}
 
 public:
     void    init (void);
@@ -192,7 +192,7 @@ public:
     bool    isSetShininess  (void) { return (shininess!=0.0);}
     bool    isSetTransparent(void) { return (transparent<0.99);}
 
-    bool    isTransparency(void) { return (isSetAlpha() || isSetTransparent() || getColor(3)<0.99);}
+    bool    isTransparency(void) { return (texture.isSetAlpha() || isSetTransparent() || texture.getColor(3)<0.99);}
 
     void    setTextureName(const char* name) { texture.setName(name);}
     void    setBumpMapName(const char* name) { bumpmap.setName(name);}
@@ -215,7 +215,7 @@ public:
     void    setEnvironment(double e) { if(e>1.0) e = 1.0; else if(e<0.0) e = 0.0; environment = e;}
     void    setLight(double l)       { if(l>1.0) l = 1.0; else if(l<0.0) l = 0.0; light = l;}
 
-    double  getTransparent(void) { return transparent;}
+    double  getTransparent(void);
     double  getShininess(void)   { return shininess;}
     double  getGlow(void)        { return glow;}
     double  getBright(void)      { return bright;}
@@ -224,57 +224,7 @@ public:
     double  getLight(void)       { return light;}
 
     void    printParam(FILE* fp);
-
-// for texture
-public: 
-    bool    isSetColor(void) { return texture.isSetColor();}
-    bool    isSetAlpha(void) { return texture.isSetAlpha();}
-
-    void    setColor(double r, double g, double b, double a=1.0) { texture.setColor(r, g, b, a);}
-    void    setColor(double v, int c) { texture.setColor(v, c);}
-    void    setShiftU(double u) { texture.setShiftU(u);}
-    void    setShiftV(double v) { texture.setShiftV(v);}
-    void    setScaleU(double u) { texture.setScaleU(u);}
-    void    setScaleV(double v) { texture.setScaleV(v);}
-    void    setRotate(double r) { texture.setRotate(r);}
-    void    setFlipU (bool h)   { texture.setFlipU(h); }
-    void    setFlipV (bool h)   { texture.setFlipV(h); }
-    void    setShift (double u, double v) { texture.setShiftU(u); texture.setShiftV(v);}
-    void    setScale (double u, double v) { texture.setScaleU(u); texture.setScaleV(v);}
-
-    void    setAlphaChannel(bool h)  { texture.setAlphaChannel(h);}
-    void    setAlphaMode(int m)      { texture.setAlphaMode(m);}
-    void    setAlphaCutoff(double m) { texture.setAlphaCutoff(m);}
-
-    Vector<double> getColor(void) { return texture.getColor();}
-    double  getColor(int c) { return texture.getColor(c);}
-    double  getAlpha(void)  { return texture.getAlpha();}
-    double  getShiftU(void) { return texture.getShiftU();}
-    double  getShiftV(void) { return texture.getShiftV();}
-    double  getScaleU(void) { return texture.getScaleU();}
-    double  getScaleV(void) { return texture.getScaleV();}
-    double  getRotate(void) { return texture.getRotate();}
-    double  getEffectiveTransparent(void);
-
-    bool    getAlphaChannel(void) { return texture.getAlphaChannel();}
-    int     getAlphaMode(void)    { return texture.getAlphaMode();}
-    double  getAlphaCutoff(void)  { return texture.getAlphaCutoff();}
-
-    void    execTrans (UVMap<double>* uv, int n) { texture.execTrans (uv, n);}       ///< Rotate -> Scale -> Shift
-    void    execShift (UVMap<double>* uv, int n) { texture.execShift (uv, n);}
-    void    execScale (UVMap<double>* uv, int n) { texture.execScale (uv, n);}
-    void    execRotate(UVMap<double>* uv, int n) { texture.execRotate(uv, n);}
-
-    void    execInvTrans (UVMap<double>* uv, int n) { texture.execInvTrans (uv, n);} ///< Shift -> Scale -> Rotate
-    void    execInvShift (UVMap<double>* uv, int n) { texture.execInvShift (uv, n);}
-    void    execInvScale (UVMap<double>* uv, int n) { texture.execInvScale (uv, n);}
-    void    execInvRotate(UVMap<double>* uv, int n) { texture.execInvRotate(uv, n);}
-
-    void    execFlipU(UVMap<double>* uv, int n) { texture.execFlipU(uv, n);}
-    void    execFlipV(UVMap<double>* uv, int n) { texture.execFlipV(uv, n);}
-
     char*   getBase64Params(unsigned char obj='\0', unsigned char cc='#');
-//  void    setBase64Params(void);
 };
 
 
