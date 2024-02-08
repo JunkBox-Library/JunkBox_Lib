@@ -140,6 +140,33 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
 }
 
 
+// UVマップの出力
+//
+void  OBJData::addTexcrdSource(MeshObjectData* meshdata)
+{
+    if (meshdata==NULL) return;
+
+     MeshFacetNode* facet = meshdata->facet;
+     while (facet!=NULL) {
+        size_t len = facet->num_texcrd*sizeof(UVMap<double>);
+        UVMap<double>* uvmap = (UVMap<double>*)malloc(len);
+        if (uvmap!=NULL) {
+            memcpy(uvmap, facet->texcrd_value, len);
+            // PLANAR Texture
+            if (facet->material_param.mapping==MATERIAL_MAPPING_PLANAR) {
+                Vector<double> scale(1.0, 1.0, 1.0);
+                if (meshdata->affine_trans!=NULL) scale = meshdata->affine_trans->scale;
+                facet->generatePlanarUVMap(scale, uvmap);
+            }
+            facet->execAffineTrans(uvmap, facet->num_texcrd);
+            ::free(uvmap);
+        }
+        facet = facet->next;
+    }
+    return;
+}
+
+
 void  OBJData::execAffineTrans(void)
 {
     OBJData* obj = this->next;
