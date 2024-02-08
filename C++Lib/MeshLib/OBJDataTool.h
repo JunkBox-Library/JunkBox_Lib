@@ -73,7 +73,6 @@ public:
     void    execAffineTrans(void);
 
     void    addObject(MeshObjectData* meshdata, bool collider);
-    void    addTexcrdSource(MeshObjectData* meshdata);
 
     void    outputFile(const char* fn, const char* out_path, const char* tex_dirn, const char* mtl_dirn);
     void    output_mtl(FILE* fp, const char* tex_dirn);
