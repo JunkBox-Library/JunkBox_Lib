@@ -78,7 +78,7 @@ void  MeshFacetNode::setMaterialID(const char* str)
             material_id = make_Buffer_str(str);
         }
         else {
-            Buffer randomstr = make_Buffer_randomstr(MOBJN_MTERIALID_RAND_LEN);
+            Buffer randomstr = make_Buffer_randomstr(JBXL_MATERIALID_RAND_LEN);
             material_id = make_Buffer_str(JBXL_MATERIAL_PREFIX);
             cat_Buffer(&randomstr, &material_id);
             free_Buffer(&randomstr);
@@ -88,7 +88,7 @@ void  MeshFacetNode::setMaterialID(const char* str)
     }
     //
     else {
-        Buffer randomstr = make_Buffer_randomstr(MOBJN_MTERIALID_RAND_LEN);
+        Buffer randomstr = make_Buffer_randomstr(JBXL_MATERIALID_RAND_LEN);
         material_id = make_Buffer_str(JBXL_MATERIAL_PREFIX);
         cat_Buffer(&randomstr, &material_id);
         free_Buffer(&randomstr);

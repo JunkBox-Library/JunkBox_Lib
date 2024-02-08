@@ -28,9 +28,8 @@
 #include  "ClassBox.h"
 
 
-#define  JBXL_BASICLIB_VERSION      "v5.0 stable  '08 8/10" 
-#define  JBXL_BASICLIB_NAME         "BasicLib" 
-#define  JBXL_BASICLIB_COPYRIGHT    "by Fumi.Iseki (C) 2000" 
-
+#define   JBXL_BASICLIB_VERSION     "v5.0 stable  '08 8/10" 
+#define   JBXL_BASICLIB_NAME        "BasicLib" 
+#define   JBXL_BASICLIB_COPYRIGHT   "by Fumi.Iseki (C) 2000" 
 
 #endif

@@ -46,6 +46,17 @@ template <typename T> inline void deleteNull(T& p) { delete p; p = (T)NULL;}
 #endif
 
 
+// for 3D
+#define   JBXL_3D_FORMAT_NONE       0
+#define   JBXL_3D_FORMAT_DAE        1
+#define   JBXL_3D_FORMAT_OBJ        2
+#define   JBXL_3D_FORMAT_STL_A      3
+#define   JBXL_3D_FORMAT_STL_B      4
+
+#define   JBXL_3D_ENGINE_NONE       0
+#define   JBXL_3D_ENGINE_UNITY      1
+#define   JBXL_3D_ENGINE_UE         2
+
 }       // namespace
 
 
