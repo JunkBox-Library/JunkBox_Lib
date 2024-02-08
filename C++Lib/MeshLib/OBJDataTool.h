@@ -51,6 +51,7 @@ public:
 
     bool    forUnity;
     bool    forUE;
+    int     engine;
 
     OBJData* next;
     OBJFacetGeoNode* geo_node;
@@ -63,8 +64,9 @@ public:
     void    free(void); 
     void    delete_next(void);
 
-    void    setUnity(bool b) { this->forUnity = b; this->forUE = !b;}
-    void    setUE(bool b)    { this->forUE = b; this->forUnity = !b;}
+    void    setUnity(bool b) { this->forUnity = b;}
+    void    setUE(bool b)    { this->forUE = b;}
+    void    setEngine(int);
 
     void    setAffineTrans (AffineTrans<double> a) { delAffineTrans(); affine_trans = new AffineTrans<double>(); affine_trans->dup(a);}
     void    delAffineTrans (void) { freeAffineTrans(this->affine_trans);}

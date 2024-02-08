@@ -51,6 +51,19 @@ void  OBJData::free(void)
 }
 
 
+void  OBJData::setEngine(int e)
+{
+    this->setUnity(false);
+    this->setUE(false);
+    //
+    this->engine = e;
+    if (e == JBXL_3D_ENGINE_UNITY)   this->setUnity(true);
+    else if (e == JBXL_3D_ENGINE_UE) this->setUE(true);
+
+    return;
+}
+
+
 void  OBJData::delete_next(void)
 {
     if (this->next==NULL) return;
@@ -262,8 +275,12 @@ void  OBJData::output_obj(FILE* fp, const char* mtl_path)
 
             for (int i=0; i<facet->num_vertex; i++) {
                 Vector<float> vv = Vector<float>((float)facet->vv[i].x, (float)facet->vv[i].y, (float)facet->vv[i].z);
-                if (this->forUE) fprintf(fp, "v %f %f %f\n", vv.x*100.f, vv.y*100.f, vv.z*100.f);  // for UE
-                else             fprintf(fp, "v %f %f %f\n", vv.x, vv.z, -vv.y);                   // for Unity
+                if (this->engine == JBXL_3D_ENGINE_UE) {
+                    fprintf(fp, "v %f %f %f\n", vv.x*100.f, vv.y*100.f, vv.z*100.f);  // for UE
+                }
+                else {
+                    fprintf(fp, "v %f %f %f\n", vv.x, vv.z, -vv.y);                   // for Unity
+                }
             }
             for (int i=0; i<facet->num_vertex; i++) {
                 UVMap<float> vt = UVMap<float>((float)facet->vt[i].u, (float)facet->vt[i].v);
@@ -271,8 +288,12 @@ void  OBJData::output_obj(FILE* fp, const char* mtl_path)
             }
             for (int i=0; i<facet->num_vertex; i++) {
                 Vector<float> vn = Vector<float>((float)facet->vn[i].x, (float)facet->vn[i].y, (float)facet->vn[i].z);
-                if (this->forUE) fprintf(fp, "vn %f %f %f\n", vn.x, vn.y, vn.z);       // for UE
-                else             fprintf(fp, "vn %f %f %f\n", vn.x, vn.z, -vn.y);      // for Unity
+                if (this->engine == JBXL_3D_ENGINE_UE) {
+                    fprintf(fp, "vn %f %f %f\n", vn.x, vn.y, vn.z);       // for UE
+                }
+                else {
+                    fprintf(fp, "vn %f %f %f\n", vn.x, vn.z, -vn.y);      // for Unity
+                }
             }
             //
             fprintf(fp, "usemtl %s\n", facet->material.buf+1);    // マテリアル名
