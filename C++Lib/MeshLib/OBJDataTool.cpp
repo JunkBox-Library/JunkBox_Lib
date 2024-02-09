@@ -446,16 +446,13 @@ void  OBJFacetMtlNode::setup_params(void)
     TextureParam bumpmap = this->material_param.bumpmap;
 
     if (texture.isSetTexture()) {       // map_Kd
-        this->map_kd = make_Buffer_str("map_Kd ");
-        cat_s2Buffer(texture.getName(), &(this->map_kd));
+        this->map_kd = make_Buffer_str(texture.getName());
     }
     if (specmap.isSetTexture()) {       // map_Ks
-        this->map_ks = make_Buffer_str("map_Ks ");
-        cat_s2Buffer(specmap.getName(), &(this->map_ks));
+        this->map_ks = make_Buffer_str(specmap.getName());
     }
     if (bumpmap.isSetTexture()) {       // map_bump
-        this->map_bump = make_Buffer_str("map_bump ");
-        cat_s2Buffer(bumpmap.getName(), &(this->map_bump));
+        this->map_bump = make_Buffer_str(bumpmap.getName());
     }
 
     this->ka = Vector<double>(1.0, 1.0, 1.0);
