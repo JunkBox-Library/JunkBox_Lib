@@ -224,7 +224,7 @@ public:
     double  getLight(void)       { return light;}
 
     void    printParam(FILE* fp);
-    char*   getBase64Params(unsigned char obj='\0', unsigned char cc='#');
+    char*   getBase64Params(unsigned char obj='\0', unsigned char cc='-');
 };
 
 
