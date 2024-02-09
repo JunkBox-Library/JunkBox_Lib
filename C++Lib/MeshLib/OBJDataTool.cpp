@@ -39,7 +39,7 @@ void  OBJData::free(void)
 {
     free_Buffer(&(this->obj_name));
 
-    delAffineTrans();
+    this->delAffineTrans();
     this->affine_trans = NULL;
 
     delete(this->geo_node);
@@ -392,7 +392,7 @@ OBJFacetMtlNode::~OBJFacetMtlNode(void)
 
 void  OBJFacetMtlNode::init(void)
 {
-    same_material  = false;
+    this->same_material  = false;
 
     this->material = init_Buffer();
     this->map_kd   = init_Buffer();
@@ -400,13 +400,13 @@ void  OBJFacetMtlNode::init(void)
     this->map_bump = init_Buffer();
     memset(&(this->material_param), 0, sizeof(this->material_param));
     
-    ka = Vector<double>(1.0, 1.0, 1.0);
-    kd = Vector<double>(1.0, 1.0, 1.0);
-    ks = Vector<double>(1.0, 1.0, 1.0);
+    this->ka = Vector<double>(1.0, 1.0, 1.0);
+    this->kd = Vector<double>(1.0, 1.0, 1.0);
+    this->ks = Vector<double>(1.0, 1.0, 1.0);
 
-    dd = 1.0;
-    ni = 1.0;
-    illum = 2;
+    this->dd = 1.0;
+    this->ni = 1.0;
+    this->illum = 2;
 
     this->next = NULL;
 }
@@ -420,8 +420,7 @@ void  OBJFacetMtlNode::free(void)
     free_Buffer(&(this->map_bump));
 
     this->material_param.free();
-
-    delete_next();
+    this->delete_next();
 }
 
 
@@ -442,48 +441,24 @@ void  OBJFacetMtlNode::delete_next(void)
 
 void  OBJFacetMtlNode::setup_params(void)
 {
-    char options[L_128];
-
     TextureParam texture = this->material_param.texture;
     TextureParam specmap = this->material_param.specmap;
     TextureParam bumpmap = this->material_param.bumpmap;
 
     if (texture.isSetTexture()) {       // map_Kd
-        double shiftU = texture.getShiftU();
-        double shiftV = texture.getShiftV();
-        double scaleU = texture.getScaleU();
-        double scaleV = texture.getScaleV();
-        double rotate = texture.getRotate();
-        snprintf(options, L_128, " -o %lf %lf -s %lf %lf -r %lf ", shiftU, shiftV, scaleU, scaleV, rotate);
-        //this->map_kd = make_Buffer_str(options);
-        this->map_kd = make_Buffer_str("");
+        this->map_kd = make_Buffer_str("map_Kd ");
         cat_s2Buffer(texture.getName(), &(this->map_kd));
     }
     if (specmap.isSetTexture()) {       // map_Ks
-        double shiftU = specmap.getShiftU();
-        double shiftV = specmap.getShiftV();
-        double scaleU = specmap.getScaleU();
-        double scaleV = specmap.getScaleV();
-        double rotate = specmap.getRotate();
-        snprintf(options, L_128, " -o %lf %lf -s %lf %lf -r %lf ", shiftU, shiftV, scaleU, scaleV, rotate);
-        //this->map_ks = make_Buffer_str(options);
-        this->map_ks = make_Buffer_str("");
+        this->map_ks = make_Buffer_str("map_Ks ");
         cat_s2Buffer(specmap.getName(), &(this->map_ks));
     }
     if (bumpmap.isSetTexture()) {       // map_bump
-        double shiftU = bumpmap.getShiftU();
-        double shiftV = bumpmap.getShiftV();
-        double scaleU = bumpmap.getScaleU();
-        double scaleV = bumpmap.getScaleV();
-        double rotate = bumpmap.getRotate();
-        snprintf(options, L_128, " -o %lf %lf -s %lf %lf -r %lf ", shiftU, shiftV, scaleU, scaleV, rotate);
-        //this->map_bump = make_Buffer_str(options);
-        this->map_bump = make_Buffer_str("");
+        this->map_bump = make_Buffer_str("map_bump ");
         cat_s2Buffer(bumpmap.getName(), &(this->map_bump));
     }
 
     this->ka = Vector<double>(1.0, 1.0, 1.0);
-    //this->ka = texture.getColor();
     this->kd = texture.getColor();
     this->ks = specmap.getColor();
 
@@ -491,7 +466,7 @@ void  OBJFacetMtlNode::setup_params(void)
     this->ni = this->material_param.getShininess()*10.;
     if (this->ni<1.0) this->ni = 1.0;
 
-    this->illum = 9;
+    this->illum = 2;
 /*
  0. Color on and Ambient off
  1. Color on and Ambient on

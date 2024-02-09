@@ -233,7 +233,6 @@ inline MaterialParam*  newMaterialParam(MaterialParam p) { MaterialParam* m = ne
 bool   isSameMaterial(MaterialParam a, MaterialParam b);        ///< compare each texture names and colors
 
 
-
 }       // namespace
 
 #endif
