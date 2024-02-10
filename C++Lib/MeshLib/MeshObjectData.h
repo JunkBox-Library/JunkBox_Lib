@@ -13,7 +13,7 @@
 namespace jbxl {
 
 
-#define   JBXL_MATERIALID_RAND_LEN  6
+#define   JBXL_MATERIALID_RAND_LEN  8
 #define   JBXL_MATERIAL_PREFIX      "#MATERIAL_"
 
 
@@ -151,8 +151,8 @@ public:
     //
     bool    importTriData(TriPolygonData* tridata, int tnum, int fnum=-1);
     bool    importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, int vnum);
-    bool    addNode(ContourBaseData* facetdata, const char* name);
-    bool    addNode(const char* name, bool useBrep);
+    bool    addNode(ContourBaseData* facetdata, const char* name, MaterialParam* param);
+    bool    addNode(const char* name, MaterialParam* param, bool useBrep);
 };
 
 

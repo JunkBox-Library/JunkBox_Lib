@@ -10,36 +10,36 @@
 #include "buffer.h"
 
 // アルファチャンネル モード
-#define  MATERIAL_ALPHA_NONE          0
-#define  MATERIAL_ALPHA_BLENDING      1
-#define  MATERIAL_ALPHA_MASKING       2
-#define  MATERIAL_ALPHA_EMISSIVE      3     // 未実装
+#define  MATERIAL_ALPHA_NONE            0
+#define  MATERIAL_ALPHA_BLENDING        1
+#define  MATERIAL_ALPHA_MASKING         2
+#define  MATERIAL_ALPHA_EMISSIVE        3     // 未実装
 
 // テクスチャのマッピング方法
-#define  MATERIAL_MAPPING_DEFAULT     0
-#define  MATERIAL_MAPPING_PLANAR      2
-#define  MATERIAL_MAPPING_SPHERICAL   4     // 未実装
-#define  MATERIAL_MAPPING_CYLINDRICAL 6     // 未実装
+#define  MATERIAL_MAPPING_DEFAULT       0
+#define  MATERIAL_MAPPING_PLANAR        2
+#define  MATERIAL_MAPPING_SPHERICAL     4     // 未実装
+#define  MATERIAL_MAPPING_CYLINDRICAL   6     // 未実装
 
 //
-#define  MATERIAL_ATTR_LEN           24     // Base64 string len = 32
+#define  MATERIAL_ATTR_LEN              24     // Base64 string len = 32
 
-#define  MATERIAL_ATTR_COLOR_RED      0
-#define  MATERIAL_ATTR_COLOR_GREEN    1
-#define  MATERIAL_ATTR_COLOR_BLUE     2
-#define  MATERIAL_ATTR_TRANSPARENT    3
-#define  MATERIAL_ATTR_ALPHACUTOFF    4
-#define  MATERIAL_ATTR_SHININESS      5
-#define  MATERIAL_ATTR_GLOW           6
-#define  MATERIAL_ATTR_BRIGHT         7
-#define  MATERIAL_ATTR_LIGHT          8
+#define  MATERIAL_ATTR_COLOR_RED        0
+#define  MATERIAL_ATTR_COLOR_GREEN      1
+#define  MATERIAL_ATTR_COLOR_BLUE       2
+#define  MATERIAL_ATTR_TRANSPARENT      3
+#define  MATERIAL_ATTR_ALPHACUTOFF      4
+#define  MATERIAL_ATTR_SHININESS        5
+#define  MATERIAL_ATTR_GLOW             6
+#define  MATERIAL_ATTR_BRIGHT           7
+#define  MATERIAL_ATTR_LIGHT            8
 // 9-12 予備
-#define  MATERIAL_ATTR_SHIFT_U       13     // short 2Byte
-#define  MATERIAL_ATTR_SHIFT_V       15     // short 2Byte
-#define  MATERIAL_ATTR_SCALE_U       17     // short 2Byte
-#define  MATERIAL_ATTR_SCALE_V       19     // short 2Byte
-#define  MATERIAL_ATTR_ROTATE        21     // short 2Byte
-#define  MATERIAL_ATTR_OBJECT        23     //
+#define  MATERIAL_ATTR_SHIFT_U          13     // short 2Byte
+#define  MATERIAL_ATTR_SHIFT_V          15     // short 2Byte
+#define  MATERIAL_ATTR_SCALE_U          17     // short 2Byte
+#define  MATERIAL_ATTR_SCALE_V          19     // short 2Byte
+#define  MATERIAL_ATTR_ROTATE           21     // short 2Byte
+#define  MATERIAL_ATTR_OBJECT           23     //
 
 
 namespace  jbxl {
@@ -201,11 +201,12 @@ public:
     char*   getTextureName(void) { return texture.getName();}       // 禁 free
     char*   getBumpMapName(void) { return bumpmap.getName();}       // 禁 free
     char*   getSpecMapName(void) { return specmap.getName();}       // 禁 free
+    char*   getName(void);                                          // 禁 free
 
+    void    setFullName(const char* extname);
     void    setParamString(const char* param) { if(param!=NULL) copy_s2Buffer(param, &paramstr);}
     void    addParamString(const char* param) { if(param!=NULL) cat_s2Buffer (param, &paramstr);}
     char*   getParamString(void) { return (char*)paramstr.buf;}     // 禁 free
-    void    setFullName(const char* extname);
 
     void    setTransparent(double a) { if(a>1.0) a = 1.0; else if(a<0.0) a = 0.0; transparent = a;}
     void    setShininess(double s)   { if(s>1.0) s = 1.0; else if(s<0.0) s = 0.0; shininess = s;}

@@ -78,22 +78,39 @@ void  MeshFacetNode::setMaterialID(const char* str)
             material_id = make_Buffer_str(str);
         }
         else {
-            Buffer randomstr = make_Buffer_randomstr(JBXL_MATERIALID_RAND_LEN);
             material_id = make_Buffer_str(JBXL_MATERIAL_PREFIX);
-            cat_Buffer(&randomstr, &material_id);
-            free_Buffer(&randomstr);
+            char* texture_name = material_param.getName();
+            if (texture_name!=NULL) {
+                Buffer texture_id = make_Buffer_bystr(texture_name);
+                del_file_extension_Buffer(&texture_id);
+                cat_Buffer(&texture_id, &material_id);
+                free_Buffer(&texture_id);
+            }
+            else {
+                Buffer randomstr = make_Buffer_randomstr(JBXL_MATERIALID_RAND_LEN);
+                cat_Buffer(&randomstr, &material_id);
+                free_Buffer(&randomstr);
+            }
             cat_s2Buffer("_", &material_id);
             cat_s2Buffer(str, &material_id);
         }
     }
     //
     else {
-        Buffer randomstr = make_Buffer_randomstr(JBXL_MATERIALID_RAND_LEN);
         material_id = make_Buffer_str(JBXL_MATERIAL_PREFIX);
-        cat_Buffer(&randomstr, &material_id);
-        free_Buffer(&randomstr);
+        char* texture_name = material_param.getName();
+        if (texture_name!=NULL) {
+            Buffer texture_id = make_Buffer_bystr(texture_name);
+            del_file_extension_Buffer(&texture_id);
+            cat_Buffer(&texture_id, &material_id);
+            free_Buffer(&texture_id);
+        }
+        else {
+            Buffer randomstr = make_Buffer_randomstr(JBXL_MATERIALID_RAND_LEN);
+            cat_Buffer(&randomstr, &material_id);
+            free_Buffer(&randomstr);
+        }
     }
-
     return;
 }
 
@@ -420,8 +437,8 @@ void  MeshObjectData::init(const char* name)
     num_node     = 0;
     num_vcount   = 3;
 
-    facet     = NULL;
-    facet_end     = NULL;
+    facet        = NULL;
+    facet_end    = NULL;
     affine_trans = NULL;
 
     num_import   = 0;
@@ -459,7 +476,7 @@ void  MeshObjectData::clear(void)
 
 
 /**
-bool  MeshObjectData::addData(ContourBaseData* facetdata, MaterialParam* param)
+bool  MeshObjectData::addData(ContourBaseData* contours, MaterialParam* param)
 
 インデックス化された ContourBaseDataを importTriData()を介さずに，直接 Nodeデータに書き込む．@n
 CONTOUR(ポリゴン)を選択的に処理することはできない．予め CONTOURに分解しておくか，CONTOURが1つのみの場合に使用する．
@@ -471,7 +488,7 @@ bool  MeshObjectData::addData(ContourBaseData* contours, MaterialParam* param)
     char* name = NULL;
     if (param!=NULL) name = param->getParamString();
 
-    bool ret = addNode(contours, name);
+    bool ret = addNode(contours, name, param);
     if (ret && param!=NULL) facet_end->setMaterialParam(*param);
 
     return ret;
@@ -498,7 +515,7 @@ bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<do
     if (ret) {
         char* name = NULL;
         if (param!=NULL) name = param->getParamString();
-        ret = addNode(name, useBrep);
+        ret = addNode(name, param, useBrep);
     }
     if (ret && param!=NULL) facet_end->setMaterialParam(*param);
 
@@ -507,6 +524,8 @@ bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<do
 
 
 /**
+bool  MeshObjectData::addData(TriPolygonData* tridata, int tnum, int pnum, MaterialParam* param, bool useBrep)
+
 TriPolygonData (三角ポリゴンデータ) を単位としてデータを追加し，MeshObjectのデータを作成する．@n
 pnum を指定すると，指定されたポリゴンデータのみが追加される．これにより面ごとのデータ構造を形成することができる．@n
 
@@ -522,7 +541,7 @@ bool  MeshObjectData::addData(TriPolygonData* tridata, int tnum, int pnum, Mater
     if (ret) {
         char* name = NULL;
         if (param!=NULL) name = param->getParamString();
-        ret = addNode(name, useBrep);
+        ret = addNode(name, param, useBrep);
     }
     //
     if (ret) {
@@ -663,7 +682,6 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
             return false;
         }
     }
-
     num_vcount = 3;
     num_import = vnum;
 
@@ -671,19 +689,21 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
 }
 
 
-bool  MeshObjectData::addNode(ContourBaseData* facetdata, const char* name)
+bool  MeshObjectData::addNode(ContourBaseData* facetdata, const char* name, MaterialParam* param)
 {
     bool ret = false;
 
     MeshFacetNode* node = new MeshFacetNode();
     if (node==NULL) return ret;
+    //
+    if (param!=NULL) node->setMaterialParam(*param);
     node->setMaterialID(name);
     
     ret = node->computeVertexDirect(facetdata);
 
     if (ret) {
         if (facet==NULL) facet = facet_end = node;
-        else                facet_end = AddMeshFacetNode(facet_end, node);
+        else             facet_end = AddMeshFacetNode(facet_end, node);
         num_node++;
         ttl_index  += node->num_index;
         ttl_vertex += node->num_vertex;
@@ -699,13 +719,15 @@ bool  MeshObjectData::addNode(ContourBaseData* facetdata, const char* name)
 @param name    ノードの名前
 @param useBrep BREPを使用して頂点を配置する．速度は遅くなるが，頂点数（データ量）は減る．
 */
-bool  MeshObjectData::addNode(const char* name, bool useBrep)
+bool  MeshObjectData::addNode(const char* name, MaterialParam* param, bool useBrep)
 {
     bool ret = false;
     if (impvtx_value==NULL) return ret;
 
     MeshFacetNode* node = new MeshFacetNode();
     if (node==NULL) return ret;
+    //
+    if (param!=NULL) node->setMaterialParam(*param);
     node->setMaterialID(name);
 
     if (useBrep) {
@@ -745,8 +767,8 @@ void  MeshObjectData::setMaterialParam(MaterialParam param, int num)
     if (num>=0) {
         while (node!=NULL) {
             if (node->facet_no==num) {
-                node->setMaterialID(param.getParamString());
                 node->setMaterialParam(param);
+                node->setMaterialID(param.getParamString());
                 return;
             }
             node = node->next;
@@ -755,8 +777,8 @@ void  MeshObjectData::setMaterialParam(MaterialParam param, int num)
     else {
         while (node!=NULL) {
             if (!node->material_param.enable) {
-                node->setMaterialID(param.getParamString());
                 node->setMaterialParam(param);
+                node->setMaterialID(param.getParamString());
                 return;
             }
             node = node->next;
