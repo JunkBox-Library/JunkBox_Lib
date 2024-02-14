@@ -404,8 +404,8 @@ void    trap_segmentation_falt(int signal);             ///< セグメンテー�
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // マクロ関数
 
-#define copy_file(src, dst)  file_from_to((src), (dst), "wb")    ///< srcから dsへファイルをコピーする．file_from_to()
-#define cat_file(src, dst)   file_from_to((src), (dst), "ab")    ///< srcから dstへファイルを catする． file_from_to()
+#define copy_file(src, dst)  file_from_to((src), (dst), "wb")    ///< srcから dstへファイルをコピーする．file_from_to()
+#define cat_file(src, dst)   file_from_to((src), (dst), "ab")    ///< srcから dstへファイルを catする．  file_from_to()
 
 #define  isBigEndian    (is_big_endian())
 #define  isLittleEndian (is_little_endian())
