@@ -22,6 +22,7 @@ void  TGAImage::init(void)
     xs      = 0;
     ys      = 0;
     col     = 0; 
+    length  = 0;
     state   = 0;
     gp      = NULL;
 
@@ -156,6 +157,7 @@ TGAImage  jbxl::readTGAFile(const char* fname)
 TGAImage  jbxl::readTGAData(FILE* fp)
 
 TGAファイルを読み込んで，TGAImage構造体へデータを格納する．
+読み込んだデータは非圧縮状態．
 
 @param  fp  読み込むファイルの記述子
 
@@ -191,8 +193,8 @@ TGAImage  jbxl::readTGAData(FILE* fp)
         rle = TRUE;
     }
     else {
-        tga.state = JBXL_GRAPH_IVDFMT_ERROR;
         DEBUG_MODE PRINT_MESG("JBXL::readTGAData: ERROR: no supported File Format (%d)\n", kind);
+        tga.state = JBXL_GRAPH_IVDFMT_ERROR;
         return tga;
     }    
 
@@ -224,10 +226,11 @@ TGAImage  jbxl::readTGAData(FILE* fp)
     PRINT_MESG("JBXL::readTGAData: TGA File (%d, %d, %d)\n", tga.xs, tga.ys, tga.col);
 
     int datasize = tga.xs*tga.ys*tga.col;
+    tga.length = datasize;
 
     tga.gp = (uByte*)malloc(datasize);
     if (tga.gp==NULL) {
-        PRINT_MESG("JBXL::readTGAData: ERROR: no more Memory!\n");
+        PRINT_MESG("JBXL::readTGAData: ERROR: out of Memory!\n");
         tga.state = JBXL_GRAPH_MEMORY_ERROR;
         return tga;
     }
@@ -263,15 +266,17 @@ TGAImage  jbxl::readTGAData(FILE* fp)
         }
         if (size!=datasize) {
             DEBUG_MODE PRINT_MESG("JBXL::readTGAData: ERROR: unpack RLE failed. (%d != %d), format = %d\n", size, datasize, kind);
-            tga.state = JBXL_GRAPH_RDFILE_ERROR;
+            tga.state = JBXL_GRAPH_FILESZ_ERROR;
             return tga;
         }
+        tga.hd[2] &= ~0x08; //  非圧縮状態
     }
     else {
         fread(tga.gp, datasize, 1, fp);
     }
     if (!feof(fp)) fread(tga.ft, TGA_FOOTER_SIZE, 1, fp);
 
+    tga.state = 0;
     return tga;
 }
 
@@ -313,7 +318,7 @@ int  jbxl::writeTGAFile(const char* fname, TGAImage tga)
 
 
 /**
-int  jbxl::writeTGAData(FILE* fp, TGAImage tga)
+int  jbxl::writeTGAData(FILE* fp, TGAImage tga, bool rle)
 
 tga の画像データを fpに書き出す．
 
@@ -334,37 +339,123 @@ int  jbxl::writeTGAData(FILE* fp, TGAImage tga)
     if (tga.col<=0 || tga.col>4) return JBXL_GRAPH_IVDARG_ERROR;
     if (tga.gp==NULL) return JBXL_GRAPH_NODATA_ERROR;
 
-    memset(tga.hd, 0, TGA_HEADER_SIZE);
-    if      (tga.col==3 || tga.col==4) tga.hd[2] = 2;    // Full Color
-    else if (tga.col==1 || tga.col==2) tga.hd[2] = 3;    // Gray Scale
+    fwrite(tga.hd, TGA_HEADER_SIZE, 1, fp);
+    fwrite(tga.gp, tga.length, 1, fp);
+    fwrite(tga.ft, TGA_FOOTER_SIZE, 1, fp);
+    return 0;
+}
+
+
+/**
+int  jbxl::setupTGAData(TGAImage* tga, bool rle)
+
+TGAのヘッダを設定し直して，必要なら RLEを行う．
+
+@param  tga    TGAデータへのポインタ
+@param  rle    RLE（連長圧縮）を行うかどうか
+
+@retval 0      正常終了
+@retval <0     エラーコード
+*/
+int  jbxl::setupTGAData(TGAImage* tga, bool rle)
+{
+    if (tga->col<=0 || tga->col>4) return JBXL_GRAPH_IVDARG_ERROR;
+
+    memset(tga->hd, 0, TGA_HEADER_SIZE);
+    if      (tga->col==3 || tga->col==4) tga->hd[2] = 2;    // Full Color
+    else if (tga->col==1 || tga->col==2) tga->hd[2] = 3;    // Gray Scale
     else return JBXL_GRAPH_IVDFMT_ERROR;
 
     if (is_little_endian()) {
-        tga.hd[12] = (uByte)(tga.xs%256);
-        tga.hd[13] = (uByte)(tga.xs/256);
-        tga.hd[14] = (uByte)(tga.ys%256);
-        tga.hd[15] = (uByte)(tga.ys/256);
+        tga->hd[12] = (uByte)(tga->xs%256);
+        tga->hd[13] = (uByte)(tga->xs/256);
+        tga->hd[14] = (uByte)(tga->ys%256);
+        tga->hd[15] = (uByte)(tga->ys/256);
     }
     else {
-        tga.hd[12] = (uByte)(tga.xs/256);
-        tga.hd[13] = (uByte)(tga.xs%256);
-        tga.hd[14] = (uByte)(tga.ys/256);
-        tga.hd[15] = (uByte)(tga.ys%256);
+        tga->hd[12] = (uByte)(tga->xs/256);
+        tga->hd[13] = (uByte)(tga->xs%256);
+        tga->hd[14] = (uByte)(tga->ys/256);
+        tga->hd[15] = (uByte)(tga->ys%256);
     }
 
-    tga.hd[16] = tga.col*8;             // depth
-    tga.hd[17] = 0x20;                  // 0x20: Y方向:Top->Down
-    if (tga.col==2 || tga.col==4) {
-        tga.hd[17] |= 0x08;             // 0x08: αチャンネル深度
+    tga->hd[16] = tga->col*8;                   // depth
+    tga->hd[17] = 0x20;                         // 0x20: Y方向:Top->Down
+    if (tga->col==2 || tga->col==4) {
+        tga->hd[17] |= 0x08;                    // 0x08: αチャンネル深度
     }
-    fwrite(tga.hd, TGA_HEADER_SIZE, 1, fp);
+    tga->length = tga->xs*tga->ys*tga->col;     // データ（gp）長
 
-    // Data
-    int len = tga.xs*tga.ys*tga.col;
-    fwrite(tga.gp, len, 1, fp);
+    if (rle && tga->gp!=NULL) {
+        int len = tga->xs*tga->ys;
+        uByte* index = (uByte*)malloc(len);
+        if (index==NULL) return JBXL_GRAPH_MEMORY_ERROR;
 
-    fwrite(tga.ft, TGA_FOOTER_SIZE, 1, fp);
+        memset(index, 0, len);
+        int idx = 0;
+        int p = 0;
+        while (p<len-1) {
+            if (!memcmp(tga->gp + p*tga->col, tga->gp + (p+1)*tga->col, tga->col)) {
+                index[idx]++;
+                if (index[idx]==127) {
+                    idx = p + 2;
+                    p++;
+                }
+            }
+            else {
+                idx = p + 1;
+            }
+            p++;
+        }
 
+        // 変換後のサイズを計算
+        int n = 0;
+        p = 0;
+        while (p < len-1) {
+            n += tga->col + 1;
+            if (index[p]!=0x00) p += index[p];
+            p++;
+        }
+
+        if ((float)n < len*tga->col*0.8f) {
+            DEBUG_MODE PRINT_MESG("JBXL::writeTGAData: exec RLE (%d -> %d)\n", len*tga->col, n);
+            uByte* buf = (uByte*)malloc(len*tga->col);
+            if (buf==NULL) {
+                ::free(index);
+                return JBXL_GRAPH_MEMORY_ERROR;
+            }
+            //
+            int i = 0;
+            int j = 0;
+            while (i < len-1) {
+                if (index[i]!=0x00) {
+                    buf[j++] = 0x80 + index[i];
+                    memcpy(buf+j, tga->gp + i*tga->col, tga->col);
+                    j += tga->col;
+                    i += index[i];
+                }
+                else {
+                    buf[j++] = 0x00;
+                    memcpy(buf+j, tga->gp + i*tga->col, tga->col);
+                    j += tga->col;
+                }
+                i++;
+            }
+            //
+            if (j==n) {
+                tga->hd[2] |= 0x08;
+                tga->length = n;
+                ::free(tga->gp);
+                tga->gp = buf;
+            }
+            else {
+                DEBUG_MODE PRINT_MESG("JBXL::writeTGAData: Warning: missmatch RLE size (%d != %d)\n", j, n);
+                DEBUG_MODE PRINT_MESG("JBXL::writeTGAData: Warning: stop RLE!\n");
+                ::free(buf);
+            }
+            ::free(index);
+        }
+    }
     return 0;
 }
 

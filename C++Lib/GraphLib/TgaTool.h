@@ -30,6 +30,7 @@ public:
     int     xs;
     int     ys;
     int     col;
+    int     length;
     int     state;
 
     uByte   hd[TGA_HEADER_SIZE];
@@ -59,6 +60,8 @@ TGAImage    readTGAFile (const char* fname);
 TGAImage    readTGAData (FILE* fp);
 int         writeTGAFile(const char* fname, TGAImage tga);
 int         writeTGAData(FILE* fp, TGAImage tga);
+
+int         setupTGAData(TGAImage* tga, bool rle);
 
 //int        isTGAHeader(Buffer buf);
 
@@ -169,6 +172,7 @@ template <typename T>  TGAImage  MSGraph2TGAImage(MSGraph<T> vp)
     }
 
     tga.setzero(vp.xs, vp.ys, vp.zs);
+    tga.length = tga.xs*tga.ys*tga.col;
     if (tga.isNull()) return tga;
 
     if (vp.color==GRAPH_COLOR_UNKNOWN) {

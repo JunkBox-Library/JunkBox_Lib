@@ -84,7 +84,7 @@ Buffer  read_tagged_Buffer(FILE* fp, unsigned int* mode);                       
 Buffer  fgets_mstream_Buffer(Buffer buf, mstream* sb);                          ///< メッセージ buf.buf はメッセージストリームに一旦バッファリングされ，この関数により一行ずつ読み出される．
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// RunLength
+// Run Length
 int     get_runlength_byte(unsigned char* buf, int len, int pos);   ///< 圧縮されていない状態で pos(Byte)の位置が，0の連長圧縮されているデータではどの位置に来るかを計算する
 Buffer  decode_runlength  (unsigned char* buf, int len, int sz);    ///< 0の連長圧縮された bufから szバイトの通常のデータを取り出す．
 Buffer  encode_runlength  (unsigned char* buf, int len);            ///< bufの szバイトを 0で連長圧縮する
