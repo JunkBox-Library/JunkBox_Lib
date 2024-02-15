@@ -4,8 +4,8 @@
 /**
 @brief    TGAグラフィックデータ定義用ヘッダ  
 @file     TgaTool.h
-@version  0.9
-@date     2015 5/9
+@version  1.0β
+@date     2024 2/15
 @author   Fumi.Iseki (C)
 */
 
@@ -14,6 +14,7 @@
 
 
 #define  TGA_HEADER_SIZE  18
+#define  TGA_FOOTER_SIZE  26
 
 //
 namespace jbxl {
@@ -30,6 +31,7 @@ public:
     int     state;
 
     uByte   hd[TGA_HEADER_SIZE];
+    uByte   ft[TGA_FOOTER_SIZE];
     uByte*  gp;                 // BGRA, BGR, MONO, MA
 
 public:
@@ -44,7 +46,7 @@ public:
 
     uByte&  point(int x, int y, int c) { return gp[col*(y*xs + x) + c];}
     void    getm(int x, int y, int c);
-    void    set (int x, int y, int c);
+    void    setzero(int x, int y, int c);
 };
 
 
@@ -58,16 +60,16 @@ int         writeTGAData(FILE* fp, TGAImage tga);
 
 //int        isTGAHeader(Buffer buf);
 
-// template <typename T>  MSGraph<T> TGAImage2MSGraph(TGAImage  tga)
+// template <typename T>  MSGraph<T> TGAImage2MSGraph<T>(TGAImage  tga)
 // template <typename T>  TGAImage  MSGraph2TGAImage(MSGraph<T> vp)
 
 
 /**
 template <typename T>  MSGraph<T> TGAImage2MSGraph(TGAImage tga)
 
-Tgaイメージデータを MSGraph型イメージデータに変換する
+TGAイメージデータを MSGraph型イメージデータに変換する
 
-@param  tga  Tgaイメージデータ
+@param  tga  TGAイメージデータ
 @return MSGraphイメージデータ
 @retval JBXL_GRAPH_NODATA_ERROR @b state データ無し
 @retval JBXL_GRAPH_MEMORY_ERROR @b state メモリ確保エラー 
@@ -93,16 +95,53 @@ template <typename T>  MSGraph<T> TGAImage2MSGraph(TGAImage tga)
         return vp;
     }
 
-    for (int k=0; k<tga.col; k++) {
-        int zp = k*tga.xs*tga.ys;
-        for (int j=0; j<tga.ys; j++) {
-            int yp = zp + j*tga.xs;
-            for (int i=0; i<tga.xs; i++) {
-                vp.gp[yp + i] = (T)tga.point(i, j, k);
+    uByte dirx = tga.hd[17] & 0x10;         // X方向 0: Left -> Right
+    uByte diry = tga.hd[17] & 0x20;         // Y方向 0: Down -> Top
+
+    if (dirx==0x00 && diry==0x00) {         // Left->Right, Down->Top
+        for (int k=0; k<tga.col; k++) {
+            int zp = k*tga.xs*tga.ys;
+            for (int j=0; j<tga.ys; j++) {
+                int yp = zp + j*tga.xs;
+                for (int i=0; i<tga.xs; i++) {
+                    vp.gp[yp + i] = (T)tga.point(i, tga.ys-1-j, k);
+                }
             }
         }
     }
-
+    else if (dirx==0x00 && diry==0x20) {    // Left->Right, Top->Down
+        for (int k=0; k<tga.col; k++) {
+            int zp = k*tga.xs*tga.ys;
+            for (int j=0; j<tga.ys; j++) {
+                int yp = zp + j*tga.xs;
+                for (int i=0; i<tga.xs; i++) {
+                    vp.gp[yp + i] = (T)tga.point(i, j, k);
+                }
+            }
+        }
+    }
+    else if (dirx==0x10 && diry==0x00) {    // Right->Left, Down->Top
+        for (int k=0; k<tga.col; k++) {
+            int zp = k*tga.xs*tga.ys;
+            for (int j=0; j<tga.ys; j++) {
+                int yp = zp + j*tga.xs;
+                for (int i=0; i<tga.xs; i++) {
+                    vp.gp[yp + i] = (T)tga.point(tga.xs-1-i, tga.ys-1-j, k);
+                }
+            }
+        }
+    }
+    else {
+        for (int k=0; k<tga.col; k++) {     // Right->Left, Top->Down
+            int zp = k*tga.xs*tga.ys;
+            for (int j=0; j<tga.ys; j++) {
+                int yp = zp + j*tga.xs;
+                for (int i=0; i<tga.xs; i++) {
+                    vp.gp[yp + i] = (T)tga.point(tga.xs-1-i, j, k);
+                }
+            }
+        }
+    }
     return vp;
 }
 
@@ -110,10 +149,11 @@ template <typename T>  MSGraph<T> TGAImage2MSGraph(TGAImage tga)
 /**
 template <typename T>  TGAImage  MSGraph2TGAImage(MSGraph<T> vp)
 
-MSGraph型イメージデータを Tgaイメージデータに変換する
+MSGraph型イメージデータを TGAイメージデータに変換する
+ヘッダ情報は変換しない（別途変換する）．
 
 @param  vp  MSGraph型イメージデータ
-@return Tgaイメージデータ
+@return TGAイメージデータ
 @retval JBXL_GRAPH_NODATA_ERROR @b state データ無し
 @retval JBXL_GRAPH_MEMORY_ERROR @b state メモリ確保エラー 
 */
@@ -126,7 +166,7 @@ template <typename T>  TGAImage  MSGraph2TGAImage(MSGraph<T> vp)
         return tga;
     }
 
-    tga.set(vp.xs, vp.ys, vp.zs);
+    tga.setzero(vp.xs, vp.ys, vp.zs);
     if (tga.isNull()) return tga;
 
     if (vp.color==GRAPH_COLOR_UNKNOWN) {

@@ -66,7 +66,7 @@ TIFF形式のデータから num番目の IFDデータを取り出す．
 @param  num  何番目の IFDデータを取り出すか？
 
 @return IFDデータ (ifd)
-@retval ifd->tga==0 is header
+@retval ifd->tag==0 is header
 @retval ifd->type  is seq number of this image (num)
 @retval ifd->count is number of IFDs in this image
 @retval ifd->value is next image IFD offset. if this is 0, next image does not exist
@@ -75,7 +75,6 @@ TIFF_ifd*  get_tiff_ifd(unsigned char* buf, int num)
 {
     TIFF_ifd* ifd = NULL;
     int  i, k;
-
 
     // Endian
     if (buf[0]=='I' && buf[1]=='I') {
@@ -98,7 +97,6 @@ TIFF_ifd*  get_tiff_ifd(unsigned char* buf, int num)
     ptr += 2;
     unsigned int offset = *((unsigned int*)ptr);
     if (TIFF_Swap_Flag) offset = swapl(offset);
-
 
     if (num<0) num = 1;
     k = 0;
@@ -293,7 +291,6 @@ void  proc_tiff_ifd(TIFF_ifd* ptr, unsigned char* buf)
             }
             break;
         }
-
         ifd++;
     }
 

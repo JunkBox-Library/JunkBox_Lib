@@ -26,6 +26,7 @@ void  TGAImage::init(void)
     gp      = NULL;
 
     memset(hd, 0, TGA_HEADER_SIZE);
+    memset(ft, 0, TGA_FOOTER_SIZE);
     return;
 }
 
@@ -79,9 +80,9 @@ void  TGAImage::free(void)
 
 
 /**
-void   TGAImage::set(int x, int y, int c) 
+void   TGAImage::setzero(int x, int y, int c) 
 */
-void   TGAImage::set(int x, int y, int c) 
+void   TGAImage::setzero(int x, int y, int c) 
 { 
     getm(x, y, c); 
     if (gp==NULL) return;
@@ -157,20 +158,114 @@ TGAファイルを読み込んで，TGAImage構造体へデータを格納する
 @retval JBXL_GRAPH_OPFILE_ERROR @b state: ファイルオープンエラー
 @retval JBXL_GRAPH_HEADER_ERROR @b state: 不正ファイル（TGAファイルでない？）
 @retval JBXL_GRAPH_MEMORY_ERROR @b state: メモリエラー
+@retval JBXL_GRAPH_IVDFMT_ERROR @b state: サポート外のデータ形式
 */
 TGAImage  jbxl::readTGAData(FILE* fp)
 {
     TGAImage tga;
+    int rle = FALSE;
 
     fseek(fp, 0, 0);
     tga.free();
 
-    /**********************************************************************/
-    PRINT_MESG("**********************************************\n");
-    PRINT_MESG("ERROR: jbxl::readTGAData() is not implemeted!!\n");
-    PRINT_MESG("**********************************************\n");
-    tga.state = JBXL_GRAPH_IVDARG_ERROR;
-    /**********************************************************************/
+    fread(&tga.hd, TGA_HEADER_SIZE, 1, fp);
+
+    int kind = (int)tga.hd[2];
+    if (kind == 2) {
+        tga.col = 3;
+    }
+    else if (kind == 3) {
+        tga.col = 1;
+    }
+    else if (kind == 10) {
+        tga.col = 3;
+        rle = TRUE;
+    }
+    else if (kind == 11) {
+        tga.col = 1;
+        rle = TRUE;
+    }
+    else {
+        tga.state = JBXL_GRAPH_IVDFMT_ERROR;
+        DEBUG_MODE PRINT_MESG("JBXL::readTGAData: ERROR: no supported File Format (%d)\n", kind);
+        return tga;
+    }    
+
+    if (is_little_endian()) {
+        tga.xs = tga.hd[12] + tga.hd[13]*256;
+        tga.ys = tga.hd[14] + tga.hd[15]*256;
+    }
+    else {
+        tga.xs = tga.hd[12]*256 + tga.hd[13];
+        tga.ys = tga.hd[14]*256 + tga.hd[15];
+    }
+
+    uByte alpha = tga.hd[17] & 0x0f;        // αチャンネル
+    if (alpha != 0x08 && alpha != 0x00) {
+        DEBUG_MODE PRINT_MESG("JBXL::readTGAData: ERROR: unkonwn Alpha Channel (0x%02x)\n", alpha);
+        tga.state = JBXL_GRAPH_IVDFMT_ERROR;
+        return tga;
+    }
+    else if (alpha == 0x08) {
+        tga.col++;
+    }
+    if (tga.col*8 != (int)tga.hd[16]) {
+        tga.col = (int)tga.hd[16]/8;
+        PRINT_MESG("JBXL::readTGAData: Warning: Not Match Color Num! set color num = %d\n", tga.col);
+    }
+    //uByte dirx = tga.hd[17] & 0x10;        // X方向 0: Left -> Right
+    //uByte diry = tga.hd[17] & 0x20;        // Y方向 0: Down -> Top
+
+    PRINT_MESG("JBXL::readTGAData: TGA File (%d, %d, %d)\n", tga.xs, tga.ys, tga.col);
+
+    int datasize = tga.xs*tga.ys*tga.col;
+
+    tga.gp = (uByte*)malloc(datasize);
+    if (tga.gp==NULL) {
+        PRINT_MESG("JBXL::readTGAData: ERROR: no more Memory!\n");
+        tga.state = JBXL_GRAPH_MEMORY_ERROR;
+        return tga;
+    }
+
+    fseek(fp, (int)tga.hd[0], SEEK_CUR);
+    if (rle) {
+        // RLE
+        int   size = 0;
+        uByte chunk;
+        uByte buf[LBUF];
+
+        while (size<datasize && !feof(fp)) {
+            fread(&chunk, 1, 1, fp);
+            int rep = (int)(chunk & 0x7f) + 1;
+            if (chunk & 0x80) {
+                fread(buf, tga.col, 1, fp);
+                for (int j=0; j<rep; j++) {
+                    for (int i=0; i<tga.col; i++) tga.gp[size++] = buf[i];
+                }
+            }
+            else {
+                if (tga.col*rep<LBUF) {
+                    fread(buf, tga.col*rep, 1, fp);
+                    for (int i=0; i<tga.col*rep; i++) tga.gp[size++] = buf[i];
+                }
+                else {
+                    for (int j=0; j<rep; j++) {
+                        fread(buf, tga.col, 1, fp);
+                        for (int i=0; i<tga.col; i++) tga.gp[size++] = buf[i];
+                    }
+                }
+            }
+        }
+        if (size!=datasize) {
+            DEBUG_MODE PRINT_MESG("JBXL::readTGAData: ERROR: unpack RLE failed. (%d != %d), format = %d\n", size, datasize, kind);
+            tga.state = JBXL_GRAPH_RDFILE_ERROR;
+            return tga;
+        }
+    }
+    else {
+        fread(tga.gp, datasize, 1, fp);
+    }
+    if (!feof(fp)) fread(tga.ft, TGA_FOOTER_SIZE, 1, fp);
 
     return tga;
 }
@@ -184,7 +279,7 @@ tga の画像データを fnameに書き出す．
 @param  fname  ファイル名
 @param  tga    保存する TGAデータ
 
-@retval 0                   正常終了
+@retval 0                        正常終了
 @retval JBXL_GRAPH_OPFILE_ERROR  ファイルオープンエラー
 @retval JBXL_GRAPH_HEADER_ERROR  不正ファイル（TGAファイルでない？）
 @retval JBXL_GRAPH_MEMORY_ERROR  メモリエラー
@@ -220,12 +315,13 @@ tga の画像データを fpに書き出す．
 @param  fp     ファイル記述子
 @param  tga    保存する TGAデータ
 
-@retval 0                   正常終了
+@retval 0                        正常終了
 @retval JBXL_GRAPH_OPFILE_ERROR  ファイルオープンエラー
 @retval JBXL_GRAPH_HEADER_ERROR  不正ファイル（TGAファイルでない？）
 @retval JBXL_GRAPH_MEMORY_ERROR  メモリエラー
 @retval JBXL_GRAPH_NODATA_ERROR  tga にデータが無い
 @retval JBXL_GRAPH_IVDARG_ERROR  サポート外のチャンネル数
+@retval JBXL_GRAPH_IVDFMT_ERROR  サポート外のデータ形式
 */
 int  jbxl::writeTGAData(FILE* fp, TGAImage tga)
 {
@@ -233,24 +329,29 @@ int  jbxl::writeTGAData(FILE* fp, TGAImage tga)
     if (tga.col<=0 || tga.col>4) return JBXL_GRAPH_IVDARG_ERROR;
     if (tga.gp==NULL) return JBXL_GRAPH_NODATA_ERROR;
 
-    // Header  http://3dtech.jp/wiki/index.php?TGA画像フォーマット詳細
     memset(tga.hd, 0, TGA_HEADER_SIZE);
-    if (tga.col==3 || tga.col==4) tga.hd[2] = 2;    // Full Color
-    else                          tga.hd[2] = 3;    // Gray Scale
+    if      (tga.col==3 || tga.col==4) tga.hd[2] = 2;    // Full Color
+    else if (tga.col==1 || tga.col==2) tga.hd[2] = 3;    // Gray Scale
+    else return JBXL_GRAPH_IVDFMT_ERROR;
 
-    unsigned short int* size = (unsigned short int*)&(tga.hd[12]);
     if (is_little_endian()) {
-        size[0] = tga.xs;
-        size[1] = tga.ys;
+        tga.hd[12] = (uByte)(tga.xs%256);
+        tga.hd[13] = (uByte)(tga.xs/256);
+        tga.hd[14] = (uByte)(tga.ys%256);
+        tga.hd[15] = (uByte)(tga.ys/256);
     }
     else {
-        size[0] = htons(tga.xs);
-        size[1] = htons(tga.ys);
+        tga.hd[12] = (uByte)(tga.xs/256);
+        tga.hd[13] = (uByte)(tga.xs%256);
+        tga.hd[14] = (uByte)(tga.ys/256);
+        tga.hd[15] = (uByte)(tga.ys%256);
     }
 
-    tga.hd[16] = tga.col*8;
-    tga.hd[17] = 0x08 | 0x20;       // 0x0x8: αチャンネル深度, 0x20: Y方向:Top->Down
-
+    tga.hd[16] = tga.col*8;             // depth
+    tga.hd[17] = 0x20;                  // 0x20: Y方向:Top->Down
+    if (tga.col==2 || tga.col==4) {
+        tga.hd[17] |= 0x08;             // 0x08: αチャンネル深度
+    }
     fwrite(tga.hd, TGA_HEADER_SIZE, 1, fp);
 
     // Data

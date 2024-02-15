@@ -80,7 +80,6 @@ extern int  TIFF_Swap_Flag;
 #define  TIFF_TAG_GEO_DOUBLE_PM 0x87b0  // 34736
 #define  TIFF_TAG_GEO_ASCII_PM  0x87b1  // 34737
 
-
 //////////////////////////////////////////////////////////////////////////////////////////
 TIFF_ifd** read_tiff_file(const char* fname);
 TIFF_ifd*  get_tiff_ifd(unsigned char* buf, int num);

@@ -176,6 +176,7 @@ void    jbxl_add_state(int id, const char* smb, const char* str);
 #define  JBXL_GRAPH_IVDMODE_ERROR   -2021       ///< 無効なモード
 #define  JBXL_GRAPH_IVDPARAM_ERROR  -2022       ///< 無効なパラメータ
 #define  JBXL_GRAPH_IVDDATA_ERROR   -2023       ///< 無効なデータ
+#define  JBXL_GRAPH_IVDFMT_ERROR    -2024       ///< 無効なデータ形式
 
 #define  JBXL_GRAPH_THROUGH_ERROR   -2888       ///< エラー処理をスルーする
 
