@@ -27,6 +27,11 @@ void  TGAImage::init(void)
 
     memset(hd, 0, TGA_HEADER_SIZE);
     memset(ft, 0, TGA_FOOTER_SIZE);
+
+    int len = strlen(TGA_FOOTER_STR) + 1;
+    int pos = TGA_FOOTER_SIZE - len;
+    memcpy(ft + pos, TGA_FOOTER_STR, len);
+
     return;
 }
 
@@ -357,6 +362,8 @@ int  jbxl::writeTGAData(FILE* fp, TGAImage tga)
     // Data
     int len = tga.xs*tga.ys*tga.col;
     fwrite(tga.gp, len, 1, fp);
+
+    fwrite(tga.ft, TGA_FOOTER_SIZE, 1, fp);
 
     return 0;
 }

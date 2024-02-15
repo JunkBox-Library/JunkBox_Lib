@@ -15,6 +15,8 @@
 
 #define  TGA_HEADER_SIZE  18
 #define  TGA_FOOTER_SIZE  26
+#define  TGA_FOOTER_STR   "TRUEVISION-XFILE."
+
 
 //
 namespace jbxl {
