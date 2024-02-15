@@ -5,10 +5,13 @@ rewrite configure.ac, doxygen.conf
 working now ..... v1.9.1
 
 v1.9.1
+	C++Lib
+	    TgaTool.cpp  read用関数の実装．書き出し時の RLEサポート．
+	    readXHead(), readXHeadFile(), readCmnHeadFile() for x64
 	add OBJData class
 	CmnHead_entry（ファイル用）導入
 	read_xxx_file(), read_cmn_header(), read_cmn_file() for x64
-	C++Lib: readXHead(), readXHeadFile(), readCmnHeadFile() for x64
+
 
 v1.9.0 '24/12/29
 	fix tjson.c ([ で始まる場合). 色々書き直し．
