@@ -152,19 +152,22 @@ template <typename T>  MSGraph<T> TGAImage2MSGraph(TGAImage tga)
 
 
 /**
-template <typename T>  TGAImage  MSGraph2TGAImage(MSGraph<T> vp)
+template <typename T>  TGAImage  MSGraph2TGAImage(MSGraph<T> vp, bool rle)
 
 MSGraph型イメージデータを TGAイメージデータに変換する
 ヘッダ情報は変換しない（別途変換する）．
 
-@param  vp  MSGraph型イメージデータ
+@param  vp   MSGraph型イメージデータ
+@param  rle  RLE（連長圧縮）を行うかどうか
+
 @return TGAイメージデータ
 @retval JBXL_GRAPH_NODATA_ERROR @b state データ無し
 @retval JBXL_GRAPH_MEMORY_ERROR @b state メモリ確保エラー 
 */
-template <typename T>  TGAImage  MSGraph2TGAImage(MSGraph<T> vp)
+template <typename T>  TGAImage  MSGraph2TGAImage(MSGraph<T> vp, bool rle)
 {
     TGAImage tga;
+    tga.init();
 
     if (vp.isNull()) {
         tga.state = JBXL_GRAPH_NODATA_ERROR;
@@ -254,6 +257,8 @@ template <typename T>  TGAImage  MSGraph2TGAImage(MSGraph<T> vp)
         tga.state = JBXL_GRAPH_IVDARG_ERROR;
         tga.free();
     }
+
+    if (tga.state==0) setupTGAData(&tga, rle);
 
     return tga;
 }
