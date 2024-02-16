@@ -29,7 +29,7 @@ void  TGAImage::init(void)
     memset(hd, 0, TGA_HEADER_SIZE);
     memset(ft, 0, TGA_FOOTER_SIZE);
 
-    int len = strlen(TGA_FOOTER_STR) + 1;
+    int len = (int)strlen(TGA_FOOTER_STR) + 1;
     int pos = TGA_FOOTER_SIZE - len;
     memcpy(ft + pos, TGA_FOOTER_STR, len);
 
@@ -220,9 +220,6 @@ TGAImage  jbxl::readTGAData(FILE* fp)
         tga.col = (int)tga.hd[16]/8;
         PRINT_MESG("JBXL::readTGAData: Warning: Not Match Color Num! set color num = %d\n", tga.col);
     }
-    //uByte dirx = tga.hd[17] & 0x10;        // X方向 0: Left -> Right
-    //uByte diry = tga.hd[17] & 0x20;        // Y方向 0: Down -> Top
-
     PRINT_MESG("JBXL::readTGAData: TGA File (%d, %d, %d)\n", tga.xs, tga.ys, tga.col);
 
     int datasize = tga.xs*tga.ys*tga.col;
@@ -381,6 +378,8 @@ int  jbxl::setupTGAData(TGAImage* tga, bool rle)
 
     tga->hd[16] = tga->col*8;                   // depth
     tga->hd[17] = 0x20;                         // 0x20: Y方向:Top->Down
+    tga->hd[10] = tga->hd[14];                  // Y posion for 0x20
+    tga->hd[11] = tga->hd[15];                  // 
     if (tga->col==2 || tga->col==4) {
         tga->hd[17] |= 0x08;                    // 0x08: αチャンネル深度
     }
