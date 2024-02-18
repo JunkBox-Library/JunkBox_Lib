@@ -70,7 +70,7 @@ public:
 
     void    setAffineTrans (AffineTrans<double> a) { delAffineTrans(); affine_trans = new AffineTrans<double>(); affine_trans->dup(a);}
     void    delAffineTrans (void) { freeAffineTrans(this->affine_trans);}
-    void    execAffineTrans(void);
+    void    execAffineTrans(bool shift);
 
     void    addObject(MeshObjectData* meshdata, bool collider);
 

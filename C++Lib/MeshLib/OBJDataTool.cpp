@@ -148,7 +148,7 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
 }
 
 
-void  OBJData::execAffineTrans(void)
+void  OBJData::execAffineTrans(bool shift)
 {
     OBJData* obj = this->next;
     while (obj!=NULL) {
@@ -156,7 +156,8 @@ void  OBJData::execAffineTrans(void)
             OBJFacetGeoNode* facet = obj->geo_node;
             while(facet!=NULL) {
                 for (int i=0; i<facet->num_vertex; i++) {
-                    facet->vv[i] = obj->affine_trans->execTrans (facet->vv[i]);
+                    if (shift) facet->vv[i] = obj->affine_trans->execTrans(facet->vv[i]);
+                    else       facet->vv[i] = obj->affine_trans->execRotateScale(facet->vv[i]);
                     facet->vn[i] = obj->affine_trans->execRotate(facet->vn[i]);
                 }
                 facet = facet->next;
