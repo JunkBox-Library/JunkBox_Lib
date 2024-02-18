@@ -69,7 +69,7 @@ private:
     bool     flipV;         ///< UVマップで V方向の反転を行うか
 
 public:
-    TextureParam(void) { name = init_Buffer();}
+    TextureParam(void) { init();}
     virtual ~TextureParam(void) {}
 
     void    init (void);

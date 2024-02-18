@@ -16,8 +16,8 @@ void  TextureParam::init(void)
     for (int i=0; i<4; i++) color[i] = 1.0;
 
     alphaChannel = false;
-    alphaMode    = MATERIAL_ALPHA_NONE;
     alphaCutoff  = 0.0;
+    alphaMode    = MATERIAL_ALPHA_NONE;
 
     shiftU       = 0.0;
     shiftV       = 0.0;
