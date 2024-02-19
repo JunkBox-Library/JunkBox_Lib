@@ -162,23 +162,55 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
 }
 
 
-void  OBJData::execAffineTrans(bool shift)
+/**
+Vector<double>  OBJData::execAffineTrans(bool origin)
+
+OBJデータの Affine変換を行う．
+origin が trueの場合，データの中心を原点に戻し，実際の位置をオフセットで返す．
+
+@param  origin  データを原点に戻すか？
+@retval データのオフセット．
+*/
+Vector<double>  OBJData::execAffineTrans(bool origin)
 {
+    Vector<double> center(0.0, 0.0, 0.0);
+    int total = 0;
+
     OBJData* obj = this->next;
     while (obj!=NULL) {
         if (obj->affine_trans!=NULL) {
             OBJFacetGeoNode* facet = obj->geo_node;
             while(facet!=NULL) {
                 for (int i=0; i<facet->num_vertex; i++) {
-                    if (shift) facet->vv[i] = obj->affine_trans->execTrans(facet->vv[i]);
-                    else       facet->vv[i] = obj->affine_trans->execRotateScale(facet->vv[i]);
+                    facet->vv[i] = obj->affine_trans->execTrans(facet->vv[i]);
                     facet->vn[i] = obj->affine_trans->execRotate(facet->vn[i]);
+                    center = center + facet->vv[i];
+                    total++;
                 }
                 facet = facet->next;
             }
         }
         obj = obj->next;
     }
+
+    if (origin) {
+        // Come back!
+        center = center / total;
+        obj = this->next;
+        while (obj != NULL) {
+            if (obj->affine_trans != NULL) {
+                OBJFacetGeoNode* facet = obj->geo_node;
+                while (facet != NULL) {
+                    for (int i = 0; i < facet->num_vertex; i++) {
+                        facet->vv[i] = facet->vv[i] - center;
+                    }
+                    facet = facet->next;
+                }
+            }
+            obj = obj->next;
+        }
+    }
+    return center;
 }
 
 

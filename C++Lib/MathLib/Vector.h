@@ -118,6 +118,10 @@ template <typename T> inline void Vector<T>::set(T X, T Y, T Z, double N, double
 }
 
 
+// Cast 
+template <typename T, typename R> inline Vector<T> Cast(Vector<R> v) { return Vector<T>((T)v.x, (T)v.y, (T)v.z, v.n, v.c, v.d);}
+
+
 ///////////////////////////////////////////////////////////////////////////
 // Vector オペレータ
 
