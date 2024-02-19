@@ -10,7 +10,7 @@ v1.9.1
 	    TgaTool.cpp  read用関数の実装．書き出し時の RLEサポート．
 	    readXHead(), readXHeadFile(), readCmnHeadFile() for x64
 	add OBJData class
-	CmnHead_entry（ファイル用）導入
+	CmnHead_Entry（ファイル用）導入
 	read_xxx_file(), read_cmn_header(), read_cmn_file() for x64
 
 
