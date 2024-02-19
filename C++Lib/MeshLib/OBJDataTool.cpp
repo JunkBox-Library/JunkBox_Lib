@@ -210,6 +210,9 @@ Vector<double>  OBJData::execAffineTrans(bool origin)
             obj = obj->next;
         }
     }
+    else {
+        center.init();      // 0.0
+    }
     return center;
 }
 
