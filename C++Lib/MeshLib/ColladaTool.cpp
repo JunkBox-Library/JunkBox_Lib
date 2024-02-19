@@ -307,7 +307,7 @@ char*  ColladaXML::addTexcrdSource(tXML* mesh, MeshObjectData* meshdata)
                     if (meshdata->affine_trans!=NULL) scale = meshdata->affine_trans->scale;
                     facet->generatePlanarUVMap(scale, uvmap);
                 }
-                facet->execAffineTrans(uvmap, facet->num_texcrd);
+                facet->execAffineTransUVMap(uvmap, facet->num_texcrd);
 
                 for (int i=0; i<facet->num_texcrd; i++) {
                     append_xml_content(source_array, dtostr(uvmap[i].u));

@@ -110,7 +110,7 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
             if (meshdata->affine_trans!=NULL) scale = meshdata->affine_trans->scale;
             facet->generatePlanarUVMap(scale, facet->texcrd_value);
         }
-        facet->execAffineTrans(facet->texcrd_value, facet->num_vertex);
+        facet->execAffineTransUVMap(facet->texcrd_value, facet->num_vertex);
 
         // Geometory
         *_geo_node = new OBJFacetGeoNode();

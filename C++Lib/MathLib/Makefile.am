@@ -6,7 +6,7 @@ AM_CFLAGS = -fPIC -W -Wall -I../BasicLib/Lib  -I../BasicLib
 AM_CFLAGS += @DEBUG@ -DCPLUSPLUS
 
 
-SRC = Rotation.cpp Matrix++.cpp TVector.cpp Tolerance.cpp Vector.cpp
+SRC = AffineTrans.cpp Rotation.cpp Matrix++.cpp TVector.cpp Tolerance.cpp Vector.cpp
 
 
 CC  = g++

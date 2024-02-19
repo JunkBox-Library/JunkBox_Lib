@@ -6,6 +6,7 @@
 
 #include  "TriBrep.h"
 #include  "Rotation.h"
+#include  "AffineTrans.h"
 #include  "ContourBaseData.h"
 #include  "MaterialParam.h"
 
@@ -76,7 +77,7 @@ public:
     void    setMaterialID(const char* str);
     void*   getMaterialID(void) { return _tochar(material_id.buf);}
 
-    void    execAffineTrans(UVMap<double>* uvmap=NULL, int num=-1);
+    void    execAffineTransUVMap(UVMap<double>* uvmap=NULL, int num=-1);
     UVMap<double>*  generatePlanarUVMap(Vector<double> scale, UVMap<double>* uvmap=NULL);
 
 public:
@@ -138,7 +139,7 @@ public:
     void    setName(const char* str) { free_Buffer(&data_name); data_name=make_Buffer_str(str);}
     char*   getName(void) { return _tochar(data_name.buf);}
     
-    void    setAffineTrans(AffineTrans<double> a) { delAffineTrans(); affine_trans=new AffineTrans<double>(); affine_trans->dup(a);}
+    void    setAffineTrans(AffineTrans<double> a) { delAffineTrans(); affine_trans = new AffineTrans<double>(); affine_trans->dup(a);}
     void    delAffineTrans(void) { freeAffineTrans(affine_trans);}
 
 public:

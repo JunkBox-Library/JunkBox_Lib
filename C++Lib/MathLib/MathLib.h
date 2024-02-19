@@ -19,6 +19,7 @@
 #include  "BasicLib.h"
 #include  "TVector.h"
 #include  "Rotation.h"
+#include  "AffineTrans.h"
 
 
 #define  JBXL_MATHLIB_VERSION   "v6.0 stable  '20 11/23" 

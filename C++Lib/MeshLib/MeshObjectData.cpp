@@ -322,7 +322,7 @@ bool  MeshFacetNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>*
 }
 
 
-void  MeshFacetNode::execAffineTrans(UVMap<double>* uvmap, int uvnum)
+void  MeshFacetNode::execAffineTransUVMap(UVMap<double>* uvmap, int uvnum)
 {
     if (uvmap==NULL) uvmap = texcrd_value;
     if (uvnum==-1)   uvnum = num_texcrd;
