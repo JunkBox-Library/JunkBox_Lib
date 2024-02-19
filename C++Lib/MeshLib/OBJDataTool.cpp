@@ -117,8 +117,13 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
         *_mtl_node = new OBJFacetMtlNode();
         (*_geo_node)->num_index = facet->num_index;
         (*_geo_node)->data_index = (int*)malloc(sizeof(int)*(*_geo_node)->num_index);
-        for (int i=0; i<(*_geo_node)->num_index; i++) {
-            (*_geo_node)->data_index[i] = facet->data_index[i];
+        if ((*_geo_node)->data_index != NULL) {
+            for (int i = 0; i < (*_geo_node)->num_index; i++) {
+                (*_geo_node)->data_index[i] = facet->data_index[i];
+            }
+        }
+        else {
+            return;
         }
 
         (*_geo_node)->collider = collider;
@@ -126,10 +131,19 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
         (*_geo_node)->vv = (Vector<double>*)malloc(sizeof(Vector<double>)*(*_geo_node)->num_vertex);
         (*_geo_node)->vn = (Vector<double>*)malloc(sizeof(Vector<double>)*(*_geo_node)->num_vertex);
         (*_geo_node)->vt = (UVMap<double>*) malloc(sizeof(UVMap<double>) *(*_geo_node)->num_vertex);
-        for (int i=0; i<(*_geo_node)->num_vertex; i++) {
-            (*_geo_node)->vv[i] = facet->vertex_value[i];
-            (*_geo_node)->vn[i] = facet->normal_value[i];
-            (*_geo_node)->vt[i] = facet->texcrd_value[i];
+        if ((*_geo_node)->vv != NULL && (*_geo_node)->vn != NULL && (*_geo_node)->vt != NULL) {
+            for (int i = 0; i < (*_geo_node)->num_vertex; i++) {
+                (*_geo_node)->vv[i] = facet->vertex_value[i];
+                (*_geo_node)->vn[i] = facet->normal_value[i];
+                (*_geo_node)->vt[i] = facet->texcrd_value[i];
+            }
+        }
+        else {
+            freeNull((*_geo_node)->vv);
+            freeNull((*_geo_node)->vn);
+            freeNull((*_geo_node)->vt);
+            freeNull((*_geo_node)->data_index);
+            return;
         }
 
         // Material
