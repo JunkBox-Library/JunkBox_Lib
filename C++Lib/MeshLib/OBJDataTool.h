@@ -57,7 +57,7 @@ public:
     OBJFacetGeoNode* geo_node;
     OBJFacetMtlNode* mtl_node;
 
-    AffineTrans<double>* affine_trans;
+    AffineTrans<double>* affineTrans;
 
 public:
     void    init(int n); 
@@ -68,8 +68,8 @@ public:
     void    setUE(bool b)    { this->forUE = b;}
     void    setEngine(int);
 
-    void    setAffineTrans (AffineTrans<double> a) { delAffineTrans(); affine_trans = new AffineTrans<double>(); affine_trans->dup(a);}
-    void    delAffineTrans (void) { freeAffineTrans(this->affine_trans);}
+    void    setAffineTrans (AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}
+    void    delAffineTrans (void) { freeAffineTrans(this->affineTrans);}
     Vector<double> execAffineTrans(bool origin);
 
     void    addObject(MeshObjectData* meshdata, bool collider);

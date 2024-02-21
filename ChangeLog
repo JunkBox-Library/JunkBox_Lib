@@ -6,6 +6,7 @@ working now ..... v1.9.1
 
 v1.9.1
 	C++Lib
+	    affine_trans -> affineTrans
 	    Rotation.h を Rotation.h と AffineTrans.h に分離
 	    TgaTool.cpp  read用関数の実装．書き出し時の RLEサポート．
 	    readXHead(), readXHeadFile(), readCmnHeadFile() for x64

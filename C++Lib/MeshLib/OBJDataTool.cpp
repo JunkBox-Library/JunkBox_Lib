@@ -31,7 +31,7 @@ void  OBJData::init(int n)
     this->next     = NULL;
     this->geo_node = NULL;
     this->mtl_node = NULL;
-    this->affine_trans = NULL;
+    this->affineTrans = NULL;
 }
 
 
@@ -40,7 +40,7 @@ void  OBJData::free(void)
     free_Buffer(&(this->obj_name));
 
     this->delAffineTrans();
-    this->affine_trans = NULL;
+    this->affineTrans = NULL;
 
     delete(this->geo_node);
     delete(this->mtl_node);
@@ -89,8 +89,8 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
     ptr_obj->next = new OBJData(-1);
     this->num_obj++;
 
-    if (meshdata->affine_trans!=NULL) { // Grass の場合は NULL
-        ptr_obj->next->setAffineTrans(*meshdata->affine_trans);
+    if (meshdata->affineTrans!=NULL) { // Grass の場合は NULL
+        ptr_obj->next->setAffineTrans(*meshdata->affineTrans);
     }
     ptr_obj->next->obj_name = dup_Buffer(meshdata->data_name);
 
@@ -107,7 +107,7 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
         // UV Map and PLANAR Texture
         if (facet->material_param.mapping == MATERIAL_MAPPING_PLANAR) {
             Vector<double> scale(1.0, 1.0, 1.0);
-            if (meshdata->affine_trans!=NULL) scale = meshdata->affine_trans->scale;
+            if (meshdata->affineTrans!=NULL) scale = meshdata->affineTrans->scale;
             facet->generatePlanarUVMap(scale, facet->texcrd_value);
         }
         facet->execAffineTransUVMap(facet->texcrd_value, facet->num_vertex);
@@ -178,12 +178,12 @@ Vector<double>  OBJData::execAffineTrans(bool origin)
 
     OBJData* obj = this->next;
     while (obj!=NULL) {
-        if (obj->affine_trans!=NULL) {
+        if (obj->affineTrans!=NULL) {
             OBJFacetGeoNode* facet = obj->geo_node;
             while(facet!=NULL) {
                 for (int i=0; i<facet->num_vertex; i++) {
-                    facet->vv[i] = obj->affine_trans->execTrans(facet->vv[i]);
-                    facet->vn[i] = obj->affine_trans->execRotate(facet->vn[i]);
+                    facet->vv[i] = obj->affineTrans->execTrans(facet->vv[i]);
+                    facet->vn[i] = obj->affineTrans->execRotate(facet->vn[i]);
                     center = center + facet->vv[i];
                     total++;
                 }
@@ -198,7 +198,7 @@ Vector<double>  OBJData::execAffineTrans(bool origin)
         center = center / total;
         obj = this->next;
         while (obj != NULL) {
-            if (obj->affine_trans != NULL) {
+            if (obj->affineTrans != NULL) {
                 OBJFacetGeoNode* facet = obj->geo_node;
                 while (facet != NULL) {
                     for (int i = 0; i < facet->num_vertex; i++) {

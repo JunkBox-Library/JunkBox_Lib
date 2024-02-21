@@ -439,7 +439,7 @@ void  MeshObjectData::init(const char* name)
 
     facet        = NULL;
     facet_end    = NULL;
-    affine_trans = NULL;
+    affineTrans = NULL;
 
     num_import   = 0;
     impvtx_value = NULL;
@@ -804,7 +804,7 @@ void  MeshObjectData::joinData(MeshObjectData*& data)
     num_node   += data->num_node;
 
     if (facet_end==NULL) {   //  最初のデータ
-        setAffineTrans(*data->affine_trans);
+        setAffineTrans(*data->affineTrans);
         facet = data->facet;
         facet_end = data->facet_end;
     }

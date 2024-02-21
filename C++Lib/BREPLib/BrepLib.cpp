@@ -94,13 +94,13 @@ int  BrepSolidList::addSolid(MeshObjectData* mesh)
     solid->facetno = fno;
 
     //
-    if (mesh->affine_trans!=NULL) {
+    if (mesh->affineTrans!=NULL) {
         long int  vnum;
         BREP_VERTEX** vertex_data = GetOctreeVertices(solid->octree, &vnum);
 
         for (long int i=0; i<vnum; i++) {
-            vertex_data[i]->point  = mesh->affine_trans->execTrans (vertex_data[i]->point);
-            vertex_data[i]->normal = mesh->affine_trans->execRotate(vertex_data[i]->normal);
+            vertex_data[i]->point  = mesh->affineTrans->execTrans (vertex_data[i]->point);
+            vertex_data[i]->normal = mesh->affineTrans->execRotate(vertex_data[i]->normal);
         }
         ::free(vertex_data);
     }

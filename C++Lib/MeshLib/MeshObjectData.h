@@ -117,7 +117,7 @@ public:
     MeshFacetNode* facet;               ///< FACETデータのリストへのポインタ
     MeshFacetNode* facet_end;           ///< FACETデータのリストの最後のデータへのポインタ
 
-    AffineTrans<double>* affine_trans;  ///< アフィン変換．ここで使用するのは，shift, rotate, scale(size) のみ
+    AffineTrans<double>* affineTrans;   ///< アフィン変換．ここで使用するのは，shift, rotate, scale(size) のみ
 
 private: // 入力データの作業用
     int     num_import;                 ///< 入力データの数
@@ -139,8 +139,8 @@ public:
     void    setName(const char* str) { free_Buffer(&data_name); data_name=make_Buffer_str(str);}
     char*   getName(void) { return _tochar(data_name.buf);}
     
-    void    setAffineTrans(AffineTrans<double> a) { delAffineTrans(); affine_trans = new AffineTrans<double>(); affine_trans->dup(a);}
-    void    delAffineTrans(void) { freeAffineTrans(affine_trans);}
+    void    setAffineTrans(AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}
+    void    delAffineTrans(void) { freeAffineTrans(affineTrans);}
 
 public:
     bool    addData(ContourBaseData* facetdata, MaterialParam* param);

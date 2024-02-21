@@ -304,7 +304,7 @@ char*  ColladaXML::addTexcrdSource(tXML* mesh, MeshObjectData* meshdata)
                 // PLANAR Texture
                 if (facet->material_param.mapping==MATERIAL_MAPPING_PLANAR) {
                     Vector<double> scale(1.0, 1.0, 1.0);
-                    if (meshdata->affine_trans!=NULL) scale = meshdata->affine_trans->scale;
+                    if (meshdata->affineTrans!=NULL) scale = meshdata->affineTrans->scale;
                     facet->generatePlanarUVMap(scale, uvmap);
                 }
                 facet->execAffineTransUVMap(uvmap, facet->num_texcrd);
@@ -691,10 +691,10 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
 
     bool local_affine = true;
     AffineTrans<double> affine;
-    if (meshdata->affine_trans!=NULL) {
+    if (meshdata->affineTrans!=NULL) {
         local_affine = false;
         affine.free();
-        affine = *(meshdata->affine_trans);
+        affine = *(meshdata->affineTrans);
     }
 
     Buffer geometry_name = dup_Buffer(meshdata->data_name);
