@@ -51,6 +51,7 @@ template <typename T> inline void deleteNull(T& p) { delete p; p = (T)NULL;}
 #define   JBXL_3D_FORMAT_DAE        1
 #define   JBXL_3D_FORMAT_OBJ        2
 #define   JBXL_3D_FORMAT_FBX        3
+#define   JBXL_3D_FORMAT_STL        8
 #define   JBXL_3D_FORMAT_STL_A      8
 #define   JBXL_3D_FORMAT_STL_B      9
 
