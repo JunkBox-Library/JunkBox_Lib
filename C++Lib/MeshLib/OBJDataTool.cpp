@@ -334,10 +334,10 @@ void  OBJData::output_obj(FILE* fp, const char* mtl_path)
             for (int i=0; i<facet->num_vertex; i++) {
                 Vector<float> vv = Vector<float>((float)facet->vv[i].x, (float)facet->vv[i].y, (float)facet->vv[i].z);
                 if (this->engine == JBXL_3D_ENGINE_UE) {
-                    fprintf(fp, "v %f %f %f\n", vv.x*100.f, vv.y*100.f, vv.z*100.f);  // for UE
+                    fprintf(fp, "v %f %f %f\n", vv.x*100.f, vv.y*100.f, vv.z*100.f);    // for UE
                 }
                 else {
-                    fprintf(fp, "v %f %f %f\n", vv.x, vv.z, -vv.y);                   // for Unity
+                    fprintf(fp, "v %f %f %f\n", vv.x, vv.z, -vv.y);                     // for Unity
                 }
             }
             for (int i=0; i<facet->num_vertex; i++) {
@@ -347,14 +347,14 @@ void  OBJData::output_obj(FILE* fp, const char* mtl_path)
             for (int i=0; i<facet->num_vertex; i++) {
                 Vector<float> vn = Vector<float>((float)facet->vn[i].x, (float)facet->vn[i].y, (float)facet->vn[i].z);
                 if (this->engine == JBXL_3D_ENGINE_UE) {
-                    fprintf(fp, "vn %f %f %f\n", vn.x, vn.y, vn.z);       // for UE
+                    fprintf(fp, "vn %f %f %f\n", vn.x, vn.y, vn.z);                     // for UE
                 }
                 else {
-                    fprintf(fp, "vn %f %f %f\n", vn.x, vn.z, -vn.y);      // for Unity
+                    fprintf(fp, "vn %f %f %f\n", vn.x, vn.z, -vn.y);                    // for Unity
                 }
             }
             //
-            fprintf(fp, "usemtl %s\n", facet->material.buf+1);    // マテリアル名
+            fprintf(fp, "usemtl %s\n", facet->material.buf+1);                          // マテリアル名
             for (int i=0; i<facet->num_index/3; i++) {
                 fprintf(fp, "f %d/%d/%d", facet->data_index[i*3  ]+p_num, facet->data_index[i*3  ]+p_num, facet->data_index[i*3  ]+p_num);
                 fprintf(fp, " %d/%d/%d ", facet->data_index[i*3+1]+p_num, facet->data_index[i*3+1]+p_num, facet->data_index[i*3+1]+p_num);
