@@ -1,6 +1,6 @@
 ﻿/**
 @brief    OBJ用 ツール
-@file     OBJTool.cpp
+@file     OBJDataTool.cpp
 @author   Fumi.Iseki (C)
 */
 
