@@ -202,7 +202,7 @@ template <typename T> inline bool operator == (const Vector<T> v1, const Vector<
 
 
 template <typename T> inline bool operator != (const Vector<T> v1, const Vector<T> v2)
-{ return (v1.x != v2.x || v1.y != v2.y || v1.z != 2.z); }
+{ return (v1.x != v2.x || v1.y != v2.y || v1.z != v2.z); }
 
 
 template <typename T> inline Vector<T> MidPoint(const Vector<T> a, const Vector<T> b)
