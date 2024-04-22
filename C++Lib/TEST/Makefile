@@ -1,15 +1,16 @@
 #
 #
 
-OPENJPEG_VERSION = 21
-OPJINC = /usr/local/include/openjpeg-2.1
+OPENJPEG_VERSION = 25
+OPJINC = /usr/local/include/openjpeg-2.5
 
 OPJLIB = openjp2
 
 
 #SUBJ = texture_entry primmesher tree 
+SUBJ = jp2k 
 #SUBJ = jp2k meshdump2 meshdump oarprim primmesher texture_entry 
-SUBJ = meshdump rot1 rot2 rot3 rot4 rot5 rot6 rot7
+#SUBJ = meshdump rot1 rot2 rot3 rot4 rot5 rot6 rot7
 
 
 TOPDIR=../..

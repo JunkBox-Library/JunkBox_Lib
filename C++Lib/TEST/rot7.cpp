@@ -1,6 +1,7 @@
 ﻿
 #include "common++.h"
 #include "Rotation.h"
+#include "AffineTrans.h"
 
 
 int main()

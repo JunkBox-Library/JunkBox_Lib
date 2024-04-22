@@ -9,6 +9,7 @@
 using namespace jbxl;
 
 
+
 int main(int argc, char** argv)
 {
     DebugMode = ON;
@@ -17,9 +18,8 @@ int main(int argc, char** argv)
 
     JPEG2KImage jp2 = readJPEG2KFile(argv[1]);
 
-    if (jp2.isNull()) printf("SSSSSSSSSSSSSSSSSS\n");
-
-    printf(" %d - %d - %d\n", jp2.col, jp2.state, (int)jp2.image->numcomps);
+    if (jp2.isNull()) printf("Null\n");
+    else printf(" %d - %d - %d - %d\n", jp2.col, jp2.state, (int)jp2.image->numcomps, jp2.cmode);
 
     return 0;
 }

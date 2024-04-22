@@ -97,18 +97,20 @@ void  JPEG2KImage::setup_image(void)
         int depth = (int)image->comps->bpp;
 #else
         int depth = (int)image->comps->prec;
-#endif
+#endif 
+        DEBUG_MODE PRINT_MESG("JBXL::JPEG2KIMage::setup_image: INFO: xs  = %d, ys = %d\n", xs, ys);
+        DEBUG_MODE PRINT_MESG("JBXL::JPEG2KIMage::setup_image: INFO: col = %d, depth = %d\n", col, depth);
         if (depth==0) {
             if      (col==3) cmode = GRAPH_COLOR_RGB;
             else if (col==4) cmode = GRAPH_COLOR_RGBA;
             else if (col==1) cmode = GRAPH_COLOR_MONO;
         }
         else if (depth==32) {
-            if      (col==3) cmode = GRAPH_COLOR_RGB;
-            else if (col==4) cmode = GRAPH_COLOR_RGBA;
+            if      (col==3) cmode = GRAPH_COLOR_XRGB32;
+            else if (col==4) cmode = GRAPH_COLOR_RGBA32;
         }
         else if (depth==24) {
-            if      (col==3) cmode = GRAPH_COLOR_RGB;
+            if      (col==3) cmode = GRAPH_COLOR_RGB24;
         }
         else if (depth==16) {
             if      (col==1) cmode = GRAPH_COLOR_MONO16;
@@ -116,7 +118,9 @@ void  JPEG2KImage::setup_image(void)
             else if (col==4) cmode = GRAPH_COLOR_RGBA16;
         }
         else if (depth==8) {
-            if      (col==1) cmode = GRAPH_COLOR_MONO;
+            if      (col==3) cmode = GRAPH_COLOR_RGB;
+            else if (col==4) cmode = GRAPH_COLOR_RGBA;
+            else if (col==1) cmode = GRAPH_COLOR_MONO;
         }
   
 /*
