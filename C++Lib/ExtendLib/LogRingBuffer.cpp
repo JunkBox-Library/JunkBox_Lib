@@ -126,7 +126,7 @@ void  CLogRingBuffer::putRingBuffer(Buffer buf, int input, int kind)
         if (pos>=maxBufSize) pos -= maxBufSize;
         if (!recalcX && maxLineY==maxBufSize && maxLineX==getLengthX(pos)) recalcX = true;
 
-        snprintf(num, 10, "%04d| ", pos);
+        snprintf(num, 10, "%05d| ", pos);
         copy_s2Buffer(num, &pBuf[pos]);
         if      (input==LOG_RB_ERROR)   cat_s2Buffer("ERROR: ", &pBuf[pos]);
         else if (input==LOG_RB_WARNING) cat_s2Buffer("WARN : ", &pBuf[pos]);
