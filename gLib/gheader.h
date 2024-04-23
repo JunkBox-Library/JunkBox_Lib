@@ -234,32 +234,32 @@ typedef struct _RGB24Data
 
 /**
 カラータイプ
-   ピクセルデータ毎にカラーの情報が入っている（PLANEモード）か，
-   カラー毎にバンクを持っているか（BANKモード）は zs(col) の値で判断する．
+   ピクセルデータ毎にカラーの情報が入っているか，
+   カラー毎に PLANEを持っているか（PLANEモード）は zsize(col) の値で判断する．
 */
 
-#define  GRAPH_COLOR_MONO       0       ///< 0x0000   PLANEモード only
+#define  GRAPH_COLOR_MONO       0       ///< 0x0000   no PLANEモード only
 #define  GRAPH_COLOR_MONO8      0
 #define  GRAPH_COLOR_GRAY       0
 
-#define  GRAPH_COLOR_MONO16     16      ///< 0x0010   PLANEモード only
+#define  GRAPH_COLOR_MONO16     16      ///< 0x0010   no PLANEモード only
 #define  GRAPH_COLOR_GRAY16     16
 
-#define  GRAPH_COLOR_R5G6B5     17      ///< 0x0011   PLANEモード only
+#define  GRAPH_COLOR_R5G6B5     17      ///< 0x0011   no PLANEモード only
 #define  GRAPH_COLOR_RGB16      17
 
-#define  GRAPH_COLOR_R4G4B4A4   18      ///< 0x0012   PLANEモード only
+#define  GRAPH_COLOR_R4G4B4A4   18      ///< 0x0012   no PLANEモード only
 #define  GRAPH_COLOR_RGBA16     18
 
-#define  GRAPH_COLOR_A4R4G4B4   19      ///< 0x0013   PLANEモード only
+#define  GRAPH_COLOR_A4R4G4B4   19      ///< 0x0013   no PLANEモード only
 #define  GRAPH_COLOR_ARGB16     19
  
-// 2BANK or 16bit PLANE
+// 2 PLANE or 16bit Pixcel
 #define  GRAPH_COLOR_MA         20      ///< 0x0014
 #define  GRAPH_COLOR_M8A8       20
 #define  GRAPH_COLOR_MA16       20
 
-// 3BANK or 24bit PLANE
+// 3 PLNAE or 24bit Pixcel
 #define  GRAPH_COLOR_R8G8B8     32      ///< 0x0020
 #define  GRAPH_COLOR_RGB24      32
 #define  GRAPH_COLOR_RGB        32
@@ -268,7 +268,7 @@ typedef struct _RGB24Data
 #define  GRAPH_COLOR_BGR24      48
 #define  GRAPH_COLOR_BGR        48
 
-// 4BANK or 32bit PLANE
+// 4 Plane or 32bit Pixcel
 #define  GRAPH_COLOR_A8R8G8B8   64      ///< 0x0040
 #define  GRAPH_COLOR_ARGB32     64
 #define  GRAPH_COLOR_ARGB       64
