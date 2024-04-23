@@ -230,137 +230,89 @@ typedef struct _RGB24Data
 #define  TIFF_DATA_STR          "TIFF"
 #define  CT_3D_VOL_STR          "3D VOL"
 
-#define  STATE_GRAPH_NOERR          0
+#define  STATE_GRAPH_NOERR      0
 
-// カラータイプ
-// Pixcel毎
-// 8bit
-#define  GRAPH_COLOR_MONO           0       ///< 0x0000
-#define  GRAPH_COLOR_MONO8          0
-#define  GRAPH_COLOR_GRAY           0
+/**
+カラータイプ
+   ピクセルデータ毎にカラーの情報が入っている（PLANEモード）か，
+   カラー毎にバンクを持っているか（BANKモード）は zs(col) の値で判断する．
+*/
 
-// 16bit
-#define  GRAPH_COLOR_MONO16         16      ///< 0x0010
-#define  GRAPH_COLOR_GRAY16         16
+#define  GRAPH_COLOR_MONO       0       ///< 0x0000   PLANEモード only
+#define  GRAPH_COLOR_MONO8      0
+#define  GRAPH_COLOR_GRAY       0
 
-#define  GRAPH_COLOR_R5G6B5         17      ///< 0x0011
-#define  GRAPH_COLOR_RGB16          17
+#define  GRAPH_COLOR_MONO16     16      ///< 0x0010   PLANEモード only
+#define  GRAPH_COLOR_GRAY16     16
 
-#define  GRAPH_COLOR_R4G4B4A4       18      ///< 0x0012
-#define  GRAPH_COLOR_RGBA16         18
+#define  GRAPH_COLOR_R5G6B5     17      ///< 0x0011   PLANEモード only
+#define  GRAPH_COLOR_RGB16      17
 
-#define  GRAPH_COLOR_A4R4G4B4       19      ///< 0x0013
-#define  GRAPH_COLOR_ARGB16         19
+#define  GRAPH_COLOR_R4G4B4A4   18      ///< 0x0012   PLANEモード only
+#define  GRAPH_COLOR_RGBA16     18
 
-#define  GRAPH_COLOR_MA             20      ///< 0x0014
-#define  GRAPH_COLOR_M8A8           20
-#define  GRAPH_COLOR_MA16           20
+#define  GRAPH_COLOR_A4R4G4B4   19      ///< 0x0013   PLANEモード only
+#define  GRAPH_COLOR_ARGB16     19
+ 
+// 2BANK or 16bit PLANE
+#define  GRAPH_COLOR_MA         20      ///< 0x0014
+#define  GRAPH_COLOR_M8A8       20
+#define  GRAPH_COLOR_MA16       20
 
-// 24bit
-#define  GRAPH_COLOR_R8G8B8         32      ///< 0x0020
-#define  GRAPH_COLOR_RGB24          32
-#define  GRAPH_COLOR_RGB            32
+// 3BANK or 24bit PLANE
+#define  GRAPH_COLOR_R8G8B8     32      ///< 0x0020
+#define  GRAPH_COLOR_RGB24      32
+#define  GRAPH_COLOR_RGB        32
 
-#define  GRAPH_COLOR_B8G8R8         48      ///< 0x0030
-#define  GRAPH_COLOR_BGR24          48
-#define  GRAPH_COLOR_BGR            48
+#define  GRAPH_COLOR_B8G8R8     48      ///< 0x0030
+#define  GRAPH_COLOR_BGR24      48
+#define  GRAPH_COLOR_BGR        48
 
-// 32bit
-#define  GRAPH_COLOR_A8R8G8B8       64      ///< 0x0040
-#define  GRAPH_COLOR_ARGB32         64
-#define  GRAPH_COLOR_ARGB           64
+// 4BANK or 32bit PLANE
+#define  GRAPH_COLOR_A8R8G8B8   64      ///< 0x0040
+#define  GRAPH_COLOR_ARGB32     64
+#define  GRAPH_COLOR_ARGB       64
 
-#define  GRAPH_COLOR_R8G8B8A8       65      ///< 0x0041
-#define  GRAPH_COLOR_RGBA32         65
-#define  GRAPH_COLOR_RGBA           65
+#define  GRAPH_COLOR_R8G8B8A8   65      ///< 0x0041
+#define  GRAPH_COLOR_RGBA32     65
+#define  GRAPH_COLOR_RGBA       65
 
-#define  GRAPH_COLOR_X8R8G8B8       66      ///< 0x0042
-#define  GRAPH_COLOR_XRGB32         66
-#define  GRAPH_COLOR_XRGB           66
+#define  GRAPH_COLOR_X8R8G8B8   66      ///< 0x0042
+#define  GRAPH_COLOR_XRGB32     66
+#define  GRAPH_COLOR_XRGB       66
 
-#define  GRAPH_COLOR_A8B8G8R8       80      ///< 0x0050
-#define  GRAPH_COLOR_ABGR32         80
-#define  GRAPH_COLOR_ABGR           80
+#define  GRAPH_COLOR_A8B8G8R8   80      ///< 0x0050
+#define  GRAPH_COLOR_ABGR32     80
+#define  GRAPH_COLOR_ABGR       80
 
-#define  GRAPH_COLOR_B8G8R8A8       81      ///< 0x0051
-#define  GRAPH_COLOR_BGRA32         81
-#define  GRAPH_COLOR_BGRA           81
+#define  GRAPH_COLOR_B8G8R8A8   81      ///< 0x0051
+#define  GRAPH_COLOR_BGRA32     81
+#define  GRAPH_COLOR_BGRA       81
 
-#define  GRAPH_COLOR_X8B8G8R8       82      ///< 0x0052
-#define  GRAPH_COLOR_XBGR32         82
-#define  GRAPH_COLOR_XBGR           82
-
-//
-// SPEC  
-#define  GRAPH_COLOR_SPEC_GRAY      96      ///< 0x0060
-#define  GRAPH_COLOR_SPEC_SRGB      97      ///< 0x0061   Standard RGB 
-#define  GRAPH_COLOR_SPEC_SYCC      98      ///< 0x0062   Standard YCC
-#define  GRAPH_COLOR_SPEC_EYCC      99      ///< 0x0063   Enhanced YCC
-#define  GRAPH_COLOR_SPEC_CMYK      100     ///< 0x0064   CMYK
+#define  GRAPH_COLOR_X8B8G8R8   82      ///< 0x0052
+#define  GRAPH_COLOR_XBGR32     82
+#define  GRAPH_COLOR_XBGR       82
 
 
-#define  GRAPH_COLOR_UNKNOWN        112     ///< 0x0070
-
-
-/////////////////////////////////////////////////////////////////////////////
-// for BANK mode: 各色のデータがバンク毎にまとまって存在するモード
-
-#define  GRAPH_COLOR_USE_BANK       128     ///< 0x0080
-#define  GRAPH_COLOR_MASK           127     ///< 0x007f
-
-// 3Bank
-#define  GRAPH_COLOR_BANK_R8G8B8    160     ///< 0x0020 + GRAPH_COLOR_USE_BANK
-#define  GRAPH_COLOR_BANK_RGB24     160
-#define  GRAPH_COLOR_BANK_RGB       160
-
-#define  GRAPH_COLOR_BANK_B8G8R8    176     ///< 0x0030 + GRAPH_COLOR_USE_BANK
-#define  GRAPH_COLOR_BANK_BGR24     176
-#define  GRAPH_COLOR_BANK_BGR       176
-
-// 4Bank
-#define  GRAPH_COLOR_BANK_A8R8G8B8  192     ///< 0x0040 + GRAPH_COLOR_USE_BANK
-#define  GRAPH_COLOR_BANK_ARGB32    192
-#define  GRAPH_COLOR_BANK_ARGB      192
-
-#define  GRAPH_COLOR_BANK_R8G8B8A8  193     ///< 0x0041 + GRAPH_COLOR_USE_BANK
-#define  GRAPH_COLOR_BANK_RGBA32    193
-#define  GRAPH_COLOR_BANK_RGBA      193
-
-#define  GRAPH_COLOR_BANK_X8R8G8B8  194     ///< 0x0042 + GRAPH_COLOR_USE_BANK
-#define  GRAPH_COLOR_BANK_XRGB32    194
-#define  GRAPH_COLOR_BANK_XRGB      194
-
-#define  GRAPH_COLOR_BANK_A8B8G8R8  208     ///< 0x0050 + GRAPH_COLOR_USE_BANK
-#define  GRAPH_COLOR_BANK_ABGR32    208
-#define  GRAPH_COLOR_BANK_ABGR      208
-
-#define  GRAPH_COLOR_BANK_B8G8R8A8  209     ///< 0x0051 + GRAPH_COLOR_USE_BANK
-#define  GRAPH_COLOR_BANK_BGRA32    209
-#define  GRAPH_COLOR_BANK_BGRA      209
-
-#define  GRAPH_COLOR_BANK_X8B8G8R8  210     ///< 0x0052 + GRAPH_COLOR_USE_BANK
-#define  GRAPH_COLOR_BANK_XBGR32    210
-#define  GRAPH_COLOR_BANK_XBGR      210
-
-#define  GRAPH_COLOR_BANK_CMYK      228     ///< 0x0064 + GRAPH_COLOR_USE_BANK
+#define  GRAPH_COLOR_UNKNOWN    112     ///< 0x0070
 
 
 /////////////////////////////////////////////////////////////////////////////
 // DICOM
-#define  DICOM_STUDY_GROUP          0x0020
-#define  DICOM_IMAGE_GROUP          0x0028
-#define  DICOM_PIXEL_GROUP          0x7fe0
+#define  DICOM_STUDY_GROUP      0x0020
+#define  DICOM_IMAGE_GROUP      0x0028
+#define  DICOM_PIXEL_GROUP      0x7fe0
 
-#define  DICOM_PIXEL_ELEMENT        0x0010
-#define  DICOM_XSIZE_ELEMENT        0x0011
-#define  DICOM_YSIZE_ELEMENT        0x0010
-#define  DICOM_PXLSPC_ELEMENT       0x0030
-#define  DICOM_DEPTH_ELEMENT        0x0100
-#define  DICOM_GRYLV_ELEMENT        0x0101
+#define  DICOM_PIXEL_ELEMENT    0x0010
+#define  DICOM_XSIZE_ELEMENT    0x0011
+#define  DICOM_YSIZE_ELEMENT    0x0010
+#define  DICOM_PXLSPC_ELEMENT   0x0030
+#define  DICOM_DEPTH_ELEMENT    0x0100
+#define  DICOM_GRYLV_ELEMENT    0x0101
 
-#define  DICOM_PIXCEL_VR            0x574f  ///< Not
-#define  DICOM_STR_VR               0x5344  ///< Z歪
-#define  DICOM_INT_VR               0x5355  ///< X, Y
+#define  DICOM_PIXCEL_VR        0x574f  ///< Not
+#define  DICOM_STR_VR           0x5344  ///< Z歪
+#define  DICOM_INT_VR           0x5355  ///< X, Y
 
 
 #endif      // __JBXL_GRAPHIC_HEADER_H_

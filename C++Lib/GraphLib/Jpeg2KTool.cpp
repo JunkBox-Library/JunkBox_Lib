@@ -31,7 +31,7 @@ void  JPEG2KImage::init(void)
     ws    = 0;
     hs    = 0;
     col   = 0;
-    cmode = GRAPH_COLOR_RGBA;
+    cmode = GRAPH_COLOR_BANK_RGBA;
     state = 0;
     image = NULL;
 }
@@ -79,22 +79,18 @@ void  JPEG2KImage::setup_image(void)
         ws = (xs + (1<<fac) -1)>>fac;
         hs = (ys + (1<<fac) -1)>>fac;
 
-        //col = (int)image->numcomps;
-        col = 0;
-        if (image->color_space==OPJ_CLRSPC_SRGB) {
+        col = (int)image->numcomps;
+        if (image->color_space==OPJ_CLRSPC_SRGB) {          /// 1
             col = 3;
         }
-        else if (image->color_space==OPJ_CLRSPC_SYCC || image->color_space==OPJ_CLRSPC_EYCC) {
+        else if (image->color_space==OPJ_CLRSPC_GRAY) {     /// 2
+            col = 1;
+        }
+        else if (image->color_space==OPJ_CLRSPC_SYCC || image->color_space==OPJ_CLRSPC_EYCC) {  /// 3, 4
             col = 3;
         }
-        else if (image->color_space==OPJ_CLRSPC_CMYK) {
+        else if (image->color_space==OPJ_CLRSPC_CMYK) {     /// 5
             col = 4;
-        }
-        else if (image->color_space==OPJ_CLRSPC_GRAY) {
-            col = 1;
-        }
-        else if (image->color_space==OPJ_CLRSPC_UNSPECIFIED) {
-            col = 1;
         }
 
         // 設定されないものについては，未対応
@@ -105,10 +101,11 @@ void  JPEG2KImage::setup_image(void)
         if (depth==0 || depth==8) {
             if      (col==1) cmode = GRAPH_COLOR_GRAY;
             else if (col==3) cmode = GRAPH_COLOR_BANK_RGB;
-            else if (col==4) cmode = GRAPH_COLOR_BANK_CMYK;
+            else if (col==4) cmode = GRAPH_COLOR_BANK_RGBA;
         }
         if (cmode==GRAPH_COLOR_UNKNOWN) {
             PRINT_MESG("JBXL::JPEG2KIMage::setup_image: unknown color mode: col = %d, depth = %d\n", col, depth);
+            cmode = GRAPH_COLOR_BANK_RGBA;
         }
 
         //

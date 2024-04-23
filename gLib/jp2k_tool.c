@@ -54,22 +54,18 @@ void  setup_jp2k(JP2KImage* jp)
     jp->ws = (jp->xs + (1<<fac) - 1)>>fac;
     jp->hs = (jp->ys + (1<<fac) - 1)>>fac;
 
-    //jp->col = (int)jp->image->numcomps;
-    jp->col = 0;
-    if (jp->image->color_space==OPJ_CLRSPC_SRGB) {
+    jp->col = (int)jp->image->numcomps;
+    if (jp->image->color_space==OPJ_CLRSPC_SRGB) {          /// 1
         jp->col = 3;
     }
-    else if (jp->image->color_space==OPJ_CLRSPC_SYCC || jp->image->color_space==OPJ_CLRSPC_EYCC) {
+    else if (jp->image->color_space==OPJ_CLRSPC_GRAY) {     /// 2
+        jp->col = 1;
+    }
+    else if (jp->image->color_space==OPJ_CLRSPC_SYCC || jp->image->color_space==OPJ_CLRSPC_EYCC) {  /// 3, 4
         jp->col = 3;
     }
-    else if (jp->image->color_space==OPJ_CLRSPC_CMYK) {
+    else if (jp->image->color_space==OPJ_CLRSPC_CMYK) {     /// 5
         jp->col = 4;
-    }
-    else if (jp->image->color_space==OPJ_CLRSPC_GRAY) {
-        jp->col = 1;
-    }
-    else if (jp->image->color_space==OPJ_CLRSPC_UNSPECIFIED) {
-        jp->col = 1;
     }
 
     // 設定されないものについては，未対応
@@ -78,11 +74,12 @@ void  setup_jp2k(JP2KImage* jp)
     DEBUG_MODE PRINT_MESG("JBXL::JPEG2KIMage::setup_image: INFO: xs  = %d, ys = %d, col = %d, depth = %d\n", jp->xs, jp->ys, jp->col, depth);
     if (depth==0 || depth==8) {
         if      (jp->col==1) jp->cmode = GRAPH_COLOR_GRAY;
-        else if (jp->col==3) jp->cmode = GRAPH_COLOR_BANK_RGB;
-        else if (jp->col==4) jp->cmode = GRAPH_COLOR_BANK_CMYK;
+        else if (jp->col==3) jp->cmode = GRAPH_COLOR_RGB;
+        else if (jp->col==4) jp->cmode = GRAPH_COLOR_RGBA;
     }
     if (jp->cmode==GRAPH_COLOR_UNKNOWN) {
         PRINT_MESG("JBXL::JPEG2KIMage::setup_image: unknown color mode: col = %d, depth = %d\n", jp->col, depth);
+        jp->cmode = GRAPH_COLOR_RGBA;
     }
 
 #if OPENJPEG_VER > JP2K_VER_12
