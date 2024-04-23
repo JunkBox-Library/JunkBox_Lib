@@ -79,51 +79,38 @@ void  JPEG2KImage::setup_image(void)
         ws = (xs + (1<<fac) -1)>>fac;
         hs = (ys + (1<<fac) -1)>>fac;
 
-        col = (int)image->numcomps;
-        if (image->color_space==CLRSPC_SRGB) {
+        //col = (int)image->numcomps;
+        col = 0;
+        if (image->color_space==OPJ_CLRSPC_SRGB) {
             col = 3;
         }
-        else if (image->color_space==CLRSPC_GRAY) {
+        else if (image->color_space==OPJ_CLRSPC_SYCC || image->color_space==OPJ_CLRSPC_EYCC) {
+            col = 3;
+        }
+        else if (image->color_space==OPJ_CLRSPC_CMYK) {
+            col = 4;
+        }
+        else if (image->color_space==OPJ_CLRSPC_GRAY) {
             col = 1;
         }
-/*
-#if OPENJPEG_VER > JP2K_VER_12
-        else if (image->color_space==CLRSPC_UNSPECIFIED) {
-            col = (int)image->numcomps;
+        else if (image->color_space==OPJ_CLRSPC_UNSPECIFIED) {
+            col = 1;
         }
-#endif
-        else if (image->color_space==CLRSPC_SYCC) {
-            color_sycc_to_rgb(image);
-            col = 3;
-        }
-*/
+
         // 設定されないものについては，未対応
         cmode = GRAPH_COLOR_UNKNOWN;
         int depth = (int)image->comps->bpp;
-        DEBUG_MODE PRINT_MESG("JBXL::JPEG2KIMage::setup_image: INFO: col = %d, depth = %d\n", col, depth);
-        if (depth==0) {
-            if      (col==3) cmode = GRAPH_COLOR_RGB;
-            else if (col==4) cmode = GRAPH_COLOR_RGBA;
-            else if (col==1) cmode = GRAPH_COLOR_MONO;
+
+        DEBUG_MODE PRINT_MESG("JBXL::JPEG2KIMage::setup_image: INFO: xs  = %d, ys = %d, col = %d, depth = %d\n", xs, ys, col, depth);
+        if (depth==0 || depth==8) {
+            if      (col==1) cmode = GRAPH_COLOR_GRAY;
+            else if (col==3) cmode = GRAPH_COLOR_BANK_RGB;
+            else if (col==4) cmode = GRAPH_COLOR_BANK_CMYK;
         }
-        else if (depth==32) {
-            if      (col==3) cmode = GRAPH_COLOR_XRGB32;
-            else if (col==4) cmode = GRAPH_COLOR_RGBA32;
+        if (cmode==GRAPH_COLOR_UNKNOWN) {
+            PRINT_MESG("JBXL::JPEG2KIMage::setup_image: unknown color mode: col = %d, depth = %d\n", col, depth);
         }
-        else if (depth==24) {
-            if      (col==3) cmode = GRAPH_COLOR_PRGB24;
-        }
-        else if (depth==16) {
-            if      (col==1) cmode = GRAPH_COLOR_MONO16;
-            else if (col==3) cmode = GRAPH_COLOR_RGB16;
-            else if (col==4) cmode = GRAPH_COLOR_RGBA16;
-        }
-        else if (depth==8) {
-            if      (col==3) cmode = GRAPH_COLOR_RGB;
-            else if (col==4) cmode = GRAPH_COLOR_RGBA;
-            else if (col==1) cmode = GRAPH_COLOR_MONO;
-        }
-  
+
         //
 #if OPENJPEG_VER > JP2K_VER_12
         freeNull(image->icc_profile_buf);
