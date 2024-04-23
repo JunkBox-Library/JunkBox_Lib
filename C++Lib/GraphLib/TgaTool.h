@@ -91,9 +91,9 @@ template <typename T>  MSGraph<T> TGAImage2MSGraph(TGAImage tga)
     vp.set(tga.xs, tga.ys, tga.col);
     if (vp.isNull()) return vp;
     //
-    if      (tga.col==4) vp.color = GRAPH_COLOR_BANK_BGRA;
-    else if (tga.col==3) vp.color = GRAPH_COLOR_BANK_BGR;
-    else if (tga.col==2) vp.color = GRAPH_COLOR_BANK_MA;
+    if      (tga.col==4) vp.color = GRAPH_COLOR_BGRA;
+    else if (tga.col==3) vp.color = GRAPH_COLOR_BGR;
+    else if (tga.col==2) vp.color = GRAPH_COLOR_MA;
     else if (tga.col==1) vp.color = GRAPH_COLOR_GRAY;
     else {
         vp.state = JBXL_GRAPH_IVDARG_ERROR;
@@ -180,13 +180,13 @@ template <typename T>  TGAImage  MSGraph2TGAImage(MSGraph<T> vp, bool rle)
 
     if (vp.color==GRAPH_COLOR_UNKNOWN) {
         if      (vp.zs==1) vp.color = GRAPH_COLOR_GRAY;
-        else if (vp.zs==2) vp.color = GRAPH_COLOR_BANK_MA;
-        else if (vp.zs==3) vp.color = GRAPH_COLOR_BANK_RGB;
-        else if (vp.zs==4) vp.color = GRAPH_COLOR_BANK_RGBA;
+        else if (vp.zs==2) vp.color = GRAPH_COLOR_MA;
+        else if (vp.zs==3) vp.color = GRAPH_COLOR_RGB;
+        else if (vp.zs==4) vp.color = GRAPH_COLOR_RGBA;
     }
 
     //
-    if (vp.color==GRAPH_COLOR_BANK_BGRA || vp.color==GRAPH_COLOR_BANK_BGR || vp.color==GRAPH_COLOR_GRAY || vp.color==GRAPH_COLOR_BANK_MA) { 
+    if (vp.color==GRAPH_COLOR_BGRA || vp.color==GRAPH_COLOR_BGR || vp.color==GRAPH_COLOR_GRAY || vp.color==GRAPH_COLOR_MA) { 
         for (int k=0; k<tga.col; k++) {
             int zp = k*tga.xs*tga.ys;
             for (int j=0; j<tga.ys; j++) {
@@ -198,7 +198,7 @@ template <typename T>  TGAImage  MSGraph2TGAImage(MSGraph<T> vp, bool rle)
         }
     }
     //
-    else if (vp.color==GRAPH_COLOR_BANK_RGB || vp.color==GRAPH_COLOR_BANK_RGBA) { 
+    else if (vp.color==GRAPH_COLOR_RGB || vp.color==GRAPH_COLOR_RGBA) { 
         for (int k=0; k<3; k++) {
             int zp = (2-k)*tga.xs*tga.ys;
             for (int j=0; j<tga.ys; j++) {
@@ -208,7 +208,7 @@ template <typename T>  TGAImage  MSGraph2TGAImage(MSGraph<T> vp, bool rle)
                 }
             }
         }
-        if (vp.color==GRAPH_COLOR_BANK_RGBA) {   // αチャンネル
+        if (vp.color==GRAPH_COLOR_RGBA) {   // αチャンネル
             int zp = 3*tga.xs*tga.ys;
             for (int j=0; j<tga.ys; j++) {
                 int yp = zp + j*tga.xs;
@@ -219,7 +219,7 @@ template <typename T>  TGAImage  MSGraph2TGAImage(MSGraph<T> vp, bool rle)
         }
     }
     //
-    else if (vp.color==GRAPH_COLOR_BANK_ABGR) { 
+    else if (vp.color==GRAPH_COLOR_ABGR) { 
         for (int j=0; j<tga.ys; j++) {      // αチャンネル
             int yp = j*tga.xs;
             for (int i=0; i<tga.xs; i++) {
@@ -237,7 +237,7 @@ template <typename T>  TGAImage  MSGraph2TGAImage(MSGraph<T> vp, bool rle)
         }
     }
     //
-    else if (vp.color==GRAPH_COLOR_BANK_ARGB) { 
+    else if (vp.color==GRAPH_COLOR_ARGB) { 
         for (int j=0; j<tga.ys; j++) {      // αチャンネル
             int yp = j*tga.xs;
             for (int i=0; i<tga.xs; i++) {

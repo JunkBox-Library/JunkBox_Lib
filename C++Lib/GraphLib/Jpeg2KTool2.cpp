@@ -31,7 +31,7 @@ void  JPEG2KImage::init(void)
     ws    = 0;
     hs    = 0;
     col   = 0;
-    cmode = GRAPH_COLOR_BANK_RGBA;
+    cmode = GRAPH_COLOR_RGBA;
     state = 0;
     image = NULL;
 }
@@ -103,12 +103,12 @@ void  JPEG2KImage::setup_image(void)
         DEBUG_MODE PRINT_MESG("JBXL::JPEG2KIMage::setup_image: INFO: xs  = %d, ys = %d, col = %d, depth = %d\n", xs, ys, col, depth);
         if (depth==0 || depth==8) {
             if      (col==1) cmode = GRAPH_COLOR_GRAY;
-            else if (col==3) cmode = GRAPH_COLOR_BANK_RGB;
-            else if (col==4) cmode = GRAPH_COLOR_BANK_RGBA;
+            else if (col==3) cmode = GRAPH_COLOR_RGB;
+            else if (col==4) cmode = GRAPH_COLOR_RGBA;
         }
         if (cmode==GRAPH_COLOR_UNKNOWN) {
             PRINT_MESG("JBXL::JPEG2KIMage::setup_image: unknown color mode: col = %d, depth = %d\n", col, depth);
-            cmode = GRAPH_COLOR_BANK_RGBA;
+            cmode = GRAPH_COLOR_RGBA;
         } 
   
 /*
