@@ -279,37 +279,47 @@ void  OBJData::output_mtl(FILE* fp, const char* tex_dirn)
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_AUTHOR);
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_VER);
 
+    tList* material_list = NULL;
     OBJData* obj = this->next;
     while (obj!=NULL) {
         OBJFacetMtlNode* node = obj->mtl_node;
         while(node!=NULL) {
             if (!node->same_material) {
-                fprintf(fp, "#\n");
-                fprintf(fp, "newmtl %s\n", node->material.buf+1);         // マテリアル名
+                // check material
+                tList* mat = search_key_tList(material_list, (char*)node->material.buf, 1);
+                if (mat==NULL) {
+                    tList* lt = add_tList_node_str(material_list, node->material.buf, NULL);
+                    if (material_list==NULL) material_list = lt;
 
-                if (node->map_kd.buf!=NULL) {
-                    fprintf(fp, "map_Kd %s%s\n", tex_dirn, node->map_kd.buf);       // Texture ファイル名
+                    // outpust
+                    fprintf(fp, "#\n");
+                    fprintf(fp, "newmtl %s\n", node->material.buf+1);         // マテリアル名
+
+                    if (node->map_kd.buf!=NULL) {
+                        fprintf(fp, "map_Kd %s%s\n", tex_dirn, node->map_kd.buf);       // Texture ファイル名
+                    }
+                    if (node->map_ks.buf!=NULL) {
+                        fprintf(fp, "map_Ks %s%s\n", tex_dirn, node->map_ks.buf);       // Specular Map ファイル名
+                    }
+                    if (node->map_bump.buf!=NULL) {
+                        fprintf(fp, "map_bump %s%s\n", tex_dirn, node->map_bump.buf);   // Bump Map ファイル名
+                    }
+
+                    fprintf(fp, "Ka %f %f %f\n", (float)node->ka.x, (float)node->ka.y, (float)node->ka.z);
+                    fprintf(fp, "Kd %f %f %f\n", (float)node->kd.x, (float)node->kd.y, (float)node->kd.z);
+                    fprintf(fp, "Ks %f %f %f\n", (float)node->ks.x, (float)node->ks.y, (float)node->ks.z);
+
+                    fprintf(fp, "d %f\n",  (float)node->dd);
+                    fprintf(fp, "Ni %f\n", (float)node->ni);
+
+                    fprintf(fp, "illum %d\n", node->illum);
                 }
-                if (node->map_ks.buf!=NULL) {
-                    fprintf(fp, "map_Ks %s%s\n", tex_dirn, node->map_ks.buf);       // Specular Map ファイル名
-                }
-                if (node->map_bump.buf!=NULL) {
-                    fprintf(fp, "map_bump %s%s\n", tex_dirn, node->map_bump.buf);   // Bump Map ファイル名
-                }
-
-                fprintf(fp, "Ka %f %f %f\n", (float)node->ka.x, (float)node->ka.y, (float)node->ka.z);
-                fprintf(fp, "Kd %f %f %f\n", (float)node->kd.x, (float)node->kd.y, (float)node->kd.z);
-                fprintf(fp, "Ks %f %f %f\n", (float)node->ks.x, (float)node->ks.y, (float)node->ks.z);
-
-                fprintf(fp, "d %f\n",  (float)node->dd);
-                fprintf(fp, "Ni %f\n", (float)node->ni);
-
-                fprintf(fp, "illum %d\n", node->illum);
             }
             node = node->next;
         }
         obj = obj->next;
     }
+    del_tList(&material_list);
 }
 
 
