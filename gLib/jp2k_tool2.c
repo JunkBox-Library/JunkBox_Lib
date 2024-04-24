@@ -56,6 +56,7 @@ void  setup_jp2k(JP2KImage* jp)
     jp->hs = (jp->ys + (1<<fac) - 1)>>fac;
 
     jp->col = (int)jp->image->numcomps;
+    /*
     if (jp->image->color_space==OPJ_CLRSPC_SRGB) {          /// 1
         jp->col = 3;
     }
@@ -68,6 +69,7 @@ void  setup_jp2k(JP2KImage* jp)
     else if (jp->image->color_space==OPJ_CLRSPC_CMYK) {     /// 5
         jp->col = 4;
     }
+    */
 
     // 設定されないものについては，未対応
     jp->cmode = GRAPH_COLOR_UNKNOWN;

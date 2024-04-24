@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     JPEG2KImage jp2 = readJPEG2KFile(argv[1]);
 
     if (jp2.isNull()) printf("Null\n");
-    else printf(" %d - %d - %d - %d\n", jp2.col, jp2.state, (int)jp2.image->numcomps, jp2.cmode);
+    else printf("col = %d, num = %d, mode = %d, spec = %d\n", jp2.col, (int)jp2.image->numcomps, jp2.cmode, jp2.image->color_space);
 
     return 0;
 }

@@ -80,6 +80,7 @@ void  JPEG2KImage::setup_image(void)
         hs = (ys + (1<<fac) -1)>>fac;
 
         col = (int)image->numcomps;
+        /*
         if (image->color_space==OPJ_CLRSPC_SRGB) {          /// 1
             col = 3;
         }
@@ -92,6 +93,7 @@ void  JPEG2KImage::setup_image(void)
         else if (image->color_space==OPJ_CLRSPC_CMYK) {     /// 5
             col = 4;
         }
+        */
 
         // 設定されないものについては，未対応
         cmode = GRAPH_COLOR_UNKNOWN;

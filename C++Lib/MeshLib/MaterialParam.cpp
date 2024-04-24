@@ -349,13 +349,13 @@ char*  MaterialParam::getBase64Params(unsigned char obj, unsigned char cc)
     double blue   = texture.getColor(2);
     double transp = getTransparent();
     double cutoff = texture.getAlphaCutoff();
-    /*
+    /**/
     short int rotate = (short int)((int)(texture.getRotate()*2000.)%32768);     // 2Byte化
     short int shiftu = (short int)((int)(texture.getShiftU()*2000.)%32768);
     short int shiftv = (short int)((int)(texture.getShiftV()*2000.)%32768);
     short int scaleu = (short int)((int)(texture.getScaleU()*100. )%32768);
     short int scalev = (short int)((int)(texture.getScaleV()*100. )%32768);
-    */
+    /**/
     memset(attr, 0, MATERIAL_ATTR_LEN);
     attr[MATERIAL_ATTR_COLOR_RED]   = (uByte)((1.0 - red   )*255);
     attr[MATERIAL_ATTR_COLOR_GREEN] = (uByte)((1.0 - green )*255);
@@ -367,13 +367,13 @@ char*  MaterialParam::getBase64Params(unsigned char obj, unsigned char cc)
     attr[MATERIAL_ATTR_BRIGHT]      = (uByte)(bright*255);
     attr[MATERIAL_ATTR_LIGHT]       = (uByte)(light*255);
     attr[MATERIAL_ATTR_OBJECT]      = (uByte)obj;
-    /*
+    /**/
     memcpy(attr + MATERIAL_ATTR_SHIFT_U, &shiftu, 2);
     memcpy(attr + MATERIAL_ATTR_SHIFT_V, &shiftv, 2);
     memcpy(attr + MATERIAL_ATTR_SCALE_U, &scaleu, 2);
     memcpy(attr + MATERIAL_ATTR_SCALE_V, &scalev, 2);
     memcpy(attr + MATERIAL_ATTR_ROTATE,  &rotate, 2);
-    */
+    /**/
     char* params = (char*)encode_base64_filename(attr, MATERIAL_ATTR_LEN, cc);  // 要 free   / -> cc
 
     return params;

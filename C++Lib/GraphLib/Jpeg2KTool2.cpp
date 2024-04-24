@@ -80,18 +80,20 @@ void  JPEG2KImage::setup_image(void)
         hs = (ys + (1<<fac) -1)>>fac;
 
         col = (int)image->numcomps;
+        /*
         if (image->color_space==OPJ_CLRSPC_SRGB) {          /// 1
             col = 3;
         }
         else if (image->color_space==OPJ_CLRSPC_GRAY) {     /// 2
             col = 1;
         }
-        else if (image->color_space==OPJ_CLRSPC_SYCC || image->color_space==OPJ_CLRSPC_EYCC) {  /// 3, 4
+        else if (image->color_space == OPJ_CLRSPC_SYCC || image->color_space == OPJ_CLRSPC_EYCC) {  /// 3, 4
             col = 3;
         }
         else if (image->color_space==OPJ_CLRSPC_CMYK) {     /// 5
             col = 4;
         }
+        */
 
         // 設定されないものについては，未対応
         cmode = GRAPH_COLOR_UNKNOWN;
@@ -110,7 +112,7 @@ void  JPEG2KImage::setup_image(void)
             PRINT_MESG("JBXL::JPEG2KIMage::setup_image: unknown color mode: col = %d, depth = %d\n", col, depth);
             cmode = GRAPH_COLOR_RGBA;
         } 
-  
+
 /*
         DEBUG_MODE {
             PRINT_MESG("JPEG2KImage::setup_image: OFFSET  %d %d %d %d\n", image->x0, image->y0, image->x1, image->y1);
