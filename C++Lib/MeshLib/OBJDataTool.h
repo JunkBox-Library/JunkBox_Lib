@@ -19,12 +19,13 @@
 namespace jbxl {
 
 
-#define  OBJDATATOOL_STR_OBJFL  "OBJ File"
-#define  OBJDATATOOL_STR_MTLFL  "MTL File"
-#define  OBJDATATOOL_STR_TOOL   "Created by CBJDataTool in the JunkBox_Lib++ (https://github.com/JunkBox-Library)"
-#define  OBJDATATOOL_STR_AUTHOR "JBXL OBJ Data Tool Library (C) 2024 by Fumi.Iseki"
-#define  OBJDATATOOL_STR_VER    "version 1.0.0, 1 Feb. 2024"
+#define  OBJDATATOOL_STR_OBJFL      "OBJ File"
+#define  OBJDATATOOL_STR_MTLFL      "MTL File"
+#define  OBJDATATOOL_STR_TOOL       "Created by CBJDataTool in the JunkBox_Lib++ (https://github.com/JunkBox-Library)"
+#define  OBJDATATOOL_STR_AUTHOR     "JBXL OBJ Data Tool Library (C) 2024 by Fumi.Iseki"
+#define  OBJDATATOOL_STR_VER        "version 1.0.0, 1 Feb. 2024"
 
+#define  OBJDATATOOL_MAX_FACET      100
 
 class  OBJData;
 class  OBJFacetGeoNode;
@@ -75,8 +76,10 @@ public:
     void    addObject(MeshObjectData* meshdata, bool collider);
 
     void    outputFile(const char* fn, const char* out_path, const char* tex_dirn, const char* mtl_dirn);
-    void    output_mtl(FILE* fp, const char* tex_dirn);
-    void    output_obj(FILE* fp, const char* fname);
+    //void    output_mtl(FILE* fp, const char* tex_dirn);
+    //void    output_obj(FILE* fp, const char* fname);
+    void    output_mtl(const char* mtl_path, const char* tex_dirn);
+    void    output_obj(const char* obj_path, const char* mtl_path);
 };
 
 

@@ -21,6 +21,7 @@ int main(int argc, char** argv)
     if (jp2.isNull()) printf("Null\n");
     else printf("col = %d, num = %d, mode = %d, spec = %d\n", jp2.col, (int)jp2.image->numcomps, jp2.cmode, jp2.image->color_space);
 
+    printf("state = %d\n", jp2.state);
     return 0;
 }
 

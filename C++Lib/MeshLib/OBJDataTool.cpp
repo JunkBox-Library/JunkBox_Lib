@@ -219,7 +219,6 @@ Vector<double>  OBJData::execAffineTrans(bool origin)
 
 void  OBJData::outputFile(const char* fname, const char* out_path, const char* tex_dirn, const char* mtl_dirn)
 {
-    FILE* fp = NULL;
     char* packname = pack_head_tail_char(get_file_name(fname), ' ');
     Buffer file_name = make_Buffer_bystr(packname);
     ::free(packname);
@@ -248,6 +247,7 @@ void  OBJData::outputFile(const char* fname, const char* out_path, const char* t
     change_file_extension_Buffer(&obj_path, ".obj");
 
     // MTL
+/*
     fp = fopen((char*)mtl_path.buf, "wb");
     if (fp!=NULL) {
         this->output_mtl(fp, (char*)rel_tex.buf);
@@ -260,6 +260,9 @@ void  OBJData::outputFile(const char* fname, const char* out_path, const char* t
         this->output_obj(fp, (char*)rel_mtl.buf);
         fclose(fp);
     }
+*/
+    this->output_mtl((char*)mtl_path.buf, (char*)rel_tex.buf);  // mtl file
+    this->output_obj((char*)obj_path.buf, (char*)rel_mtl.buf);  // obj file
     //
     free_Buffer(&obj_path);
     free_Buffer(&mtl_path);
@@ -270,10 +273,11 @@ void  OBJData::outputFile(const char* fname, const char* out_path, const char* t
 }
 
 
-void  OBJData::output_mtl(FILE* fp, const char* tex_dirn)
+void  OBJData::output_mtl(const char* mtl_path, const char* tex_dirn)
 {
+    FILE* fp = fopen(mtl_path, "wb");
     if (fp==NULL) return;
-    
+
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_MTLFL);
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_TOOL);
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_AUTHOR);
@@ -320,11 +324,15 @@ void  OBJData::output_mtl(FILE* fp, const char* tex_dirn)
         obj = obj->next;
     }
     del_tList(&material_list);
+
+    fclose(fp);
+    return;
 }
 
 
-void  OBJData::output_obj(FILE* fp, const char* mtl_path)
+void  OBJData::output_obj(const char* obj_path, const char* mtl_path)
 {
+    FILE* fp = fopen(obj_path, "wb");
     if (fp==NULL) return;
 
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_OBJFL);
@@ -332,9 +340,30 @@ void  OBJData::output_obj(FILE* fp, const char* mtl_path)
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_AUTHOR);
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_VER);
 
+    int facet_num = 0;
+    int file_num  = 1;
+
     int p_num = 1;
     OBJData* obj = this->next;
     while (obj!=NULL) {
+
+        if (facet_num > OBJDATATOOL_MAX_FACET) {
+            fclose(fp);
+            Buffer obj_file = make_Buffer_str(obj_path);
+            del_file_extension_Buffer(&obj_file);
+            cat_s2Buffer("_", &obj_file);
+            cat_s2Buffer(itostr(file_num), &obj_file);
+            cat_s2Buffer(".obj", &obj_file);
+
+            fp = fopen((char*)obj_file.buf, "wb");
+            free_Buffer(&obj_file);
+            if (fp==NULL) return;
+
+            file_num++;
+            facet_num = 0;
+            p_num = 1;
+        }
+
         fprintf(fp, "# \n# SHELL\n");
         OBJFacetGeoNode* facet = obj->geo_node;
         while(facet!=NULL) {
@@ -371,11 +400,15 @@ void  OBJData::output_obj(FILE* fp, const char* mtl_path)
                 fprintf(fp, "%d/%d/%d\n", facet->data_index[i*3+2]+p_num, facet->data_index[i*3+2]+p_num, facet->data_index[i*3+2]+p_num);
             }
             p_num += facet->num_vertex;
+            facet_num++;
             //
             facet = facet->next;
         }
         obj = obj->next;
     }
+
+    fclose(fp);
+    return;
 }
 
 
