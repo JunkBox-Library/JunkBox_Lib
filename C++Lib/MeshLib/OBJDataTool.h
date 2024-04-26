@@ -25,7 +25,7 @@ namespace jbxl {
 #define  OBJDATATOOL_STR_AUTHOR     "JBXL OBJ Data Tool Library (C) 2024 by Fumi.Iseki"
 #define  OBJDATATOOL_STR_VER        "version 1.0.0, 1 Feb. 2024"
 
-#define  OBJDATATOOL_MAX_FACET      100
+#define  OBJDATATOOL_MAX_FACET      500     ///< Max Facts Number per File
 
 class  OBJData;
 class  OBJFacetGeoNode;

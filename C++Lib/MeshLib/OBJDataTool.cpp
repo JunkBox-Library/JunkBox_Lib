@@ -246,21 +246,6 @@ void  OBJData::outputFile(const char* fname, const char* out_path, const char* t
     cat_Buffer(&file_name, &obj_path);
     change_file_extension_Buffer(&obj_path, ".obj");
 
-    // MTL
-/*
-    fp = fopen((char*)mtl_path.buf, "wb");
-    if (fp!=NULL) {
-        this->output_mtl(fp, (char*)rel_tex.buf);
-        fclose(fp);
-    }
-
-    // OBJECT
-    fp = fopen((char*)obj_path.buf, "wb");
-    if (fp!=NULL) {
-        this->output_obj(fp, (char*)rel_mtl.buf);
-        fclose(fp);
-    }
-*/
     this->output_mtl((char*)mtl_path.buf, (char*)rel_tex.buf);  // mtl file
     this->output_obj((char*)obj_path.buf, (char*)rel_mtl.buf);  // obj file
     //
@@ -346,8 +331,8 @@ void  OBJData::output_obj(const char* obj_path, const char* mtl_path)
     int p_num = 1;
     OBJData* obj = this->next;
     while (obj!=NULL) {
-
-        if (facet_num > OBJDATATOOL_MAX_FACET) {
+        // file division for Unity
+        if (facet_num>OBJDATATOOL_MAX_FACET && this->engine==JBXL_3D_ENGINE_UNITY) {
             fclose(fp);
             Buffer obj_file = make_Buffer_str(obj_path);
             del_file_extension_Buffer(&obj_file);
