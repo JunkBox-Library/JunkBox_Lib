@@ -5,7 +5,7 @@ LIB_EXT_DIR = ../xLib
 LIB_BSC = $(LIB_BSC_DIR)/libbasic.a
 LIB_EXT = $(LIB_EXT_DIR)/libextend.a
 
-SUBJ = c2doc fdump printxml
+SUBJ = c2doc fdump printxml llsd_dump
 
 if DISABLE_WIN
     SUBJ += check_ip_allow
@@ -28,6 +28,8 @@ printxml_LDADD = $(LIB_BSC)
 check_ip_allow_SOURCES = check_ip_allow.c
 check_ip_allow_LDADD = $(LIB_EXT) $(LIB_BSC)
 
+llsd_dump_SOURCES = llsd_dump.c
+llsd_dump_LDADD = $(LIB_EXT) $(LIB_BSC)
 
 
 clean:
