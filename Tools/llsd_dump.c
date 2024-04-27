@@ -44,14 +44,13 @@ int main(int argc, char** argv)
 
     ////////////////////////////////////////////////
     tXML* xml = NULL; 
-    /*
     int hdsz  = llsd_bin_get_length(buf, sz);
     xml = llsd_bin_parse(buf, hdsz); 
     if (xml!=NULL) {
-        //print_xml(stdout, xml, 2);
+        print_xml(stdout, xml, 2);
+        fprintf(stdout, "\n");
         del_xml(&xml);
     }
-    */
     if (key!=NULL) {
         xml= llsd_bin_get_blockdata(buf, sz, key);
         if (xml!=NULL) {
