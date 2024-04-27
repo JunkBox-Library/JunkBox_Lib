@@ -2,14 +2,13 @@
 @brief   LLSD用ライブラリヘッダ（サブセット版）
 @file    llsd_tool.c
 @author  Fumi.Iseki (C)
-@sa http://wiki.secondlife.com/wiki/LLSD
-@sa http://www.nsl.tuis.ac.jp/xoops/modules/xpwiki/?LLSD
+@sa https://wiki.secondlife.com/wiki/LLSD
+@sa https://polaris.star-dust.jp/pukiwiki/?LLSD
 */
 
 #ifdef CPLUSPLUS
     #undef CPLUSPLUS
 #endif
-
 
 #include "llsd_tool.h"
 
@@ -159,6 +158,15 @@ Buffer  llsd_bin_get_bin(uByte** ptr)
 }
 
 
+/**
+int  llsd_bin_get_length(uByte* ptr, int sz)
+
+データの長さとフォーマットを検証する．
+
+@param   ptr  　データへのポインタ
+@param   sz     データのファイルサイズ
+@retval  解析したヘッダサイズ．
+*/
 int  llsd_bin_get_length(uByte* ptr, int sz)
 {
     if (ptr==NULL) return 0;
@@ -219,7 +227,7 @@ int  llsd_bin_get_length(uByte* ptr, int sz)
 //
 
 /**
-@brief  LLSD のバイナリデータを tXMLのデータに格納する．
+@brief  LLSDヘッダ のバイナリデータを tXMLのデータに格納する．ボディについては別途処理する．
 
 @param  ptr  LLSDのバイナリデータへのポインタ
 @param  sz   データのサイズ
@@ -239,7 +247,6 @@ tXML*  llsd_bin_parse(uByte* ptr, int sz)
     // パース
     node = llsd_bin_main_parse(xml, ptr, sz);
     if (node->state<0) return xml;
-
 
     // 元に戻ったか？
     if (xml==node) {
@@ -452,12 +459,52 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
 
     //
     if (snode==xml) xml->state = JBXL_XML_NODE_CLOSED;
-    else           xml->state = JBXL_XML_NOT_CLOSED;
+    else            xml->state = JBXL_XML_NOT_CLOSED;
 
     xml = xml->prev;
 
     return xml;
 }
+
+
+#ifndef  DISABLE_ZLIB
+
+/**
+tXML*  llsd_bin_get_blockdata(uByte* buf, int sz, const char* key)
+
+llmeshファイルのヘッダ部分の keyを参照し，圧縮されたボディデータから該当ブロックデータを取り出してXML形式に変換する．
+
+@param buf  llmeshファイルのヘッダ部分のバイナリデータ
+@param sz   buf のサイズ
+@param key  取り出すブロックデータのキー．Ex.) "hight_lod", "medium_lod", "low_lod", "lowest_lod", "physics_convex", "skin", etc...
+@sa https://wiki.secondlife.com/wiki/LLSD
+
+@return  指定された keyのデータの XML形式．
+*/
+tXML*  llsd_bin_get_blockdata(uByte* buf, int sz, const char* key)
+{
+    int hdsz  = llsd_bin_get_length(buf, sz);
+    tXML* xml = llsd_bin_parse(buf, hdsz);
+
+    int ofst = -1, size = -1;
+    if (llsd_xml_contain_key(xml, key)){
+        ofst = llsd_xml_get_content_int(xml, key, "offset");
+        size = llsd_xml_get_content_int(xml, key, "size");
+    }
+    del_xml(&xml);
+    if (ofst<0 || size<=0) return NULL;
+
+    //
+    Buffer enc = set_Buffer(buf+ofst+hdsz, size);
+    Buffer dec = gz_decode_data(enc);
+
+    hdsz = llsd_bin_get_length(dec.buf, dec.vldsz);
+    xml  = llsd_bin_parse(dec.buf, hdsz);
+
+    return xml;
+}
+
+#endif
 
 
 

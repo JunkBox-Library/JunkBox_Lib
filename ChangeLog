@@ -4,7 +4,13 @@
 rewrite configure.ac, doxygen.conf
 working now ..... v1.9.2alpha
 
+
 v1.9.2alpha
+	LLSD
+		lsd_tool.c: add llsd_bin_get_blockdata() for LLSD
+	Jpeg2000
+		jp2k_tool.c, jp2k_tool2.c:  fix mode
+		Jpeg2KTool.cpp, Jpeg2KTool2.cp: fix mode
 
 
 v1.9.1 '24/02/27
@@ -14,7 +20,7 @@ v1.9.1 '24/02/27
 	    Rotation.h を Rotation.h と AffineTrans.h に分離
 	    TgaTool.cpp  read用関数の実装．書き出し時の RLEサポート．
 	    readXHead(), readXHeadFile(), readCmnHeadFile() for x64
-	add OBJData class
+		add OBJData class
 	CmnHead_Entry（ファイル用）導入
 	read_xxx_file(), read_cmn_header(), read_cmn_file() for x64
 

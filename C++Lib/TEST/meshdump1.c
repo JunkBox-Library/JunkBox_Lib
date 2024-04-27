@@ -15,14 +15,12 @@ int main(int argc, char** argv)
 
     long   sz;
     unsigned char*  buf;
-    char*  key = NULL;
     FILE*  fp;
 
     if (argc<2) {
-        fprintf(stderr,"Usage %s dump_file key\n", argv[0]);
+        fprintf(stderr,"Usage %s dump_file\n", argv[0]);
         exit(1);
     }
-    if (argc==3) key = argv[2];
 
     sz = file_size(argv[1]);
     if (sz<=0) exit(1);
@@ -40,18 +38,21 @@ int main(int argc, char** argv)
     ////////////////////////////////////////////////
     int hdsz  = llsd_bin_get_length(buf, sz);
     tXML* xml = llsd_bin_parse(buf, hdsz); 
-    if (xml!=NULL) {
-        //print_xml(stdout, xml, 2);
-        del_xml(&xml);
+    print_xml(stderr, xml, 2);
+
+    printf("size = %d, %d\n", sz, hdsz);
+
+    int ofst = -1, size = -1;
+
+    if (llsd_xml_contain_key(xml, "high_lod")){
+        ofst = llsd_xml_get_content_int(xml, "high_lod", "offset");
+        size = llsd_xml_get_content_int(xml, "high_lod", "size");
     }
 
-    if (key!=NULL) {
-        xml= llsd_bin_get_blockdata(buf, sz, key);
-        if (xml!=NULL) {
-            print_xml(stdout, xml, 2);
-            del_xml(&xml);
-        }
-    }
+    printf("offset = %d\n", ofst);
+    printf("size   = %d\n", size);
+
+    del_xml(&xml);
     ////////////////////////////////////////////////
 
     ::free(buf);

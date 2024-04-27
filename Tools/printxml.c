@@ -13,7 +13,7 @@ int main(int argc, char** argv)
     int  mode = 2, dflg = OFF;
     
     for (i=1; i<argc; i++) {
-        if    (!strcmp(argv[i],"-0"))  mode = 0;
+        if      (!strcmp(argv[i],"-0"))  mode = 0;
         else if (!strcmp(argv[i],"-1"))  mode = 1;
         else if (!strcmp(argv[i],"-2"))  mode = 2;
         else if (!strcmp(argv[i],"-d"))  dflg = ON;

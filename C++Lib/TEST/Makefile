@@ -8,7 +8,7 @@ OPJLIB = openjp2
 
 
 #SUBJ = texture_entry primmesher tree 
-SUBJ = jp2k 
+SUBJ = meshdump jp2k 
 #SUBJ = jp2k meshdump2 meshdump oarprim primmesher texture_entry 
 #SUBJ = meshdump rot1 rot2 rot3 rot4 rot5 rot6 rot7
 

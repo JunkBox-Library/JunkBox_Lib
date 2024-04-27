@@ -5,12 +5,18 @@
 @brief   LLSD用ライブラリヘッダ（サブセット版）
 @file    llsd_tool.h
 @author  Fumi.Iseki (C)
-@sa http://wiki.secondlife.com/wiki/LLSD
+@sa https://wiki.secondlife.com/wiki/LLSD
 @sa http://www.nsl.tuis.ac.jp/xoops/modules/xpwiki/?LLSD
 */ 
 
 #include "xtools.h"
 #include "txml.h"
+#include "jbxl_state.h"
+
+#ifndef  DISABLE_ZLIB
+    #include "gz_tool.h"
+#endif
+
 
 #define  LLSD_MAKER_UNDEF       '!'
 #define  LLSD_MAKER_TRUE        '1'
@@ -45,6 +51,10 @@ unsigned long long int llsd_bin_get_date(uByte** ptr);  // 64bit
 int     llsd_bin_get_length(uByte* ptr, int sz);
 tXML*   llsd_bin_parse(uByte* ptr, int sz);
 tXML*   llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz);
+
+#ifndef  DISABLE_ZLIB
+tXML*   llsd_bin_get_blockdata(uByte* buf, int sz, const char* key);
+#endif
 
 // for Sihgle Data
 int     llsd_xml_contain_key(tXML* xml, const char* key);
