@@ -10,6 +10,7 @@
 #include <vector>
 #include <algorithm>
 
+#include "xLib/llsd_tool.h"
 #include "Vector.h"
 #include "Rotation.h"
 #include "buffer.h"
@@ -30,8 +31,6 @@ typedef std::vector<Vector<float> >    CONTOUR_VECTOR_ARRAY32;
 typedef std::vector<ContourTriIndex>   CONTOUR_TRIINDX_ARRAY;
 typedef std::vector<ContourTriData>    CONTOUR_TRIDATA_ARRAY;
 
-
-#define   CONTOUR_JOINT_MAXNUM    32
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,12 +59,10 @@ public:
         return normal.normalize();
     }
 
-    /*
     Vector<float> SurfaceNormal(CONTOUR_VECTOR_ARRAY32* coords) {
         Vector<float> normal = NewellMethod<float>((*coords)[v1], (*coords)[v2], (*coords)[v3]);
         return normal.normalize();
     }
-    */
 };
 
 
@@ -83,7 +80,7 @@ public:
     Vector<double>  v1,  v2,  v3;
     Vector<double>  n1,  n2,  n3;
     UVMap<double>   uv1, uv2, uv3;
-    double          weight[CONTOUR_JOINT_MAXNUM];
+    llsd_weight     w1,  w2,  w3;
 
 public:
     ContourTriData(int n=0) { init(); contourNum = n;}
@@ -115,7 +112,7 @@ public:
     Vector<double>* vertex;         ///< 頂点データ       vertex[index[0]], vertex[index[1]], vertex[index[2]], ... の順に並ぶ
     Vector<double>* normal;         ///< 法線ベクトル     normal[index[0]], normal[index[1]], normal[index[2]], ... の順に並ぶ
     UVMap<double>*  texcrd;         ///< テクスチャマップ texcrd[index[0]], texcrd[index[1]], texcrd[index[2]], ... の順に並ぶ
-    double*         weight;         ///< Skin の Weight   weight[index[0]], weight[index[1]], weight[index[2]], ... の順に並ぶ
+    llsd_weight*    weight;         ///< Skin の Weight   weight[index[0]], weight[index[1]], weight[index[2]], ... の順に並ぶ
 
 public:
     ContourBaseData(int idx=0, int num=0) { init(idx, num);}
@@ -152,7 +149,7 @@ public:
     Vector<double>  vertex[3];
     Vector<double>  normal[3];
     UVMap<double>   texcrd[3];
-    double          weight[CONTOUR_JOINT_MAXNUM];
+    llsd_weight     weight[3];
 
 public:
     TriPolygonData(void) { init();}

@@ -469,8 +469,9 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
 
 #ifndef  DISABLE_ZLIB
 
+
 /**
-tXML*  llsd_bin_get_blockdata(uByte* buf, int sz, const char* key)
+tXML*  llsd_bin_get_block_data(uByte* buf, int sz, const char* key)
 
 llmeshファイルのヘッダ部分の keyを参照し，圧縮されたボディデータから該当ブロックデータを取り出してXML形式に変換する．
 
@@ -481,7 +482,7 @@ llmeshファイルのヘッダ部分の keyを参照し，圧縮されたボデ�
 
 @return  指定された keyのデータの XML形式．
 */
-tXML*  llsd_bin_get_blockdata(uByte* buf, int sz, const char* key)
+tXML*  llsd_bin_get_block_data(uByte* buf, int sz, const char* key)
 {
     int hdsz  = llsd_bin_get_length(buf, sz);
     tXML* xml = llsd_bin_parse(buf, hdsz);
@@ -503,6 +504,61 @@ tXML*  llsd_bin_get_blockdata(uByte* buf, int sz, const char* key)
 
     return xml;
 }
+
+
+/**
+uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num);
+
+llmesh の LODデータから weight データを抜き出して，uWord の 2次元配列に格納する．
+ちょっとメモリの無駄遣いをしている．
+
+@param  buf : Weghtデータが格納されたバイナリデータ．
+@param  sz  : buf のサイズ．
+@param  vertex_num : 対応する頂点の数．
+
+@retval 2Byte の Weightデータ．weight[頂点*LLSD_JOINT_MAX_NUMBER + Joint]. 
+*/
+uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num)
+{
+    if (buf==NULL) return NULL;
+
+    int len = sizeof(uWord)*LLSD_JOINT_MAX_NUMBER*vertex_num;
+    uWord* weight = (uWord*)malloc(len);
+    if (weight==NULL) return NULL;
+    memset(weight, 0, len);
+
+    int invrtx = 0;
+    int vertex = 0;
+    int pos = 0;
+
+    uByte* pweight = buf;
+    while (pos < sz && vertex < vertex_num) {
+        uByte joint = *(pweight + pos);
+        pos++;
+
+        if (joint==0xff) {
+            invrtx = 0;
+            vertex++;
+        }
+        else {
+            invrtx++;
+            weight[vertex*LLSD_JOINT_MAX_NUMBER + (int)joint] = *(uWord*)(pweight + pos);
+            pos += 2;
+            //
+            if (invrtx%4==0) {
+                invrtx = 0;
+                vertex++;
+            }
+        }
+    }
+
+    if (pos!=sz || vertex!=vertex_num) {
+        PRINT_MESG("WARNING: llsd_bin_get_skin_weight: missmatch length %d != %d or %d != %d\n", pos, sz, vertex, vertex_num);
+    }
+
+    return weight;
+}
+
 
 #endif
 

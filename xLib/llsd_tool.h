@@ -18,6 +18,14 @@
 #endif
 
 
+#define  LLSD_JOINT_MAX_NUMBER  32
+
+struct  _llsd_skin_weight {
+    uWord  weight[LLSD_JOINT_MAX_NUMBER];
+};
+typedef  struct _llsd_skin_weight  llsd_weight;
+
+
 #define  LLSD_MAKER_UNDEF       '!'
 #define  LLSD_MAKER_TRUE        '1'
 #define  LLSD_MAKER_FALSE       '0'
@@ -53,7 +61,8 @@ tXML*   llsd_bin_parse(uByte* ptr, int sz);
 tXML*   llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz);
 
 #ifndef  DISABLE_ZLIB
-tXML*   llsd_bin_get_blockdata(uByte* buf, int sz, const char* key);
+tXML*   llsd_bin_get_block_data (uByte* buf, int sz, const char* key);
+uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num);
 #endif
 
 // for Sihgle Data

@@ -42,8 +42,10 @@ void  ContourTriData::init(void)
     uv1.init();
     uv2.init();
     uv3.init();
-    
-    memset(&weight, 0, sizeof(double)*CONTOUR_JOINT_MAXNUM);
+
+    memset(&w1, 0, sizeof(llsd_weight));
+    memset(&w2, 0, sizeof(llsd_weight));
+    memset(&w3, 0, sizeof(llsd_weight));
 }
 
 
@@ -111,7 +113,7 @@ bool  ContourBaseData::getm(void)
     vertex = (Vector<double>*)malloc(sizeof(Vector<double>)*num_data);
     normal = (Vector<double>*)malloc(sizeof(Vector<double>)*num_data);
     texcrd = (UVMap <double>*)malloc(sizeof(UVMap <double>)*num_data);
-    weight = (double*)malloc(sizeof(double)*CONTOUR_JOINT_MAXNUM*num_data);
+    weight = (llsd_weight*)   malloc(sizeof(llsd_weight)*num_data);
 
     if (index==NULL || vertex==NULL || normal==NULL || texcrd==NULL) {
         this->free();
@@ -186,8 +188,8 @@ void  TriPolygonData::init(void)
         vertex[i].init();
         normal[i].init();
         texcrd[i].init();
+        memset(&weight[i], 0, sizeof(llsd_weight));
     }
-    memset(weight, 0, sizeof(double)*CONTOUR_JOINT_MAXNUM);
 }
 
 
