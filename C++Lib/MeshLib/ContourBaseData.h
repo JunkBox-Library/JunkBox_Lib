@@ -31,6 +31,9 @@ typedef std::vector<ContourTriIndex>   CONTOUR_TRIINDX_ARRAY;
 typedef std::vector<ContourTriData>    CONTOUR_TRIDATA_ARRAY;
 
 
+#define   CONTOUR_JOINT_MAXNUM    32
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Index of Triangle Polygon Data
 //    ContourTriData を設定するためのインデックス
@@ -39,7 +42,7 @@ typedef std::vector<ContourTriData>    CONTOUR_TRIDATA_ARRAY;
 class  ContourTriIndex
 {
 public:
-    int  v1,  v2,  v3;  // Vertex Index
+    int  v1,  v2,  v3;  // Vertex/Weight Index
     int  n1,  n2,  n3;  // Normal Index
     int uv1, uv2, uv3;  // UVmap  Index
 
@@ -57,18 +60,19 @@ public:
         return normal.normalize();
     }
 
-    //
+    /*
     Vector<float> SurfaceNormal(CONTOUR_VECTOR_ARRAY32* coords) {
         Vector<float> normal = NewellMethod<float>((*coords)[v1], (*coords)[v2], (*coords)[v3]);
         return normal.normalize();
     }
+    */
 };
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Triangle Contour Data
 //    ContourTriIndex をインデックスとした 3角ポリゴンデータ
-//    ex.) tri_data.v1 = XXX[tri_indx.v1];
+//    ex.) tri_data.v1 = coords[tri_indx.v1];
 //
 
 class  ContourTriData
@@ -79,6 +83,7 @@ public:
     Vector<double>  v1,  v2,  v3;
     Vector<double>  n1,  n2,  n3;
     UVMap<double>   uv1, uv2, uv3;
+    double          weight[CONTOUR_JOINT_MAXNUM];
 
 public:
     ContourTriData(int n=0) { init(); contourNum = n;}
@@ -96,6 +101,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Contour Base Data (インデックス化されたデータ)
+//      ContourTriIndex +  ContourTriData
 //
 
 class  ContourBaseData
@@ -105,10 +111,11 @@ public:
     int     num_data;               ///< データ数．（vertex, normal, texcrd の要素数）
     int     vcount;                 ///< ポリゴンの頂点数．通常は3 
 
-    int*    index;                  ///< インデックスデータ
+    int*            index;          ///< インデックスデータ
     Vector<double>* vertex;         ///< 頂点データ       vertex[index[0]], vertex[index[1]], vertex[index[2]], ... の順に並ぶ
     Vector<double>* normal;         ///< 法線ベクトル     normal[index[0]], normal[index[1]], normal[index[2]], ... の順に並ぶ
     UVMap<double>*  texcrd;         ///< テクスチャマップ texcrd[index[0]], texcrd[index[1]], texcrd[index[2]], ... の順に並ぶ
+    double*         weight;         ///< Skin の Weight   weight[index[0]], weight[index[1]], weight[index[2]], ... の順に並ぶ
 
 public:
     ContourBaseData(int idx=0, int num=0) { init(idx, num);}
@@ -140,10 +147,12 @@ public:
     int             polygonNum;     ///< ポリゴン番号
     bool            has_normal;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
     bool            has_texcrd;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
+    bool            has_weught;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
 
     Vector<double>  vertex[3];
     Vector<double>  normal[3];
     UVMap<double>   texcrd[3];
+    double          weight[CONTOUR_JOINT_MAXNUM];
 
 public:
     TriPolygonData(void) { init();}

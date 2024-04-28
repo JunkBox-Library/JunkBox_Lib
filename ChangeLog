@@ -6,6 +6,7 @@ working now ..... v1.9.2alpha
 
 
 v1.9.2alpha
+	decode_base64  length miss 
 	LLSD
 		lsd_tool.c: add llsd_bin_get_blockdata() for LLSD
 	Jpeg2000

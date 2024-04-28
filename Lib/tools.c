@@ -2687,13 +2687,12 @@ unsigned char*  decode_base64(unsigned char* buf, int* sz)
         if (lt==ln) break;
     }
 
-    //len = lt/4*3 + (lt%4)*3/4;
-    int len = ((lt+1)*3)/4;
+    int len = lt/4*3 + (lt%4)*3/4;
     if (sz!=NULL) *sz = len;
 
-    dcd = (unsigned char*)malloc(len);
+    dcd = (unsigned char*)malloc(len+1);
     if (dcd==NULL) return NULL;
-    memset(dcd, 0, len);
+    memset(dcd, 0, len+1);
 
     for (i=0; i<lt; i++) {
         if      (buf[i]>='A' && buf[i]<='Z') cc = buf[i] - 'A';
@@ -2711,7 +2710,6 @@ unsigned char*  decode_base64(unsigned char* buf, int* sz)
             }
         }
     }
-
     return dcd;
 }
 
@@ -2769,7 +2767,6 @@ unsigned char*  encode_base64(unsigned char* buf, int sz)
             ecd[i] = '=';
         }
     }
-
     return ecd;
 }
 
