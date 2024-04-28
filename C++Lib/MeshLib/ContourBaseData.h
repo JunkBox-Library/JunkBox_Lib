@@ -147,7 +147,7 @@ public:
     int             polygonNum;     ///< ポリゴン番号
     bool            has_normal;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
     bool            has_texcrd;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
-    bool            has_weught;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
+    bool            has_weight;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
 
     Vector<double>  vertex[3];
     Vector<double>  normal[3];
