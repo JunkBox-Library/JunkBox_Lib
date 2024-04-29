@@ -53,6 +53,7 @@ public:
     Vector<double>* vertex_value;   ///< 頂点データの並び．要素数は num_vertex
     Vector<double>* normal_value;   ///< 法線ベクトルデータの並び．要素数は num_vertex
     UVMap<double>*  texcrd_value;   ///< テクスチャマップの並び．要素数は num_texcrd
+    llsd_weight*    weight_value;   ///< 頂点の重み．Jointを持つデータに使用される．
 
     MeshFacetNode* next;
     MeshFacetNode* prev;
@@ -82,8 +83,9 @@ public:
 
 public:
     bool    computeVertexDirect(ContourBaseData* facetdata);
-    bool    computeVertexDirect(Vector<double>* vtx, Vector<double>* nml, UVMap<double>* map, int num, int vcount=3);
-    bool    computeVertexByBREP(Vector<double>* vtx, Vector<double>* nml, UVMap<double>* map, int num, int vcount=3);
+    bool    computeVertexByBREP(ContourBaseData* facetdata);
+    bool    computeVertexDirect(Vector<double>* vtx, Vector<double>* nml, UVMap<double>* map, llsd_weight* wgt, int num, int vcount=3);
+    bool    computeVertexByBREP(Vector<double>* vtx, Vector<double>* nml, UVMap<double>* map, llsd_weight* wgt, int num, int vcount=3);
 };
 
 
@@ -125,6 +127,7 @@ private: // 入力データの作業用
     Vector<double>* impvtx_value;       ///< 入力された頂点データ．3個で 1ポリゴンを表現．法線方向は右手順．
     Vector<double>* impnrm_value;       ///< 入力された頂点の法線ベクトル．impvtx_value と対応．
     UVMap<double>*  impmap_value;       ///< 入力されたテクスチャ座標データ．impvtx_value と対応．
+    llsd_weight*    impwgt_value;       ///< 入力された頂点の重み．Jointを持つデータに使用される．
 
 public:
     MeshObjectData(const char* name=NULL) { init(name);}
@@ -143,17 +146,19 @@ public:
     void    delAffineTrans(void) { freeAffineTrans(affineTrans);}
 
 public:
+    //      addData(){addNode();}
     bool    addData(ContourBaseData* facetdata, MaterialParam* param);
-    bool    addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, int vnum, MaterialParam* param, bool useBrep);
+    bool    addNode(ContourBaseData* facetdata, const char* name, MaterialParam* param);
+    
+    //      addData(){importTriData(); addNode();}
+    bool    addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, llsd_weight* wgt, int vnum, MaterialParam* param, bool useBrep);
     bool    addData(TriPolygonData* tridata, int tnum, int fnum, MaterialParam* param, bool useBrep);  ///< 処理するFACETを選択できる
-
+    bool    importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, llsd_weight* wgt, int vnum);
+    bool    importTriData(TriPolygonData* tridata, int tnum, int fnum=-1);
+    bool    addNode(const char* name, MaterialParam* param, bool useBrep);
+    //
     void    joinData(MeshObjectData*& data);    ///< data は削除される．
     void    setMaterialParam(MaterialParam param, int num=-1);
-    //
-    bool    importTriData(TriPolygonData* tridata, int tnum, int fnum=-1);
-    bool    importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, int vnum);
-    bool    addNode(ContourBaseData* facetdata, const char* name, MaterialParam* param);
-    bool    addNode(const char* name, MaterialParam* param, bool useBrep);
 };
 
 

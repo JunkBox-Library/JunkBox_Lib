@@ -70,7 +70,7 @@ public:
 // Triangle Contour Data
 //    ContourTriIndex をインデックスとした 3角ポリゴンデータ
 //    ex.) tri_data.v1 = coords[tri_indx.v1];
-//
+//    注)  OpenSimulator の Prim, Sculpt Prim の解析に使用する．
 
 class  ContourTriData
 {
@@ -105,7 +105,7 @@ class  ContourBaseData
 {
 public:
     int     num_index;              ///< インデックスの数．(index の要素数）
-    int     num_data;               ///< データ数．（vertex, normal, texcrd の要素数）
+    int     num_data;               ///< データ数．（vertex, normal, texcrd, weight の要素数）
     int     vcount;                 ///< ポリゴンの頂点数．通常は3 
 
     int*            index;          ///< インデックスデータ

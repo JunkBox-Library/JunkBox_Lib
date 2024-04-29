@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     FILE*  fp;
 
     if (argc<2) {
-        fprintf(stderr,"Usage %s llmesh_file key\n", argv[0]);
+        fprintf(stderr,"Usage %s llmesh_file [key]\n", argv[0]);
         exit(1);
     }
     if (argc==3) key = argv[2];
@@ -78,13 +78,14 @@ int main(int argc, char** argv)
         }
     }
 
+    // Weight
     uWord* weight = llsd_bin_get_skin_weight((uByte*)wgt.buf, wgt.vldsz, vrt.vldsz/6);
     if (weight!=NULL) {
         fprintf(stdout, "\n");
         for (int i=0; i<vrt.vldsz/6; i++) {
             for (int j=0; j<LLSD_JOINT_MAX_NUMBER; j++) {
-                int pos = i*LLSD_JOINT_MAX_NUMBER + j;
-                if (weight[pos]!=0x0000) printf("%3d[%2d] = 0x%04x\n", i, j, weight[pos]);
+                //int pos = i*LLSD_JOINT_MAX_NUMBER + j;
+                //if (weight[pos]!=0x0000) printf("%3d[%2d] = 0x%04x\n", i, j, weight[pos]);
             }
         }
     }

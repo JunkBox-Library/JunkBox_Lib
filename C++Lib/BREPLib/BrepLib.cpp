@@ -79,7 +79,7 @@ int  BrepSolidList::addSolid(MeshObjectData* mesh)
             normal[1] = node->normal_value[idx1];
             normal[2] = node->normal_value[idx2];
 
-            BREP_CONTOUR* contour = CreateContourByVector(facet, vertex, normal, NULL, false);
+            BREP_CONTOUR* contour = CreateContourByVector(facet, vertex, normal, NULL, NULL, false);
             if (contour!=NULL) {
                 solid->contours.push_back(contour);
             }
@@ -179,7 +179,7 @@ BREP_SOLID*  BrepSolidList::getMerge(CVCounter* counter)
             }
             //
             BREP_FACET* facet = new BREP_FACET(shell);
-            BREP_CONTOUR* contour = CreateContourByVector(facet, vect, norm, NULL, false);
+            BREP_CONTOUR* contour = CreateContourByVector(facet, vect, norm, NULL, NULL, false);
             if (contour!=NULL) solid->contours.push_back(contour);
             else  deleteNull(facet);
             //
