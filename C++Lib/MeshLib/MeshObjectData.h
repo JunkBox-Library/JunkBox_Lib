@@ -16,6 +16,7 @@ namespace jbxl {
 
 //#define   JBXL_MATERIALID_RAND_LEN  8
 #define   JBXL_MATERIAL_PREFIX      "#MATERIAL_"
+#define   JBXL_JOINT_MAX_NUMBER     64
 
 
 class  MeshFacetNode;
@@ -53,14 +54,16 @@ public:
     Vector<double>* vertex_value;   ///< 頂点データの並び．要素数は num_vertex
     Vector<double>* normal_value;   ///< 法線ベクトルデータの並び．要素数は num_vertex
     UVMap<double>*  texcrd_value;   ///< テクスチャマップの並び．要素数は num_texcrd
-    llsd_weight*    weight_value;   ///< 頂点の重み．Jointを持つデータに使用される．
+
+    ArrayParam<double>* weight_value;   ///< 頂点の重み．Jointを持つデータに使用される．要素数は num_vertex
+    ArrayParam<char*>   joint_name;
 
     MeshFacetNode* next;
     MeshFacetNode* prev;
 
 public:
     MeshFacetNode(void) { init();}
-    virtual ~MeshFacetNode(void) {}
+    virtual ~MeshFacetNode(void) { /*DEBUG_MODE PRINT_MESG("MeshFacetNode::~MeshFacetNode() in\n"); free();*/};
 
     void    init(void);
     void    free(void);
@@ -84,8 +87,8 @@ public:
 public:
     bool    computeVertexDirect(ContourBaseData* facetdata);
     bool    computeVertexByBREP(ContourBaseData* facetdata);
-    bool    computeVertexDirect(Vector<double>* vtx, Vector<double>* nml, UVMap<double>* map, llsd_weight* wgt, int num, int vcount=3);
-    bool    computeVertexByBREP(Vector<double>* vtx, Vector<double>* nml, UVMap<double>* map, llsd_weight* wgt, int num, int vcount=3);
+    bool    computeVertexDirect(Vector<double>* vtx, Vector<double>* nml, UVMap<double>* map, ArrayParam<double>* wgt, int num, int vcount=3);
+    bool    computeVertexByBREP(Vector<double>* vtx, Vector<double>* nml, UVMap<double>* map, ArrayParam<double>* wgt, int num, int vcount=3);
 };
 
 
@@ -124,14 +127,14 @@ public:
 private: // 入力データの作業用
     int     num_import;                 ///< 入力データの数
 
-    Vector<double>* impvtx_value;       ///< 入力された頂点データ．3個で 1ポリゴンを表現．法線方向は右手順．
-    Vector<double>* impnrm_value;       ///< 入力された頂点の法線ベクトル．impvtx_value と対応．
-    UVMap<double>*  impmap_value;       ///< 入力されたテクスチャ座標データ．impvtx_value と対応．
-    llsd_weight*    impwgt_value;       ///< 入力された頂点の重み．Jointを持つデータに使用される．
+    Vector<double>*     impvtx_value;   ///< 入力された頂点データ．3個で 1ポリゴンを表現．法線方向は右手順．
+    Vector<double>*     impnrm_value;   ///< 入力された頂点の法線ベクトル．impvtx_value と対応．
+    UVMap<double>*      impmap_value;   ///< 入力されたテクスチャ座標データ．impvtx_value と対応．
+    ArrayParam<double>* impwgt_value;   ///< 入力された頂点の重み．Jointを持つデータに使用される．
 
 public:
     MeshObjectData(const char* name=NULL) { init(name);}
-    virtual ~MeshObjectData(void)   {}
+    virtual ~MeshObjectData(void) { DEBUG_MODE PRINT_MESG("MeshObjectData::~MeshObjectData() in\n"); }
 
     void    init(const char* name=NULL);
     void    free(void);
@@ -151,9 +154,9 @@ public:
     bool    addNode(ContourBaseData* facetdata, const char* name, MaterialParam* param);
     
     //      addData(){importTriData(); addNode();}
-    bool    addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, llsd_weight* wgt, int vnum, MaterialParam* param, bool useBrep);
+    bool    addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<double>* wgt, int vnum, MaterialParam* param, bool useBrep);
     bool    addData(TriPolygonData* tridata, int tnum, int fnum, MaterialParam* param, bool useBrep);  ///< 処理するFACETを選択できる
-    bool    importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, llsd_weight* wgt, int vnum);
+    bool    importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<double>* wgt, int vnum);
     bool    importTriData(TriPolygonData* tridata, int tnum, int fnum=-1);
     bool    addNode(const char* name, MaterialParam* param, bool useBrep);
     //

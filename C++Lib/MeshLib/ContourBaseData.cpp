@@ -42,10 +42,9 @@ void  ContourTriData::init(void)
     uv1.init();
     uv2.init();
     uv3.init();
-
-    memset(&w1, 0, sizeof(llsd_weight));
-    memset(&w2, 0, sizeof(llsd_weight));
-    memset(&w3, 0, sizeof(llsd_weight));
+    w1.init();
+    w2.init();
+    w3.init();
 }
 
 
@@ -100,9 +99,22 @@ void  ContourBaseData::free(void)
     freeNull(vertex);
     freeNull(normal);
     freeNull(texcrd);
-    freeNull(weight);
+    //
+    free_weight();
 
     init();
+}
+
+
+void  ContourBaseData::free_weight(void)
+{
+    if (weight!=NULL) {
+        for (int i=0; i<num_data; i++) {
+            weight[i].free();
+        }
+        freeNull(weight);
+        weight = NULL;
+    }
 }
 
 
@@ -113,7 +125,7 @@ bool  ContourBaseData::getm(void)
     vertex = (Vector<double>*)malloc(sizeof(Vector<double>)*num_data);
     normal = (Vector<double>*)malloc(sizeof(Vector<double>)*num_data);
     texcrd = (UVMap <double>*)malloc(sizeof(UVMap <double>)*num_data);
-    weight = (llsd_weight*)   malloc(sizeof(llsd_weight)*num_data);
+    weight = (ArrayParam<double>*)malloc(sizeof(ArrayParam<double>)*num_data);
 
     if (index==NULL || vertex==NULL || normal==NULL || texcrd==NULL) {
         this->free();
@@ -136,7 +148,7 @@ void  ContourBaseData::dup(ContourBaseData a)
             vertex[i] = a.vertex[i];
             normal[i] = a.normal[i];
             texcrd[i] = a.texcrd[i];
-            weight[i] = a.weight[i];
+            weight[i].dup(a.weight[i]);
         }
     }
     return;
@@ -188,7 +200,7 @@ void  TriPolygonData::init(void)
         vertex[i].init();
         normal[i].init();
         texcrd[i].init();
-        memset(&weight[i], 0, sizeof(llsd_weight));
+        weight[i].init();
     }
 }
 
@@ -196,6 +208,7 @@ void  TriPolygonData::init(void)
 void  TriPolygonData::dup(TriPolygonData a)
 {
     *this = a;
+    for (int i=0; i<3; i++) weight[i].dup(a.weight[i]);
 }
 
 

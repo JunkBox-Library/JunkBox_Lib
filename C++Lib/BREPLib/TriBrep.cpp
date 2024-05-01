@@ -666,7 +666,7 @@ DllExport int  jbxl::DupEdgeNumber(BREP_CONTOUR* contour)
 
 
 /**
-BREP_CONTOUR*  jbxl::CreateContourByVector(BREP_FACET* facet, Vector<double>* vect, Vector<double>* nrml, UVMap<double>* uvmp, Vertex_Weight* wght, bool dupli)
+BREP_CONTOUR*  jbxl::CreateContourByVector(BREP_FACET* facet, Vector<double>* vect, Vector<double>* nrml, UVMap<double>* uvmp, ArrayParam<double>* wght, bool dupli)
 
 Facet と Vector[] から Contour を作る．
 
@@ -681,7 +681,7 @@ uvmp[0]〜uvmp[2] は３点の曲面座標データ．
 @param  weght 頂点の重みデータへのポインタ．
 @param  dupli true: 頂点の重複登録を許可する．false: 重複登録を許可しない．
 */
-DllExport BREP_CONTOUR*  jbxl::CreateContourByVector(BREP_FACET* facet, Vector<double>* vect, Vector<double>* nrml, UVMap<double>* uvmp, Vertex_Weight* wght, bool dupli)
+DllExport BREP_CONTOUR*  jbxl::CreateContourByVector(BREP_FACET* facet, Vector<double>* vect, Vector<double>* nrml, UVMap<double>* uvmp, ArrayParam<double>* wght, bool dupli)
 {
     BREP_SOLID*   solid;
     BREP_CONTOUR* contour;
@@ -701,7 +701,7 @@ DllExport BREP_CONTOUR*  jbxl::CreateContourByVector(BREP_FACET* facet, Vector<d
             vertex[i]->uvmap  = uvmp[i];
         }
         if (wght!=NULL) {
-            vertex[i]->weight = wght[i];
+            vertex[i]->weight.dup(wght[i]);
         }
         vertex[i]->CloseData();
     }
@@ -1301,7 +1301,7 @@ DllExport int  jbxl::CreateTriSolidFromSTL(BREP_SOLID* solid, STLData* stldata, 
 
 
 /**
-DllExport int  jbxl::CreateTriSolidFromVector(BREP_SOLID* solid, int vno, Vector<double>* vect, Vector<double>* nrml, UVMap<double>* uvmp, Vertex_Weight* wght, bool dupli, bool check)
+DllExport int  jbxl::CreateTriSolidFromVector(BREP_SOLID* solid, int vno, Vector<double>* vect, Vector<double>* nrml, UVMap<double>* uvmp, ArrayParam<double>* wght, bool dupli, bool check)
 
 Vector<double>から BREP_SOLIDを生成する．BREP_SOLIDに使用された有効なファセットの数を返す．@n
 カウンタ使用可能．
@@ -1318,7 +1318,7 @@ Vector<double>から BREP_SOLIDを生成する．BREP_SOLIDに使用された有
 @retval -1  ソリッドがNULL，stldataがNULL またはソリッドの Octreeが NULL
 @retval -3  操作がキャンセルされた．
 */
-DllExport int  jbxl::CreateTriSolidFromVector(BREP_SOLID* solid, int vno, Vector<double>* vect, Vector<double>* nrml, UVMap<double>* uvmp, Vertex_Weight* wght, bool dupli, bool check)
+DllExport int  jbxl::CreateTriSolidFromVector(BREP_SOLID* solid, int vno, Vector<double>* vect, Vector<double>* nrml, UVMap<double>* uvmp, ArrayParam<double>* wght, bool dupli, bool check)
 {
     BREP_SHELL*   shell;
     BREP_FACET*   facet;
@@ -1344,7 +1344,7 @@ DllExport int  jbxl::CreateTriSolidFromVector(BREP_SOLID* solid, int vno, Vector
 
     Vector<double>* normal = NULL;
     UVMap<double>*  uvmap  = NULL;
-    Vertex_Weight*  weight = NULL;
+    ArrayParam<double>* weight = NULL;
     shell = new BREP_SHELL(solid);
     //
     for (int i=0; i<fno; i++) {
@@ -1394,7 +1394,7 @@ DllExport int  jbxl::CreateTriSolidFromVector(BREP_SOLID* solid, int vno, Vector
 
 
 /**
-void  jbxl::AddVector2TriSolid(BREP_SOLID* solid, BREP_SHELL* shell, Vector<double>* vect, Vector<double>* nrml, UVMap<double>* uvmp, Vertex_Weight* wgt, bool dupli)
+void  jbxl::AddVector2TriSolid(BREP_SOLID* solid, BREP_SHELL* shell, Vector<double>* vect, Vector<double>* nrml, UVMap<double>* uvmp, ArrayParam<double>* wgt, bool dupli)
 
 vect[3]を BREP_SOLIDに１個ずつシーケンシャルに追加する．
 データの追加が終わったら，必ず CloseSolid() を呼ぶこと．@n
@@ -1408,7 +1408,7 @@ vect[3]を BREP_SOLIDに１個ずつシーケンシャルに追加する．
 @param  uvmp  頂点の曲面座標データへのポインタ．
 @param  dupli true: 頂点の重複登録を許可する．false: 重複登録を許可しない．
 */
-DllExport void  jbxl::AddVector2TriSolid(BREP_SOLID* solid, BREP_SHELL* shell, Vector<double>* vect, Vector<double>* nrml, UVMap<double>* uvmp, Vertex_Weight* wgt, bool dupli)
+DllExport void  jbxl::AddVector2TriSolid(BREP_SOLID* solid, BREP_SHELL* shell, Vector<double>* vect, Vector<double>* nrml, UVMap<double>* uvmp, ArrayParam<double>* wgt, bool dupli)
 {
     BREP_FACET*   facet;
     BREP_CONTOUR* contour;

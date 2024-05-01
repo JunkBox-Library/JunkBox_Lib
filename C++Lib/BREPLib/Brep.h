@@ -23,7 +23,6 @@
 
 #include "Vector.h"
 #include "TVector.h"
-#include "xLib/llsd_tool.h"
 
 
 
@@ -248,8 +247,6 @@ public:
 };
 
 
-typedef  struct _llsd_skin_weight  Vertex_Weight;
-
 
 //////////////////////////////////////////////////////////////////////////////////
 // BREP_VERTEX
@@ -263,7 +260,7 @@ public:
     Vector<double>  point;                  ///< 頂点の座標．
     Vector<double>  normal;                 ///< 法線ベクトル．周りの Contour の法線ベクトルの平均．
     UVMap<double>   uvmap;                  ///< 曲面のUV座標
-    Vertex_Weight   weight;                 ///< 頂点の重み
+    ArrayParam<double> weight;          ///< 頂点の重み
 
     // optional
     long int        index;                  ///< シーケンシャルに増加する一意的な番号．Octree に格納されるときに設定される．

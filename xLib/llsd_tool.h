@@ -18,13 +18,7 @@
 #endif
 
 
-#define  LLSD_JOINT_MAX_NUMBER  32
-
-struct  _llsd_skin_weight {
-    uWord  weight[LLSD_JOINT_MAX_NUMBER];
-};
-typedef  struct _llsd_skin_weight  llsd_weight;
-
+#define  LLSD_JOINT_NUMBER      32
 
 #define  LLSD_MAKER_UNDEF       '!'
 #define  LLSD_MAKER_TRUE        '1'

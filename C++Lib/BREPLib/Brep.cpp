@@ -576,6 +576,8 @@ BREP_VERTEX::BREP_VERTEX()
     calc_normal     = true;
     tolerance       = Abs_Vertex_Tolerance;
 
+    weight.init(0);
+
     forbidden_list  = NULL;
     distance2       = HUGE_VALF;
 }
@@ -587,6 +589,8 @@ BREP_VERTEX::~BREP_VERTEX()
     if (!wing_list.empty()) {
         DEBUG_MODE PRINT_MESG("~BREP_VERTEX:  List of Wing is not empty!!\n");
     }
+
+    weight.free();
 
     if (forbidden_list!=NULL) {
         forbidden_list->clear();
@@ -997,7 +1001,7 @@ int jbxl::CompareVertex(BREP_VERTEX* v1, BREP_VERTEX* v2)
 
 v2 に対する v1 の位置を検査する．
 
-@retval 0〜7 Vertex の位置
+@retval 0〜7 v2 から見た v1 の位置（OctTree）
 @retval 8    同じVertex
 */
 DllExport int jbxl::CompareVertex(BREP_VERTEX* v1, BREP_VERTEX* v2)
@@ -1006,7 +1010,7 @@ DllExport int jbxl::CompareVertex(BREP_VERTEX* v1, BREP_VERTEX* v2)
     double  dist2 = (v1->point.x - v2->point.x)*(v1->point.x - v2->point.x) +
                     (v1->point.y - v2->point.y)*(v1->point.y - v2->point.y) +
                     (v1->point.z - v2->point.z)*(v1->point.z - v2->point.z);
-    if (dist2<=tolerance*tolerance && v1->uvmap==v2->uvmap) return 8;   // 同じ位置．同じテクスチャマップ．
+    if (dist2/3.0<=tolerance*tolerance) return 8;   // 同じ位置．
 
     int code = 0;
     if (v1->point.x > v2->point.x) code += 1;

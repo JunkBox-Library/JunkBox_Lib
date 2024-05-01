@@ -7,6 +7,7 @@
 #include  "MeshObjectData.h"
 
 
+
 using namespace jbxl;
 
 
@@ -32,8 +33,38 @@ void  MeshFacetNode::init(void)
     texcrd_value = NULL;
     weight_value = NULL;
 
+    joint_name.init(JBXL_JOINT_MAX_NUMBER);
+
     next         = NULL;
     prev         = NULL;
+}
+
+
+void  MeshFacetNode::free(void)
+{
+    delMaterialParam();
+    free_Buffer(&material_id);
+
+    free_value();
+}
+
+
+void  MeshFacetNode::free_value(void)
+{
+    freeNull(data_index); 
+    freeNull(vertex_value); 
+    freeNull(normal_value); 
+    freeNull(texcrd_value); 
+
+    freeArrayParams(&weight_value, num_vertex);
+    joint_name.free_ptr();
+}
+
+
+void  MeshFacetNode::clear(void)
+{
+    this->free();
+    init();
 }
 
 
@@ -118,32 +149,6 @@ void  MeshFacetNode::set(int vertex, int polygon, int vcount)
 }
 
 
-void  MeshFacetNode::free(void)
-{
-    delMaterialParam();
-    free_Buffer(&material_id);
-
-    free_value();
-}
-
-
-void  MeshFacetNode::free_value(void)
-{
-    freeNull(data_index); 
-    freeNull(vertex_value); 
-    freeNull(normal_value); 
-    freeNull(texcrd_value); 
-    freeNull(weight_value); 
-}
-
-
-void  MeshFacetNode::clear(void)
-{
-    this->free();
-    init();
-}
-
-
 /**
 bool  MeshFacetNode::getm(int vertex, int polygon, int vcount)
 
@@ -159,8 +164,9 @@ bool  MeshFacetNode::getm(int vertex, int polygon, int vcount)
 */
 bool  MeshFacetNode::getm(int vertex, int polygon, int vcount)
 {
-    free_value();
+    //free_value();
 
+print_message("pppppppppppppppppp\n");
     if (vertex >0) num_vertex  = vertex;
     if (polygon>0) num_polygon = polygon;
     if (vcount >0) num_index   = num_polygon*vcount;
@@ -168,17 +174,20 @@ bool  MeshFacetNode::getm(int vertex, int polygon, int vcount)
     if (num_vertex<=0 || num_polygon<=0) return false;
     num_texcrd = num_vertex;
 
+print_message("pppppppppppppppppp\n");
     data_index   = (int*)malloc(num_index*sizeof(int));
     vertex_value = (Vector<double>*)malloc(num_vertex*sizeof(Vector<double>));
     normal_value = (Vector<double>*)malloc(num_vertex*sizeof(Vector<double>));
     texcrd_value = (UVMap<double>*) malloc(num_texcrd*sizeof(UVMap<double>));
-    weight_value = (llsd_weight*)   malloc(num_vertex*sizeof(llsd_weight));     // option
+    weight_value = (ArrayParam<double>*)malloc(num_vertex*sizeof(ArrayParam<double>));     // option
 
+print_message("pppppppppppppppppp\n");
     if (data_index==NULL || vertex_value==NULL || normal_value==NULL || texcrd_value==NULL) {
         this->free();
         return false;
     }
 
+print_message("pppppppppppppppppp\n");
     return true;
 }
 
@@ -193,20 +202,32 @@ bool  MeshFacetNode::computeVertexDirect(ContourBaseData* facetdata)
 */
 bool  MeshFacetNode::computeVertexDirect(ContourBaseData* facetdata)
 {
+    DEBUG_MODE PRINT_MESG("MeshFacetNode::computeVertexDirect(ContourBaseData* facetdata) in\n");
+
+print_message("1111111111111111\n");
     if (facetdata==NULL) return false;
     if (facetdata->index==NULL || facetdata->vertex==NULL || facetdata->normal==NULL) return false;
 
+print_message("1111111111111111\n");
     set(facetdata->num_data, facetdata->num_index/facetdata->vcount, facetdata->vcount);
-    if (!getm()) return false;
+print_message("1111111111111111\n");
+    if (!getm()) {
+print_message("2222222222222222\n");
+        PRINT_MESG("Warnning: MeshFacetNode::computeVertexDirect(ContourBaseData* facetdata): no more memory!\n");
+        return false;
+    }
 
+print_message("1111111111111111\n");
     for (int i=0; i<facetdata->num_index; i++) {
         data_index[i]   = facetdata->index[i];
     }
+print_message("1111111111111111\n");
     for (int i=0; i<num_vertex; i++) {
         vertex_value[i] = facetdata->vertex[i];
         normal_value[i] = facetdata->normal[i];
-        weight_value[i] = facetdata->weight[i];
+        weight_value[i].dup(facetdata->weight[i]);
     }
+print_message("1111111111111111\n");
     if (facetdata->texcrd!=NULL) {
         for (int i=0; i<num_texcrd; i++) {
             texcrd_value[i] = facetdata->texcrd[i];
@@ -249,6 +270,7 @@ bool  MeshFacetNode::computeVertexByBREP(ContourBaseData* facetdata)
     // メモリの確保
     set((int)vnum, brep->facetno, vcount);
     if (!getm()) {
+        PRINT_MESG("Warnning: MeshFacetNode::computeVertexByBREP(ContourBaseData* facetdata): no more memory!\n");
         ::free(vertex_data);
         freeBrepSolid(brep);
         return false;
@@ -259,7 +281,7 @@ bool  MeshFacetNode::computeVertexByBREP(ContourBaseData* facetdata)
         vertex_value[i] = vertex_data[i]->point;
         normal_value[i] = vertex_data[i]->normal;
         texcrd_value[i] = vertex_data[i]->uvmap;
-        weight_value[i] = vertex_data[i]->weight;
+        weight_value[i].dup(vertex_data[i]->weight);
     }
 
     // Index
@@ -285,7 +307,7 @@ bool  MeshFacetNode::computeVertexByBREP(ContourBaseData* facetdata)
 
 
 /**
-bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, llsd_weight* impwgt, int impnum, int vcount)
+bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, ArrayParam<double>* impwgt, int impnum, int vcount)
 
 整列化（インデックス化ではない）された頂点データを直接 MeshObjectのデータとしてインポートする．@n
 元のデータの再現性が良い．処理時間が早い．@n
@@ -299,12 +321,15 @@ bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>*
 @param vcount ポリゴンの頂点数．通常は 3
 @return インポートに成功したかどうか．
 */
-bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, llsd_weight* impwgt, int impnum, int vcount)
+bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, ArrayParam<double>* impwgt, int impnum, int vcount)
 {
     if (impvtx==NULL || impnrm==NULL) return false;
 
     set(impnum, impnum/vcount, vcount);
-    if (!getm()) return false;
+    if (!getm()) {
+        PRINT_MESG("Warnning: MeshFacetNode::computeVertexDirect(Vector<double> ...): no more memory!\n");
+        return false;
+    }
 
     for (int i=0; i<num_vertex; i++) {
         vertex_value[i] = impvtx[i];
@@ -318,7 +343,7 @@ bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>*
     }
     if (impwgt!=NULL) {
         for (int i=0; i<num_vertex; i++) {
-            weight_value[i] = impwgt[i];
+            weight_value[i].dup(impwgt[i]);
         }
     }
 
@@ -327,7 +352,7 @@ bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>*
 
 
 /**
-bool  MeshFacetNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, llsd_weight* impwgt, int impnum, int vcount)
+bool  MeshFacetNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, ArrayParamter<double>* impwgt, int impnum, int vcount)
 
 BREPを使用して，頂点データを処理する．頂点データは再インデックス化される@n
 データがインデックス化されていない場合，重複頂点を削除するのでデータサイズが小さくなる．@n
@@ -342,7 +367,7 @@ BREPを使用して，頂点データを処理する．頂点データは再イ�
 @param vcount ポリゴンの頂点数．通常は 3
 @return インポートに成功したかどうか．
 */
-bool  MeshFacetNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, llsd_weight* impwgt, int impnum, int vcount)
+bool  MeshFacetNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, ArrayParam<double>* impwgt, int impnum, int vcount)
 {
     if (impvtx==NULL) return false;
 
@@ -370,7 +395,7 @@ bool  MeshFacetNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>*
         vertex_value[i] = vertex_data[i]->point;
         normal_value[i] = vertex_data[i]->normal;
         texcrd_value[i] = vertex_data[i]->uvmap;
-        weight_value[i] = vertex_data[i]->weight;
+        weight_value[i].dup(vertex_data[i]->weight);
     }
 
     // Index
@@ -388,7 +413,8 @@ bool  MeshFacetNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>*
         polyn++;
     }
 
-    ::free(vertex_data);
+    //::free(vertex_data);
+    delete(vertex_data);
     freeBrepSolid(brep);
 
     return true;
@@ -538,10 +564,12 @@ void  MeshObjectData::free(void)
 
 void  MeshObjectData::free_value(void)
 {
+/*
     freeNull(impvtx_value);
     freeNull(impnrm_value);
     freeNull(impmap_value);
-    freeNull(impwgt_value);
+    //freeNull(impwgt_value);
+*/
 }
 
 
@@ -565,6 +593,7 @@ CONTOUR(ポリゴン)を選択的に処理することはできない．予め C
 */
 bool  MeshObjectData::addData(ContourBaseData* contours, MaterialParam* param)
 {
+    DEBUG_MODE PRINT_MESG("MeshObjectData::addData(ContourBaseData* contours, MaterialParam* param) in\n");
     char* name = NULL;
     if (param!=NULL) name = param->getParamString();
 
@@ -576,7 +605,7 @@ bool  MeshObjectData::addData(ContourBaseData* contours, MaterialParam* param)
 
 
 /**
-bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, llsd_weight* wgt, int vnum, MaterialParam* param, bool useBrep)
+bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<double>* wgt, int vnum, MaterialParam* param, bool useBrep)
 
 指定した頂点ベクトルのデータを追加し，MeshObjectのデータ（通常はCONTOUR すなわちポリゴン単位）を作成する．@n
 vct, nrm, map は3個づつ組になって三角ポリゴンを表す．従って vnumは必ず3の倍数になるはず．@n
@@ -591,8 +620,10 @@ vct, nrm, map は3個づつ組になって三角ポリゴンを表す．従っ�
 @param useBrep  BREPを使用して頂点を配置する．速度は遅くなるが，頂点数（データ量）は減る．
 @retval         true: 処理の成功．false: 処理の失敗．
 */
-bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, llsd_weight* wgt, int vnum, MaterialParam* param, bool useBrep)
+bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<double>* wgt, int vnum, MaterialParam* param, bool useBrep)
 {
+    DEBUG_MODE PRINT_MESG("MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ....) in\n");
+
     bool ret = importTriData(vct, nrm, map, wgt, vnum);
     if (ret) {
         char* name = NULL;
@@ -620,6 +651,8 @@ pnum を指定すると，指定されたポリゴンデータのみが追加さ
 */
 bool  MeshObjectData::addData(TriPolygonData* tridata, int tnum, int pnum, MaterialParam* param, bool useBrep)
 {
+    DEBUG_MODE PRINT_MESG("MeshObjectData::TriPolygonData* tridata, int tnum, int pnum, MaterialParam* param, bool useBrep) in\n");
+
     bool ret = importTriData(tridata, tnum, pnum);
     if (ret) {
         char* name = NULL;
@@ -637,7 +670,7 @@ bool  MeshObjectData::addData(TriPolygonData* tridata, int tnum, int pnum, Mater
 
 
 /**
-bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, llsd_weight* wgt, int vnum)
+bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<double>* wgt, int vnum)
 
 指定した頂点ベクトルのデータを取り込む．@n
 vct, nrm, map は3個づつ組になって三角ポリゴンを表す．従って vnumは必ず3の倍数になるはず．
@@ -649,7 +682,7 @@ vct, nrm, map は3個づつ組になって三角ポリゴンを表す．従っ�
 @param vnum     データ数
 @retval         true: 処理の成功．false: 処理の失敗．
 */
-bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, llsd_weight* wgt, int vnum)
+bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<double>* wgt, int vnum)
 {
     if (vct==NULL) return false;
     //
@@ -690,10 +723,12 @@ bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UV
 
     // Vertex Weight (option)
     if (wgt!=NULL) {
-        int wsize = sizeof(llsd_weight)*vnum;
-        impwgt_value = (llsd_weight*)malloc(wsize);
+        int wsize = sizeof(ArrayParam<double>)*vnum;
+        impwgt_value = (ArrayParam<double>*)malloc(wsize);
         if (impwgt_value!=NULL) {
-            memcpy(impwgt_value, wgt, wsize);
+            for (int i=0; i<vnum; i++) {
+               impwgt_value[i].dup(wgt[i]);
+            }
         }
     }
 
@@ -791,14 +826,14 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
     // Vertex Weight (option)
     impwgt_value = NULL;
     if (tridata[0].has_weight) {
-        int wsize = sizeof(llsd_weight)*vnum;
-        impwgt_value = (llsd_weight*)malloc(wsize);
+        int wsize = sizeof(ArrayParam<double>)*vnum;
+        impwgt_value = (ArrayParam<double>*)malloc(wsize);
         if (impwgt_value!=NULL) {
             for (int i=0, n=0; i<tnum; i++) {
                 if (tridata[i].polygonNum==pnum || pnum<0) {
-                    impwgt_value[n*3]   = tridata[i].weight[0];
-                    impwgt_value[n*3+1] = tridata[i].weight[1];
-                    impwgt_value[n*3+2] = tridata[i].weight[2];
+                    impwgt_value[n*3]  .dup(tridata[i].weight[0]);
+                    impwgt_value[n*3+1].dup(tridata[i].weight[1]);
+                    impwgt_value[n*3+2].dup(tridata[i].weight[2]);
                     n++;
                 }
             }
@@ -819,6 +854,8 @@ bool  MeshObjectData::addNode(ContourBaseData* facetdata, const char* name, Mate
 */
 bool  MeshObjectData::addNode(ContourBaseData* facetdata, const char* name, MaterialParam* param)
 {
+    DEBUG_MODE PRINT_MESG("MeshObjectData::addNode(ContourBaseData* facetdata, const char* name, MaterialParam* param) in\n");
+
     bool ret = false;
 
     MeshFacetNode* node = new MeshFacetNode();
@@ -850,6 +887,8 @@ bool  MeshObjectData::addNode(const char* name, MaterialParam* param, bool useBr
 */
 bool  MeshObjectData::addNode(const char* name, MaterialParam* param, bool useBrep)
 {
+    DEBUG_MODE PRINT_MESG("MeshObjectData::addNode(const char* name, MaterialParam* param, bool useBrep) in\n");
+
     bool ret = false;
     if (impvtx_value==NULL) return ret;
 

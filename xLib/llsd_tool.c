@@ -516,13 +516,13 @@ llmesh の LODデータから weight データを抜き出して，uWord の 2�
 @param  sz  : buf のサイズ．
 @param  vertex_num : 対応する頂点の数．
 
-@retval 2Byte の Weightデータ．weight[頂点*LLSD_JOINT_MAX_NUMBER + Joint]. 
+@retval 2Byte の Weightデータ．weight[頂点*LLSD_JOINT_NUMBER + Joint]. 
 */
 uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num)
 {
     if (buf==NULL) return NULL;
 
-    int len = sizeof(uWord)*LLSD_JOINT_MAX_NUMBER*vertex_num;
+    int len = sizeof(uWord)*LLSD_JOINT_NUMBER*vertex_num;
     uWord* weight = (uWord*)malloc(len);
     if (weight==NULL) return NULL;
     memset(weight, 0, len);
@@ -542,7 +542,7 @@ uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num)
         }
         else {
             invrtx++;
-            weight[vertex*LLSD_JOINT_MAX_NUMBER + (int)joint] = *(uWord*)(pweight + pos);
+            weight[vertex*LLSD_JOINT_NUMBER + (int)joint] = *(uWord*)(pweight + pos);
             pos += 2;
             //
             if (invrtx%4==0) {
