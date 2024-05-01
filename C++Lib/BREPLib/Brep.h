@@ -23,7 +23,6 @@
 
 #include "Vector.h"
 #include "TVector.h"
-#include "xLib/llsd_tool.h"
 
 
 
@@ -248,8 +247,6 @@ public:
 };
 
 
-typedef  struct _llsd_skin_weight  Vertex_Weight;
-
 
 //////////////////////////////////////////////////////////////////////////////////
 // BREP_VERTEX
@@ -260,19 +257,19 @@ class DllExport BREP_VERTEX
 public:
     BREP_WING_LIST  wing_list;
 
-    Vector<double>  point;                  ///< 頂点の座標．
-    Vector<double>  normal;                 ///< 法線ベクトル．周りの Contour の法線ベクトルの平均．
-    UVMap<double>   uvmap;                  ///< 曲面のUV座標
-    Vertex_Weight   weight;                 ///< 頂点の重み
+    Vector<double>      point;              ///< 頂点の座標．
+    Vector<double>      normal;             ///< 法線ベクトル．周りの Contour の法線ベクトルの平均．
+    UVMap<double>       uvmap;              ///< 曲面のUV座標
+    ArrayParam<double>  weight;             ///< 頂点の重み
 
     // optional
-    long int        index;                  ///< シーケンシャルに増加する一意的な番号．Octree に格納されるときに設定される．
-    bool            calc_normal;            ///< normal を計算するか? しない場合は入力値を使用する．
+    long int            index;              ///< シーケンシャルに増加する一意的な番号．Octree に格納されるときに設定される．
+    bool                calc_normal;        ///< normal を計算するか? しない場合は入力値を使用する．
 
-    double          distance2;
-    double          tolerance;
+    double              distance2;
+    double              tolerance;
 
-    BREP_VERTEX_LIST*  forbidden_list;      ///< お互いに Edgeを張ることを禁止された Vertexの List
+    BREP_VERTEX_LIST*   forbidden_list;     ///< お互いに Edgeを張ることを禁止された Vertexの List
 
 public:
     BREP_VERTEX();

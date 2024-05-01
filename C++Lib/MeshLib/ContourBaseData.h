@@ -10,7 +10,6 @@
 #include <vector>
 #include <algorithm>
 
-#include "xLib/llsd_tool.h"
 #include "Vector.h"
 #include "Rotation.h"
 #include "buffer.h"
@@ -77,16 +76,17 @@ class  ContourTriData
 public:
     int contourNum;
 
-    Vector<double>  v1,  v2,  v3;
-    Vector<double>  n1,  n2,  n3;
-    UVMap<double>   uv1, uv2, uv3;
-    llsd_weight     w1,  w2,  w3;
+    Vector<double>      v1,  v2,  v3;
+    Vector<double>      n1,  n2,  n3;
+    UVMap<double>       uv1, uv2, uv3;
+    ArrayParam<double>  w1,  w2,  w3;
 
 public:
-    ContourTriData(int n=0) { init(); contourNum = n;}
-    virtual ~ContourTriData(void) {}
+    ContourTriData(int n = 0) { init(); contourNum = n;}
+    virtual ~ContourTriData(void) { free();}
 
     void  init(void);
+    void  free(void);
 
 public:
     void  execScale(double x, double y, double z);
@@ -108,15 +108,15 @@ public:
     int     num_data;               ///< データ数．（vertex, normal, texcrd, weight の要素数）
     int     vcount;                 ///< ポリゴンの頂点数．通常は3 
 
-    int*            index;          ///< インデックスデータ
-    Vector<double>* vertex;         ///< 頂点データ       vertex[index[0]], vertex[index[1]], vertex[index[2]], ... の順に並ぶ
-    Vector<double>* normal;         ///< 法線ベクトル     normal[index[0]], normal[index[1]], normal[index[2]], ... の順に並ぶ
-    UVMap<double>*  texcrd;         ///< テクスチャマップ texcrd[index[0]], texcrd[index[1]], texcrd[index[2]], ... の順に並ぶ
-    llsd_weight*    weight;         ///< Skin の Weight   weight[index[0]], weight[index[1]], weight[index[2]], ... の順に並ぶ
+    int*                index;      ///< インデックスデータ
+    Vector<double>*     vertex;     ///< 頂点データ       vertex[index[0]], vertex[index[1]], vertex[index[2]], ... の順に並ぶ
+    Vector<double>*     normal;     ///< 法線ベクトル     normal[index[0]], normal[index[1]], normal[index[2]], ... の順に並ぶ
+    UVMap<double>*      texcrd;     ///< テクスチャマップ texcrd[index[0]], texcrd[index[1]], texcrd[index[2]], ... の順に並ぶ
+    ArrayParam<double>* weight;     ///< Skin の Weight   weight[index[0]], weight[index[1]], weight[index[2]], ... の順に並ぶ
 
 public:
     ContourBaseData(int idx=0, int num=0) { init(idx, num);}
-    virtual ~ContourBaseData(void) {} 
+    virtual ~ContourBaseData(void) { free();} 
 
     void  init(int idx=0, int num=0);
     void  free(void);
@@ -141,22 +141,22 @@ inline void  freeContourBaseData(ContourBaseData*& contour) { if(contour!=NULL){
 class  TriPolygonData
 {
 public:
-    int             polygonNum;     ///< ポリゴン番号
-    bool            has_normal;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
-    bool            has_texcrd;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
-    bool            has_weight;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
+    int                 polygonNum;     ///< ポリゴン番号
+    bool                has_normal;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
+    bool                has_texcrd;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
+    bool                has_weight;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
 
-    Vector<double>  vertex[3];
-    Vector<double>  normal[3];
-    UVMap<double>   texcrd[3];
-    llsd_weight     weight[3];
+    Vector<double>      vertex[3];
+    Vector<double>      normal[3];
+    UVMap<double>       texcrd[3];
+    ArrayParam<double>  weight[3];
 
 public:
     TriPolygonData(void) { init();}
-    virtual ~TriPolygonData(void) {}   
+    virtual ~TriPolygonData(void) { free();}   
 
     void  init(void);
-    void  free(void) { init();}
+    void  free(void);
     void  dup(TriPolygonData a);
 
 public:

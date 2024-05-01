@@ -576,6 +576,7 @@ BREP_VERTEX::BREP_VERTEX()
     calc_normal     = true;
     tolerance       = Abs_Vertex_Tolerance;
 
+    weight.init();
     forbidden_list  = NULL;
     distance2       = HUGE_VALF;
 }
@@ -587,6 +588,8 @@ BREP_VERTEX::~BREP_VERTEX()
     if (!wing_list.empty()) {
         DEBUG_MODE PRINT_MESG("~BREP_VERTEX:  List of Wing is not empty!!\n");
     }
+
+    weight.free();
 
     if (forbidden_list!=NULL) {
         forbidden_list->clear();

@@ -42,10 +42,19 @@ void  ContourTriData::init(void)
     uv1.init();
     uv2.init();
     uv3.init();
+    w1.init();
+    w2.init();
+    w3.init();
+}
 
-    memset(&w1, 0, sizeof(llsd_weight));
-    memset(&w2, 0, sizeof(llsd_weight));
-    memset(&w3, 0, sizeof(llsd_weight));
+
+void  ContourTriData::free(void)
+{
+    contourNum = 0;
+
+    w1.free();
+    w2.free();
+    w3.free();
 }
 
 
@@ -96,13 +105,17 @@ void  ContourBaseData::init(int idx, int num)
 void  ContourBaseData::free(void)
 {
     freeNull(index);
-
     freeNull(vertex);
     freeNull(normal);
     freeNull(texcrd);
-    freeNull(weight);
 
-    init();
+    freeArrayParams(weight, num_data);
+
+    index     = NULL;
+    vertex    = NULL;
+    normal    = NULL;
+    texcrd    = NULL;
+    weight    = NULL;
 }
 
 
@@ -112,13 +125,18 @@ bool  ContourBaseData::getm(void)
 
     vertex = (Vector<double>*)malloc(sizeof(Vector<double>)*num_data);
     normal = (Vector<double>*)malloc(sizeof(Vector<double>)*num_data);
-    texcrd = (UVMap <double>*)malloc(sizeof(UVMap <double>)*num_data);
-    weight = (llsd_weight*)   malloc(sizeof(llsd_weight)*num_data);
+    texcrd = (UVMap <double>*)malloc(sizeof(UVMap<double>) *num_data);
+    weight = (ArrayParam<double>*)malloc(sizeof(ArrayParam<double>)*num_data);
 
     if (index==NULL || vertex==NULL || normal==NULL || texcrd==NULL) {
         this->free();
         return false;
     }
+
+    memset(vertex, 0, sizeof(Vector<double>)*num_data);
+    memset(normal, 0, sizeof(Vector<double>)*num_data);
+    memset(texcrd, 0, sizeof(UVMap<double>) *num_data);
+    memset(weight, 0, sizeof(ArrayParam<double>)*num_data);
 
     return true;
 }
@@ -136,7 +154,7 @@ void  ContourBaseData::dup(ContourBaseData a)
             vertex[i] = a.vertex[i];
             normal[i] = a.normal[i];
             texcrd[i] = a.texcrd[i];
-            weight[i] = a.weight[i];
+            weight[i].dup(a.weight[i]);
         }
     }
     return;
@@ -188,14 +206,24 @@ void  TriPolygonData::init(void)
         vertex[i].init();
         normal[i].init();
         texcrd[i].init();
-        memset(&weight[i], 0, sizeof(llsd_weight));
+        weight[i].init();
+    }
+}
+
+
+void  TriPolygonData::free(void)
+{
+    for (int i=0; i<3; i++) {
+        weight[i].free();
     }
 }
 
 
 void  TriPolygonData::dup(TriPolygonData a)
 {
+    for (int i=0; i<3; i++) weight[i].free();
     *this = a;
+    for (int i=0; i<3; i++) weight[i].dup(a.weight[i], false);
 }
 
 

@@ -17,7 +17,7 @@
 namespace jbxl {
 
 
-DllExport BREP_CONTOUR* CreateContourByVector(BREP_FACET* facet, Vector<double>* v, Vector<double>* n=NULL, UVMap<double>* uv=NULL, Vertex_Weight* w=NULL, bool dupli=false);
+DllExport BREP_CONTOUR* CreateContourByVector(BREP_FACET* facet, Vector<double>* v, Vector<double>* n=NULL, UVMap<double>* uv=NULL, ArrayParam<double>* w=NULL, bool dupli=false);
 DllExport BREP_CONTOUR* CreateContourByVertex(BREP_FACET* facet, BREP_VERTEX** vtx);
 
 DllExport void   CreateContoursList(BREP_SOLID* solid);
@@ -57,9 +57,9 @@ DllExport int    CommonVertex(BREP_CONTOUR* contour1, BREP_CONTOUR* contour2);
 DllExport bool   SamePlaneContour(BREP_CONTOUR* contour1, BREP_CONTOUR* contour2, int& lineno);
 
 DllExport int    CreateTriSolidFromSTL(BREP_SOLID* solid, STLData* stldata, int fno, bool check=true);
-DllExport int    CreateTriSolidFromVector(BREP_SOLID* solid, int vno, Vector<double>* v, Vector<double>* n=NULL, UVMap<double>* uv=NULL, Vertex_Weight* w=NULL, bool dupli=false, bool check=true);
+DllExport int    CreateTriSolidFromVector(BREP_SOLID* solid, int vno, Vector<double>* v, Vector<double>* n=NULL, UVMap<double>* uv=NULL, ArrayParam<double>* w=NULL, bool dupli=false, bool check=true);
 
-DllExport void   AddVector2TriSolid(BREP_SOLID* solid, BREP_SHELL* shell, Vector<double>* v, Vector<double>* n=NULL, UVMap<double>* uv=NULL, Vertex_Weight* w=NULL, bool dupli=false);
+DllExport void   AddVector2TriSolid(BREP_SOLID* solid, BREP_SHELL* shell, Vector<double>* v, Vector<double>* n=NULL, UVMap<double>* uv=NULL, ArrayParam<double>* w=NULL, bool dupli=false);
 DllExport int    CloseTriSolid(BREP_SOLID* solid, bool check=true, CVCounter* counter=NULL);
 
 DllExport bool   IsConnectEdges(BREP_WING* wing1, BREP_WING* wing2);
