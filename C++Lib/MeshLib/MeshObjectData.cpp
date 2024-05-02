@@ -278,7 +278,7 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
 
     // Normal Vector
     impnrm_value = NULL;
-    if (tridata[0].has_normal) {
+    //if (tridata[0].has_normal) {
         impnrm_value = (Vector<double>*)malloc(lsize);
         if (impnrm_value!=NULL) {
             for (int i=0, n=0; i<tnum; i++) {
@@ -294,11 +294,11 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
             freeNull(impvtx_value);
             return false;
         }
-    }
+    //}
 
     // UV Map
     impmap_value = NULL;
-    if (tridata[0].has_texcrd) {
+    //if (tridata[0].has_texcrd) {
         int msize = sizeof(UVMap<double>)*vnum;
         impmap_value = (UVMap<double>*)malloc(msize);
         if (impmap_value!=NULL) {
@@ -316,7 +316,7 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
             freeNull(impnrm_value);
             return false;
         }
-    }
+    //}
 
     // Vertex Weight (option)
     impwgt_value = NULL;

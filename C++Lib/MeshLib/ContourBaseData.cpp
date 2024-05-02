@@ -309,7 +309,7 @@ TriPolygonData*  jbxl::joinTriPolygonData(TriPolygonData*& first, int num_p, Tri
 
 void  jbxl::freeTriPolygonData(TriPolygonData*& tridata, int n)
 {
-    DEBUG_MODE PRINT_MESG("JBXL::freeTriPolygonData(): start.\n");
+    //DEBUG_MODE PRINT_MESG("JBXL::freeTriPolygonData(): start.\n");
     if (n<=0) return;
 
     if (tridata!=NULL) {
@@ -319,6 +319,6 @@ void  jbxl::freeTriPolygonData(TriPolygonData*& tridata, int n)
         ::free(tridata);
         tridata = NULL;
     }
-    DEBUG_MODE PRINT_MESG("JBXL::freeTriPolygonData(): end.\n");
+    //DEBUG_MODE PRINT_MESG("JBXL::freeTriPolygonData(): end.\n");
 }
 
