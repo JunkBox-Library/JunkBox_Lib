@@ -57,7 +57,7 @@ public:
 
 public:
     MeshFacetNode(void) { init();}
-    virtual ~MeshFacetNode(void) { free();}
+    virtual ~MeshFacetNode(void) { /*free();*/}
 
     void    init(void);
     void    free(void);

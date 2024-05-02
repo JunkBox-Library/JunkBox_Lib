@@ -53,7 +53,7 @@ public:
     void mlt_set(int d1=0,int d2=0,int d3=0);
 
 public:
-    Vector<double> SurfaceNormal(CONTOUR_VECTOR_ARRAY* coords) { 
+    Vector<double> SurfaceNormal(CONTOUR_VECTOR_ARRAY* coords) {
         Vector<double> normal = NewellMethod<double>((*coords)[v1],(*coords)[v2],(*coords)[v3]);
         return normal.normalize();
     }
@@ -83,7 +83,7 @@ public:
 
 public:
     ContourTriData(int n = 0) { init(); contourNum = n;}
-    virtual ~ContourTriData(void) { free();}
+    virtual ~ContourTriData(void) { /*free();*/}
 
     void  init(void);
     void  free(void);
@@ -106,7 +106,7 @@ class  ContourBaseData
 public:
     int     num_index;              ///< インデックスの数．(index の要素数）
     int     num_data;               ///< データ数．（vertex, normal, texcrd, weight の要素数）
-    int     vcount;                 ///< ポリゴンの頂点数．通常は3 
+    int     vcount;                 ///< ポリゴンの頂点数．通常は3
 
     int*                index;      ///< インデックスデータ
     Vector<double>*     vertex;     ///< 頂点データ       vertex[index[0]], vertex[index[1]], vertex[index[2]], ... の順に並ぶ
@@ -116,7 +116,7 @@ public:
 
 public:
     ContourBaseData(int idx=0, int num=0) { init(idx, num);}
-    virtual ~ContourBaseData(void) { free();} 
+    virtual ~ContourBaseData(void) { /*free();*/}
 
     void  init(int idx=0, int num=0);
     void  free(void);
@@ -153,7 +153,7 @@ public:
 
 public:
     TriPolygonData(void) { init();}
-    virtual ~TriPolygonData(void) { free();}   
+    virtual ~TriPolygonData(void) { /*free();*/}
 
     void  init(void);
     void  free(void);

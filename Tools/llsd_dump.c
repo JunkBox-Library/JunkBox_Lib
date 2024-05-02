@@ -84,8 +84,8 @@ int main(int argc, char** argv)
         fprintf(stdout, "\n");
         for (int i=0; i<vrt.vldsz/6; i++) {
             for (int j=0; j<LLSD_JOINT_MAX_NUMBER; j++) {
-                //int pos = i*LLSD_JOINT_MAX_NUMBER + j;
-                //if (weight[pos]!=0x0000) printf("%3d[%2d] = 0x%04x\n", i, j, weight[pos]);
+                int pos = i*LLSD_JOINT_MAX_NUMBER + j;
+                if (weight[pos]!=0x0000) printf("%3d[%2d] = 0x%04x\n", i, j, weight[pos]);
             }
         }
     }

@@ -174,7 +174,7 @@ vct, nrm, map は3個づつ組になって三角ポリゴンを表す．従っ�
 */
 bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<double>* wgt, int vnum)
 {
-    DEBUG_MODE PRINT_MESG("MeshObjectData::importTriData: for Vector<>: start.\n");
+    //DEBUG_MODE PRINT_MESG("MeshObjectData::importTriData: for Vector<>: start.\n");
     if (vct==NULL) return false;
     //
     free_value();
@@ -229,7 +229,7 @@ bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UV
     num_vcount = 3;         // Contour（ポリゴン）を形成する頂点数
     num_import = vnum;      // 総頂点数
 
-    DEBUG_MODE PRINT_MESG("MeshObjectData::importTriData: for Vector<>: end.\n");
+    //DEBUG_MODE PRINT_MESG("MeshObjectData::importTriData: for Vector<>: end.\n");
     return true;
 }
 
@@ -278,7 +278,7 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
 
     // Normal Vector
     impnrm_value = NULL;
-    //if (tridata[0].has_normal) {
+    if (tridata[0].has_normal) {
         impnrm_value = (Vector<double>*)malloc(lsize);
         if (impnrm_value!=NULL) {
             for (int i=0, n=0; i<tnum; i++) {
@@ -294,11 +294,11 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
             freeNull(impvtx_value);
             return false;
         }
-    //}
+    }
 
     // UV Map
     impmap_value = NULL;
-    //if (tridata[0].has_texcrd) {
+    if (tridata[0].has_texcrd) {
         int msize = sizeof(UVMap<double>)*vnum;
         impmap_value = (UVMap<double>*)malloc(msize);
         if (impmap_value!=NULL) {
@@ -316,7 +316,7 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
             freeNull(impnrm_value);
             return false;
         }
-    //}
+    }
 
     // Vertex Weight (option)
     impwgt_value = NULL;
@@ -327,9 +327,9 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
             memset(impwgt_value, 0, vnum);
             for (int i=0, n=0; i<vnum/3; i++) {
                 if (tridata[i].polygonNum==pnum || pnum<0) {
-                    impwgt_value[n*3]  .dup(tridata[i].weight[0]);
-                    impwgt_value[n*3+1].dup(tridata[i].weight[1]);
-                    impwgt_value[n*3+2].dup(tridata[i].weight[2]);
+                    impwgt_value[n*3]  .dup(tridata[i].weight[0], false);
+                    impwgt_value[n*3+1].dup(tridata[i].weight[1], false);
+                    impwgt_value[n*3+2].dup(tridata[i].weight[2], false);
                     n++;
                 }
             }

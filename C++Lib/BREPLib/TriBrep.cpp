@@ -701,7 +701,7 @@ DllExport BREP_CONTOUR*  jbxl::CreateContourByVector(BREP_FACET* facet, Vector<d
             vertex[i]->uvmap  = uvmp[i];
         }
         if (wght!=NULL) {
-            vertex[i]->weight.dup(wght[i]);
+            vertex[i]->weight.dup(wght[i], false);
         }
         vertex[i]->CloseData();
     }

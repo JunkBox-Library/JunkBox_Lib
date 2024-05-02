@@ -332,8 +332,8 @@ bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>*
     }
     if (impwgt!=NULL) {
         for (int i=0; i<num_vertex; i++) {
-            //weight_value[i].dup(impwgt[i], false);
-            weight_value[i].dup(impwgt[i]);
+            weight_value[i].dup(impwgt[i], false);
+            //weight_value[i].dup(impwgt[i]);
         }
     }
 
@@ -385,8 +385,8 @@ bool  MeshFacetNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>*
         vertex_value[i] = vertex_data[i]->point;
         normal_value[i] = vertex_data[i]->normal;
         texcrd_value[i] = vertex_data[i]->uvmap;
-        //weight_value[i].dup(vertex_data[i]->weight, false);
-        weight_value[i].dup(vertex_data[i]->weight);
+        weight_value[i].dup(vertex_data[i]->weight, false);
+        //weight_value[i].dup(vertex_data[i]->weight);
     }
 
     // Index
@@ -416,7 +416,7 @@ void  MeshFacetNode::execAffineTransUVMap(UVMap<double>* uvmap, int uvnum)
     if (uvmap==NULL) uvmap = texcrd_value;
     if (uvnum==-1)   uvnum = num_texcrd;
 
-    material_param.texture.execTrans(uvmap, uvnum); 
+    material_param.texture.execTrans(uvmap, uvnum);
 
     return;
 }

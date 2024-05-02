@@ -41,7 +41,7 @@ private: // 入力データの作業用
 
 public:
     MeshObjectData(const char* name=NULL) { init(name);}
-    virtual ~MeshObjectData(void)   { free();}
+    virtual ~MeshObjectData(void)   { /*free();*/}
 
     void    init(const char* name=NULL);
     void    free(void);

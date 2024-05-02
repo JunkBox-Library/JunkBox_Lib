@@ -7,6 +7,7 @@ llmesh データのヘッダテスト用
 #include "tools.h"
 #include "llsd_tool.h"
 #include "gz_tool.h"
+#include "xLib/llsd_tool.h"
 
 
 int main(int argc, char** argv)
@@ -46,7 +47,7 @@ int main(int argc, char** argv)
     }
 
     if (key!=NULL) {
-        xml= llsd_bin_get_blockdata(buf, sz, key);
+        xml= llsd_bin_get_block_data(buf, sz, key);
         if (xml!=NULL) {
             print_xml(stdout, xml, 2);
             del_xml(&xml);
