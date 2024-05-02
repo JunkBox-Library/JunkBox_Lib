@@ -109,7 +109,7 @@ void  ContourBaseData::free(void)
     freeNull(normal);
     freeNull(texcrd);
 
-    freeArrayParams(weight, num_data);
+    freeArrayParams<double>(weight, num_data);
 
     index     = NULL;
     vertex    = NULL;
@@ -121,8 +121,7 @@ void  ContourBaseData::free(void)
 
 bool  ContourBaseData::getm(void)
 {
-    index = (int*)malloc(sizeof(int)*num_index);
-
+    index  = (int*)malloc(sizeof(int)*num_index);
     vertex = (Vector<double>*)malloc(sizeof(Vector<double>)*num_data);
     normal = (Vector<double>*)malloc(sizeof(Vector<double>)*num_data);
     texcrd = (UVMap <double>*)malloc(sizeof(UVMap<double>) *num_data);
@@ -133,6 +132,7 @@ bool  ContourBaseData::getm(void)
         return false;
     }
 
+    memset(index,  0, sizeof(int)*num_data);
     memset(vertex, 0, sizeof(Vector<double>)*num_data);
     memset(normal, 0, sizeof(Vector<double>)*num_data);
     memset(texcrd, 0, sizeof(UVMap<double>) *num_data);
@@ -214,16 +214,24 @@ void  TriPolygonData::init(void)
 void  TriPolygonData::free(void)
 {
     for (int i=0; i<3; i++) {
-        weight[i].free();
+        if (!weight[i].get_size()) weight[i].free();
     }
 }
 
 
 void  TriPolygonData::dup(TriPolygonData a)
 {
-    for (int i=0; i<3; i++) weight[i].free();
-    *this = a;
-    for (int i=0; i<3; i++) weight[i].dup(a.weight[i], false);
+    polygonNum = a.polygonNum;     ///< ポリゴン番号
+    has_normal = a.has_normal;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
+    has_texcrd = a.has_texcrd;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
+    has_weight = a.has_weight;     ///< 配列データの場合，一番最初のデータが値を持っていれば十分である．
+    //
+    for (int i=0; i<3; i++) {
+        vertex[i] = a.vertex[i];
+        normal[i] = a.normal[i];
+        texcrd[i] = a.texcrd[i];
+        weight[i].dup(a.weight[i], false);
+    }
 }
 
 
@@ -279,7 +287,7 @@ TriPolygonData*  jbxl::joinTriPolygonData(TriPolygonData*& first, int num_p, Tri
 
     TriPolygonData* join = (TriPolygonData*)malloc((num_p+num_n)*sizeof(TriPolygonData));
     if (join==NULL) return NULL;
-    
+
     int num = 0;
     for (int i=0; i<num_p; i++) {
         join[i].dup(first[i]);
@@ -301,6 +309,9 @@ TriPolygonData*  jbxl::joinTriPolygonData(TriPolygonData*& first, int num_p, Tri
 
 void  jbxl::freeTriPolygonData(TriPolygonData*& tridata, int n)
 {
+    DEBUG_MODE PRINT_MESG("JBXL::freeTriPolygonData(): start.\n");
+    if (n<=0) return;
+
     if (tridata!=NULL) {
         for (int i=0; i<n; i++) {
             tridata[i].free();
@@ -308,5 +319,6 @@ void  jbxl::freeTriPolygonData(TriPolygonData*& tridata, int n)
         ::free(tridata);
         tridata = NULL;
     }
+    DEBUG_MODE PRINT_MESG("JBXL::freeTriPolygonData(): end.\n");
 }
 

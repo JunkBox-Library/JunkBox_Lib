@@ -22,7 +22,7 @@ namespace jbxl {
 
 
 /**
- * 汎用配列パラメータ 
+ * 汎用配列パラメータ
 
 */
 template <typename T=double> class ArrayParam
@@ -35,18 +35,64 @@ public:
     ArrayParam(int n = 0)     { init(n);}
     virtual ~ArrayParam(void) { free();}
 
-    void  init(int n = 0) { if (n<0) n = 0; _size = n; if (n>0) _value = (T*)malloc(sizeof(T)*_size); else _value = NULL;}
-    void  free(void) { _size = 0; if (_value!=NULL) ::free(_value); _value = NULL;}
+    void  init(int n = 0);
+    void  free(void);
+    void  free_ptr(void);
 
-    // _value[i] がポインタの場合．（実行注意！） 
-    void  free_ptr(void) { for (int i=0; i<_size; i++) if (_value[i]!=NULL){ ::free(_value[i]); _value[i] = NULL;}}
-
-    int   get_size() { return _size;}
-    int   get_value(int n) { if (n<0) n=0; else if (n>=_size) n = _size-1; return _value[n];}
+    int   get_size(void) { return _size;}
+    T     get_value(int n);
     bool  set_value(int n, T val);
 
-    void  dup(ArrayParam<T> a, bool reset = true);
+    void  dup(ArrayParam<T> a, bool del = true);
 };
+
+
+template <typename T> void  ArrayParam<T>::init(int n)
+{
+    if (n<0) n = 0;
+    _size = n;
+    if (n>0) _value = (T*)malloc(sizeof(T)*_size);
+    else     _value = NULL;
+
+    return;
+}
+
+
+template <typename T> void  ArrayParam<T>::free(void)
+{
+    if (_size>0) {
+        _size = 0;
+        if (_value!=NULL) ::free(_value);
+    }
+    _value = NULL;
+    return;
+}
+
+
+// _value[i] がポインタの場合．（実行注意！）
+template <typename T> void  ArrayParam<T>::free_ptr(void)
+{
+    if (_size<=0 || _value==NULL) return;
+
+    for (int i=0; i<_size; i++) {
+        if (_value[i]!=NULL){
+            ::free(_value[i]);
+            _value[i] = NULL;
+        }
+    }
+    return;
+}
+
+
+template <typename T> T  ArrayParam<T>::get_value(int n)
+{
+    if (_size<=0 || _value==NULL) return (T)0;
+
+    if (n<0) n = 0;
+    else if (n>=_size) n = _size-1;
+
+    return _value[n];
+}
 
 
 /**
@@ -54,10 +100,10 @@ public:
 */
 template <typename T> bool  ArrayParam<T>::set_value(int n, T val)
 {
-    if (_size==0) return false; 
+    if (_size<=0 || _value==NULL) return false;
 
     if (n<0) n = 0;
-    else if (n>=_size) n = _size - 1;  
+    else if (n>=_size) n = _size - 1;
     _value[n] = val;
 
     return true;
@@ -68,22 +114,28 @@ template <typename T> bool  ArrayParam<T>::set_value(int n, T val)
 template <typename T> void ArrayParam<T>::dup(ArrayParam<T> a)
 
 ArrayParam<T> のコピーを作る．
+既に何かデータが入っている場合は, del を trueにする．
+メモリ確保直後（_value の値が不定）の場合に del を trueにすると，セグメンテーションエラーを起こす．
 
 @param  param  コピーするデータ．
-@param  del    現在のデータを初期化するか？　true: 初期化する（デフォルト），false: 初期化しない．
+@param  del    最初にデータを free()するか？　true: 最初に free()する（デフォルト），false: free() しない．
 
 */
 template <typename T> void ArrayParam<T>::dup(ArrayParam<T> a, bool del)
 {
-    DEBUG_MODE PRINT_MESG("ArrayParam<T>::dup(): start.\n");
     int size = a.get_size();
-    if (del) this->free();
-    this->init(size);
+    try {
+        if (del) this->free();
+        this->init(size);
 
-    for (int i=0; i<size; i++) {
-        this->_value[i] = a.get_value(i);
+        for (int i=0; i<size; i++) {
+            this->_value[i] = a.get_value(i);
+        }
     }
-    DEBUG_MODE PRINT_MESG("ArrayParam<T>::dup(): end.\n");
+    catch (...) {
+        PRINT_MESG("ERROR: ArrayParam<T>::dup(): Error occurred! (del = %d)\n", del);
+        exit(1);
+    }
 }
 
 
@@ -94,21 +146,25 @@ ArrayParam の配列を解放する．
 */
 template <typename T> void  freeArrayParams(ArrayParam<T>* p, int num)
 {
-    DEBUG_MODE PRINT_MESG("freeArrayParams: start.\n");
-    if (p!=NULL) {
-        for (int i=0; i<num; i++) {
-            p[i].free();
+    try {
+        if (p!=NULL) {
+            for (int i=0; i<num; i++) {
+                p[i].free();
+            }
+            freeNull(p);
         }
-        freeNull(p);
     }
-    DEBUG_MODE PRINT_MESG("freeArrayParams: end.\n");
+    catch (...) {
+        PRINT_MESG("ERROR: freeArrayParams(): Error occurred! (num = %d)\n", num);
+        exit(1);
+    }
 }
 
 
 
 /**
  * Class Base64
- * 
+ *
  *unsigned char* を返す encode(), decode() は ::free() が必要
  */
 class Base64
@@ -136,7 +192,7 @@ public:
 //
 //
 
-/** 
+/**
 非推奨
 use  get_local_timestamp(time(0), "%Y-%m-%dT%H:%M:%SZ"));   need free()
 
