@@ -62,7 +62,7 @@ template <typename T> void  ArrayParam<T>::free(void)
 {
     if (_size>0) {
         _size = 0;
-        DEBUG_MODE PRINT_MESG("ArrayParam<T>::free: _value = %016x\n", _value);
+        //DEBUG_MODE PRINT_MESG("ArrayParam<T>::free: _value = %016x\n", _value);
         if (_value!=NULL) ::free(_value);
     }
     _value = NULL;
