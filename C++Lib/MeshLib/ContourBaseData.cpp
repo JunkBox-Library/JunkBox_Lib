@@ -108,7 +108,6 @@ void  ContourBaseData::free(void)
     freeNull(vertex);
     freeNull(normal);
     freeNull(texcrd);
-
     freeArrayParams<double>(weight, num_data);
 
     index     = NULL;
@@ -230,7 +229,7 @@ void  TriPolygonData::dup(TriPolygonData a)
         vertex[i] = a.vertex[i];
         normal[i] = a.normal[i];
         texcrd[i] = a.texcrd[i];
-        weight[i].dup(a.weight[i], false);
+        weight[i].dup(a.weight[i]);
     }
 }
 

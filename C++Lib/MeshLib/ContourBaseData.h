@@ -83,7 +83,7 @@ public:
 
 public:
     ContourTriData(int n = 0) { init(); contourNum = n;}
-    virtual ~ContourTriData(void) { /*free();*/}
+    virtual ~ContourTriData(void) { free();}
 
     void  init(void);
     void  free(void);
@@ -116,7 +116,7 @@ public:
 
 public:
     ContourBaseData(int idx=0, int num=0) { init(idx, num);}
-    virtual ~ContourBaseData(void) { /*free();*/}
+    virtual ~ContourBaseData(void) { free();}
 
     void  init(int idx=0, int num=0);
     void  free(void);
@@ -153,7 +153,7 @@ public:
 
 public:
     TriPolygonData(void) { init();}
-    virtual ~TriPolygonData(void) { /*free();*/}
+    virtual ~TriPolygonData(void) { free();}
 
     void  init(void);
     void  free(void);

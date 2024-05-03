@@ -272,7 +272,6 @@ bool  MeshFacetNode::computeVertexByBREP(ContourBaseData* facetdata)
         vertex_value[i] = vertex_data[i]->point;
         normal_value[i] = vertex_data[i]->normal;
         texcrd_value[i] = vertex_data[i]->uvmap;
-        //weight_value[i].dup(vertex_data[i]->weight, false);
         weight_value[i].dup(vertex_data[i]->weight);
     }
 
@@ -332,8 +331,7 @@ bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>*
     }
     if (impwgt!=NULL) {
         for (int i=0; i<num_vertex; i++) {
-            weight_value[i].dup(impwgt[i], false);
-            //weight_value[i].dup(impwgt[i]);
+            weight_value[i].dup(impwgt[i]);
         }
     }
 
@@ -385,8 +383,7 @@ bool  MeshFacetNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>*
         vertex_value[i] = vertex_data[i]->point;
         normal_value[i] = vertex_data[i]->normal;
         texcrd_value[i] = vertex_data[i]->uvmap;
-        weight_value[i].dup(vertex_data[i]->weight, false);
-        //weight_value[i].dup(vertex_data[i]->weight);
+        weight_value[i].dup(vertex_data[i]->weight);
     }
 
     // Index

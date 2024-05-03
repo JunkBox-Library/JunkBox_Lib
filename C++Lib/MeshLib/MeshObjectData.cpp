@@ -174,7 +174,7 @@ vct, nrm, map は3個づつ組になって三角ポリゴンを表す．従っ�
 */
 bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<double>* wgt, int vnum)
 {
-    //DEBUG_MODE PRINT_MESG("MeshObjectData::importTriData: for Vector<>: start.\n");
+    DEBUG_MODE PRINT_MESG("MeshObjectData::importTriData: for Vector<>: start.\n");
     if (vct==NULL) return false;
     //
     free_value();
@@ -219,7 +219,6 @@ bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UV
         if (impwgt_value!=NULL) {
             memset(impwgt_value, 0, wsize);
             for (int i=0; i<vnum; i++) {
-                //impwgt_value[i].dup(wgt[i], false);
                 impwgt_value[i].dup(wgt[i]);
             }
         }
@@ -229,7 +228,7 @@ bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UV
     num_vcount = 3;         // Contour（ポリゴン）を形成する頂点数
     num_import = vnum;      // 総頂点数
 
-    //DEBUG_MODE PRINT_MESG("MeshObjectData::importTriData: for Vector<>: end.\n");
+    DEBUG_MODE PRINT_MESG("MeshObjectData::importTriData: for Vector<>: end.\n");
     return true;
 }
 
@@ -325,7 +324,7 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
         impwgt_value = (ArrayParam<double>*)malloc(wsize);
         if (impwgt_value!=NULL) {
             memset(impwgt_value, 0, vnum);
-            for (int i=0, n=0; i<vnum/3; i++) {
+            for (int i=0, n=0; i<tnum; i++) {
                 if (tridata[i].polygonNum==pnum || pnum<0) {
                     impwgt_value[n*3]  .dup(tridata[i].weight[0], false);
                     impwgt_value[n*3+1].dup(tridata[i].weight[1], false);
@@ -351,7 +350,7 @@ bool  MeshObjectData::addNode(ContourBaseData* facetdata, const char* name, Mate
 */
 bool  MeshObjectData::addNode(ContourBaseData* facetdata, const char* name, MaterialParam* param)
 {
-    DEBUG_MODE PRINT_MESG("MeshObjectData::addNode: for ContourBaseData: start.\n");
+    DEBUG_MODE PRINT_MESG("MeshObjectData::addNode(): for ContourBaseData: start.\n");
     bool ret = false;
 
     MeshFacetNode* node = new MeshFacetNode();
@@ -371,7 +370,7 @@ bool  MeshObjectData::addNode(ContourBaseData* facetdata, const char* name, Mate
         ttl_texcrd += node->num_texcrd;
     }
 
-    DEBUG_MODE PRINT_MESG("MeshObjectData::addNode: for ContourBaseData: end.\n");
+    DEBUG_MODE PRINT_MESG("MeshObjectData::addNode(): for ContourBaseData: end.\n");
     return ret;
 }
 
@@ -384,7 +383,7 @@ bool  MeshObjectData::addNode(const char* name, MaterialParam* param, bool useBr
 */
 bool  MeshObjectData::addNode(const char* name, MaterialParam* param, bool useBrep)
 {
-    DEBUG_MODE PRINT_MESG("MeshObjectData::addNode: for TriPolygonData or Vector<>: start.\n");
+    DEBUG_MODE PRINT_MESG("MeshObjectData::addNode(): for TriPolygonData or Vector<>: start.\n");
 
     bool ret = false;
     if (impvtx_value==NULL) return ret;
@@ -401,7 +400,6 @@ bool  MeshObjectData::addNode(const char* name, MaterialParam* param, bool useBr
     else {
         ret = node->computeVertexDirect(impvtx_value, impnrm_value, impmap_value, impwgt_value, num_import, num_vcount);
     }
-
     if (ret) {
         if (facet==NULL) facet = facet_end = node;
         else             facet_end = AddMeshFacetNode(facet_end, node);
@@ -415,8 +413,9 @@ bool  MeshObjectData::addNode(const char* name, MaterialParam* param, bool useBr
     freeNull(impnrm_value);
     freeNull(impmap_value);
     freeArrayParams<double>(impwgt_value, node->num_vertex);
+    impwgt_value = NULL;
 
-    DEBUG_MODE PRINT_MESG("MeshObjectData::addNode: for TriPolygonData or Vector<>: end.\n");
+    DEBUG_MODE PRINT_MESG("MeshObjectData::addNode(): for TriPolygonData or Vector<>: end.\n");
     return ret;
 }
 

@@ -33,7 +33,7 @@ private:
 
 public:
     ArrayParam(int n = 0)     { init(n);}
-    virtual ~ArrayParam(void) { free();}
+    virtual ~ArrayParam(void) {}    // ディストラクタではなく，free() で解放する．
 
     void  init(int n = 0);
     void  free(void);
@@ -62,6 +62,7 @@ template <typename T> void  ArrayParam<T>::free(void)
 {
     if (_size>0) {
         _size = 0;
+        DEBUG_MODE PRINT_MESG("ArrayParam<T>::free: _value = %016x\n", _value);
         if (_value!=NULL) ::free(_value);
     }
     _value = NULL;
@@ -111,7 +112,7 @@ template <typename T> bool  ArrayParam<T>::set_value(int n, T val)
 
 
 /**
-template <typename T> void ArrayParam<T>::dup(ArrayParam<T> a)
+template <typename T> void ArrayParam<T>::dup(ArrayParam<T> a, bool del)
 
 ArrayParam<T> のコピーを作る．
 既に何かデータが入っている場合は, del を trueにする．
@@ -124,17 +125,11 @@ ArrayParam<T> のコピーを作る．
 template <typename T> void ArrayParam<T>::dup(ArrayParam<T> a, bool del)
 {
     int size = a.get_size();
-    try {
-        if (del) this->free();
-        this->init(size);
+    if (del) this->free();
+    this->init(size);
 
-        for (int i=0; i<size; i++) {
-            this->_value[i] = a.get_value(i);
-        }
-    }
-    catch (...) {
-        PRINT_MESG("ERROR: ArrayParam<T>::dup(): Error occurred! (del = %d)\n", del);
-        exit(1);
+    for (int i=0; i<size; i++) {
+        this->_value[i] = a.get_value(i);
     }
 }
 
@@ -146,17 +141,11 @@ ArrayParam の配列を解放する．
 */
 template <typename T> void  freeArrayParams(ArrayParam<T>* p, int num)
 {
-    try {
-        if (p!=NULL) {
-            for (int i=0; i<num; i++) {
-                p[i].free();
-            }
-            freeNull(p);
+    if (p!=NULL) {
+        for (int i=0; i<num; i++) {
+            p[i].free();
         }
-    }
-    catch (...) {
-        PRINT_MESG("ERROR: freeArrayParams(): Error occurred! (num = %d)\n", num);
-        exit(1);
+        ::free(p);
     }
 }
 

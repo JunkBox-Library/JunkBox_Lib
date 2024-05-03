@@ -113,7 +113,7 @@ tTree*  del_sisters_children_tTree(tTree** pp); ///< 指定したノードの姉
 
 void    adjust_tTree_depth(tTree* pp);          ///< 指定したノード ppを基準にして，木の深さを測り直す
 void    print_tTree(FILE* fp, tTree* pp);       ///< ツリーの表示．ポインタ ノードのキー部のバッファをfpに表示する．
-void    print_tTree_tree(FILE* fp, tTree* pp, const char* sp);   ///< ツリーの表示．ポインタ ノードのキー部のバッファをfpに表示する．
+void    print_tTree_tree(FILE* fp, tTree* pp, const char* space);  ///< ツリーの表示．ポインタ ノードのキー部のバッファをfpに表示する．
 
 tTree*  add_tTree(tTree* pp, tTree* pt);        ///< ツリー tpへ ツリー ttを追加．
 tTree*  div_tTree(tTree* pp);                   ///< ツリー tp から ツリー ttを分離する．
