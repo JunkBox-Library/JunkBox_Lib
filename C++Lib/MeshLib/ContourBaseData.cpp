@@ -42,9 +42,9 @@ void  ContourTriData::init(void)
     uv1.init();
     uv2.init();
     uv3.init();
-    w1.init();
-    w2.init();
-    w3.init();
+    //w1.init();
+    //w2.init();
+    //w3.init();
 }
 
 
@@ -52,9 +52,9 @@ void  ContourTriData::free(void)
 {
     contourNum = 0;
 
-    w1.free();
-    w2.free();
-    w3.free();
+    //w1.free();
+    //w2.free();
+    //w3.free();
 }
 
 

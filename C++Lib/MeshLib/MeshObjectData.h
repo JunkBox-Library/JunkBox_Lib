@@ -9,7 +9,10 @@ namespace jbxl {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MeshObject Data: for Object
-//
+//    3Dオブジェクトの最終的なデータ形式
+//        ContourTriData + ContourTriIndex -> MeshFacetNode -> MeshObjectData  (for Prim or Sculpt Prim)
+//        TriPolygonData + ContourTriIndex -> MeshFacetNode -> MeshObjectData
+//        ContourBaseData -> MeshFacetNode -> MeshObjectData
 
 /**
 class  MeshObjectData

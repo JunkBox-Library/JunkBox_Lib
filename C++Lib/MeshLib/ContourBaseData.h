@@ -69,7 +69,7 @@ public:
 // Triangle Contour Data
 //    ContourTriIndex をインデックスとした 3角ポリゴンデータ
 //    ex.) tri_data.v1 = coords[tri_indx.v1];
-//    注)  OpenSimulator の Prim, Sculpt Prim の解析に使用する．
+//    注)  OpenSimulator の Prim, Sculpt Prim の解析に使用する．Weight は扱わない．
 
 class  ContourTriData
 {
@@ -79,7 +79,7 @@ public:
     Vector<double>      v1,  v2,  v3;
     Vector<double>      n1,  n2,  n3;
     UVMap<double>       uv1, uv2, uv3;
-    ArrayParam<double>  w1,  w2,  w3;
+    //ArrayParam<double>  w1,  w2,  w3;
 
 public:
     ContourTriData(int n = 0) { init(); contourNum = n;}
@@ -94,43 +94,6 @@ public:
     void  execRotate(Quaternion<double> q);
     void  ComputeTriNormal() { Vector<double> nv = NewellMethod(v1, v2, v3); nv.normalize(); n1 = n2 = n3 = nv;}
 };
-
-
-//////////////////////////////////////////////////////////////////////////////////////
-// Contour Base Data (インデックス化されたデータ)
-//      ContourTriIndex +  ContourTriData
-//
-
-class  ContourBaseData
-{
-public:
-    int     num_index;              ///< インデックスの数．(index の要素数）
-    int     num_data;               ///< データ数．（vertex, normal, texcrd, weight の要素数）
-    int     vcount;                 ///< ポリゴンの頂点数．通常は3
-
-    int*                index;      ///< インデックスデータ
-    Vector<double>*     vertex;     ///< 頂点データ       vertex[index[0]], vertex[index[1]], vertex[index[2]], ... の順に並ぶ
-    Vector<double>*     normal;     ///< 法線ベクトル     normal[index[0]], normal[index[1]], normal[index[2]], ... の順に並ぶ
-    UVMap<double>*      texcrd;     ///< テクスチャマップ texcrd[index[0]], texcrd[index[1]], texcrd[index[2]], ... の順に並ぶ
-    ArrayParam<double>* weight;     ///< Skin の Weight   weight[index[0]], weight[index[1]], weight[index[2]], ... の順に並ぶ
-
-public:
-    ContourBaseData(int idx=0, int num=0) { init(idx, num);}
-    virtual ~ContourBaseData(void) { free();}
-
-    void  init(int idx=0, int num=0);
-    void  free(void);
-    bool  getm(void);
-    void  dup(ContourBaseData a);
-
-public:
-    void  execScale(Vector<double> scale);
-    void  execShift(Vector<double> shift);
-    void  execRotate(Quaternion<double> quat);
-};
-
-
-inline void  freeContourBaseData(ContourBaseData*& contour) { if(contour!=NULL){ contour->free(); delete contour; contour = NULL;}}
 
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -172,6 +135,44 @@ TriPolygonData*  joinTriPolygonData(TriPolygonData*& first, int num_f, TriPolygo
 
 inline void   freeTriPolygonData(TriPolygonData*& tridata) { if(tridata!=NULL){ tridata->free(); delete tridata; tridata = NULL;}}
 void   freeTriPolygonData(TriPolygonData*& tridata, int n);
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+// Contour Base Data (インデックス化されたデータ)
+//      ContourTriIndex +  ContourTriData
+//
+
+class  ContourBaseData
+{
+public:
+    int     num_index;              ///< インデックスの数．(index の要素数）
+    int     num_data;               ///< データ数．（vertex, normal, texcrd, weight の要素数）
+    int     vcount;                 ///< ポリゴンの頂点数．通常は3
+
+    int*                index;      ///< インデックスデータ
+    Vector<double>*     vertex;     ///< 頂点データ       vertex[index[0]], vertex[index[1]], vertex[index[2]], ... の順に並ぶ
+    Vector<double>*     normal;     ///< 法線ベクトル     normal[index[0]], normal[index[1]], normal[index[2]], ... の順に並ぶ
+    UVMap<double>*      texcrd;     ///< テクスチャマップ texcrd[index[0]], texcrd[index[1]], texcrd[index[2]], ... の順に並ぶ
+    ArrayParam<double>* weight;     ///< Skin の Weight   weight[index[0]], weight[index[1]], weight[index[2]], ... の順に並ぶ
+
+public:
+    ContourBaseData(int idx=0, int num=0) { init(idx, num);}
+    virtual ~ContourBaseData(void) { free();}
+
+    void  init(int idx=0, int num=0);
+    void  free(void);
+    bool  getm(void);
+    void  dup(ContourBaseData a);
+
+public:
+    void  execScale(Vector<double> scale);
+    void  execShift(Vector<double> shift);
+    void  execRotate(Quaternion<double> quat);
+};
+
+
+inline void  freeContourBaseData(ContourBaseData*& contour) { if(contour!=NULL){ contour->free(); delete contour; contour = NULL;}}
 
 
 
