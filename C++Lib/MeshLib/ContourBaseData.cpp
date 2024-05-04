@@ -90,15 +90,15 @@ void  ContourTriData::execRotate(Quaternion<double> q)
 
 void  ContourBaseData::init(int idx, int num)
 {
-    num_index = idx;
-    num_data  = num;
-    vcount    = 3;
+    num_index  = idx;
+    num_data   = num;
+    vcount     = 3;
 
-    index     = NULL;
-    vertex    = NULL;
-    normal    = NULL;
-    texcrd    = NULL;
-    weight    = NULL;
+    index      = NULL;
+    vertex     = NULL;
+    normal     = NULL;
+    texcrd     = NULL;
+    weight     = NULL;
 }
 
 
@@ -110,11 +110,7 @@ void  ContourBaseData::free(void)
     freeNull(texcrd);
     freeArrayParams<double>(weight, num_data);
 
-    index     = NULL;
-    vertex    = NULL;
-    normal    = NULL;
-    texcrd    = NULL;
-    weight    = NULL;
+    init(0, 0);
 }
 
 
@@ -215,6 +211,7 @@ void  TriPolygonData::free(void)
     for (int i=0; i<3; i++) {
         if (!weight[i].get_size()) weight[i].free();
     }
+    init();
 }
 
 
@@ -319,5 +316,53 @@ void  jbxl::freeTriPolygonData(TriPolygonData*& tridata, int n)
         tridata = NULL;
     }
     //DEBUG_MODE PRINT_MESG("JBXL::freeTriPolygonData(): end.\n");
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// SkinJointData
+//
+
+void  SkinJointData::init(int n)
+{
+    joint_num = 0;
+    pelvis_offset = 0.0;
+
+    inverse_bind = NULL;
+    alt_inverse_bind = NULL;
+    bind_shape.init();
+    joint_names.init();
+
+    if (n>0) {
+        joint_num = n;
+        inverse_bind     = (Matrix<double>*)malloc(sizeof(Matrix<double>)*joint_num);
+        alt_inverse_bind = (Matrix<double>*)malloc(sizeof(Matrix<double>)*joint_num);
+        //
+        for (int i=0; i<joint_num; i++) {
+            inverse_bind[i]     = Matrix<double>(2, 4, 4);
+            alt_inverse_bind[i] = Matrix<double>(2, 4, 4);
+        }
+        bind_shape = Matrix<double>(2, 4, 4);
+        //
+        joint_names.init(joint_num);
+    }
+}
+
+
+void  SkinJointData::free()
+{
+    for (int i=0; i<joint_num; i++) {
+        inverse_bind[i].free();
+        alt_inverse_bind[i].free();
+    }
+    freeNull(inverse_bind);
+    freeNull(alt_inverse_bind);
+    bind_shape.free();
+    //
+    joint_names.free_ptr();
+    joint_names.free();
+
+    init();
 }
 

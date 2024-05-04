@@ -208,11 +208,11 @@ void    print_sister_xml_tree(FILE* fp, tXML* pp, const char* space);       ///<
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Search and Get/Set    操作対象は１番最初に一致したもの
 
-tXML*   get_xml_node(tXML* pp, tXML* pt);                    ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードへのポインタを返す．
+tXML*   get_xml_node(tXML* pp, tXML* pt);                    ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードへのポインタを altp に入れて返す．
 int     set_xml_node(tXML* pp, tXML* pt, const char* val);   ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノード対応したノードにノード名をコピーする．
-int     set_xml_end_node(tXML* pp, tXML* pt);                ///< 同じパターンの枝を探し，ptに最初に一致した枝の，
+int     set_xml_end_node(tXML* pp, tXML* pt);                ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードへのポインタを altp に入れて返す．
 
-tXML*   get_xml_content(tXML* pp, tXML* pt);                 ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードのコンテントへのポインタを返す．
+tXML*   get_xml_content(tXML* pp, tXML* pt);                 ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードのコンテントへのポインタを latp に入れて返す．
 int     set_xml_content(tXML* pp, tXML* pt, const char* val);///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後ノードに対応したのノードのコンテントを contentで置き換える．
 tList*  get_xml_attr(tXML* pp, tXML* pt);                    ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードのノード属性値へのリストを返す．
 int     set_xml_attr(tXML* pp, tXML* pt, tList* at);         ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードのノードの属性としてatの値をコピーする．

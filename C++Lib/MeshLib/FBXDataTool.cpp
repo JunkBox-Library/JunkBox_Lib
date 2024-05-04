@@ -54,11 +54,15 @@ void  FBXData::setEngine(int e)
 }
 
 
-void  FBXData::addObject(MeshObjectData* meshdata, bool collider)
+void  FBXData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints)
 {
     if (meshdata==NULL) return;
     if (collider) {
     }
+
+    if (joints!=NULL) {
+    }
+
     return;
 }
 

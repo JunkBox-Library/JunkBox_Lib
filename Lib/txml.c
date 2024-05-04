@@ -2523,7 +2523,7 @@ int  replace_xml_content_bystr(tXML*pp, const char* str, const char* src, const 
 tList*  get_xml_node_list(tXML* pp, tXML* pt)
 
 XMLツリー pp内で XMLツリー ptと同じパターンの枝を探し，ptに一致した枝の，ptの最後のノードに対応するノードへの
-ポインタをリストに格納して返す．ポインタはリストの altpに格納される．
+ポインタをリストの altp に格納して返す．
 
 pt の中で ctrl が TREE_NOCMP_NODE または TREE_NOCMP_COPY_NODE となっているノードは
 比較されない．これらのノードは必ず一致する．
@@ -2557,7 +2557,7 @@ tList*  get_xml_node_list(tXML* pp, tXML* pt)
 tList*  get_xml_content_list(tXML* pp, tXML* pt)
 
 XMLツリー pp内で XMLツリー ptと同じパターンの枝を探し，ptに一致した枝の，ptの最後のノードに対応するノードの
-コンテントへのポインタをリストに格納して返す．ポインタはリストの altpに格納される．
+コンテントへのポインタをリストの altp に格納して返す．コンテンツはリストの altp->ldat.key に格納される．
 
 pt の中で ctrl が TREE_NOCMP_NODE または TREE_NOCMP_COPY_NODE となっているノードは比較されない．@n
 これらのノードは必ず一致する．

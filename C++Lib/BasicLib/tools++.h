@@ -70,7 +70,10 @@ template <typename T> void  ArrayParam<T>::free(void)
 }
 
 
-// _value[i] がポインタの場合．（実行注意！）
+/**
+ _value[i] がポインタの場合．（実行注意！）@n
+_valkue 自体は freeしない．
+*/
 template <typename T> void  ArrayParam<T>::free_ptr(void)
 {
     if (_size<=0 || _value==NULL) return;
@@ -101,6 +104,10 @@ template <typename T> T  ArrayParam<T>::get_value(int n)
 */
 template <typename T> bool  ArrayParam<T>::set_value(int n, T val)
 {
+    if (n>=_size || n<0) {
+        PRINT_MESG("WARNING: ArrayParam<T>::set_value: size missmatch (%d !< %d)\n", n, _size);
+    }
+
     if (_size<=0 || _value==NULL) return false;
 
     if (n<0) n = 0;
@@ -137,7 +144,8 @@ template <typename T> void ArrayParam<T>::dup(ArrayParam<T> a, bool del)
 /**
 void  freeArrayParams(ArrayParam<T>* p, int num)
 
-ArrayParam の配列を解放する．
+ArrayParam の配列を解放する．@n
+この関数呼び出し後に，必ず p = NULL とすること．
 */
 template <typename T> void  freeArrayParams(ArrayParam<T>* p, int num)
 {

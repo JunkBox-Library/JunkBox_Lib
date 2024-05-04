@@ -20,9 +20,11 @@ namespace  jbxl {
 
 class   ContourTriIndex;
 class   ContourTriData;
+class   TriPolygonData;
 
 class   ContourBaseData;
-class   TriPolygonData;
+
+class   SkinJointData;
 
 
 typedef std::vector<Vector<double> >   CONTOUR_VECTOR_ARRAY;
@@ -173,6 +175,31 @@ public:
 
 
 inline void  freeContourBaseData(ContourBaseData*& contour) { if(contour!=NULL){ contour->free(); delete contour; contour = NULL;}}
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+// SkinJointData
+
+class  SkinJointData
+{
+public:
+    int     joint_num;              ///< Jointの数．
+    double  pelvis_offset;
+
+    Matrix<double>*     inverse_bind;
+    Matrix<double>*     alt_inverse_bind;
+
+    Matrix<double>      bind_shape;
+    ArrayParam<char*>   joint_names;
+
+public:
+    SkinJointData(int num=0) { init(num);}
+    virtual ~SkinJointData(void) { }
+
+    void  init(int num=0);
+    void  free(void);
+};
 
 
 

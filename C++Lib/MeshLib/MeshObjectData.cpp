@@ -107,7 +107,7 @@ vct, nrm, map は3個づつ組になって三角ポリゴンを表す．従っ�
 @param wgt      頂点の重みデータへのポインタ（オプション）
 @param vnum     データ数
 @param param    マテリアル用パラメータへのポインタ
-@param useBrep  BREPを使用して頂点を配置する．速度は遅くなるが，頂点数（データ量）は減る．
+@param useBrep  BREPを使用して頂点を配置する．
 @retval         true: 処理の成功．false: 処理の失敗．
 */
 bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<double>* wgt, int vnum, MaterialParam* param, bool useBrep)
@@ -136,7 +136,7 @@ pnum を指定すると，指定されたポリゴンデータのみが追加さ
 @param tnum     三角ポリゴンデータの数
 @param pnum     追加するデータのポリゴン番号（選択的に追加する場合に指定する）．-1以下なら全てのポリゴンデータを追加する．
 @param param    マテリアル用パラメータへのポインタ
-@param useBrep  BREPを使用して頂点を配置する．速度は遅くなるが，頂点数（データ量）は減る．
+@param useBrep  BREPを使用して頂点を配置する．
 @retval         true: 処理の成功．false: 処理の失敗．
 */
 bool  MeshObjectData::addData(TriPolygonData* tridata, int tnum, int pnum, MaterialParam* param, bool useBrep)
@@ -378,8 +378,8 @@ bool  MeshObjectData::addNode(ContourBaseData* facetdata, const char* name, Mate
 /**
 bool  MeshObjectData::addNode(const char* name, MaterialParam* param, bool useBrep)
 
-@param name    ノードの名前
-@param useBrep BREPを使用して頂点を配置する．速度は遅くなるが，頂点数（データ量）は減る．
+@param name     ノードの名前
+@param useBrep  BREPを使用して頂点を配置する．
 */
 bool  MeshObjectData::addNode(const char* name, MaterialParam* param, bool useBrep)
 {

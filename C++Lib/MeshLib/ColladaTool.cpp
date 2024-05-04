@@ -25,9 +25,8 @@ void  ColladaXML::init(double meter, int axis, const char* ver)
     initCollada(meter, axis, ver);
     blank_texture = init_Buffer();
     phantom_out = true;
-
-    forUnity5 = false;
-    forUnity  = true;
+    forUnity5   = false;
+    forUnity    = true;
 }
 
 
@@ -146,7 +145,7 @@ void  ColladaXML::initCollada(double meter, int axis, const char* ver)
 }
 
 
-void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider)
+void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints)
 {
     if (meshdata==NULL) return;
 
@@ -154,8 +153,17 @@ void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider)
     if (geom_id==NULL) return;
 
     addScene(geom_id, meshdata, collider);      // Scene への配置（位置，サイズ，回転，コライダー）
-
     ::free(geom_id);
+
+    if (joints!=NULL) {
+/*
+        char* skin_id = addiSkinJoint(jointis); // Joints 情報を配置
+        if (skin_id==NULL) return;
+        addScene(skin_id, joints);              // Scene への配置
+        ::free(skin_id);
+*/
+    }
+
     return;
 }
 

@@ -53,7 +53,7 @@ public:
 public:
     void    initCollada(double meter, int axis, const char* ver);
     void    initCollada(float  meter, int axis, const char* ver) { initCollada((double)meter, axis, ver); }
-    void    addObject(MeshObjectData* meshdata, bool collider);
+    void    addObject(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint);
 
     char*   addGeometry(MeshObjectData* meshdata);
     void    addScene(const char* geometry_id, MeshObjectData* meshdata, bool collider);
