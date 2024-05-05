@@ -180,8 +180,11 @@ void  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdat
     add_xml_attr_str(skin_tag, "source", _tochar(geometry_id));
 
     tXML* bind_shape_matrix = add_xml_node(skin_tag, "bind_shape_matrix");
-    //
-    //
+    for (int i=1; i<=4; i++) {
+        for (int j=1; j<=4; j++) {
+            append_xml_content_node(bind_shape_matrix, dtostr(joints->bind_shape.element(i, j)));
+        }
+    }
 
     // sourece
     Buffer joint_id = make_Buffer_str("#JOINT_");
@@ -761,7 +764,7 @@ void  ColladaXML::addExtraBumpmap(tXML* profile, const char* bump_id)
 
 
 /**
- Scene への配置（位置，サイズ，回転，コライダー）
+ Scene への配置（位置，サイズ，回転，コライダー, Joints）
 */
 void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template)
 {
@@ -769,24 +772,26 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
 
     // joints
     if (joints!=NULL && joints_template!=NULL && visual_scene->next==NULL) {
-        int joints_num = joints->joint_names.get_size();
-
         char buf[LNAME];
         memset(buf, 0, LNAME);
         buf[0] = '"';
 
-        for (int j=0; j<joints_num; j++) {
-            const char* joint_name = (const char*)joints->joint_names.get_value(j);
+        int joints_num = joints->joint_names.get_size();
+        for (int jnt=0; jnt<joints_num; jnt++) {
+            const char* joint_name = (const char*)joints->joint_names.get_value(jnt);
             if (joint_name!=NULL) {
                 int len = strlen(joint_name);
-                memcpy(buf+1, joint_name, len);
+                memcpy(buf + 1, joint_name, len);
                 buf[len + 1] = '"';
                 buf[len + 2] = '\0';
                 tXML* xml = get_xml_attr_node(joints_template, "name", (const char*)buf);
                 if (xml!=NULL) {
-
-                    set_xml_content_node(xml->next, "1111111111111");
-
+                    tXML* matrix = xml->next;
+                    for (int i=1; i<=4; i++) {
+                        for (int j=1; j<=4; j++) {
+                            append_xml_content_node(matrix, dtostr(joints->alt_inverse_bind[jnt].element(i, j)));
+                        }
+                    }
                 }
             }
         }
