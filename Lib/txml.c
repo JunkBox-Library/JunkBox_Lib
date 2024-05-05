@@ -899,14 +899,14 @@ Buffer  xml_inverse_parse(tXML* pp, int mode)
     if (buf.buf==NULL) return buf;
 
     while (pp->esis!=NULL) pp = pp->esis;
-    xml_to_Buffer(pp, &buf, mode, pp->depth);
+    _xml_to_Buffer(pp, &buf, mode, pp->depth);
 
     return buf;
 }
 
 
 /**
-void  xml_to_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
+void  _xml_to_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
 
 xml_inverse_parse()用の補助関数．
 ppに格納された XMLデータを元の書式に戻して Bufferに格納する．
@@ -919,12 +919,12 @@ ppに格納された XMLデータを元の書式に戻して Bufferに格納す�
 @param  mode    @b XML_INDENT_FORMAT  先頭にインデント(TAB)をつけ，ノードごとに改行する．
 @param  indent  インデントを付け始める深さ．modeが @b XML_INDENT_MODE のときのみ有効．
 */
-void  xml_to_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
+void  _xml_to_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
 {
     do {
         xml_open_node_Buffer(pp, buf, mode, indent);
         if (pp->next!=NULL) {
-            xml_to_Buffer(pp->next, buf, mode, indent);
+            _xml_to_Buffer(pp->next, buf, mode, indent);
             xml_close_node_Buffer(pp, buf, mode, indent);
         }
         
@@ -1250,13 +1250,37 @@ tXML*  insert_xml_node(tXML* xml, const char* name)
 
 
 /**
-tXML*  add_xml_content(tXML* xml, const char* content)
+tXML*  add_xml_content_node(tXML* xml, const char* content)
 
-XMLツリーのxml の直下にコンテントを挿入する．@n
-コンテントが複数ある場合は末っ子のノードとして挿入する．@n
-xmlがノード名ノードでなければエラー（NULLが返る）
+xml が指すノード名ノードに コンテンツノードを追加する．@n
+コンテントノードが既に存在する場合は，妹ノードとしてコンテントノードが追加される．
+（逆パースした場合は，コンテンツが改行と共に追加されたように見える）@n
+
+xml はノード名ノードでなければエラー（NULLが返る） ．@n
+
+コンテント xxxx が存在する状態で，1111を add した場合．
+@code
+  -> 7: 1 [703] matrix (1)  attr --> sid="transform"
+    -> 8: 2 [703] xxxx (0)
+    -> 8: 2 [703] 1111 (0)
+@endcode
+
+これを逆パースした場合
+@code
+  <matrix sid="transform">
+    xxxx
+    1111
+  </matrix>
+@endcode
+
+ちょっと変．
+既にコンテントノードが存在するなら，append_xml_content_node() か set_xml_content_node() を使用することを推奨．
+
+@param   xml      コンテントを設定する ノード名ノード．
+@param   content  設定する コンテント.
+@retval  追加したコンテントノードへのポインタ．
 */
-tXML*  add_xml_content(tXML* xml, const char* content)
+tXML*  add_xml_content_node(tXML* xml, const char* content)
 {
     tList* pp;
 
@@ -1272,12 +1296,17 @@ tXML*  add_xml_content(tXML* xml, const char* content)
 
 
 /**
-tXML*  append_xml_content(tXML* xml, const char* content)
+tXML*  append_xml_content_node(tXML* xml, const char* content)
 
-XMLツリーのxml の直下のコンテントノードにコンテンツを追加する．@n
-コンテントノードが無ければ，末っ子のノードにとしてコンテントノードを追加する．@n
+XMLツリーのxml の直下のコンテントノードのコンテントにコンテンツを追加する．@n
+コンテントノードが無ければ，add_xml_content_node() でコンテントノードを追加する．@n
+xmlがノード名ノードでなければエラー（NULLが返る） ．@n
+
+@param   xml      コンテントを設定する コンテントノード．このノードはノード名ノードでなければならない．
+@param   content  設定する コンテント.
+@retval  追加したコンテントノードへのポインタ．
 */
-tXML*  append_xml_content(tXML* xml, const char* content)
+tXML*  append_xml_content_node(tXML* xml, const char* content)
 {
     tList* pp;
 
@@ -1288,11 +1317,43 @@ tXML*  append_xml_content(tXML* xml, const char* content)
     while (pp!=NULL && pp->ldat.id!=XML_CONTENT_NODE) pp = pp->ysis;
 
     if (pp==NULL) {
-        pp = add_xml_content(xml, content);
+        pp = add_xml_content_node(xml, content);
     }
     else {
         if (pp->ldat.key.vldsz!=0) cat_s2Buffer(" ", &(pp->ldat.key));
         cat_s2Buffer(content, &(pp->ldat.key));
+    }
+
+    return pp;
+}
+
+
+/**
+tXML*  set_xml_content_node(tXML* xml, const char* content)
+
+XMLツリーのxml の直下のコンテントノードの値を置き換える．@n
+コンテントノードが無ければ，add_xml_content_node() でコンテントノードを追加する．@n
+xmlがノード名ノードでなければエラー（NULLが返る） ．@n
+
+@param   xml      コンテントを設定する コンテントノード．このノードはノード名ノードでなければならない．
+@param   content  設定する コンテント.
+@retval  追加したコンテントノードへのポインタ．
+*/
+tXML*  set_xml_content_node(tXML* xml, const char* content)
+{
+    tList* pp;
+
+    if (xml==NULL || content==NULL) return NULL;
+    if (xml->ldat.id!=XML_NAME_NODE) return NULL;
+    
+    pp = xml->next;
+    while (pp!=NULL && pp->ldat.id!=XML_CONTENT_NODE) pp = pp->ysis;
+
+    if (pp==NULL) {
+        pp = add_xml_content_node(xml, content);
+    }
+    else {
+        copy_s2Buffer(content, &(pp->ldat.key));
     }
 
     return pp;
@@ -1317,7 +1378,7 @@ int  add_xml_content_area(tXML* xml, int len)
     memset(area, (int)' ', len-1);
     area[len-1] = '\0';
 
-    tXML* pp = add_xml_content(xml, area);
+    tXML* pp = add_xml_content_node(xml, area);
     if (pp!=NULL) {
         pp->ldat.key.buf[0] = '\0';
         pp->ldat.key.vldsz  = 0;
@@ -1661,8 +1722,10 @@ void   print_xml_node(FILE* fp, tXML* pp)
         if (pp->ldat.id==XML_ANCHOR_NODE) pp = pp->next;
         if (pp!=NULL) {
             int num = count_tList((tList*)pp->ldat.lst);
-            fprintf(fp, "%d: %d [%d] %s (%d)", pp->depth, pp->ldat.id, pp->state, pp->ldat.key.buf, num);
-            fprintf(fp, "\n");
+            fprintf(fp, "%d: %d [%d] %s (%d)\n", pp->depth, pp->ldat.id, pp->state, pp->ldat.key.buf, num);
+            if (pp->altp!=NULL) {
+                fprintf(fp, " altp -> %s, %s\n", pp->altp->ldat.key.buf, pp->altp->ldat.val.buf);
+            }
         }
         else {
             fprintf(fp, "(XML is ANCHOR only)\n");
@@ -1725,7 +1788,7 @@ XMLツリーの表示．ppの姉妹ノードも出力する．@n
 表示：入れ子の深さ，ID, ノード状態, ノード名(ノード値)，ノード属性の個数
 
 @param  fp     出力するファイルへのポインタ．NULLの場合は stderr
-@param  pp       表示を開始するノードへのポインタ．(姉妹ノードも出力する）
+@param  pp     表示を開始するノードへのポインタ．(姉妹ノードも出力する）
 @param  space  出力の書式を揃えるための空白（インデント）を指定する．例 "    "
 */
 void   print_sister_xml_tree(FILE* fp, tXML* pp, const char* space)
@@ -1753,6 +1816,14 @@ void   print_sister_xml_tree(FILE* fp, tXML* pp, const char* space)
             }
             int num = count_tList((tList*)ld.lst);
             fprintf(fp, "%d: %d [%d] %s (%d)", pp->depth, ld.id, pp->state, ld.key.buf, num);
+            if (ld.lst!=NULL) {
+                tList* lst = ld.lst;
+                fprintf(fp, "  attr -->");
+                while (lst!=NULL) {
+                    fprintf(fp, " %s=%s", lst->ldat.key.buf, lst->ldat.val.buf);
+                    lst = lst->next;
+                }
+            }
 
             if (pp->next!=NULL) print_sister_xml_tree(fp, pp->next, space);
        
@@ -1777,9 +1848,9 @@ void   print_sister_xml_tree(FILE* fp, tXML* pp, const char* space)
 tXML*  get_xml_node(tXML* pp, tXML* pt)
 
 XMLツリー pp内で XMLツリー ptと同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードへのポインタを返す．@n
-pp の姉妹ツリーも検索するので注意．@n
+pp の姉妹ツリーも検索する．@n
 
-また，pt の中で ctrl が @b TREE_NOCMP_NODE または @b TREE_NOCMP_NODE となっているノードは比較されない．@n
+また，pt の中で ctrl が @b TREE_NOCMP_NODE または @b TREE_NOCMP_COPY_NODE となっているノードは比較されない．@n
 返ってきた tXML* は free() してはいけない．
 
 @param  pp  検索対象のXMLツリー．姉妹ツリーも検索する．
@@ -1822,7 +1893,7 @@ tXML*  get_xml_node(tXML* pp, tXML* pt)
     if (fnd) tt = tt->altp;
     else     tt = NULL;
 
-    clear_tTree_ctrl(pm);
+    _clear_tTree_ctrl(pm);
 
     return tt;
 }
@@ -1832,7 +1903,7 @@ tXML*  get_xml_node(tXML* pp, tXML* pt)
 int set_xml_node(tXML* pp, tXML* pt, const char* name)
 
 XMLツリー pp内で XMLツリー ptと同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノード対応したノードにノード名をコピーする．@n
-pp の姉妹ツリーも検索するので注意．@n
+pp の姉妹ツリーも検索する．@n
 
 pt の中で ctrl が TREE_NOCMP_NODE または TREE_NOCMP_COPY_NODE となっている ノードは比較されない．
     
@@ -1863,7 +1934,7 @@ int set_xml_end_node(tXML* pp, tXML* pt)
 
 XMLツリー pp内で XMLツリー ptと同じパターンの枝を探し，ptに最初に一致した枝の，
 ptの最後のノードに対応したノードに ptの最後のノードの値（含む属性）をコピーする．@n
-pp の姉妹ツリーも検索するので注意．@n
+pp の姉妹ツリーも検索する．@n
 
 ただし，ptの最後のノードに関しては比較されない(コピー用だから)．@n
 pt の中で ctrl が @b TREE_NOCMP_NODE または @b TREE_NOCMP_COPY_NODE となっているノードは比較されない．@n
@@ -1904,13 +1975,59 @@ int set_xml_end_node(tXML* pp, tXML* pt)
     while(pp->esis!=NULL) pp = pp->esis;
     ret = find_match_xml(pp, pt);
     if (ret) {
-        copy_tTree_byctrl(pt);
+        _copy_tTree_byctrl(pt);
         adjust_tTree_depth(pp);
     }
 
-    clear_tTree_ctrl(pm);
+    _clear_tTree_ctrl(pm);
 
     return ret;
+}
+
+
+/**
+tXML*  get_xml_attr_node(tXML* pp, char* key, char* val)
+
+XMLツリー pp内で 属性が　key = val であるのノードを探し，最初に見つけたノードへのポインタを返す．@n
+pp の姉妹ツリーも検索する．@n
+
+また，pt の中で ctrl が @b TREE_NOCMP_NODE または @b TREE_NOCMP_COPY_NODE となっているノードは比較されない．@n
+
+返ってきた tXML* は free() してはいけない．
+
+@param  pp   検索対象のXMLツリー．姉妹ツリーも検索する．
+@param  key  検索する属性値のキー．
+@param  val  検索する属性値の値．
+@return ノードへのポインタ．free() してはいけない．
+*/
+tXML*  get_xml_attr_node(tXML* pp, const char* key, const char* val)
+{
+    if (pp==NULL || (key==NULL && val==NULL) ) return NULL;
+
+    if (pp->ldat.id==XML_ANCHOR_NODE) {
+        if (pp->next!=NULL) pp = pp->next;
+        else return NULL;
+    }
+    while(pp->esis!=NULL) pp = pp->esis;
+
+    while(pp!=NULL) {
+        if (pp->ldat.lst!=NULL) {
+            tList* lst = pp->ldat.lst;
+            while (lst!=NULL) {
+                if (ex_strncasecmp(key, (const char*)lst->ldat.key.buf, 0)) {
+                    if (ex_strncasecmp(val, (const char*)lst->ldat.val.buf, 0)) return pp;
+                }
+                lst = lst->next;
+            }
+        }
+        //
+        if (pp->next!=NULL) {
+            tXML* pm = get_xml_attr_node(pp->next, key, val);
+            if (pm!=NULL) return pm;
+        }
+        pp = pp->ysis;
+    }
+    return NULL;
 }
 
 
@@ -1919,7 +2036,7 @@ tXML*  get_xml_content(tXML* pp, tXML* pt)
 
 XMLツリー pp内で XMLツリー ptと同じパターンの枝を探し，ptに最初に一致した枝の，
 ptの最後のノードに対応したノードのコンテントへのポインタを返す．@n
-pp の姉妹ツリーも検索するので注意．@n
+pp の姉妹ツリーも検索する．@n
 
 pt の中で ctrl が TREE_NOCMP_NODE または TREE_NOCMP_COPY_NODE となっているノードは比較されない．@n
 これらのノードは必ず一致する．
@@ -1961,7 +2078,7 @@ tXML*  get_xml_content(tXML* pp, tXML* pt)
 
     tt = find_xml_end(pt);
     if (tt==NULL) return NULL;
-    dm = add_xml_content(tt, (char*)"DUMMY");
+    dm = add_xml_content_node(tt, (char*)"DUMMY");
     if (dm==NULL) return NULL;
     dm->ctrl = TREE_NOCMP_NODE;
 
@@ -1972,7 +2089,7 @@ tXML*  get_xml_content(tXML* pp, tXML* pt)
     else     tt = NULL;
 
     del_xml(&dm);
-    clear_tTree_ctrl(pm);
+    _clear_tTree_ctrl(pm);
 
     return tt;
 }
@@ -1983,7 +2100,7 @@ int set_xml_content(tXML* pp, tXML* pt, const char* content)
 
 XMLツリー pp内で XMLツリー ptと同じパターンの枝を探し，ptに最初に一致した枝の，
 ptの最後ノードに対応したのノードのコンテントを contentで置き換える．@n
-pp の姉妹ツリーも検索するので注意．@n
+pp の姉妹ツリーも検索する．@n
 
 pt の中で ctrl が TREE_NOCMP_NODE または TREE_NOCMP_COPY_NODE となっているノードは
 比較されない．これらのノードは必ず一致する．
@@ -2074,7 +2191,7 @@ tList*  get_xml_attr(tXML* pp, tXML* pt)
 
 XMLツリー pp内で XMLツリー ptと同じパターンの枝を探し，ptに最初に一致した枝の，
 ptの最後のノードに対応したノードのノード属性値へのリストを返す．@n
-pp の姉妹ツリーも検索するので注意．@n
+pp の姉妹ツリーも検索する．@n
 
 pt の中で ctrl が @b TREE_NOCMP_NODE または @b TREE_NOCMP_COPY_NODE となっているノードは
 比較されない．これらのノードは必ず一致する．
@@ -2171,7 +2288,7 @@ int  set_xml_attr(tXML* pp, tXML* pt, tList* at)
 
 XMLツリー pp内で XMLツリー ptと同じパターンの枝を探し，ptに最初に一致した枝の，
 ptの最後のノードに対応したノードのノードの属性として atの値をコピーする．@n
-pp の姉妹ツリーも検索するので注意．@n
+pp の姉妹ツリーも検索する．@n
 
 pt の中で ctrl が TREE_NOCMP_NODE または TREE_NOCMP_COPY_NODE となっているノードは
 比較されない．これらのノードは必ず一致する．
@@ -2585,7 +2702,7 @@ tList*  get_xml_content_list(tXML* pp, tXML* pt)
 
     dm = find_xml_end(pt);
     if (dm==NULL) return NULL;
-    dm = add_xml_content(dm, (char*)"DUMMY");
+    dm = add_xml_content_node(dm, (char*)"DUMMY");
     if (dm==NULL) return NULL;
     dm->ctrl = TREE_NOCMP_NODE;
 
@@ -2700,13 +2817,18 @@ int  set_xml_content_list_bystr(tXML* pp, const char* str, const char* content)
 /**
 int  find_match_xml(tXML* pp, tXML* pt)
 
-ツリー pp内で ツリー ptと同じパターンの枝を探す．姉妹ツリーも検索するので注意．@n 
+ツリー pp内で ツリー ptと同じパターンの枝を探す．姉妹ツリーも検索する．@n 
 
 同じパターンの探索では キー値のみを比較し，ノード値は比較しない．@n
 ただし，pt->ctrl が TREE_NOCMP_NODE または TREE_NOCMP_COPY_NODE のノードは比べない(常に一致とする)．
     
 もし同じツリーパターンがある場合，trの各ノードの altpには，一番最初に見つかった対応する ppの各ノードへ
 のポインタが格納される．
+
+get_xml_node() との違い．
+- get_xml_node() はノードを返す．これは，ツリーを返す．
+- get_xml_node() はアンカーノード（XML_ANCHOR_NODE）も処理する． 
+- find_match_xml() は get_xml_node() の中で使用されている．
 
 check_match_xml() との違い．
 - check_match_xml() では比べる枝の開始ノードはppに固定される．
@@ -2732,7 +2854,7 @@ int  find_match_xml(tXML* pp, tXML* pt)
         if (pp->next!=NULL) {
             ret = find_match_xml(pp->next, pt);
             if (ret) {
-                clear_tTree_ctrl(pm);
+                _clear_tTree_ctrl(pm);
                 return TRUE;
             }
         }
@@ -2765,20 +2887,20 @@ tXML*  find_match_xml_endlist(tXML* pp, tXML* pt)
     te = find_xml_end(pt);
     while(pp->esis!=NULL) pp = pp->esis;
 
-    lp = find_match_xml_endlist_rcsv(pp, pt, te);
-    if (lp!=NULL) clear_tTree_ctrl(pp);
+    lp = _find_match_xml_endlist_rcsv(pp, pt, te);
+    if (lp!=NULL) _clear_tTree_ctrl(pp);
     
     return lp;
 }
 
 
 /**
-tList*  find_match_xml_endlist_rcsv(tXML* pp, tXML* pt, tXML* te)
+tList*  _find_match_xml_endlist_rcsv(tXML* pp, tXML* pt, tXML* te)
 
 find_match_xml_endlist() の補助関数
 
 */
-tList*  find_match_xml_endlist_rcsv(tXML* pp, tXML* pt, tXML* te)
+tList*  _find_match_xml_endlist_rcsv(tXML* pp, tXML* pt, tXML* te)
 {
     tList* lt = NULL;
     tList* lp = NULL;
@@ -2794,11 +2916,11 @@ tList*  find_match_xml_endlist_rcsv(tXML* pp, tXML* pt, tXML* te)
         }  
                             
         if (pp->next!=NULL) {     
-            tList* lm = find_match_xml_endlist_rcsv(pp->next, pt, te);
+            tList* lm = _find_match_xml_endlist_rcsv(pp->next, pt, te);
             if (lm!=NULL) {       
                 lt = insert_tList(lt, lm);
                 if (lp==NULL) lp = lt;
-                clear_tTree_ctrl(pp->next);
+                _clear_tTree_ctrl(pp->next);
             }
         }
                                    
@@ -2836,7 +2958,7 @@ tXML*  find_match_xml_end_node(tXML* pp, tXML* pt)
         }
     }
 
-    clear_tTree_ctrl(pm);
+    _clear_tTree_ctrl(pm);
 
     return tt;
 }
@@ -3102,18 +3224,18 @@ int  replace_all_node_contents(tXML* pp, const char* name, const char* src, cons
     }
     while(pp->esis!=NULL) pp = pp->esis;
 
-    n = replace_all_node_contents_rcsv(pp, name, src, dst);
+    n = _replace_all_node_contents_rcsv(pp, name, src, dst);
 
     return n;
 }
 
 
 /**
-int  replace_all_node_contents_rcsv(tXML* pp, const char* name, const char* src, const char* dst)
+int  _replace_all_node_contents_rcsv(tXML* pp, const char* name, const char* src, const char* dst)
 
 replace_all_node_content() の補助関数
 */
-int  replace_all_node_contents_rcsv(tXML* pp, const char* name, const char* src, const char* dst)
+int  _replace_all_node_contents_rcsv(tXML* pp, const char* name, const char* src, const char* dst)
 {
     int  n = 0;
 
@@ -3141,7 +3263,7 @@ int  replace_all_node_contents_rcsv(tXML* pp, const char* name, const char* src,
             }
         }
 
-        if (pp->next!=NULL) n += replace_all_node_contents_rcsv(pp->next, name, src, dst);
+        if (pp->next!=NULL) n += _replace_all_node_contents_rcsv(pp->next, name, src, dst);
 
         pp = pp->ysis;
     }
@@ -3174,18 +3296,18 @@ int  replace_all_node_byid(tXML* pp, const char* src, const char* dst, int id)
     }
     while(pp->esis!=NULL) pp = pp->esis;
 
-    n = replace_all_node_byid_rcsv(pp, src, dst, id);
+    n = _replace_all_node_byid_rcsv(pp, src, dst, id);
 
     return n;
 }
 
 
 /**
-int  replace_all_node_byid_rcsv(tXML* pp, const char* src, const char* dst, int id)
+int  _replace_all_node_byid_rcsv(tXML* pp, const char* src, const char* dst, int id)
 
 replace_all_node_byid() の補助関数
 */
-int  replace_all_node_byid_rcsv(tXML* pp, const char* src, const char* dst, int id)
+int  _replace_all_node_byid_rcsv(tXML* pp, const char* src, const char* dst, int id)
 {
     int  n = 0;
 
@@ -3203,7 +3325,7 @@ int  replace_all_node_byid_rcsv(tXML* pp, const char* src, const char* dst, int 
             }
         }
 
-        if (pp->next!=NULL) n += replace_all_node_byid_rcsv(pp->next, src, dst, id);
+        if (pp->next!=NULL) n += _replace_all_node_byid_rcsv(pp->next, src, dst, id);
 
         pp = pp->ysis;
     }
@@ -3254,7 +3376,7 @@ Buffer  xml_rpc_request_pack(const char* name, tXML* xml)
     tXML* mnm = add_xml_node(top, "methodName");
     tXML* prs = add_xml_node(top, "params");
     tXML* prm = add_xml_node(prs, "param");
-    add_xml_content(mnm, name);
+    add_xml_content_node(mnm, name);
 
     join_xml(prm, xml);
     Buffer buf = xml_inverse_parse(ptr, XML_ONELINE_FORMAT);
@@ -3293,8 +3415,8 @@ tXML*   xml_rpc_add_member(tXML* xml, char* name, char* value, char* kind)
     else if (kind[0]=='\0') knd = add_xml_node(val, "string");
     else                    knd = add_xml_node(val, kind);
 
-    add_xml_content(mnm, name);
-    add_xml_content(knd, value);
+    add_xml_content_node(mnm, name);
+    add_xml_content_node(knd, value);
 
     return xml;
 }

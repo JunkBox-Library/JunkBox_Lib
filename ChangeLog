@@ -6,12 +6,18 @@ working now ..... v1.9.2alpha
 
 
 v1.9.2alpha
-	decode_base64  length miss 
-	LLSD
-		lsd_tool.c: add llsd_bin_get_blockdata() for LLSD
-	Jpeg2000
-		jp2k_tool.c, jp2k_tool2.c:  fix mode
-		Jpeg2KTool.cpp, Jpeg2KTool2.cp: fix mode
+	Lib/txml.c
+		add_xml_content()    -> add_xml_content_node()
+		append_xml_content() -> append_xml_content_node()
+		add replace_xml_content_node()
+	Lib/buffer.c
+		decode_base64  fix length miss 
+	xLib/llsd_tool.c
+		add llsd_bin_get_block_data()
+	gLib/jp2k_tool.c   fix mode
+	gLib/jp2k_tool2.c  fix mode
+	C++Lib/GraphLib/Jpeg2KTool.cpp  fix mode
+	C++Lib/GraphLib/Jpeg2KTool2.cp  fix mode
 
 
 v1.9.1 '24/02/27

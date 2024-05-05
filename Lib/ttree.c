@@ -99,6 +99,9 @@ tTree*  add_tTree_node(tTree* pp, tTree* node)
     if (node==NULL) return NULL;
     if (pp==NULL) return node;
 
+    if (node->ldat.id==TREE_ANCHOR_NODE) node = node->next;
+    if (node==NULL) return NULL;
+
     node->prev = pp;
     node->ysis = NULL;
     node->esis = pp->yngr;
@@ -1101,7 +1104,7 @@ tTree*  strncmp_tTree(tTree* pp, const char* key, int len, int no)
         nn++;
         if (no==nn) return pp;
     }
-    if (pp->next!=NULL) pt = next_strncmp_vertical_tTree(pp->next, key, len, no, &nn);
+    if (pp->next!=NULL) pt = _next_strncmp_vertical_tTree(pp->next, key, len, no, &nn);
 
     return pt;
 }
@@ -1137,7 +1140,7 @@ tTree*  strncasecmp_tTree(tTree* pp, const char* key, int len, int no)
         nn++;
         if (no==nn) return pp;
     }
-    if (pp->next!=NULL) pt = next_strncasecmp_vertical_tTree(pp->next, key, len, no, &nn);
+    if (pp->next!=NULL) pt = _next_strncasecmp_vertical_tTree(pp->next, key, len, no, &nn);
 
     return pt;
 }
@@ -1301,7 +1304,7 @@ int  find_match_tTree(tTree* pp, tTree* pt)
         if (pp->next!=NULL) {
             ret = find_match_tTree(pp->next, pt);
             if (ret) {
-                clear_tTree_ctrl(pm);
+                _clear_tTree_ctrl(pm);
                 return TRUE;
             }
         }
@@ -1313,17 +1316,18 @@ int  find_match_tTree(tTree* pp, tTree* pt)
 
 
 /**
-void  clear_tTree_ctrl(tTree* pp)
+void  _clear_tTree_ctrl(tTree* pp)
 
 ppツリーの ctrlをクリアする．
+find_match_tTree(tTree* pp, tTree* pt) の補助関数
 */
-void  clear_tTree_ctrl(tTree* pp)
+void  _clear_tTree_ctrl(tTree* pp)
 {
     while (pp->esis!=NULL) pp = pp->esis;
 
     while (pp!=NULL) {
         pp->ctrl = TREE_NOCTRL_NODE;
-        if (pp->next!=NULL) clear_tTree_ctrl(pp->next);
+        if (pp->next!=NULL) _clear_tTree_ctrl(pp->next);
         pp = pp->ysis;
     }
 }
@@ -1351,19 +1355,19 @@ tList*  find_match_tTree_endlist(tTree* pp, tTree* pt)
     te = find_tTree_end(pt);
     while(pp->esis!=NULL) pp = pp->esis;
 
-    lp = find_match_tTree_endlist_rcsv(pp, pt, te);
-    if (lp!=NULL) clear_tTree_ctrl(pp);
+    lp = _find_match_tTree_endlist_rcsv(pp, pt, te);
+    if (lp!=NULL) _clear_tTree_ctrl(pp);
     
     return lp;
 }
 
 
 /**
-tList*  find_match_tTree_endlist_rcsv(tTree* pp, tTree* pt, tTree* te)
+tList*  _find_match_tTree_endlist_rcsv(tTree* pp, tTree* pt, tTree* te)
 
 find_match_tTree_endlist() の補助関数
 */
-tList*  find_match_tTree_endlist_rcsv(tTree* pp, tTree* pt, tTree* te)
+tList*  _find_match_tTree_endlist_rcsv(tTree* pp, tTree* pt, tTree* te)
 {
     tList* lt = NULL;
     tList* lp = NULL;
@@ -1379,11 +1383,11 @@ tList*  find_match_tTree_endlist_rcsv(tTree* pp, tTree* pt, tTree* te)
         }
             
         if (pp->next!=NULL) {
-            tList* lm = find_match_tTree_endlist_rcsv(pp->next, pt, te);
+            tList* lm = _find_match_tTree_endlist_rcsv(pp->next, pt, te);
             if (lm!=NULL) {
                 lt = insert_tList(lt, lm);
                 if (lp==NULL) lp = lt;
-                clear_tTree_ctrl(pp->next);
+                _clear_tTree_ctrl(pp->next);
             }
         }
     
@@ -1421,7 +1425,7 @@ int replace_tTree_node(tTree* pp, tTree* pt)
     
     ret = find_match_tTree(pp, pt);
     if (ret) {
-        copy_tTree_byctrl(pt);
+        _copy_tTree_byctrl(pt);
         adjust_tTree_depth(pp);
     }
 
@@ -1430,15 +1434,15 @@ int replace_tTree_node(tTree* pp, tTree* pt)
 
 
 /**
-void  copy_tTree_byctrl(tTree* pt)
+void  _copy_tTree_byctrl(tTree* pt)
 
-replace_tTree_node()の補助関数．
+replace_tTree_node() の補助関数．
 
 ツリー ptにおいて，pt->ctrl が TREE_COPY_NODE または TREE_NOCMP_COPY_NODE の場合，
 pt->altp のノードへ ptの属性をコピーする．@n
 pt->ldat.sz には正確に pt->ldat.ptrのサイズが設定されている必要がある．
 */
-void  copy_tTree_byctrl(tTree* pt)
+void  _copy_tTree_byctrl(tTree* pt)
 {
     while(pt!=NULL) {
         if (pt->altp!=NULL) {
@@ -1469,7 +1473,7 @@ void  copy_tTree_byctrl(tTree* pt)
             }
         }
 
-        if (pt->next!=NULL) copy_tTree_byctrl(pt->next);
+        if (pt->next!=NULL) _copy_tTree_byctrl(pt->next);
         pt = pt->ysis;
     }
 
@@ -1524,11 +1528,11 @@ Buffer  get_value_tTree(tTree* pp, tTree* pt)
 //
 
 /**
-tTree*  next_strncmp_vertical_tTree(tTree* pp, const char* key, int len, int no, int* nn)
+tTree*  _next_strncmp_vertical_tTree(tTree* pp, const char* key, int len, int no, int* nn)
 
 tTree 検索用補助関数．vertical は縦方向探索
 */
-tTree*  next_strncmp_vertical_tTree(tTree* pp, const char* key, int len, int no, int* nn)
+tTree*  _next_strncmp_vertical_tTree(tTree* pp, const char* key, int len, int no, int* nn)
 {
     do { 
         if (ex_strncmp((char*)(pp->ldat).key.buf, key, len)) {
@@ -1536,7 +1540,7 @@ tTree*  next_strncmp_vertical_tTree(tTree* pp, const char* key, int len, int no,
             if (no==*nn) return pp;
         }
         if (pp->next!=NULL) {
-            tTree* tt = next_strncmp_vertical_tTree(pp->next, key, len, no, nn);
+            tTree* tt = _next_strncmp_vertical_tTree(pp->next, key, len, no, nn);
             if (tt!=NULL) return tt;
         }
         pp = pp->ysis;
@@ -1547,11 +1551,11 @@ tTree*  next_strncmp_vertical_tTree(tTree* pp, const char* key, int len, int no,
 
 
 /**
-tTree*  next_strncmp_horizon_tTree (tTree* pp, const char* key, int len, int no, int* nn)
+tTree*  _next_strncmp_horizon_tTree (tTree* pp, const char* key, int len, int no, int* nn)
 
 tTree 検索用補助関数．horizon は擬似的な横方向探索（完全な横方向探索ではない）
 */
-tTree*  next_strncmp_horizon_tTree(tTree* pp, const char* key, int len, int no, int* nn)
+tTree*  _next_strncmp_horizon_tTree(tTree* pp, const char* key, int len, int no, int* nn)
 {
     do { 
         if (ex_strncmp((char*)(pp->ldat).key.buf, key, len)) {
@@ -1559,7 +1563,7 @@ tTree*  next_strncmp_horizon_tTree(tTree* pp, const char* key, int len, int no, 
             if (no==*nn) return pp;
         }
         if (pp->ysis!=NULL) {
-            tTree* tt = next_strncmp_horizon_tTree(pp->ysis, key, len, no, nn);
+            tTree* tt = _next_strncmp_horizon_tTree(pp->ysis, key, len, no, nn);
             if (tt!=NULL) return tt;
         }
         pp = pp->next;
@@ -1570,11 +1574,11 @@ tTree*  next_strncmp_horizon_tTree(tTree* pp, const char* key, int len, int no, 
 
 
 /**
-tTree*  next_strncasecmp_vertical_tTree(tTree* pp, const char* key, int len, int no, int* nn)
+tTree*  _next_strncasecmp_vertical_tTree(tTree* pp, const char* key, int len, int no, int* nn)
 
 tTree 検索用補助関数．vertical は縦方向探索
 */
-tTree*  next_strncasecmp_vertical_tTree(tTree* pp, const char* key, int len, int no, int* nn)
+tTree*  _next_strncasecmp_vertical_tTree(tTree* pp, const char* key, int len, int no, int* nn)
 {
     do { 
         if (ex_strncasecmp((char*)(pp->ldat).key.buf, key, len)) {
@@ -1582,7 +1586,7 @@ tTree*  next_strncasecmp_vertical_tTree(tTree* pp, const char* key, int len, int
             if (no==*nn) return pp;
         }
         if (pp->next!=NULL) {
-            tTree* tt = next_strncasecmp_vertical_tTree(pp->next, key, len, no, nn);
+            tTree* tt = _next_strncasecmp_vertical_tTree(pp->next, key, len, no, nn);
             if (tt!=NULL) return tt;
         }
         pp = pp->ysis;
@@ -1593,11 +1597,11 @@ tTree*  next_strncasecmp_vertical_tTree(tTree* pp, const char* key, int len, int
 
 
 /**
-tTree*  next_strncasecmp_horizon_tTree (tTree* pp, const char* key, int len, int no, int* nn)
+tTree*  _next_strncasecmp_horizon_tTree (tTree* pp, const char* key, int len, int no, int* nn)
 
 tTree 検索用補助関数．horizon は擬似的な横方向探索（完全な横方向探索ではない）
 */
-tTree*  next_strncasecmp_horizon_tTree(tTree* pp, const char* key, int len, int no, int* nn)
+tTree*  _next_strncasecmp_horizon_tTree(tTree* pp, const char* key, int len, int no, int* nn)
 {
     do { 
         if (ex_strncasecmp((char*)(pp->ldat).key.buf, key, len)) {
@@ -1605,7 +1609,7 @@ tTree*  next_strncasecmp_horizon_tTree(tTree* pp, const char* key, int len, int 
             if (no==*nn) return pp;
         }
         if (pp->ysis!=NULL) {
-            tTree* tt = next_strncasecmp_horizon_tTree(pp->ysis, key, len, no, nn);
+            tTree* tt = _next_strncasecmp_horizon_tTree(pp->ysis, key, len, no, nn);
             if (tt!=NULL) return tt;
         }
         pp = pp->next;

@@ -152,10 +152,10 @@ int     isnot_xml_name(unsigned char* pp);          ///< XML名として不適�
 
 // 逆パース
 Buffer  xml_inverse_parse(tXML* pp, int mode);                              ///< ppに格納された XMLデータを元の書式に戻して Bufferに格納する．xml_parse() の逆．
-void    xml_to_Buffer(tXML* pp, Buffer* buf, int mode, int indent);         ///< xml_inverse_parse()用の補助関数．
 void    xml_open_node_Buffer (tXML* pp, Buffer* buf, int mode, int indent); ///< ツリー中のXMLのオープンノードのデータを元の書式に戻して Bufferに格納する．
 void    xml_close_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent); ///< ツリー中のXMLのクローズノードのデータを元の書式に戻して Bufferに格納する．
 void    xml_attr_to_Buffer(tList* pp, Buffer* buf);                         ///< リストに保存されたノードの属性をテキストへ戻す．
+void    _xml_to_Buffer(tXML* pp, Buffer* buf, int mode, int indent);        ///< xml_inverse_parse()用の補助関数．
 
 // Operation
 tXML*   init_xml_doc(void);                                                 ///< XML のドキュメントヘッダを作成する．
@@ -169,8 +169,9 @@ tXML*   add_xml_attr_int   (tXML* xml, const char* name, int   value);      ///<
 tXML*   add_xml_attr_float (tXML* xml, const char* name, float value);      ///< xml に属性名 name, float型実数の属性値 value を持つノードを追加する．
 tXML*   add_xml_attr_double(tXML* xml, const char* name, double value);     ///< xml に属性名 name, double型実数の属性値 value を持つノードを追加する．
 
-tXML*   add_xml_content(tXML* xml, const char* value);                      ///< XMLツリーのxml の直下にコンテントを挿入する．
-tXML*   append_xml_content(tXML* xml, const char* value);                   ///< XMLツリーのxml の直下のコンテントノードにコンテンツを追加する．
+tXML*   add_xml_content_node(tXML* xml, const char* value);                 ///< XMLツリーのxml の直下にコンテントを挿入する．
+tXML*   append_xml_content_node(tXML* xml, const char* value);              ///< XMLツリーのxml の直下のコンテントノードにコンテンツを追加する．
+tXML*   set_xml_content_node(tXML* xml, const char* value);                 ///< XMLツリーのxml の直下のコンテントノードの値を置き換える．
 int     add_xml_content_area(tXML* xml, int len);                           ///< xml に空のコンテントノードを追加する．
 
 #define join_xml(a, b)              add_tTree_node((a), (b))                ///< add_tTree_node()
@@ -208,13 +209,15 @@ void    print_sister_xml_tree(FILE* fp, tXML* pp, const char* space);       ///<
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Search and Get/Set    操作対象は１番最初に一致したもの
 
-tXML*   get_xml_node(tXML* pp, tXML* pt);                    ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードへのポインタを altp に入れて返す．
+tXML*   get_xml_node(tXML* pp, tXML* pt);                    ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードへのポインタを返す．
 int     set_xml_node(tXML* pp, tXML* pt, const char* val);   ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノード対応したノードにノード名をコピーする．
-int     set_xml_end_node(tXML* pp, tXML* pt);                ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードへのポインタを altp に入れて返す．
+int     set_xml_end_node(tXML* pp, tXML* pt);                ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードへのポインタを返す．
 
-tXML*   get_xml_content(tXML* pp, tXML* pt);                 ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードのコンテントへのポインタを latp に入れて返す．
+tXML*   get_xml_attr_node(tXML* pp, const char* key, const char* val); ///< 属性 key=val のノードを探し，最初に見つけたノードを返す．
+
+tXML*   get_xml_content(tXML* pp, tXML* pt);                 ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードのコンテントへのポインタを altp に入れて返す．
 int     set_xml_content(tXML* pp, tXML* pt, const char* val);///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後ノードに対応したのノードのコンテントを contentで置き換える．
-tList*  get_xml_attr(tXML* pp, tXML* pt);                    ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードのノード属性値へのリストを返す．
+tList*  get_xml_attr(tXML* pp, tXML* pt);                    ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードのノード属性値へのリストを altp に入れて返す．
 int     set_xml_attr(tXML* pp, tXML* pt, tList* at);         ///< 同じパターンの枝を探し，ptに最初に一致した枝の，ptの最後のノードに対応したノードのノードの属性としてatの値をコピーする．
 
 tXML*   get_xml_node_bystr(tXML* pp, const char* str);                      ///< get_xml_node(tXML* pp, tXML* pt) の _bystr バージョン
@@ -268,10 +271,9 @@ int     replace_xml_content_bystr(tXML*pp, const char* str, const char* src, con
 #define get_xml_int_attr_str(p, s, v)       get_xml_int_attr_bystr((p), (s), (v))           ///< get_xml_int_attr_bystr()
 #define get_xml_double_attr_str(p, s, v)    get_xml_double_attr_bystr((p), (s), (v))        ///< get_xml_double_attr_bystr()
 
-
 // Operation for Multi Node
-tList*  get_xml_node_list(tXML* pp, tXML* pt);      ///< XMLツリー pp内で XMLツリー ptと同じパターンの枝を探し，ptに一致した枝の，ptの最後のノードに対応するノードへのポインタをリストに格納して返す．
-tList*  get_xml_content_list(tXML* pp, tXML* pt);   ///< XMLツリー pp内で XMLツリー ptと同じパターンの枝を探し，ptに一致した枝の，ptの最後のノードに対応するノードのコンテントへのポインタをリストに格納して返す．
+tList*  get_xml_node_list(tXML* pp, tXML* pt);    ///< XMLツリー pp内で XMLツリー ptと同じパターンの枝を探し，ptに一致した枝の，ptの最後のノードに対応するノードへのポインタをリストに格納して返す．
+tList*  get_xml_content_list(tXML* pp, tXML* pt); ///< XMLツリー pp内で XMLツリー ptと同じパターンの枝を探し，ptに一致した枝の，ptの最後のノードに対応するノードのコンテントへのポインタをリストに格納して返す．
 int     set_xml_content_list(tXML* pp, tXML* pt, const char* content);              ///< get_xml_content_list() で検出したコンテントを, content で置き換える．
 
 tList*  get_xml_node_list_bystr(tXML* pp, const char* str);                         ///< get_xml_node_list() の _bystr バージョン．
@@ -284,12 +286,12 @@ int     set_xml_content_list_bystr(tXML* pp, const char* str, const char* conten
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// Search XML Node (tTree用の関数とほぼ同じ)
+// Search XML Node (tTree用の関数とほぼ同じ)．ツリーを返す．
 
 int     find_match_xml(tXML* pp, tXML* pt);                         ///< ツリー pp内で ツリー ptと同じパターンの枝を探す．姉妹ツリーも検索するので注意．
 tXML*   find_match_xml_endlist(tXML* pp, tXML* pt);                 ///< ツリー pp内で ツリー ptと同じパターンの枝を全て探して，その枝のptの最後のノードに対応するノードの情報をリストにして返す．
-tList*  find_match_xml_endlist_rcsv(tXML* pp, tXML* pt, tXML* te);  ///< find_match_xml_endlist() の補助関数
 tXML*   find_match_xml_end_node(tXML* pp, tXML* pt);                ///< XMLツリー pp内で XMLツリー ptと同じパターンの枝を探し，ptの最後のノードに対応する pp内のノードへのポインタを返す．
+tList*  _find_match_xml_endlist_rcsv(tXML* pp, tXML* pt, tXML* te); ///< find_match_xml_endlist() の補助関数
 
 int     check_match_xml(tXML* tp, tXML* tr);                        ///< XMLツリー tpが XMLツリー trと同じかどうかを検査する．
 tXML*   cmp_sisters_xml(tXML* tp, tXML* tr);                        ///< XMLノード tpの姉妹ノードが trの姉妹ノードと同じ XMLノードまたはコンテントであるかを比較する．
@@ -303,12 +305,12 @@ Buffer  get_node_content(tXML* tp, const char* name, int no);   ///< tp中のXML
 
 int     return_exist_node(tXML* tp, const char* name, int no, Buffer* value);   ///< bufの中に ノード '@<name>content@</name>' が存在するかどうかチェックする．
 
-int     replace_all_node_integer (tXML* tp, const char* name, int src, int dst);                        ///< XMLツリー pp内で ノード名が nameである全てのノードのコンテント（整数）を，srcから dstに書き換える．
-int     replace_all_node_contents(tXML* tp, const char* name, const char* src, const char* dst);        ///< XMLツリー pp内で ノード名が nameである全てのノードのコンテントを，srcから dstに書き換える．
-int     replace_all_node_contents_rcsv(tXML* tp, const char* name, const char* src, const char* dst);   ///< replace_all_node_content() の補助関数
+int     replace_all_node_integer (tXML* tp, const char* name, int src, int dst);                      ///< XMLツリー pp内で ノード名が nameである全てのノードのコンテント（整数）を，srcから dstに書き換える．
+int     replace_all_node_contents(tXML* tp, const char* name, const char* src, const char* dst);      ///< XMLツリー pp内で ノード名が nameである全てのノードのコンテントを，srcから dstに書き換える．
+int     _replace_all_node_contents_rcsv(tXML* tp, const char* name, const char* src, const char* dst);///< replace_all_node_content() の補助関数
 
 int     replace_all_node_byid(tXML* tp, const char* src, const char* dst, int id);          ///< XMLツリー pp内で ノードの種別が idである全てのノードの内容を srcから dstに書き換える．
-int     replace_all_node_byid_rcsv(tXML* tp, const char* src, const char* dst, int id);     ///< replace_all_node_byid() の補助関数
+int     _replace_all_node_byid_rcsv(tXML* tp, const char* src, const char* dst, int id);    ///< replace_all_node_byid() の補助関数
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////

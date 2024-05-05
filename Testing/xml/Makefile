@@ -1,7 +1,7 @@
 #
 #
 #SUBJ = db
-SUBJ = collada xml_test5 xml_test4 xml_test3 xml_test2 prev findxml prxml xml_test xml_change xml_seq
+SUBJ = xml_file collada xml_test5 xml_test4 xml_test3 xml_test2 prev findxml prxml xml_test xml_change xml_seq
 
 
 #
@@ -53,6 +53,9 @@ clean:
 #
 #
 #
+xml_file: xml_file.o $(LIB_BSC) $(LIB_EXT) 
+	$(CC) $(@).o $(ELIB) $(SLIB) -O2 -o $@  -lssl -lcrypto -lcrypt -lz
+
 collada: collada.o $(LIB_BSC) $(LIB_EXT) 
 	$(CC) $(@).o $(ELIB) $(SLIB) -O2 -o $@  -lssl -lcrypto -lcrypt -lz
 

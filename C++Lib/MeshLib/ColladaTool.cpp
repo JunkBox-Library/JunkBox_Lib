@@ -83,20 +83,23 @@ void  ColladaXML::initCollada(double meter, int axis, const char* ver)
     //char* ltime = get_localtime('-', 'T', ':', 'Z');
     char* ltime = get_local_timestamp(time(0), "%Y-%m-%dT%H:%M:%SZ");
     //
-    add_xml_content(author, COLLADA_STR_AUTHOR);
-    add_xml_content(authoring_tool, COLLADA_STR_TOOL);
-    add_xml_content(created,  ltime);
-    add_xml_content(modified, ltime);
+    add_xml_content_node(author, COLLADA_STR_AUTHOR);
+    add_xml_content_node(authoring_tool, COLLADA_STR_TOOL);
+    add_xml_content_node(created,  ltime);
+    add_xml_content_node(modified, ltime);
     add_xml_attr_str(unit, "name", "meter");
     add_xml_attr_float(unit, "meter", (float)meter);
     ::free(ltime);
 
-    if      (axis==COLLADA_X_UP) add_xml_content(up_axis, "X_UP");
-    else if (axis==COLLADA_Y_UP) add_xml_content(up_axis, "Y_UP");
-    else                         add_xml_content(up_axis, "Z_UP");
+    if      (axis==COLLADA_X_UP) add_xml_content_node(up_axis, "X_UP");
+    else if (axis==COLLADA_Y_UP) add_xml_content_node(up_axis, "Y_UP");
+    else                         add_xml_content_node(up_axis, "Z_UP");
 
     // library_images
     library_images = add_xml_node(collada, "library_images");
+
+    // library_effects
+    library_effects = add_xml_node(collada, "library_effects");
 
     // library_materials
     library_materials = add_xml_node(collada, "library_materials");
@@ -105,10 +108,10 @@ void  ColladaXML::initCollada(double meter, int axis, const char* ver)
     library_geometries = add_xml_node(collada, "library_geometries");
 
     // library_effects
-    library_effects = add_xml_node(collada, "library_effects");
+    //library_effects = add_xml_node(collada, "library_effects");
 
-    // library_materials
-    //library_materials = add_xml_node(collada, "library_materials");
+    // library_controllers
+    library_controllers = add_xml_node(collada, "library_controllers");
 
     // library_physics_models
     library_physics_models = add_xml_node(collada, "library_physics_models");
@@ -139,30 +142,97 @@ void  ColladaXML::initCollada(double meter, int axis, const char* ver)
     add_xml_attr_str(instance_physics_scene, "url", "#Physics_Scene");
     instance_visual_scene = add_xml_node(scene, "instance_visual_scene");
     add_xml_attr_str(instance_visual_scene, "url", "#Scene");
-
     //
     free_Buffer(&buf);
 }
 
 
-void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints)
+void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template)
 {
     if (meshdata==NULL) return;
 
-    char* geom_id = addGeometry(meshdata);      // 幾何情報を配置
-    if (geom_id==NULL) return;
+    char* geom_id = addGeometry(meshdata);                          // 幾何情報を配置
+    addController(geom_id, meshdata, joints);                       // Joints 情報を配置
+    addScene(geom_id, meshdata, collider, joints, joints_template); // Scene への配置（位置，サイズ，回転，コライダー, Joints）
+    
+    if (geom_id!=NULL) ::free(geom_id);
+    return;
+}
 
-    addScene(geom_id, meshdata, collider);      // Scene への配置（位置，サイズ，回転，コライダー）
-    ::free(geom_id);
 
-    if (joints!=NULL) {
-/*
-        char* skin_id = addiSkinJoint(jointis); // Joints 情報を配置
-        if (skin_id==NULL) return;
-        addScene(skin_id, joints);              // Scene への配置
-        ::free(skin_id);
-*/
-    }
+void  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdata, SkinJointData* joints)
+{
+    if (geometry_id==NULL || meshdata==NULL || joints==NULL) return;
+
+    Buffer geometry_name = dup_Buffer(meshdata->data_name);
+    if (geometry_name.buf==NULL) geometry_name = make_Buffer_str(geometry_id+1);
+
+    Buffer randomstr = make_Buffer_randomstr(8);
+
+    Buffer controller_id = make_Buffer_str("avatar_");
+    cat_Buffer(&randomstr, &controller_id);
+
+    tXML* controller_tag = add_xml_node(library_controllers, "controller");
+    add_xml_attr_str(controller_tag, "id", _tochar(controller_id.buf));
+    add_xml_attr_str(controller_tag, "name",  "avater");
+
+    tXML* skin_tag = add_xml_node(controller_tag, "skin");
+    add_xml_attr_str(skin_tag, "source", _tochar(geometry_id));
+
+    tXML* bind_shape_matrix = add_xml_node(skin_tag, "bind_shape_matrix");
+    //
+    //
+
+    // sourece
+    Buffer joint_id = make_Buffer_str("#JOINT_");
+    cat_Buffer(&randomstr, &joint_id);
+    tXML* joint_tag = add_xml_node(skin_tag, "source");
+    add_xml_attr_str(joint_tag, "id", _tochar(joint_id.buf+1));
+
+    Buffer invbind_id = make_Buffer_str("#INVBIND_");
+    cat_Buffer(&randomstr, &invbind_id);
+    tXML* invbind_tag = add_xml_node(skin_tag, "source");
+    add_xml_attr_str(invbind_tag, "id", _tochar(invbind_id.buf+1));
+
+    Buffer weight_id = make_Buffer_str("#WEIGHT_");
+    cat_Buffer(&randomstr, &weight_id);
+    tXML* weight_tag = add_xml_node(skin_tag, "source");
+    add_xml_attr_str(weight_tag, "id", _tochar(weight_id.buf+1));
+
+    // joints
+    tXML* joints_tag = add_xml_node(skin_tag, "joints");
+
+    tXML* input_joint_tag = add_xml_node(joints_tag, "input");
+    add_xml_attr_str(input_joint_tag, "semantic", "JOINT");
+    add_xml_attr_str(input_joint_tag, "source", _tochar(joint_id.buf));
+
+    tXML* input_invbind = add_xml_node(joints_tag, "input");
+    add_xml_attr_str(input_invbind, "semantic", "INV_BIND_MATRIX");
+    add_xml_attr_str(input_invbind, "source", _tochar(invbind_id.buf));
+
+    // vertex_weight
+    tXML* vertex_weight_tag = add_xml_node(skin_tag, "vertex_weights");
+    add_xml_attr_str(vertex_weight_tag, "count", "0000000000000000000000000");
+
+    tXML* input_joint2_tag = add_xml_node(vertex_weight_tag, "input");
+    add_xml_attr_str(input_joint2_tag, "semantic", "JOINT");
+    add_xml_attr_str(input_joint2_tag, "source", _tochar(joint_id.buf));
+    add_xml_attr_str(input_joint2_tag, "offset", "0");
+
+    tXML* input_weight_tag = add_xml_node(vertex_weight_tag, "input");
+    add_xml_attr_str(input_weight_tag, "semantic", "WEIGHT");
+    add_xml_attr_str(input_weight_tag, "source", _tochar(weight_id.buf));
+    add_xml_attr_str(input_weight_tag, "offset", "1");
+
+    add_xml_node(vertex_weight_tag, "vcount");
+    add_xml_node(vertex_weight_tag, "v");
+
+    free_Buffer(&geometry_name);
+    free_Buffer(&randomstr);
+    free_Buffer(&controller_id);
+    free_Buffer(&joint_id);
+    free_Buffer(&invbind_id);
+    free_Buffer(&weight_id);
 
     return;
 }
@@ -229,9 +299,9 @@ char*  ColladaXML::addVertexSource(tXML* mesh, MeshObjectData* meshdata)
         while (facet!=NULL) {
             Vector<double>* vect = facet->vertex_value;
             for (int i=0; i<facet->num_vertex; i++) {
-                append_xml_content(source_array, dtostr(vect[i].x));
-                append_xml_content(source_array, dtostr(vect[i].y));
-                append_xml_content(source_array, dtostr(vect[i].z));
+                append_xml_content_node(source_array, dtostr(vect[i].x));
+                append_xml_content_node(source_array, dtostr(vect[i].y));
+                append_xml_content_node(source_array, dtostr(vect[i].z));
             }
             facet = facet->next;
         }   
@@ -267,9 +337,9 @@ char*  ColladaXML::addNormalSource(tXML* mesh, MeshObjectData* meshdata)
         while (facet!=NULL) {
             Vector<double>* vect = facet->normal_value;
             for (int i=0; i<facet->num_vertex; i++) {
-                append_xml_content(source_array, dtostr(vect[i].x));
-                append_xml_content(source_array, dtostr(vect[i].y));
-                append_xml_content(source_array, dtostr(vect[i].z));
+                append_xml_content_node(source_array, dtostr(vect[i].x));
+                append_xml_content_node(source_array, dtostr(vect[i].y));
+                append_xml_content_node(source_array, dtostr(vect[i].z));
             }
             facet = facet->next;
         }
@@ -318,8 +388,8 @@ char*  ColladaXML::addTexcrdSource(tXML* mesh, MeshObjectData* meshdata)
                 facet->execAffineTransUVMap(uvmap, facet->num_texcrd);
 
                 for (int i=0; i<facet->num_texcrd; i++) {
-                    append_xml_content(source_array, dtostr(uvmap[i].u));
-                    append_xml_content(source_array, dtostr(uvmap[i].v));
+                    append_xml_content_node(source_array, dtostr(uvmap[i].u));
+                    append_xml_content_node(source_array, dtostr(uvmap[i].v));
                 }
                 ::free(uvmap);
             }
@@ -460,7 +530,7 @@ void   ColladaXML::addPolylists(tXML* mesh, MeshObjectData* meshdata, const char
         tXML* vcount = add_xml_node(polylist, "vcount");
         if (add_xml_content_area(vcount, facet->num_polygon*10)) {
             for (int i=0; i<facet->num_polygon; i++) {
-                append_xml_content(vcount, itostr(meshdata->num_vcount));
+                append_xml_content_node(vcount, itostr(meshdata->num_vcount));
             }
         }
 
@@ -469,9 +539,9 @@ void   ColladaXML::addPolylists(tXML* mesh, MeshObjectData* meshdata, const char
             for (int i=0; i<facet->num_polygon; i++) {
                 int n = i*meshdata->num_vcount;
                 for (int j=0; j<meshdata->num_vcount; j++) {
-                    append_xml_content(p_data, itostr(facet->data_index[n+j] + pnum));
+                    append_xml_content_node(p_data, itostr(facet->data_index[n+j] + pnum));
                 }
-                append_xml_content(p_data, "");
+                append_xml_content_node(p_data, "");
             }
         }
 
@@ -500,7 +570,7 @@ char*  ColladaXML::addImage(const char* fn)
         add_xml_attr_int(image, "width",  0);
 
         tXML* init_from = add_xml_node(image, "init_from");
-        append_xml_content(init_from, _tochar(filename.buf));
+        append_xml_content_node(init_from, _tochar(filename.buf));
     }
 
     free_Buffer(&filename);
@@ -554,13 +624,13 @@ tXML*  ColladaXML::addEffect(const char* material_url, const char* file_id, Mate
         tXML* surface = add_xml_node(newparam, "surface");
         add_xml_attr_str(surface, "type", "2D");
         tXML* init_from = add_xml_node(surface, "init_from");
-        append_xml_content(init_from, _tochar(fid.buf));
+        append_xml_content_node(init_from, _tochar(fid.buf));
 
         newparam = add_xml_node(profile, "newparam");
         add_xml_attr_str(newparam, "sid", _tochar(smp.buf));
         tXML* sample = add_xml_node(newparam, "sampler2D");
         tXML* source = add_xml_node(sample, "source");
-        append_xml_content(source, _tochar(srf.buf));
+        append_xml_content_node(source, _tochar(srf.buf));
     }
 
     tXML* technique = add_xml_node(profile, "technique");
@@ -571,16 +641,16 @@ tXML*  ColladaXML::addEffect(const char* material_url, const char* file_id, Mate
     if (mparam.isSetGlow()) {
         tXML* emission = add_xml_node(phong, "emission");
         tXML* color = add_xml_node(emission, "color");
-        for (int i=0; i<3; i++) append_xml_content(color, dtostr(mparam.getGlow()));
-        append_xml_content(color, "1.0");   // alpha
+        for (int i=0; i<3; i++) append_xml_content_node(color, dtostr(mparam.getGlow()));
+        append_xml_content_node(color, "1.0");   // alpha
     }
 
     // ambient (bright)
     if (mparam.isSetBright()) {
         tXML* ambient = add_xml_node(phong, "ambient");
         tXML* color = add_xml_node(ambient, "color");
-        for (int i=0; i<3; i++) append_xml_content(color, dtostr(mparam.getBright()));
-        append_xml_content(color, "1.0");   // alpha
+        for (int i=0; i<3; i++) append_xml_content_node(color, dtostr(mparam.getBright()));
+        append_xml_content_node(color, "1.0");   // alpha
     }
 
     // diffuse
@@ -609,7 +679,7 @@ tXML*  ColladaXML::addEffect(const char* material_url, const char* file_id, Mate
         for (int i=0; i<4; i++) {
             double col = mparam.texture.getColor(i);
             if (forUnity && col==0.0) col = 0.0001;
-            append_xml_content(color, dtostr(col));
+            append_xml_content_node(color, dtostr(col));
         }
     }
 
@@ -619,18 +689,18 @@ tXML*  ColladaXML::addEffect(const char* material_url, const char* file_id, Mate
         if (forUnity && alpha<0.01) alpha = 0.01;
         tXML* transparency = add_xml_node(phong, "transparency");
         tXML* transfloat   = add_xml_node(transparency, "float");
-        append_xml_content(transfloat, dtostr(alpha));
+        append_xml_content_node(transfloat, dtostr(alpha));
     }
 
     // specular map & shininess 
     if (mparam.isSetShininess()) {
         tXML* specular = add_xml_node(phong, "specular");
         tXML* color = add_xml_node(specular, "color");
-        for (int i=0; i<4; i++) append_xml_content(color, dtostr(mparam.specmap.getColor(i)));
+        for (int i=0; i<4; i++) append_xml_content_node(color, dtostr(mparam.specmap.getColor(i)));
         //
         tXML* shininess = add_xml_node(phong, "shininess");
         tXML* shinfloat = add_xml_node(shininess, "float");
-        append_xml_content(shinfloat, dtostr(mparam.getShininess()));
+        append_xml_content_node(shinfloat, dtostr(mparam.getShininess()));
     }
 
     free_Buffer(&fid);
@@ -663,14 +733,14 @@ void  ColladaXML::addExtraBumpmap(tXML* profile, const char* bump_id)
     add_xml_attr_str(newparam, "sid", _tochar(smp.buf));
     tXML* sample = add_xml_node(newparam, "sampler2D");
     tXML* source = add_xml_node(sample, "source");
-    append_xml_content(source, _tochar(srf.buf));
+    append_xml_content_node(source, _tochar(srf.buf));
 
     newparam = insert_xml_node(profile, "newparam");
     add_xml_attr_str(newparam, "sid", _tochar(srf.buf));
     tXML* surface = add_xml_node(newparam, "surface");
     add_xml_attr_str(surface, "type", "2D");
     tXML* init_from = add_xml_node(surface, "init_from");
-    append_xml_content(init_from, _tochar(fid.buf));
+    append_xml_content_node(init_from, _tochar(fid.buf));
 
     tXML* technique = get_xml_node_bystr(profile, "<technique>");
     tXML* extra = add_xml_node(technique, "extra");
@@ -693,10 +763,37 @@ void  ColladaXML::addExtraBumpmap(tXML* profile, const char* bump_id)
 /**
  Scene への配置（位置，サイズ，回転，コライダー）
 */
-void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bool collider)
+void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template)
 {
     if (geometry_id==NULL || meshdata==NULL) return;
 
+    // joints
+    if (joints!=NULL && joints_template!=NULL && visual_scene->next==NULL) {
+        int joints_num = joints->joint_names.get_size();
+
+        char buf[LNAME];
+        memset(buf, 0, LNAME);
+        buf[0] = '"';
+
+        for (int j=0; j<joints_num; j++) {
+            const char* joint_name = (const char*)joints->joint_names.get_value(j);
+            if (joint_name!=NULL) {
+                int len = strlen(joint_name);
+                memcpy(buf+1, joint_name, len);
+                buf[len + 1] = '"';
+                buf[len + 2] = '\0';
+                tXML* xml = get_xml_attr_node(joints_template, "name", (const char*)buf);
+                if (xml!=NULL) {
+
+                    set_xml_content_node(xml->next, "1111111111111");
+
+                }
+            }
+        }
+        join_xml(visual_scene, joints_template);
+    }
+     
+    //
     bool local_affine = true;
     AffineTrans<double> affine;
     if (meshdata->affineTrans!=NULL) {
@@ -713,11 +810,10 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
     Buffer node_id = make_Buffer_str("#NODE_");
     cat_Buffer(&randomstr, &node_id);
 
-    tXML* nodetag = add_xml_node(visual_scene, "node");
-    //add_xml_attr_str(nodetag, "id",   _tochar(node_id.buf));
-    add_xml_attr_str(nodetag, "id",   _tochar(node_id.buf+1));
-    add_xml_attr_str(nodetag, "name", _tochar(geometry_name.buf));
-    add_xml_attr_str(nodetag, "type", "NODE");
+    tXML* node_tag = add_xml_node(visual_scene, "node");
+    add_xml_attr_str(node_tag, "id",   _tochar(node_id.buf+1));
+    add_xml_attr_str(node_tag, "name", _tochar(geometry_name.buf));
+    add_xml_attr_str(node_tag, "type", "NODE");
 
     // Collider
     tXML* rigid_body = NULL;
@@ -737,45 +833,45 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
 
     // 回転行列
     affine.computeMatrix(false);
-    tXML* matrix = add_xml_node(nodetag, "matrix");
+    tXML* matrix = add_xml_node(node_tag, "matrix");
     for (int i=1; i<=4; i++) {
         for (int j=1; j<=4; j++) {
-            append_xml_content(matrix, dtostr(affine.matrix.element(i,j)));
+            append_xml_content_node(matrix, dtostr(affine.matrix.element(i, j)));
         }
     }
 
     // オイラー角
 /*
-    tXML* translate = add_xml_node(nodetag, "translate");
+    tXML* translate = add_xml_node(node_tag, "translate");
     add_xml_attr_str(translate, "sid", "location");
-    append_xml_content(translate, dtostr(affine.shift.x));
-    append_xml_content(translate, dtostr(affine.shift.y));
-    append_xml_content(translate, dtostr(affine.shift.z));
+    append_xml_content_node(translate, dtostr(affine.shift.x));
+    append_xml_content_node(translate, dtostr(affine.shift.y));
+    append_xml_content_node(translate, dtostr(affine.shift.z));
     //
     Vector<double> euler = affine.rotate.getEulerZYX();
-    tXML* rotate_z = add_xml_node(nodetag, "rotate");
+    tXML* rotate_z = add_xml_node(node_tag, "rotate");
     add_xml_attr_str(rotate_z, "sid", "rotationZ");
-    append_xml_content(rotate_z, "0 0 1");
-    append_xml_content(rotate_z, dtostr(euler.x));
+    append_xml_content_node(rotate_z, "0 0 1");
+    append_xml_content_node(rotate_z, dtostr(euler.x));
 
-    tXML* rotate_y = add_xml_node(nodetag, "rotate");
+    tXML* rotate_y = add_xml_node(node_tag, "rotate");
     add_xml_attr_str(rotate_y, "sid", "rotationY");
-    append_xml_content(rotate_y, "0 1 0");
-    append_xml_content(rotate_y, dtostr(euler.y));
+    append_xml_content_node(rotate_y, "0 1 0");
+    append_xml_content_node(rotate_y, dtostr(euler.y));
 
-    tXML* rotate_x = add_xml_node(nodetag, "rotate");
+    tXML* rotate_x = add_xml_node(node_tag, "rotate");
     add_xml_attr_str(rotate_x, "sid", "rotationX");
-    append_xml_content(rotate_x, "1 0 0");
-    append_xml_content(rotate_x, dtostr(euler.z));
+    append_xml_content_node(rotate_x, "1 0 0");
+    append_xml_content_node(rotate_x, dtostr(euler.z));
 */
     
-    tXML* scale = add_xml_node(nodetag, "scale");
+    tXML* scale = add_xml_node(node_tag, "scale");
     add_xml_attr_str(scale, "sid", "scale");
-    append_xml_content(scale, dtostr(affine.scale.x));
-    append_xml_content(scale, dtostr(affine.scale.y));
-    append_xml_content(scale, dtostr(affine.scale.z));
+    append_xml_content_node(scale, dtostr(affine.scale.x));
+    append_xml_content_node(scale, dtostr(affine.scale.y));
+    append_xml_content_node(scale, dtostr(affine.scale.z));
 
-    tXML* instance = add_xml_node(nodetag, "instance_geometry");
+    tXML* instance = add_xml_node(node_tag, "instance_geometry");
     add_xml_attr_str(instance, "url", geometry_id);
 
     tXML* bind_material = add_xml_node(instance, "bind_material");
@@ -797,8 +893,8 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
         technique_common = add_xml_node(rigid_body, "technique_common");
         tXML* dynamic = add_xml_node(technique_common, "dynamic");
         tXML* mass    = add_xml_node(technique_common, "mass");
-        add_xml_content(dynamic, "false");
-        add_xml_content(mass, "0");
+        add_xml_content_node(dynamic, "false");
+        add_xml_content_node(mass, "0");
         tXML* shape   = add_xml_node(technique_common, "shape");
         instance      = add_xml_node(shape, "instance_geometry");
         add_xml_attr_str(instance, "url", geometry_id);
@@ -881,18 +977,18 @@ void  ColladaXML::addCenterObject(void)
 //
 void  ColladaXML::addCenterScene(void)
 {
-    tXML* nodetag = add_xml_node(visual_scene, "node");
-    add_xml_attr_str(nodetag, "id",   "#NODE_DUMMY");
-    add_xml_attr_str(nodetag, "name", "center_origin");
-    add_xml_attr_str(nodetag, "type", "NODE");
+    tXML* node_tag = add_xml_node(visual_scene, "node");
+    add_xml_attr_str(node_tag, "id",   "#NODE_DUMMY");
+    add_xml_attr_str(node_tag, "name", "center_origin");
+    add_xml_attr_str(node_tag, "type", "NODE");
 
     // 回転行列
     AffineTrans<double> affine;
     affine.computeMatrix(false);
-    tXML* matrix = add_xml_node(nodetag, "matrix");
+    tXML* matrix = add_xml_node(node_tag, "matrix");
     for (int i=1; i<=4; i++) {
         for (int j=1; j<=4; j++) {
-            append_xml_content(matrix, dtostr(affine.matrix.element(i,j)));
+            append_xml_content_node(matrix, dtostr(affine.matrix.element(i,j)));
         }
     }
     affine.free();

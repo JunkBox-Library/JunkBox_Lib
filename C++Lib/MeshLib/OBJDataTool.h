@@ -73,11 +73,10 @@ public:
     void    delAffineTrans (void) { freeAffineTrans(this->affineTrans);}
     Vector<double> execAffineTrans(bool origin);
 
+public:
     void    addObject(MeshObjectData* meshdata, bool collider);
 
     void    outputFile(const char* fn, const char* out_path, const char* tex_dirn, const char* mtl_dirn);
-    //void    output_mtl(FILE* fp, const char* tex_dirn);
-    //void    output_obj(FILE* fp, const char* fname);
     void    output_mtl(const char* mtl_path, const char* tex_dirn);
     void    output_obj(const char* obj_path, const char* mtl_path);
 };

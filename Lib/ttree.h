@@ -136,24 +136,24 @@ tTree*  strncasecmp_tTree(tTree* pp, const char*  key, int len, int no);///< ツ
 
 int     find_match_tTree  (tTree* pp, tTree* pt);                       ///< ツリー pp内で ツリー ptと同じパターンの枝を探す．
 tList*  find_match_tTree_endlist(tTree* pp, tTree* pt);                 ///< pp内で ptと同じパターンの枝を全て探して，その枝の最後のノードへの情報を返す．
-tList*  find_match_tTree_endlist_rcsv(tTree* pp, tTree* pt, tTree* te); ///< find_match_tTree_endlist() の補助関数
+tList*  _find_match_tTree_endlist_rcsv(tTree* pp, tTree* pt, tTree* te);///< find_match_tTree_endlist() の補助関数
 
 int     check_match_tTree (tTree* tp, tTree* tr);   ///< tpが trと同じパターン(キー値)を持っているかどうかを検査する．
 tTree*  cmp_sisters_tTree (tTree* tp, tTree* tr);   ///< tpの姉妹ノードが trの姉妹ノードと同じキー値を持っているかどうかを検査する．
 
 int     replace_tTree_node(tTree* pp, tTree* pt);   ///< 同じパターンの枝を検索し，ptのノードの属性で置き換える．
-void    copy_tTree_byctrl (tTree* pt);              ///< 同じパターンの枝を検索し，ptのノードの属性をコピーする．
-void    clear_tTree_ctrl  (tTree* pp);              ///< ppツリーの ctrlをクリアする．
+void    _copy_tTree_byctrl (tTree* pt);             ///< 同じパターンの枝を検索し，ptのノードの属性をコピーする．
+void    _clear_tTree_ctrl  (tTree* pp);             ///< ppツリーの ctrlをクリアする．
 
 Buffer  get_value_tTree  (tTree* pp, tTree* pt);    ///< 同じパターンの枝を検索し，一致した枝があれば，その枝の最後のノードの値を返す．
 #define set_value_tTree(p, t)    replace_tTree_node((p), (t))   ///< replace_tTree_node()
 
 // 補助的関数
-tTree*  next_strncmp_vertical_tTree    (tTree* pp, const char* key, int len, int no, int* nn);  ///< tTree 検索用補助関数．vertical は縦方向探索
-tTree*  next_strncasecmp_vertical_tTree(tTree* pp, const char* key, int len, int no, int* nn);  ///< tTree 検索用補助関数．vertical は縦方向探索
+tTree*  _next_strncmp_vertical_tTree    (tTree* pp, const char* key, int len, int no, int* nn);  ///< tTree 検索用補助関数．vertical は縦方向探索
+tTree*  _next_strncasecmp_vertical_tTree(tTree* pp, const char* key, int len, int no, int* nn);  ///< tTree 検索用補助関数．vertical は縦方向探索
 
-tTree*  next_strncmp_horizon_tTree    (tTree* pp, const char* key, int len, int no, int* nn);   ///< tTree 検索用補助関数．horizon は擬似的な横方向探索
-tTree*  next_strncasecmp_horizon_tTree(tTree* pp, const char* key, int len, int no, int* nn);   ///< tTree 検索用補助関数．horizon は擬似的な横方向探索
+tTree*  _next_strncmp_horizon_tTree    (tTree* pp, const char* key, int len, int no, int* nn);   ///< tTree 検索用補助関数．horizon は擬似的な横方向探索
+tTree*  _next_strncasecmp_horizon_tTree(tTree* pp, const char* key, int len, int no, int* nn);   ///< tTree 検索用補助関数．horizon は擬似的な横方向探索
 
 
 #endif  // __JBXL_TINY_TREE_H_

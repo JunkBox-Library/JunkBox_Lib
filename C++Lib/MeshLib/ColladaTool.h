@@ -53,10 +53,11 @@ public:
 public:
     void    initCollada(double meter, int axis, const char* ver);
     void    initCollada(float  meter, int axis, const char* ver) { initCollada((double)meter, axis, ver); }
-    void    addObject(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint);
+    void    addObject(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tXML* joints_template=NULL);
 
     char*   addGeometry(MeshObjectData* meshdata);
-    void    addScene(const char* geometry_id, MeshObjectData* meshdata, bool collider);
+    void    addController(const char* geometry_id, MeshObjectData* meshdata, SkinJointData* skin_joint);
+    void    addScene(const char* geometry_id, MeshObjectData* meshdata, bool collider, SkinJointData* skin_join, tXML* joints_template);
 
     char*   addVertexSource(tXML* mesh, MeshObjectData* meshdata);
     char*   addNormalSource(tXML* mesh, MeshObjectData* meshdata);
@@ -100,12 +101,13 @@ public:
     tXML*   up_axis;
 
     tXML*   library_images;
-    tXML*   library_geometries;
     tXML*   library_effects;
     tXML*   library_materials;
-    tXML*   library_visual_scenes;
+    tXML*   library_geometries;
+    tXML*   library_controllers;
     tXML*   library_physics_scenes;
     tXML*   library_physics_models;
+    tXML*   library_visual_scenes;
 
     tXML*   instance_physics_model;
 
