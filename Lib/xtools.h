@@ -138,7 +138,7 @@ void    canonical_filename_Buffer(Buffer* fname);                       ///< fna
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Resource (file) List
 tList*  add_resource_list(const char* path, int keylen, tList* list, tList* extn);  ///< ディレクトリ pathを検索して，リソースリストにファイルを追加し，リストの先頭を返す．
-char*   get_resource_path(char* name, tList* lp);                       ///< リソースの名前から，ファイルのパスを得る．戻り値は free() してはいけない．
+char*   get_resource_path(const char* name, tList* lp);                 ///< リソースの名前から，ファイルのパスを得る．戻り値は free() してはいけない．
 
 
 #endif  // __JBXL_EXTEND_TOOLS_H_

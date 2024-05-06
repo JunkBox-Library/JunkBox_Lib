@@ -107,9 +107,6 @@ void  ColladaXML::initCollada(double meter, int axis, const char* ver)
     // library_geometries
     library_geometries = add_xml_node(collada, "library_geometries");
 
-    // library_effects
-    //library_effects = add_xml_node(collada, "library_effects");
-
     // library_controllers
     library_controllers = add_xml_node(collada, "library_controllers");
 
@@ -179,6 +176,7 @@ void  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdat
     tXML* skin_tag = add_xml_node(controller_tag, "skin");
     add_xml_attr_str(skin_tag, "source", _tochar(geometry_id));
 
+    // bind_shape_matrix
     tXML* bind_shape_matrix = add_xml_node(skin_tag, "bind_shape_matrix");
     for (int i=1; i<=4; i++) {
         for (int j=1; j<=4; j++) {
@@ -186,21 +184,53 @@ void  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdat
         }
     }
 
-    // sourece
-    Buffer joint_id = make_Buffer_str("#JOINT_");
+    // sourece JOINT
+    Buffer joint_id = make_Buffer_str("#SOURCE_JOINT_");
     cat_Buffer(&randomstr, &joint_id);
+    Buffer joint_name_id = make_Buffer_str("#SOURCE_JOINT_ARRAY_");
+    cat_Buffer(&randomstr, &joint_name_id);
+
     tXML* joint_tag = add_xml_node(skin_tag, "source");
-    add_xml_attr_str(joint_tag, "id", _tochar(joint_id.buf+1));
+    add_xml_attr_str(joint_tag, "id", _tochar(joint_id.buf + 1));
 
-    Buffer invbind_id = make_Buffer_str("#INVBIND_");
+    int joints_num = joints->joint_names.get_size();
+    tXML* joint_name_tag = add_xml_node(joint_tag, "Name_array");
+    add_xml_attr_str(joint_name_tag, "id", _tochar(joint_name_id.buf + 1));
+    add_xml_attr_int(joint_name_tag, "count", joints_num);
+
+    for (int jnt=0; jnt<joints_num; jnt++) {
+        const char* joint_name = (const char*)joints->joint_names.get_value(jnt);
+        append_xml_content_node(joint_name_tag, joint_name);
+    }
+    addSimpleTechniqueAccessor(joint_tag, _tochar(joint_name_id.buf), joints_num, 1, "JOINT", "name");
+
+    // source TRANSFORM
+    Buffer invbind_id = make_Buffer_str("#SOURCE_INVBIND_");
     cat_Buffer(&randomstr, &invbind_id);
-    tXML* invbind_tag = add_xml_node(skin_tag, "source");
-    add_xml_attr_str(invbind_tag, "id", _tochar(invbind_id.buf+1));
+    Buffer invbind_float_id = make_Buffer_str("#SOURCE_INVBIND_ARRAY_");
+    cat_Buffer(&randomstr, &invbind_float_id);
 
-    Buffer weight_id = make_Buffer_str("#WEIGHT_");
-    cat_Buffer(&randomstr, &weight_id);
-    tXML* weight_tag = add_xml_node(skin_tag, "source");
-    add_xml_attr_str(weight_tag, "id", _tochar(weight_id.buf+1));
+    tXML* invbind_tag = add_xml_node(skin_tag, "source");
+    add_xml_attr_str(invbind_tag, "id", _tochar(invbind_id.buf + 1));
+
+    tXML* invbind_float_tag = add_xml_node(invbind_tag, "float_array");
+    add_xml_attr_str(invbind_float_tag, "id", _tochar(invbind_float_id.buf + 1));
+    add_xml_attr_int(invbind_float_tag, "count", joints_num*16);
+
+    for (int jnt=0; jnt<joints_num; jnt++) {
+        for (int i=1; i<=4; i++) {
+            for (int j=1; j<=4; j++) {
+                append_xml_content_node(invbind_float_tag, dtostr(joints->inverse_bind[jnt].element(i, j)));
+            }
+        }
+    }
+    addSimpleTechniqueAccessor(invbind_tag, _tochar(invbind_float_id.buf), joints_num, 16, "TRANSFORM", "float4x4");
+
+    // source WEIGHT
+    int vec_len = sizeof(Vector<int>)*meshdata->ttl_vertex*joints_num;
+    Vector<int>* weight_index = (Vector<int>*)malloc(vec_len);    // x: vertex num, y: joint num, z: FALSE->データなし, TRUE->データあり
+    memset(weight_index, 0, vec_len);
+    char* weight_id = addWeightSource(skin_tag, meshdata, joints_num, weight_index);
 
     // joints
     tXML* joints_tag = add_xml_node(skin_tag, "joints");
@@ -215,27 +245,53 @@ void  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdat
 
     // vertex_weight
     tXML* vertex_weight_tag = add_xml_node(skin_tag, "vertex_weights");
-    add_xml_attr_str(vertex_weight_tag, "count", "0000000000000000000000000");
 
     tXML* input_joint2_tag = add_xml_node(vertex_weight_tag, "input");
     add_xml_attr_str(input_joint2_tag, "semantic", "JOINT");
     add_xml_attr_str(input_joint2_tag, "source", _tochar(joint_id.buf));
-    add_xml_attr_str(input_joint2_tag, "offset", "0");
+    add_xml_attr_int(input_joint2_tag, "offset", 0);
 
     tXML* input_weight_tag = add_xml_node(vertex_weight_tag, "input");
     add_xml_attr_str(input_weight_tag, "semantic", "WEIGHT");
-    add_xml_attr_str(input_weight_tag, "source", _tochar(weight_id.buf));
-    add_xml_attr_str(input_weight_tag, "offset", "1");
+    add_xml_attr_str(input_weight_tag, "source", weight_id);
+    add_xml_attr_int(input_weight_tag, "offset", 1);
 
-    add_xml_node(vertex_weight_tag, "vcount");
-    add_xml_node(vertex_weight_tag, "v");
+    tXML* vcount = add_xml_node(vertex_weight_tag, "vcount");
+    tXML* vindex = add_xml_node(vertex_weight_tag, "v");
+
+    int snum = 0;
+    int wnum = 0;
+    int vnum = 0;
+    int prev_vertex = -1;
+    for (int i=0; i<meshdata->ttl_vertex*joints_num; i++) {
+        if (weight_index[i].z==TRUE) {
+            if (prev_vertex==-1) prev_vertex = weight_index[i].x;
+            append_xml_content_node(vindex, itostr(weight_index[i].y));
+            append_xml_content_node(vindex, itostr(wnum));
+            //            
+            if (prev_vertex!=weight_index[i].x) {
+                append_xml_content_node(vcount, itostr(vnum));
+                prev_vertex = weight_index[i].x;
+                snum++;
+                vnum = 1;
+            }
+            else vnum++;
+            wnum++;
+        }
+    }
+    append_xml_content_node(vcount, itostr(vnum));
+    snum++;
+
+    add_xml_attr_str(vertex_weight_tag, "count", itostr(snum));
 
     free_Buffer(&geometry_name);
     free_Buffer(&randomstr);
     free_Buffer(&controller_id);
     free_Buffer(&joint_id);
+    free_Buffer(&joint_name_id);
     free_Buffer(&invbind_id);
-    free_Buffer(&weight_id);
+    free_Buffer(&invbind_float_id);
+    if (weight_id!=NULL) ::free(weight_id);
 
     return;
 }
@@ -251,11 +307,11 @@ char*  ColladaXML::addGeometry(MeshObjectData* meshdata)
     cat_Buffer(&randomstr, &geometry_id);
 
     Buffer geometry_name = dup_Buffer(meshdata->data_name);
-    if (geometry_name.buf==NULL) geometry_name = make_Buffer_str(geometry_id.buf+1);
+    if (geometry_name.buf==NULL) geometry_name = make_Buffer_str(geometry_id.buf + 1);
 
     // library_geometries
     tXML* geomrtry = add_xml_node(library_geometries, "geometry");
-    add_xml_attr_str(geomrtry, "id",   _tochar(geometry_id.buf+1));
+    add_xml_attr_str(geomrtry, "id",   _tochar(geometry_id.buf + 1));
     add_xml_attr_str(geomrtry, "name", _tochar(geometry_name.buf));
     tXML* mesh = add_xml_node(geomrtry, "mesh");
 
@@ -280,9 +336,9 @@ char*  ColladaXML::addGeometry(MeshObjectData* meshdata)
 }
 
 
-char*  ColladaXML::addVertexSource(tXML* mesh, MeshObjectData* meshdata)
+char*  ColladaXML::addVertexSource(tXML* tag, MeshObjectData* meshdata)
 {
-    if (mesh==NULL || meshdata==NULL) return NULL;
+    if (tag==NULL || meshdata==NULL) return NULL;
 
     Buffer randomstr = make_Buffer_randomstr(8);
     Buffer source_id = make_Buffer_str("#SOURCE_POS_");
@@ -291,10 +347,10 @@ char*  ColladaXML::addVertexSource(tXML* mesh, MeshObjectData* meshdata)
     cat_Buffer(&randomstr, &source_array_id);
 
     int vnum = meshdata->ttl_vertex;
-    tXML* source = add_xml_node(mesh, "source");
-    add_xml_attr_str(source, "id", _tochar(source_id.buf+1));
+    tXML* source = add_xml_node(tag, "source");
+    add_xml_attr_str(source, "id", _tochar(source_id.buf + 1));
     tXML* source_array = add_xml_node(source, "float_array");
-    add_xml_attr_str(source_array, "id", _tochar(source_array_id.buf+1));
+    add_xml_attr_str(source_array, "id", _tochar(source_array_id.buf + 1));
     add_xml_attr_int(source_array, "count", vnum*3);                            // 3 -> X, Y, Z の次元数
     //
     if (add_xml_content_area(source_array, meshdata->ttl_vertex*10)) {
@@ -318,9 +374,9 @@ char*  ColladaXML::addVertexSource(tXML* mesh, MeshObjectData* meshdata)
 }
 
 
-char*  ColladaXML::addNormalSource(tXML* mesh, MeshObjectData* meshdata)
+char*  ColladaXML::addNormalSource(tXML* tag, MeshObjectData* meshdata)
 {
-    if (mesh==NULL || meshdata==NULL) return NULL;
+    if (tag==NULL || meshdata==NULL) return NULL;
 
     Buffer randomstr = make_Buffer_randomstr(8);
     Buffer source_id = make_Buffer_str("#SOURCE_NORMAL_");
@@ -329,10 +385,10 @@ char*  ColladaXML::addNormalSource(tXML* mesh, MeshObjectData* meshdata)
     cat_Buffer(&randomstr, &source_array_id);
 
     int vnum = meshdata->ttl_vertex;
-    tXML* source = add_xml_node(mesh, "source");
-    add_xml_attr_str(source, "id", _tochar(source_id.buf+1));
+    tXML* source = add_xml_node(tag, "source");
+    add_xml_attr_str(source, "id", _tochar(source_id.buf + 1));
     tXML* source_array = add_xml_node(source, "float_array");
-    add_xml_attr_str(source_array, "id", _tochar(source_array_id.buf+1));
+    add_xml_attr_str(source_array, "id", _tochar(source_array_id.buf + 1));
     add_xml_attr_int(source_array, "count", vnum*3);                            // 3 -> X, Y, Z の次元数
     //
     if (add_xml_content_area(source_array, meshdata->ttl_vertex*10)) {
@@ -357,10 +413,9 @@ char*  ColladaXML::addNormalSource(tXML* mesh, MeshObjectData* meshdata)
 
 
 // UVマップの出力
-//
-char*  ColladaXML::addTexcrdSource(tXML* mesh, MeshObjectData* meshdata)
+char*  ColladaXML::addTexcrdSource(tXML* tag, MeshObjectData* meshdata)
 {
-    if (mesh==NULL || meshdata==NULL) return NULL;
+    if (tag==NULL || meshdata==NULL) return NULL;
 
     Buffer randomstr = make_Buffer_randomstr(8);
     Buffer source_id = make_Buffer_str("#SOURCE_MAP_");
@@ -369,10 +424,10 @@ char*  ColladaXML::addTexcrdSource(tXML* mesh, MeshObjectData* meshdata)
     cat_Buffer(&randomstr, &source_array_id);
 
     int vnum = meshdata->ttl_vertex;
-    tXML* source = add_xml_node(mesh, "source");
-    add_xml_attr_str(source, "id", _tochar(source_id.buf+1));
+    tXML* source = add_xml_node(tag, "source");
+    add_xml_attr_str(source, "id", _tochar(source_id.buf + 1));
     tXML* source_array = add_xml_node(source, "float_array");
-    add_xml_attr_str(source_array, "id", _tochar(source_array_id.buf+1));
+    add_xml_attr_str(source_array, "id", _tochar(source_array_id.buf + 1));
     add_xml_attr_int(source_array, "count", vnum*2);                            // 2 -> S,T (U, V) の次元数
     //
     if (add_xml_content_area(source_array, meshdata->ttl_texcrd*10)) {
@@ -408,17 +463,69 @@ char*  ColladaXML::addTexcrdSource(tXML* mesh, MeshObjectData* meshdata)
 }
 
 
-char*  ColladaXML::addVerticesPos(tXML* mesh, const char* position_id)
+char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* meshdata, int joints_num, Vector<int>* weight_index)
 {
-    if (mesh==NULL || position_id==NULL) return NULL;
+    if (tag==NULL || meshdata==NULL) return NULL;
+
+    Buffer randomstr = make_Buffer_randomstr(8);
+    Buffer source_id = make_Buffer_str("#SOURCE_WEIGHT_");
+    Buffer source_array_id = make_Buffer_str("#SOURCE_WEIGHT_ARRAY_");
+    cat_Buffer(&randomstr, &source_id);
+    cat_Buffer(&randomstr, &source_array_id);
+
+    tXML* source = add_xml_node(tag, "source");
+    add_xml_attr_str(source, "id", _tochar(source_id.buf + 1));
+    tXML* source_array = add_xml_node(source, "float_array");
+    add_xml_attr_str(source_array, "id", _tochar(source_array_id.buf + 1));
+    //
+    int count = 0;
+    int vnum  = 0;
+    if (add_xml_content_area(source_array, meshdata->ttl_vertex*10)) {          // 1データ 10桁の領域．予め確保した方が早い．
+        MeshFacetNode* facet = meshdata->facet;
+        while (facet!=NULL) {
+            ArrayParam<double>* weight = facet->weight_value;
+            for (int i=0; i<facet->num_vertex; i++) {
+                for (int j=0; j<joints_num; j++) {
+                    weight_index[vnum*joints_num + j].x = i;
+                    weight_index[vnum*joints_num + j].y = j;
+                    weight_index[vnum*joints_num + j].z = FALSE;
+                    double value = weight[i].get_value(j);
+                    if (value!=0.0) {
+                        append_xml_content_node(source_array, dtostr(value));
+                        weight_index[vnum*joints_num + j].z = TRUE;
+                        count++;
+                    }
+                }
+                vnum++;
+            }
+            facet = facet->next;
+        }
+    }
+    add_xml_attr_int(source_array, "count", count);
+
+    if (vnum!=meshdata->ttl_vertex) {
+        PRINT_MESG("WARNING: ColladaXML::addWeightSource: no match vertex num (%d != %d)\n", vnum, meshdata->ttl_vertex);
+    }
+
+    addSimpleTechniqueAccessor(source, _tochar(source_array_id.buf), count, 1, "WEIGHT", "float");
+
+    free_Buffer(&randomstr);
+    free_Buffer(&source_array_id);
+    return _tochar(source_id.buf);
+}
+
+
+char*  ColladaXML::addVerticesPos(tXML* tag, const char* position_id)
+{
+    if (tag==NULL || position_id==NULL) return NULL;
 
     Buffer randomstr = make_Buffer_randomstr(8);
     Buffer vertex_id = make_Buffer_str("#VERTEX_");
     cat_Buffer(&randomstr, &vertex_id);
 
     // Vertices
-    tXML* vertices = add_xml_node(mesh, "vertices");
-    add_xml_attr_str(vertices, "id", _tochar(vertex_id.buf+1));
+    tXML* vertices = add_xml_node(tag, "vertices");
+    add_xml_attr_str(vertices, "id", _tochar(vertex_id.buf + 1));
     tXML* position_input = add_xml_node(vertices, "input");
     add_xml_attr_str(position_input, "semantic", "POSITION");
     add_xml_attr_str(position_input, "source", position_id);
@@ -426,6 +533,21 @@ char*  ColladaXML::addVerticesPos(tXML* mesh, const char* position_id)
     free_Buffer(&randomstr);
 
     return _tochar(vertex_id.buf);
+}
+
+
+void   ColladaXML::addSimpleTechniqueAccessor(tXML* source, const char* source_array_id, int count, int stride, const char* name, const char* type)
+{
+    tXML* technique_common = add_xml_node(source, "technique_common");
+    tXML* accessor  = add_xml_node(technique_common, "accessor");
+    add_xml_attr_str(accessor, "source", source_array_id);
+    add_xml_attr_int(accessor, "count", count);
+    add_xml_attr_int(accessor, "stride", stride);
+    tXML* param = add_xml_node(accessor, "param");
+    add_xml_attr_str(param, "name", name);
+    add_xml_attr_str(param, "type", type);
+
+    return;
 }
 
 
@@ -490,12 +612,12 @@ void   ColladaXML::addPolylists(tXML* mesh, MeshObjectData* meshdata, const char
         // Material
         if (facet->material_param.enable && facet->material_id.buf!=NULL) {
             //
-            add_xml_attr_str(polylist, "material", _tochar(facet->material_id.buf+1));
+            add_xml_attr_str(polylist, "material", _tochar(facet->material_id.buf + 1));
             if (!facet->same_material) {
-                char* material = _tochar(facet->material_id.buf+1);
+                char* material = _tochar(facet->material_id.buf + 1);
                 bool exist_same_material = existSameID(library_materials, "<library_materials><material>", material);
                 if (!exist_same_material) { // 一番最初
-                    char* material_url = addMaterial(_tochar(facet->material_id.buf+1));
+                    char* material_url = addMaterial(_tochar(facet->material_id.buf + 1));
                     char* file_id = addImage(facet->material_param.getTextureName());
                     tXML* profile = addEffect(material_url, file_id, facet->material_param);
                     ::free(material_url);
@@ -531,14 +653,14 @@ void   ColladaXML::addPolylists(tXML* mesh, MeshObjectData* meshdata, const char
         }
     
         tXML* vcount = add_xml_node(polylist, "vcount");
-        if (add_xml_content_area(vcount, facet->num_polygon*10)) {
+        if (add_xml_content_area(vcount, facet->num_polygon*10)) {          // 1データ 10桁の領域．予め確保した方が早い．
             for (int i=0; i<facet->num_polygon; i++) {
                 append_xml_content_node(vcount, itostr(meshdata->num_vcount));
             }
         }
 
         tXML* p_data = add_xml_node(polylist, "p");
-        if (add_xml_content_area(p_data, meshdata->num_vcount*10)) {
+        if (add_xml_content_area(p_data, meshdata->num_vcount*10)) {        // 1データ 10桁の領域．予め確保した方が早い．
             for (int i=0; i<facet->num_polygon; i++) {
                 int n = i*meshdata->num_vcount;
                 for (int j=0; j<meshdata->num_vcount; j++) {
@@ -816,7 +938,7 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
     cat_Buffer(&randomstr, &node_id);
 
     tXML* node_tag = add_xml_node(visual_scene, "node");
-    add_xml_attr_str(node_tag, "id",   _tochar(node_id.buf+1));
+    add_xml_attr_str(node_tag, "id",   _tochar(node_id.buf + 1));
     add_xml_attr_str(node_tag, "name", _tochar(geometry_name.buf));
     add_xml_attr_str(node_tag, "type", "NODE");
 
@@ -825,11 +947,11 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
     tXML* instance_rigid_body = NULL;
     if (collider) {
         rigid_body = add_xml_node(physics_model, "rigid_body");
-        add_xml_attr_str(rigid_body, "sid",  _tochar(node_id.buf+1));
+        add_xml_attr_str(rigid_body, "sid",  _tochar(node_id.buf + 1));
         add_xml_attr_str(rigid_body, "name", _tochar(geometry_name.buf));
         //
         instance_rigid_body = add_xml_node(instance_physics_model, "instance_rigid_body");
-        add_xml_attr_str(instance_rigid_body, "body",   _tochar(node_id.buf+1));
+        add_xml_attr_str(instance_rigid_body, "body",   _tochar(node_id.buf + 1));
         add_xml_attr_str(instance_rigid_body, "target", _tochar(node_id.buf));
     }
 
@@ -887,7 +1009,7 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
     while(facet!=NULL) {
         if (!facet->same_material) {
             instance_material = add_xml_node(technique_common, "instance_material");
-            add_xml_attr_str(instance_material, "symbol", _tochar(facet->material_id.buf+1));
+            add_xml_attr_str(instance_material, "symbol", _tochar(facet->material_id.buf + 1));
             add_xml_attr_str(instance_material, "target", _tochar(facet->material_id.buf));
         }
         facet = facet->next;

@@ -59,11 +59,14 @@ public:
     void    addController(const char* geometry_id, MeshObjectData* meshdata, SkinJointData* skin_joint);
     void    addScene(const char* geometry_id, MeshObjectData* meshdata, bool collider, SkinJointData* skin_join, tXML* joints_template);
 
-    char*   addVertexSource(tXML* mesh, MeshObjectData* meshdata);
-    char*   addNormalSource(tXML* mesh, MeshObjectData* meshdata);
-    char*   addTexcrdSource(tXML* mesh, MeshObjectData* meshdata);
+    char*   addVertexSource(tXML* tag, MeshObjectData* meshdata);
+    char*   addNormalSource(tXML* tag, MeshObjectData* meshdata);
+    char*   addTexcrdSource(tXML* tag, MeshObjectData* meshdata);
+    char*   addWeightSource(tXML* tag, MeshObjectData* meshdata, int joints_num, Vector<int>* weight_index);
+
     char*   addVerticesPos (tXML* mesh, const char* position_id);
 
+    void    addSimpleTechniqueAccessor(tXML* source, const char* source_array_id, int count, int stride, const char* name, const char* type);
     void    addPosTechniqueAccessor(tXML* source, const char* source_array_id, int count);
     void    addMapTechniqueAccessor(tXML* source, const char* source_array_id, int count);
 

@@ -2104,7 +2104,7 @@ tList*  add_resource_list(const char* path, int keylen, tList* list, tList* extn
 
 
 /**
-char*  get_resource_path(char* name, tList* lp)
+char*   get_resource_path(const char* name, tList* lp)
 
 リソース名（ldat.key.buf）の値から，対象のパス値を得る．戻り値は freeしてはいけない．
 
@@ -2112,7 +2112,7 @@ char*  get_resource_path(char* name, tList* lp)
 @param lp   リソースリスト．key部に名前，val部にパスが格納されている．
 @return リソース名に対応したパス．
 */
-char*  get_resource_path(char* name, tList* lp)
+char*   get_resource_path(const char* name, tList* lp)
 {
     if (name==NULL) return NULL;
 

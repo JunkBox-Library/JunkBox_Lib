@@ -16,7 +16,6 @@ namespace jbxl {
 
 //#define   JBXL_MATERIALID_RAND_LEN  8
 #define   JBXL_MATERIAL_PREFIX      "#MATERIAL_"
-#define   JBXL_JOINT_MAX_NUMBER     64
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
