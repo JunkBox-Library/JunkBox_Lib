@@ -902,7 +902,7 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
         for (int jnt=0; jnt<joints_num; jnt++) {
             const char* joint_name = (const char*)joints->joint_names.get_value(jnt);
             if (joint_name!=NULL) {
-                int len = strlen(joint_name);
+                int len = (int)strlen(joint_name);
                 memcpy(buf + 1, joint_name, len);
                 buf[len + 1] = '"';
                 buf[len + 2] = '\0';

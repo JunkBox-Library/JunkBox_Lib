@@ -438,6 +438,8 @@ UVMap<double>*  MeshFacetNode::generatePlanarUVMap(Vector<double> scale, UVMap<d
     if (uvmap==NULL) {
         size_t len = num_texcrd*sizeof(UVMap<double>);
         uvmap = (UVMap<double>*)malloc(len);
+        if (uvmap==NULL) return NULL;
+        memset(uvmap, 0, len);
     }
 
     for (int i=0; i<num_texcrd; i++) {

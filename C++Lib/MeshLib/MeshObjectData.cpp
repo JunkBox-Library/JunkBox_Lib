@@ -183,7 +183,9 @@ bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UV
 
     // Vertex Position
     impvtx_value = (Vector<double>*)malloc(lsize);
-    if (impvtx_value!=NULL) memcpy(impvtx_value, vct, lsize);
+    if (impvtx_value!=NULL) {
+        memcpy(impvtx_value, vct, lsize);
+    }
     else return false;
 
     // Normal Vector

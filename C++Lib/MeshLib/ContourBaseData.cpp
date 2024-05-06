@@ -268,10 +268,14 @@ TriPolygonData* jbxl::dupTriPolygonData(TriPolygonData* data, int num)
 {
     if (data==NULL) return NULL;
 
-    TriPolygonData* dup = (TriPolygonData*)malloc(num*sizeof(TriPolygonData));
+    TriPolygonData* dup = (TriPolygonData*)malloc(sizeof(TriPolygonData)*num);
     if (dup==NULL) return NULL;
+    memset(dup, 0, sizeof(TriPolygonData)*num);
 
-    for (int i=0; i<num; i++) dup[i].dup(data[i]);
+    for (int i=0; i<num; i++) {
+        dup[i].dup(data[i]);
+        for (int j=0; j<3; j++) dup[i].weight[j].dup(data[i].weight[j]);
+    }
     return dup;
 }
 
@@ -281,8 +285,9 @@ TriPolygonData*  jbxl::joinTriPolygonData(TriPolygonData*& first, int num_p, Tri
     if (first==NULL) return next;
     if (next ==NULL) return first;
 
-    TriPolygonData* join = (TriPolygonData*)malloc((num_p+num_n)*sizeof(TriPolygonData));
+    TriPolygonData* join = (TriPolygonData*)malloc(sizeof(TriPolygonData)*(num_p+num_n));
     if (join==NULL) return NULL;
+    memset(join, 0, sizeof(TriPolygonData)*(num_p+num_n));
 
     int num = 0;
     for (int i=0; i<num_p; i++) {
@@ -338,6 +343,8 @@ void  SkinJointData::init(int n)
         joint_num = n;
         inverse_bind     = (Matrix<double>*)malloc(sizeof(Matrix<double>)*joint_num);
         alt_inverse_bind = (Matrix<double>*)malloc(sizeof(Matrix<double>)*joint_num);
+        memset(inverse_bind,     0, sizeof(Matrix<double>)*joint_num);
+        memset(alt_inverse_bind, 0, sizeof(Matrix<double>)*joint_num);
         //
         for (int i=0; i<joint_num; i++) {
             inverse_bind[i]     = Matrix<double>(2, 4, 4);
