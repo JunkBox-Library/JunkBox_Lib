@@ -140,6 +140,7 @@ JP2KImage  read_jp2k_file(const char* fname)
         jp.state = JBXL_GRAPH_MEMORY_ERROR;
         return jp;
     }
+    memset(data, 0, len);
 
     rs = fread(head, 12, 1, fp);
     fseek(fp, 0, 0);

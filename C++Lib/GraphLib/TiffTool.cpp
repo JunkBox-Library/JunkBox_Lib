@@ -119,7 +119,8 @@ TIFF_ifd*  get_tiff_ifd(unsigned char* buf, int num)
             if (ifd==NULL) {
                 return NULL;
             }
-
+            memset(ifd, 0, sizeof(TIFF_ifd)*(nn+1));
+            //
             memset(&ifd[0], 0, 12);
             ifd[0].type  = num;
             ifd[0].count = nn;

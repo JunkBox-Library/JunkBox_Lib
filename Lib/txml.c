@@ -571,11 +571,14 @@ tList*  xml_parse_attr(char* pp)
     sz = (int)strlen((const char*)pp) + 1;
     nm = (char*)malloc(sz);
     if (nm==NULL) return NULL;
+    memset(nm, 0, sz);
+
     vl = (char*)malloc(sz);
     if (vl==NULL) {
         free(nm);
         return NULL;
     }
+    memset(vl, 0, sz);
 
     // Parse for AAA="BBB" CCC="DDDD"
     while (*pp==' ' && *pp!='\0') pp++;

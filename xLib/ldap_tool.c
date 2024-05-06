@@ -419,6 +419,7 @@ void  free_LDAP_Dn(JBXL_LDAP_Dn* dn)
 JBXL_LDAP_Host*  new_LDAP_Host(void)
 {
     JBXL_LDAP_Host* host = (JBXL_LDAP_Host*)malloc(sizeof(JBXL_LDAP_Host));
+    if (host!=NULL) memset(host, 0, sizeof(JBXL_LDAP_Host));
     init_LDAP_Host(host);
 
     return host;
@@ -428,6 +429,7 @@ JBXL_LDAP_Host*  new_LDAP_Host(void)
 JBXL_LDAP_Dn*  new_LDAP_Dn(void)
 {
     JBXL_LDAP_Dn* dn = (JBXL_LDAP_Dn*)malloc(sizeof(JBXL_LDAP_Dn));
+    if (dn!=NULL) memset(dn, 0, sizeof(JBXL_LDAP_Dn));
     init_LDAP_Dn(dn);
 
     return dn;

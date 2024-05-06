@@ -833,12 +833,15 @@ template <typename T>  CmnHead  copyMSGraph2CmnHead(MSGraph<T>& vp, unsigned int
         hd.kind  = HEADER_NONE;
         return hd;
     }
+    memset(hd.grptr, 0, hd.lsize*sizeof(uByte));
+
     hd.buf = (uByte*)malloc(hd.bsize*sizeof(uByte));
     if (hd.buf==NULL) {
         free_CmnHead(&hd);
         hd.xsize = JBXL_GRAPH_MEMORY_ERROR;
         return hd;
     }
+    memset(hd.buf, 0, hd.bsize*sizeof(uByte));
 
     // カウンタ．ここでは，delete禁止
     CVCounter* counter = NULL;

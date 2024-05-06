@@ -114,6 +114,7 @@ void   TGAImage::getm(int x, int y, int c)
         state = JBXL_GRAPH_MEMORY_ERROR;
         return;
     }
+    memset(gp, 0, x*y*c);
     
     return;
 }
@@ -231,6 +232,7 @@ TGAImage  jbxl::readTGAData(FILE* fp)
         tga.state = JBXL_GRAPH_MEMORY_ERROR;
         return tga;
     }
+    memset(tga.gp, 0, datasize);
 
     fseek(fp, (int)tga.hd[0], SEEK_CUR);
     if (rle) {
@@ -389,8 +391,8 @@ int  jbxl::setupTGAData(TGAImage* tga, bool rle)
         int len = tga->xs*tga->ys;
         uByte* index = (uByte*)malloc(len);
         if (index==NULL) return JBXL_GRAPH_MEMORY_ERROR;
-
         memset(index, 0, len);
+
         int idx = 0;
         int p = 0;
         while (p<len-1) {
@@ -423,6 +425,7 @@ int  jbxl::setupTGAData(TGAImage* tga, bool rle)
                 ::free(index);
                 return JBXL_GRAPH_MEMORY_ERROR;
             }
+            memset(buf, 0, len*tga->col);
             //
             int i = 0;
             int j = 0;

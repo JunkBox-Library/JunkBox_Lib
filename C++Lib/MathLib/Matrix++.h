@@ -77,6 +77,7 @@ template <typename T>  Matrix<T>::Matrix(int nn, ...)
     mx  = NULL;
     sz  = (int*)malloc(n*sizeof(int));
     if (sz==NULL) return;
+    memset(sz, 0, n*sizeof(int));
 
     va_list argsptr;
 

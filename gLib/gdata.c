@@ -86,7 +86,6 @@ BSGraph  make_BSGraph(int xs, int ys, int zs)
         vp.state = JBXL_GRAPH_MEMORY_ERROR;
         return vp;
     }
-
     for (i=0; i<vp.xs*vp.ys*vp.zs; i++) vp.gp[i] = 0;
 
     return vp;
@@ -129,7 +128,6 @@ WSGraph  make_WSGraph(int xs, int ys, int zs)
         vp.state = JBXL_GRAPH_MEMORY_ERROR;
         return vp;
     }
-
     for (i=0; i<vp.xs*vp.ys*vp.zs; i++) vp.gp[i] = 0;
 
     return vp;
@@ -172,7 +170,6 @@ FSGraph  make_FSGraph(int xs, int ys, int zs)
         vp.state = JBXL_GRAPH_MEMORY_ERROR;
         return vp;
     }
-
     for (i=0; i<vp.xs*vp.ys*vp.zs; i++) vp.gp[i] = 0.0;
 
     return vp;
@@ -215,7 +212,6 @@ ISGraph  make_ISGraph(int xs, int ys, int zs)
         vp.state = JBXL_GRAPH_MEMORY_ERROR;
         return vp;
     }
-
     for (i=0; i<vp.xs*vp.ys*vp.zs; i++) vp.gp[i] = 0;
 
     return vp;
@@ -258,7 +254,6 @@ VSGraph  make_VSGraph(int xs, int ys, int zs)
         vp.state = JBXL_GRAPH_MEMORY_ERROR;
         return vp;
     }
-
     for (i=0; i<xs*ys*zs; i++) vp.gp[i] = set_vector(0.0, 0.0, 0.0);
 
     return vp;
@@ -303,7 +298,6 @@ MSGraph  make_MSGraph(int xs, int ys, int zs, int depth)
         vp.state = JBXL_GRAPH_MEMORY_ERROR;
         return vp;
     }
-
     memset(vp.gp, 0, xs*ys*zs*((depth+7)/8));
     return vp;
 }
@@ -348,7 +342,6 @@ BSGraph* new_BSGraph(int xs, int ys, int zs)
         vp->state = JBXL_GRAPH_MEMORY_ERROR;
         return vp;
     }
-
     for (i=0; i<vp->xs*vp->ys*vp->zs; i++) vp->gp[i] = 0;
 
     return vp;
@@ -394,7 +387,6 @@ WSGraph* new_WSGraph(int xs, int ys, int zs)
         vp->state = JBXL_GRAPH_MEMORY_ERROR;
         return vp;
     }
-
     for (i=0; i<vp->xs*vp->ys*vp->zs; i++) vp->gp[i] = 0;
 
     return vp;
@@ -440,7 +432,6 @@ FSGraph* new_FSGraph(int xs, int ys, int zs)
         vp->state = JBXL_GRAPH_MEMORY_ERROR;
         return vp;
     }
-
     for (i=0; i<vp->xs*vp->ys*vp->zs; i++) vp->gp[i] = 0.0;
 
     return vp;
@@ -467,8 +458,8 @@ ISGraph* new_ISGraph(int xs, int ys, int zs)
 
     vp = (ISGraph*)malloc(sizeof(ISGraph));
     if (vp==NULL) return NULL;
-
     memset(vp, 0, sizeof(ISGraph));
+
     if (xs==0 || ys==0) {
         vp->state = JBXL_GRAPH_IVDARG_ERROR;
         return vp;
@@ -486,7 +477,6 @@ ISGraph* new_ISGraph(int xs, int ys, int zs)
         vp->state = JBXL_GRAPH_MEMORY_ERROR;
         return vp;
     }
-
     for (i=0; i<vp->xs*vp->ys*vp->zs; i++) vp->gp[i] = 0;
 
     return vp;
@@ -532,7 +522,6 @@ VSGraph* new_VSGraph(int xs, int ys, int zs)
         vp->state = JBXL_GRAPH_MEMORY_ERROR;
         return vp;
     }
-
     for (i=0; i<vp->xs*vp->ys*vp->zs; i++) vp->gp[i] = set_vector(0.0, 0.0, 0.0);
 
     return vp;
@@ -580,8 +569,8 @@ MSGraph* new_MSGraph(int xs, int ys, int zs, int depth)
         vp->state = JBXL_GRAPH_MEMORY_ERROR;
         return vp;
     }
-
     memset(vp->gp, 0, vp->xs*vp->ys*vp->zs*((depth+7)/8));
+
     return vp;
 }
 
@@ -611,8 +600,8 @@ ISGraph  W2ISGraph(WSGraph vp)
         ix.state = JBXL_GRAPH_MEMORY_ERROR;
         return ix;
     }
-
     for (i=0; i<ix.xs*ix.ys*ix.zs; i++) ix.gp[i] = (int)vp.gp[i];
+
     return ix;
 }
 
@@ -642,8 +631,8 @@ FSGraph  W2FSGraph(WSGraph vp)
         ix.state = JBXL_GRAPH_MEMORY_ERROR;
         return ix;
     }
-
     for (i=0; i<ix.xs*ix.ys*ix.zs; i++) ix.gp[i]=(double)vp.gp[i];
+
     return ix;
 }
 
@@ -673,8 +662,8 @@ WSGraph  B2WSGraph(BSGraph vp)
         ix.state = JBXL_GRAPH_MEMORY_ERROR;
         return ix;
     }
-
     for (i=0; i<ix.xs*ix.ys*ix.zs; i++) ix.gp[i] = (sWord)vp.gp[i];
+
     return ix;
 }
 
@@ -704,8 +693,8 @@ WSGraph  I2WSGraph(ISGraph vp)
         ix.state = JBXL_GRAPH_MEMORY_ERROR;
         return ix;
     }
-
     for (i=0; i<ix.xs*ix.ys*ix.zs; i++) ix.gp[i] = (sWord)vp.gp[i];
+
     return ix;
 }
 
@@ -735,8 +724,8 @@ WSGraph  F2WSGraph(FSGraph vp)
         ix.state = JBXL_GRAPH_MEMORY_ERROR;
         return ix;
     }
-
     for (i=0; i<ix.xs*ix.ys*ix.zs; i++) ix.gp[i] = (sWord)vp.gp[i];
+
     return ix;
 }
 

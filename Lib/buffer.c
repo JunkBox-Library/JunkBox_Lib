@@ -329,6 +329,7 @@ int  copy_Buffer(Buffer* src, Buffer* dst)
         dz  = (int)((sz+1)*BUFFER_FACT);
         buf = (unsigned char*)malloc(dz+1);
         if (buf==NULL) return JBXL_MALLOC_ERROR;
+        memset(buf, 0, dz+1);
 
         free(dst->buf);
         dst->bufsz = dz;
@@ -528,6 +529,8 @@ int  copy_b2Buffer(void* src, Buffer* dst, int len)
         dz  = (int)((sz+1)*BUFFER_FACT);
         buf = (unsigned char*)malloc(dz+1);
         if (buf==NULL) return JBXL_MALLOC_ERROR;
+        memset(buf, 0, dz+1);
+
         if (dst->buf!=NULL) free(dst->buf);
         dst->bufsz = dz;
         dst->buf   = buf;

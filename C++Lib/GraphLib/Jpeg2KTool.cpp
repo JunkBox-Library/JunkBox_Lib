@@ -168,6 +168,7 @@ JPEG2KImage  jbxl::readJPEG2KFile(const char* fname)
         jp.state = JBXL_GRAPH_MEMORY_ERROR;
         return jp;
     }
+    memset(data, 0, len);
 
     Buffer buf = read_Buffer_data(fp, 12);
     if (buf.vldsz<12) {

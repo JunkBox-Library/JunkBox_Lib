@@ -35,8 +35,8 @@ char*  get_smtp_rcpt(char* mesg)
         pp = (char*)malloc(strlen((const char*)mesg)+1);
         pt = strstr(mesg, ":");
         if (pp==NULL || pt==NULL) {
-            freeNull(pc);
-            freeNull(pp);
+            if (pc!=NULL) freeNull(pc);
+            if (pp!=NULL) freeNull(pp);
             return NULL;
         }
         memset(pp, 0, strlen((const char*)mesg)+1);

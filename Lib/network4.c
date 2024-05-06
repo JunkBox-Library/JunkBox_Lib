@@ -1102,6 +1102,7 @@ unsigned char*  get_myipaddr_num()
     len = sizeof(struct ifreq)*MAXIFNO;
     ifp = ifq = (struct ifreq*)malloc(len);
     if (ifq==NULL) return NULL;
+    memset(ifp, 0, len);
     ifc.ifc_len = len;
     ifc.ifc_req = ifq;
 
@@ -1140,6 +1141,7 @@ unsigned char*  get_myipaddr_num()
                 free(ifq);
                 return NULL;
             }
+            memset(addr, 0, 8);
 
             // アドレス取得
             if (ioctl(sofd, SIOCGIFADDR, ifp)<0) {

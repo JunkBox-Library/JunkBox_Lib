@@ -114,13 +114,15 @@ void   JPEGImage::getm(int x, int y, int c)
         state = JBXL_GRAPH_MEMORY_ERROR;
         return;
     }
+    memset(image, 0,  sizeof(JSAMPROW)*y);
 
-    gp  = (JSAMPLE*)malloc(sizeof(JSAMPLE)*c*x*y);
+    gp = (JSAMPLE*)malloc(sizeof(JSAMPLE)*c*x*y);
     if (gp==NULL) {
         freeNull(image);
         state = JBXL_GRAPH_MEMORY_ERROR;
         return;
     }
+    memset(gp, 0, sizeof(JSAMPLE)*c*x*y);
     
     int j;
     for (j=0; j<y; j++) image[j] = (JSAMPROW)&gp[j*c*x];
@@ -369,6 +371,7 @@ CmnHead  jbxl::JPEGImage2CmnHead(JPEGImage jp)
         hd.xsize = JBXL_GRAPH_MEMORY_ERROR;
         return hd;
     }
+    memset(hd.grptr, 0, hd.lsize);
 
     for (k=0; k<jp.col; k++) {
         zp = k*jp.xs*jp.ys;

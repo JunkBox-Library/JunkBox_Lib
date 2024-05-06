@@ -42,6 +42,7 @@ ShapeIndex* read_shape_index_file(FILE* fp)
 
     ShapeIndex* shpidx = (ShapeIndex*)malloc(count*sizeof(ShapeIndex));
     if (shpidx==NULL) return NULL;
+    memset(shpidx, 0, count*sizeof(ShapeIndex));
     
     fseek(fp, 100L, SEEK_SET);
     for (i=0; i<count; i++) {

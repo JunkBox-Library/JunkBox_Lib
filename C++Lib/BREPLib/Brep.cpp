@@ -917,9 +917,10 @@ DllExport  BREP_VERTEX** jbxl::GetOctreeVertices(OctreeNode* octree, long int* v
     long int num = OctreeGetter(octree, NULL, 0);
 
     if (num>0) {
-        vindex = (BREP_VERTEX**)malloc(num*sizeof(BREP_VERTEX*));
+        vindex = (BREP_VERTEX**)malloc(sizeof(BREP_VERTEX*)*num);
     }
     if (vindex!=NULL) {
+        memset(vindex, 0, sizeof(BREP_VERTEX*)*num);
         OctreeGetter(octree, vindex, 0);
     }
     if (vertexno!=NULL) *vertexno = num;

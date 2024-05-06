@@ -34,7 +34,7 @@ int  CLogRingBuffer::init(int size)
     inputSrc = (int*)malloc(sizeof(int)*size);
 
     if (pBuf!=NULL && inputSrc!=NULL && kindData!=NULL) {
-        memset(pBuf,      0, sizeof(Buffer)*size);
+        memset(pBuf,     0, sizeof(Buffer)*size);
         memset(kindData, 0, sizeof(int)*size);
         memset(inputSrc, 0, sizeof(int)*size);
         maxBufSize = size;
@@ -227,7 +227,6 @@ void  CLogRingBuffer::putRingFormat(int input, char* fmt, ...)
     len  = (int)strlen(fmt);    
     nfmt = (char*)malloc(len+1);
     if (nfmt==NULL) return;
-
     strncpy(nfmt, fmt, len);
     nfmt[len] = '\0';
 
@@ -260,7 +259,6 @@ void  CLogRingBuffer::putRingFormat(int input, char* fmt, va_list args)
     len  = (int)strlen(fmt);    
     nfmt = (char*)malloc(len+1);
     if (nfmt==NULL) return;
-
     strncpy(nfmt, fmt, len);
     nfmt[len] = '\0';
 

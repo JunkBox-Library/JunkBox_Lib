@@ -438,6 +438,7 @@ char*  get_localtime_ts(char c1, char c2, char c3, char c4)
 char*  get_local_timestamp(time_t date, const char* format)
 {
     char* buf = (char*)malloc(64);
+    memset(buf, 0, 64);
 
     //struct tm tm = *gmtime(&date);
     struct tm tm = *localtime(&date);
@@ -451,6 +452,7 @@ char*  get_local_timestamp(time_t date, const char* format)
 char*  get_gmt_timestamp(time_t date, const char* format)
 {
     char* buf = (char*)malloc(64);
+    memset(buf, 0, 64);
 
     struct tm tm = *gmtime(&date);
     //struct tm tm = *localtime(&date);
@@ -1160,6 +1162,7 @@ char*  pack_char_len(char* mesg, char cc, int len)
     if (len<0)  len = (int)strlen(mesg);
     pp = (char*)malloc(len+1);
     if (pp==NULL) return NULL;
+    memset(pp, 0, len+1);
 
     i = j = 0;
     while(mesg[i]!='\0' && i<len) {
@@ -1211,6 +1214,7 @@ char*  change_esc(char* mesg)
 
     pp = (char*)malloc((strlen(mesg)+1)*2);
     if (pp==NULL) return NULL;
+    memset(pp, 0, (strlen(mesg)+1)*2);
 
     i = j = 0;
     while(mesg[i]!='\0') {
@@ -1258,6 +1262,7 @@ char*  replace_str(char* buf, int len, const char* frm, const char* tos)
 
     wrk = (char*)malloc(len);
     if (wrk==NULL) return NULL;
+    memset(wrk, 0, len);
 
     slen = (int)strlen(buf);
     flen = (int)strlen(frm);
@@ -1931,6 +1936,7 @@ int  file_from_to(const char* src, const char* dst, const char* mode)
     if (sz<0) return JBXL_FILE_EXIST_ERROR;
     buf = (unsigned char*)malloc(sz);
     if (buf==NULL) return JBXL_MALLOC_ERROR;
+    memset(buf, 0, sz);
 
     fp = fopen(src, "rb");
     if (fp==NULL) {
@@ -1980,6 +1986,7 @@ int  fp_from_to(FILE* src, FILE* dst, long int sz)
 
     buf = (unsigned char*)malloc(sz);
     if (buf==NULL) return JBXL_MALLOC_ERROR;
+    memset(buf, 0, sz);
 
     rs = fread(buf, sz, 1, src);
     sz = (int)fwrite(buf, sz, 1, dst);
@@ -2352,11 +2359,14 @@ char*  temp_filename(const char* dir, int flen)
 
     fname = (char*)malloc(dlen+flen+1);
     if (fname==NULL) return NULL;
+    memset(fname, 0, dlen+flen+1);
+
     fnbin = (char*)malloc(flen);
     if (fnbin==NULL) {
         free(fname);
         return NULL;
     }
+    memset(fnbin, 0, flen);
 
     fnb64 = NULL;
     fp = fopen("/dev/urandom", "rb");
@@ -2407,6 +2417,7 @@ unsigned char*  read_file(const char* fname, unsigned long int* size)
 
     unsigned char* buf = (unsigned char*)malloc(*size);
     if (buf==NULL) return NULL;
+    memset(buf, 0, *size);
 
     FILE* fp  = fopen(fname, "rb");
     if (fp==NULL) {
@@ -2464,6 +2475,7 @@ char* double_bs(char* str)
     for (i=0; i<len; i++) if (str[i]=='\\') bsn++;
     buf = (char*)malloc(len+bsn+1);
     if (buf==NULL) return NULL;
+    memset(buf, 0, len+bsn+1);
 
     for (i=0,j=0; i<len; i++) {
         buf[j++] = str[i];
@@ -2496,7 +2508,7 @@ char*  numbering_name(const char* fmt, int n)
     snprintf(fname, LNAME-1, fmt, n);
     len = (int)strlen(fname);
 
-    fo = (char*)malloc(len + 1);
+    fo = (char*)malloc(len+1);
     if (fo==NULL) return NULL;
 
     memset(fo, 0, len+1);
@@ -3279,9 +3291,9 @@ unsigned char*  get_ringBuffer(ringBuffer* rb, int sz)
     if (rb->buf==NULL) return NULL;
     if (sz>rb->datasz) return NULL;
 
-    pp = (unsigned char*)malloc(sz + 1);
+    pp = (unsigned char*)malloc(sz+1);
     if (pp==NULL)  return NULL;
-    memset(pp, 0, sz + 1);
+    memset(pp, 0, sz+1);
 
     if (rb->spoint+sz<=rb->bufsz) {
         memcpy(pp, &(rb->buf[rb->spoint]), sz);
@@ -3525,6 +3537,7 @@ unsigned char*  uuid2guid(unsigned char* p)
 
     guid = (unsigned char*)malloc(LGUID);    // 40 = 32+4+1(\0) + α
     if (guid==NULL) return NULL;
+    memset(guid, 0, LGUID);
 
     snprintf((char*)guid, 37, "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
                     p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15]);
@@ -3551,6 +3564,7 @@ unsigned char*  guid2uuid(unsigned char* p)
 
     uuid = (unsigned char*)malloc(16);
     if (uuid==NULL) return NULL;
+    memset(uuid, 0, 16);
 
     i = j = 0;
     while (p[i]!='\0' && j<16) {

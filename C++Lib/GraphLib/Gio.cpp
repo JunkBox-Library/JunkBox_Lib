@@ -64,10 +64,10 @@ CmnHead  jbxl::readRasData(FILE* fp)
         hd.kind  = HEADER_NONE;
         return hd;
     }
+    memset(hd.grptr, 0, hd.lsize);
     buf = (uByte*)hd.grptr;
 
     fseek(fp, rhd.ras_maplength, 1); 
-
     databyte = hd.xsize*((hd.depth+7)/8);
     linebyte = rhd.ras_length/hd.ysize;
 
@@ -114,9 +114,9 @@ int  jbxl::writeRasData(FILE* fp, CmnHead* hd, int obit)
         unsigned int u;
         memcpy((sByte*)&shd, hd->buf, hd->bsize);
         ptr = (uByte*)malloc(hd->lsize);
-        if (ptr==NULL)  return JBXL_GRAPH_MEMORY_ERROR;
-        lsize = hd->lsize;
+        if (ptr==NULL) return JBXL_GRAPH_MEMORY_ERROR;
         for (u=0; u<hd->lsize; u++) ptr[u] = hd->grptr[u];
+        lsize = hd->lsize;
     }
     else { // CT -> RAS 
         if (hd->depth==16) {
@@ -126,7 +126,8 @@ int  jbxl::writeRasData(FILE* fp, CmnHead* hd, int obit)
 
             lsize = hd->xsize*hd->ysize*depth/8;
             buf = (uByte*)malloc(lsize);
-            if (buf==NULL)  return JBXL_GRAPH_MEMORY_ERROR;
+            if (buf==NULL) return JBXL_GRAPH_MEMORY_ERROR;
+            memset(buf, 0, lsize);
 
             if (obit==8) {
                 int  max = 255; // 8bit mode での最大値 
@@ -174,6 +175,7 @@ int  jbxl::writeRasData(FILE* fp, CmnHead* hd, int obit)
             if (hd->depth==16) free(buf);
             return -2;
         }
+        memset(ptr, 0, lsize);
 
         k = l = 0;
         for (i=0 ; i<hd->ysize; i++) {
@@ -239,6 +241,7 @@ CmnHead  jbxl::readUserSetData(FILE* fp, CmnHead* chd, bool cnt)
         hd.kind  = HEADER_NONE;
         return hd;
     }
+    memset(hd.buf, 0, hd.bsize);
     fread((void*)hd.buf, hd.bsize, 1, fp);
 
     // カウンタ
@@ -258,6 +261,7 @@ CmnHead  jbxl::readUserSetData(FILE* fp, CmnHead* chd, bool cnt)
         hd.kind  = HEADER_NONE;
         return hd;
     }
+    memset(hd.grptr, 0, hd.lsize);
 
     fseek(fp, hd.bsize, 0);
 
@@ -379,8 +383,8 @@ CmnHead  jbxl::readMoonData(FILE* fp, unsigned int fsz, bool no_ntoh)
         hd.xsize = JBXL_GRAPH_MEMORY_ERROR;
         return hd;
     }
-    hd.kind  = MOON_DATA;
     memcpy(hd.buf, &chd, hd.bsize);
+    hd.kind  = MOON_DATA;
 
     hd.grptr = (uByte*)malloc(hd.lsize);
     if (hd.grptr==NULL) {
@@ -389,6 +393,7 @@ CmnHead  jbxl::readMoonData(FILE* fp, unsigned int fsz, bool no_ntoh)
         hd.kind  = HEADER_NONE;
         return hd;
     }
+    memset(hd.grptr, 0, hd.lsize);
 
     fseek(fp, hd.bsize, 0);
     fread(hd.grptr, hd.lsize, 1, fp);
@@ -477,6 +482,7 @@ int  jbxl::dicomHeader(FILE* fp, int fsize, int* dsize, int* xsize, int* ysize, 
     sz = rp*sizeof(uWord);
     wp = (uWord*)malloc(sz);
     if (wp==NULL) return JBXL_GRAPH_MEMORY_ERROR;
+    memset(wp, 0, sz);
 
     /////////////////////////////////////////////////////////////////////
     // ヘッダ読み込み
@@ -725,6 +731,7 @@ CmnHead  jbxl::readXHead(const char* fn, CmnHead* chd)
                     fclose(fp);
                     return hd;
                 }
+                memset(hd.buf, 0, hd.bsize);
 
                 fseek(fp, hsz, 0);
                 fread(hd.buf, hd.bsize, 1, fp);
@@ -993,7 +1000,10 @@ CmnHead  jbxl::readXHeadFile(const char* fn, CmnHead* chd, bool cnt)
                 }
             }
 
-            if (hd.bsize > 0) hd.buf = (uByte*)malloc(hd.bsize);
+            if (hd.bsize > 0) {
+                hd.buf = (uByte*)malloc(hd.bsize);
+                if (hd.buf!=NULL) memset(hd.buf, 0, hd.bsize);
+            }
             hd.grptr = (uByte*)malloc(hd.lsize);
             if ((hd.bsize > 0 && hd.buf == NULL) || hd.grptr == NULL) {
                 free_CmnHead(&hd);
@@ -1002,6 +1012,10 @@ CmnHead  jbxl::readXHeadFile(const char* fn, CmnHead* chd, bool cnt)
                 fclose(fp);
                 return hd;
             }
+            memset(hd.grptr, 0, hd.lsize);
+            
+
+
             fseek(fp, hsz, 0);
             if (hd.bsize > 0) {
                 fread(hd.buf, hd.bsize, 1, fp);
@@ -1164,6 +1178,8 @@ CmnHead  jbxl::readXHeadFile(const char* fn, CmnHead* chd, bool cnt)
         fclose(fp);
         return hd;
     }
+    memset(hd.grptr, 0, fsz);
+
     fseek(fp, 0, 0);
     fread(hd.grptr, fsz, 1, fp);
 
@@ -1343,7 +1359,10 @@ CmnHead  jbxl::readCmnHeadFile(const char* fn, CmnHead* chd, bool cnt)
             }
         }
 
-        if (hd.bsize>0) hd.buf = (uByte*)malloc(hd.bsize);
+        if (hd.bsize>0) {
+            hd.buf = (uByte*)malloc(hd.bsize);
+            if (hd.buf!=NULL) memset(hd.buf, 0, hd.bsize);
+        }
         hd.grptr = (uByte*)malloc(hd.lsize);
         if ((hd.bsize>0&&hd.buf==NULL) || hd.grptr==NULL) {
             free_CmnHead(&hd);
@@ -1352,6 +1371,8 @@ CmnHead  jbxl::readCmnHeadFile(const char* fn, CmnHead* chd, bool cnt)
             fclose(fp);
             return hd;
         }
+        memset(hd.grptr, 0, hd.lsize);
+
         fseek(fp, hsz, 0);
         if (hd.bsize>0) {
             fread(hd.buf, hd.bsize, 1, fp);
@@ -1564,6 +1585,7 @@ int  jbxl::writeCmnHeadData(FILE* fp, CmnHead* hd, bool cnt)
     hd->lsize = psize*hd->zsize;
     ptr = (sByte*)malloc(hd->lsize);
     if (ptr==NULL) return JBXL_GRAPH_MEMORY_ERROR;
+    memset(ptr, 0, hd->lsize);
 
     // CTHead chd を作る．
     if (kind==CT_DATA || kind==CT_3DM || kind==CT_3D_VOL) {

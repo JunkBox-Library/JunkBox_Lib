@@ -1581,11 +1581,13 @@ FMask  gauss_mask(double sig, int ms, int md)
     fm = (double*)malloc(ps*sizeof(double));
     mask.imask = (int*)malloc(ps*sizeof(int));
     if (fm==NULL || mask.imask==NULL) {
-        free(fm);
-        free(mask.imask);
+        if (fm!=NULL) free(fm);
+        if (mask.imask!=NULL) free(mask.imask);
         memset(&mask, 0, sizeof(FMask));
         return mask;
     }
+    memset(fm, 0, ps*sizeof(double));
+    memset(mask.imask, 0, ps*sizeof(int));
 
     for (zz=-ns*sw; zz<=ns*sw; zz++) {
         for (yy=-ns; yy<=ns; yy++) {
@@ -1716,6 +1718,7 @@ WSGraph  median(WSGraph xp, int ms)  /* 3D */
         vp.state = JBXL_GRAPH_MEMORY_ERROR;
         return vp;
     }
+    memset(me, 0, ms*ms*mz*sizeof(sWord));
 
     kc = ms*ms*mz/2;
     xc = ms/2;

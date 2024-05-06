@@ -51,8 +51,13 @@ template <typename T> void  ArrayParam<T>::init(int n)
 {
     if (n<0) n = 0;
     _size = n;
-    if (n>0) _value = (T*)malloc(sizeof(T)*_size);
-    else     _value = NULL;
+    if (n>0) {
+        _value = (T*)malloc(sizeof(T)*_size);
+        if (_value!=NULL) memset(_value, 0, sizeof(T)*_size);
+    }
+    else {
+        _value = NULL;
+    }
 
     return;
 }

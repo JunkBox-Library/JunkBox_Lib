@@ -193,7 +193,7 @@ matrix  make_matrix1(int n)
     a.n = a.r = 0;
     a.mx = NULL;
     a.sz = (int*)malloc(sizeof(int));
-    if (a.sz==NULL)  return a;
+    if (a.sz==NULL) return a;
     a.sz[0] = n;
 
     a.mx = (double*)malloc(n*sizeof(double));
@@ -226,7 +226,7 @@ imatrix  make_imatrix1(int n)
     a.n = a.r = 0;
     a.mx = NULL;
     a.sz = (int*)malloc(sizeof(int));
-    if (a.sz==NULL)  return a;
+    if (a.sz==NULL) return a;
     a.sz[0] = n;
 
     a.mx = (int*)malloc(n*sizeof(int));
@@ -691,6 +691,12 @@ matrix   mlt_matrix(matrix a, matrix b)
     cx = (int*)malloc(n*sizeof(int));
     if (cx==NULL) {free(sz); free(sa); free(sb); free(sc); return c;}
 
+    memset(sz, 0, n*sizeof(int));
+    memset(sa, 0, a.n*sizeof(int));
+    memset(sb, 0, b.n*sizeof(int));
+    memset(sc, 0, n*sizeof(int));
+    memset(cx, 0, n*sizeof(int));
+
     for (i=0; i<a.n-1; i++) sz[i] = a.sz[i];
     for (i=1; i<b.n; i++)   sz[a.n-2+i] = b.sz[i];
 
@@ -760,6 +766,11 @@ imatrix   mlt_imatrix(imatrix a, imatrix b)
     cx = (int*)malloc(n*sizeof(int));
     if (cx==NULL) {free(sz); free(sa); free(sb); free(sc); return c;}
 
+    memset(sz, 0, n*sizeof(int));
+    memset(sa, 0, a.n*sizeof(int));
+    memset(sb, 0, b.n*sizeof(int));
+    memset(sc, 0, n*sizeof(int));
+    memset(cx, 0, n*sizeof(int));
 
     for (i=0; i<a.n-1; i++) sz[i] = a.sz[i];
     for (i=1; i<b.n; i++)   sz[a.n-2+i] = b.sz[i];

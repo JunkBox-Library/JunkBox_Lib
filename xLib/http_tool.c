@@ -1492,6 +1492,7 @@ int  send_http_res_file(int sofd, char* fname, int mode)
         fclose(fp);
         return JBXL_MALLOC_ERROR;
     }
+    memset(html, 0, sz);
 
     rs = fread(html, sz, 1, fp); 
     tcp_send(sofd, html, sz);

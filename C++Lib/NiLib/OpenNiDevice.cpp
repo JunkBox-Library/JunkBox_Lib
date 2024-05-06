@@ -192,6 +192,7 @@ BOOL  COpenNiDevice::create_Image(BOOL easy)
 
     imageMD = new xn::ImageMetaData();
     //imageData = (uByte*)malloc(outputMode.nXRes*outputMode.nYRes*3);
+    //if (imageData!=NULL) memset(imageData, 0, outputMode.nXRes*outputMode.nYRes*3);
 
     return TRUE;
 }
@@ -239,6 +240,7 @@ BOOL  COpenNiDevice::create_Depth(BOOL easy)
 
     depthMD = new xn::DepthMetaData();
     //depthData = (XnLabel*)malloc(outputMode.nXRes*outputMode.nYRes*sizeof(XnLabel));
+    //if (depthData!=NULL) memset(depthData, 0, outputMode.nXRes*outputMode.nYRes*sizeof(XnLabel));
 
     return TRUE;
 }

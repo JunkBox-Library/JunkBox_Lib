@@ -317,6 +317,8 @@ void  CBVHTool::_set_offset(tTree* tree, int* jnum)
             if (ld->ptr==NULL) {
                 ld->sz  = sizeof(vector);
                 ld->ptr = (void*)malloc(ld->sz);
+                if (ld->ptr==NULL) return;
+                memset(ld->ptr, 0, ld->sz);
             }
             *((vector*)ld->ptr) = offset[*jnum];
             (*jnum)++;
@@ -346,6 +348,8 @@ void  CBVHTool::get_bvh_params()
     size_t  len = sizeof(int)*joint_num;
     channel_num = (int*)malloc(len);
     channel_idx = (int*)malloc(len);
+    if (channel_num!=NULL) memset(channel_num, 0, len);
+    if (channel_idx!=NULL) memset(channel_idx, 0, len);
     //
     if (channel_num==NULL || channel_idx==NULL) {
         if (channel_num!=NULL) free(channel_num);
@@ -360,6 +364,8 @@ void  CBVHTool::get_bvh_params()
     //
     flex_joint = make_Buffer(joint_num*6);
     joint_name = (Buffer*)malloc(sizeof(Buffer)*joint_num);
+    if (joint_name==NULL) return;
+    memset(joint_name, 0, sizeof(Buffer)*joint_num);
 
     int* ch = channel_num;
     Buffer* jn = joint_name;
@@ -459,6 +465,7 @@ Quaternion<double>*  CBVHTool::getQuaternion(int frame)
     size_t len = sizeof(Quaternion<double>)*joint_num;
     Quaternion<double>* quat = (Quaternion<double>*)malloc(len);
     if (quat==NULL) return NULL;
+    memset(quat, 0, len);
 
     Vector<double> ex(1.0, 0.0, 0.0, 1.0);  
     Vector<double> ey(0.0, 1.0, 0.0, 1.0);  
@@ -524,7 +531,6 @@ Vector<double>*  CBVHTool::getPosOffset(void)
 {
     size_t len = sizeof(Vector<double>)*joint_num;
     Vector<double>* vect = (Vector<double>*)malloc(len);
-
     if (vect==NULL) return NULL;
     memset(vect, 0, len);
 
@@ -551,6 +557,7 @@ Matrix<double>*  CBVHTool::getRotMatrix(int frame)
     size_t len = sizeof(Matrix<double>)*joint_num;
     Matrix<double>* mtrx = (Matrix<double>*)malloc(len);
     if (mtrx==NULL) return NULL;
+    memset(mtrx, 0, len);
 
     double d2r = PI/180.0;
     int frm = frame*bvh_data->channels;

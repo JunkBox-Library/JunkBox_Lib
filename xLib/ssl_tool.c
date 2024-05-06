@@ -681,6 +681,7 @@ Buffer  decode_EVPAPI_Buffer(Buffer buf, Buffer shdkey, EVP_CIPHER* cipher)
 
 #if OPENSSL_VERSION_NUMBER < 0x10101000L
     ctx = (EVP_CIPHER_CTX*)malloc(sizeof(EVP_CIPHER_CTX));  // v1.1.0
+    memset(ctx, 0, sizeof(EVP_CIPHER_CTX));
     EVP_CIPHER_CTX_init(ctx);
 #else
     ctx = EVP_CIPHER_CTX_new();                             // v1.1.1
@@ -733,6 +734,7 @@ Buffer  encode_EVPAPI_Buffer(Buffer buf, Buffer shdkey, EVP_CIPHER* cipher)
 
 #if OPENSSL_VERSION_NUMBER < 0x10101000L
     ctx = (EVP_CIPHER_CTX*)malloc(sizeof(EVP_CIPHER_CTX));  // v1.1.0
+    memset(ctx, 0, sizeof(EVP_CIPHER_CTX));
     EVP_CIPHER_CTX_init(ctx);
 #else
     ctx = EVP_CIPHER_CTX_new();                             // v1.1.1

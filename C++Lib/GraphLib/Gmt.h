@@ -807,6 +807,7 @@ template <typename T>  MSGraph<T>  medianFilter(MSGraph<T> xp, int ms=3)
 
     mz = Min(ms, xp.zs);
     me = (T*)malloc(ms*ms*mz*sizeof(T));
+    if (me!=NULL) memset(me, 0, ms*ms*mz*sizeof(T));
 
     vp.mimicry(xp);
     if (vp.isNull()) {

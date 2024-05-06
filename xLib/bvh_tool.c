@@ -576,7 +576,6 @@ tTree*  bvh_parse_hierarchy(tTree* tree, FILE* fp)
 
                 vector* vect = (vector*)malloc(sizeof(vector));
                 memset(vect, 0, sizeof(vector));
-
                 //
                 if (lt->next!=NULL) {
                     lt = lt->next;

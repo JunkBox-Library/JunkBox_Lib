@@ -1348,6 +1348,7 @@ Buffer*  get_Buffer_dim_tList(tList* lp)
     mx = nn;
     buf = ret = (Buffer*)malloc(sizeof(Buffer)*mx);
     if (ret==NULL) return NULL;
+    memset(buf, 0, sizeof(Buffer)*mx);
     
     nn = 0;
     while(lp!=NULL && lp->ldat.key.buf!=NULL) {
@@ -1393,6 +1394,7 @@ Buffer*  get_Buffer_dim_tList_value(tList* lp)
     mx = nn;
     buf = ret = (Buffer*)malloc(sizeof(Buffer)*mx);
     if (ret==NULL) return NULL;
+    memset(buf, 0, sizeof(Buffer)*mx);
     
     nn = 0;
     while(lp!=NULL && lp->ldat.val.buf!=NULL) {
@@ -1496,6 +1498,7 @@ Buffer*  decompline_Buffer_dim(Buffer buf, int mode)
 
     dim = (Buffer*)malloc(sizeof(Buffer)*n);
     if (dim==NULL) return NULL;
+    memset(dim, 0, sizeof(Buffer)*n);
 
     int nxt = 0;
     for (m=0; m<n-1; m++) {

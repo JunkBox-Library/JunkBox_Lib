@@ -54,7 +54,6 @@ int  write_wsg_file(const char* fname, WSGraph gr)
         //fprintf(stderr, "WRITE_FILE: no more memory!! %d\n", hd.bsize);
         return JBXL_GRAPH_MEMORY_ERROR;
     }
-
     for (i=0; i<hd.bsize; i++) *(hd.buf+i) = (sByte)0;
     int ret = write_ct_file(fname, &hd);
 
@@ -151,8 +150,8 @@ int  write_file_rb(const char* fname, WSGraph gr, IRBound rb)
         //fprintf(stderr, "WRITE_FILE_RB: no more memory!! %d\n", hd.bsize);
         return JBXL_GRAPH_MEMORY_ERROR;
     }
-
     for (i=0; i<hd.bsize; i++) *(hd.buf+i) = (sByte)0;
+
     chd = (CTHead*)hd.buf;
     chd->cutleft  = rb.xmin;
     chd->cutright = rb.xmax;
@@ -331,7 +330,6 @@ WSGraph  read_ras_file(const char* fn)
         gd.state = JBXL_GRAPH_MEMORY_ERROR;
         return gd;
     }
-
     for (i=0; i<sz; i++) gd.gp[i] = (uByte)hd.grptr[i];
     free_CmnHead(&hd);
 
@@ -489,6 +487,7 @@ int  write_ras_file_obit(const char* fn, CmnHead* hd, int obit)
                  fclose(fp);
                  return JBXL_GRAPH_MEMORY_ERROR;
             }
+            memset(buf, 0, lsize);
 
             if (obit==8) {
                 int  max = 255; // 8bit mode での最大値 
@@ -537,10 +536,11 @@ int  write_ras_file_obit(const char* fn, CmnHead* hd, int obit)
             fclose(fp);
             return JBXL_GRAPH_MEMORY_ERROR;
         }
+        memset(ptr, 0, lsize);
 
         k = l = 0;
         for (i=0 ; i<hd->ysize; i++) {
-            for (j=0; j<databyte; j++)        ptr[k++] = buf[l++];
+            for (j=0; j<databyte; j++)          ptr[k++] = buf[l++];
             for (j=0; j<linebyte-databyte; j++) ptr[k++] = null;
         }
 
@@ -601,6 +601,7 @@ int  write_ct_file(const char* fn, CmnHead* hd)
         fclose(fp);
         return JBXL_GRAPH_MEMORY_ERROR;
     }
+    memset(ptr, 0, lsize);
 
     if (checkBit(hd->kind, CT_DATA) || checkBit(hd->kind, CT_3DM)) {
         memcpy((sByte*)&chd, hd->buf, hd->bsize);
@@ -758,6 +759,8 @@ CmnHead  read_xxx_file(const char* fn)
                 fclose(fp);
                 return hd;
             }
+            memset(hd.buf,   0, hd.bsize);
+            memset(hd.grptr, 0, hd.lsize);
 
             rs = fread(hd.buf, hd.bsize, 1, fp);
             wptr = (sWord*)hd.buf;
@@ -836,6 +839,7 @@ CmnHead  read_cmn_header(const char* fn)
             fclose(fp);
             return hd;
         }
+        memset(hd.buf, 0, hd.bsize);
         rs = fread(hd.buf, hd.bsize, 1, fp);
     }
     else  {
@@ -894,6 +898,7 @@ CmnHead  read_cmn_file(const char* fn)
             fclose(fp);
             return hd;
         }
+        memset(hd.buf, 0, hd.bsize);
         rs = fread(hd.buf, hd.bsize, 1, fp);
     }
     else  {
@@ -909,6 +914,7 @@ CmnHead  read_cmn_file(const char* fn)
         fclose(fp);
         return hd;
     }
+    memset(hd.grptr, 0, hd.lsize);
     rs = fread(hd.grptr, hd.lsize, 1, fp);
 
     fclose(fp);
@@ -967,6 +973,7 @@ CmnHead  read_user_data(FILE* fp, CmnHead* chd)
         hd.xsize = JBXL_GRAPH_MEMORY_ERROR;
         return hd;
     }
+    memset(hd.buf, 0, hd.bsize);
     rs = fread((void*)hd.buf, hd.bsize, 1, fp);
 
     hd.grptr = (uByte*)malloc(hd.lsize);
@@ -975,6 +982,7 @@ CmnHead  read_user_data(FILE* fp, CmnHead* chd)
         hd.xsize = JBXL_GRAPH_MEMORY_ERROR;
         return hd;
     }
+    memset(hd.grptr, 0, hd.lsize);
 
     fseek(fp, hd.bsize, 0);
     rs = fread(hd.grptr, hd.lsize, 1, fp);
@@ -1048,6 +1056,7 @@ CmnHead  read_ras_data(FILE* fp)
         hd.xsize = JBXL_GRAPH_MEMORY_ERROR;
         return hd;
     }
+    memset(hd.grptr, 0, hd.lsize);
     buf = (uByte*)hd.grptr;
 
     fseek(fp, rhd.ras_maplength, 1); 
@@ -1124,6 +1133,7 @@ CmnHead  read_ct_data(FILE* fp)
         hd.xsize = JBXL_GRAPH_MEMORY_ERROR;
         return hd;
     }
+    memset(hd.grptr, 0, hd.lsize);
 
     fseek(fp, hd.bsize, 0);
     rs = fread(hd.grptr, hd.lsize, 1, fp);
@@ -1212,6 +1222,7 @@ int  dicom_header(FILE* fp, int fsize, int* dsize, int* xsize, int* ysize, int* 
     sz = rp*sizeof(uWord);
     wp = (uWord*)malloc(sz);
     if (wp==NULL) return JBXL_GRAPH_MEMORY_ERROR;
+    memset(wp, 0, sz);
 
     /////////////////////////////////////////////////////////////////////
     // ヘッダ読み込み

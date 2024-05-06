@@ -71,6 +71,8 @@ openX  disp_image(WSGraph gd, int lc, int hc, int cflg)
     if (dpb==3 && COLOR_DEPTH>=32) dpb = 4;
 
     image = (char*)malloc(width*height*dpb);
+    if (image!=NULL) memset(image, 0, width*height*dpb);
+
     for(i=0; i<width*height; i++){
         tmp = *(imagewk + i);
         if (tmp>hc) tmp = hc;  
@@ -164,6 +166,8 @@ openX  displayOpen(int xs, int ys, int cflg)
 
     cmap = DefaultColormap(xid.display, xid.screen);
     xid.color_index = (long unsigned int*)malloc(COLOR_NUM*sizeof(long));
+    if (xid.color_index!=NULL) memset(xid.color_index, 0, COLOR_NUM*sizeof(long));
+
     for (ir = 0; ir < 5; ir++) {
         for (ig = 0; ig < 5; ig++) {
             for (ib = 0; ib < 5; ib++) {

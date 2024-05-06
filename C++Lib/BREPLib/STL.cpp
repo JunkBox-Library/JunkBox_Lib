@@ -132,6 +132,7 @@ DllExport STLData*  jbxl::readSTLFileA(char* fname, long int* fno)
     // メモリの確保
     if (vno!=0 && vno==(*fno)*3) {
         stldata = (STLData*)malloc(sizeof(STLData)*(*fno));
+        if (stldata!=NULL) memset(stldata, 0, sizeof(STLData)*(*fno));
     }
     if (stldata==NULL) {
         *fno = 0;
@@ -188,6 +189,7 @@ DllExport STLData*  jbxl::readSTLFileB(char* fname, long int* fno)
     fread(fno, 4, 1, fp);
     tmp_stldata = (tmpSTLData*)malloc(sizeof(tmpSTLData)*(*fno));
     if (tmp_stldata==NULL) return NULL;
+    memset(tmp_stldata, 0, sizeof(tmpSTLData)*(*fno));
     fread(tmp_stldata, sizeof(tmpSTLData), *fno, fp);
     fclose(fp);
 
@@ -196,6 +198,7 @@ DllExport STLData*  jbxl::readSTLFileB(char* fname, long int* fno)
         free(tmp_stldata);
         return NULL;
     }
+    memset(stldata, 0, sizeof(STLData)*(*fno));
 
     for (int i=0; i<(*fno); i++) {
         exdata = (STLData*)(&tmp_stldata[i]);       // アドレスの読み替え（50Byteの構造体を作れないため）

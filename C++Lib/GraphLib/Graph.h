@@ -1169,10 +1169,12 @@ template <typename T>  void  MSGraph_Circle(MSGraph<T> vp, int x, int y, int r, 
     px = (int*)malloc(sizeof(int)*(r+1));
     py = (int*)malloc(sizeof(int)*(r+1));
     if (px==NULL || py==NULL) {
-        free(px);
-        free(py);
+        if (px!=NULL) free(px);
+        if (py!=NULL) free(py);
         return;
     }
+    memset(px, 0, sizeof(int)*(r+1));
+    memset(py, 0, sizeof(int)*(r+1));
 
     ix = 0;
     iy = r;

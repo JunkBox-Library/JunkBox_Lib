@@ -2172,7 +2172,10 @@ tList*  read_tList_fp(FILE* fp, int mode)
         }
         else {
             str = (char*)malloc(LBUF+1);
-            if (str!=NULL) strncpy(val, str, LBUF);
+            if (str!=NULL) {
+                memset(str, 0, LBUF+1);
+                strncpy(val, str, LBUF);
+            }
         }
 
         if (str!=NULL) {

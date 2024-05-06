@@ -31,6 +31,7 @@ int main(int argc, char** argv)
         fprintf(stderr, "Cannot open file %s\n", argv[1]);
         exit(1);
     }
+    memset(buf, 0, sz);
 
     fread(buf, sz, 1, fp);
     fclose(fp);

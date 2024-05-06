@@ -38,7 +38,10 @@ void  jbxl::DisPatcher(int signalno, ...)
     va_list args;    
     va_start(args, signalno);
 
-    if (signalno>0) ign_signal = (unsigned int*)malloc(signalno*sizeof(int));
+    if (signalno>0) {
+        ign_signal = (unsigned int*)malloc(signalno*sizeof(int));
+        if (ign_signal!=NULL) memset(ign_signal, 0, signalno*sizeof(int));
+    }
     if (ign_signal==NULL) signalno = 0;
     for (i=0; i<signalno; i++) {
         ign_signal[i] = va_arg(args, unsigned int);

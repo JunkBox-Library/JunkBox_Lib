@@ -1877,6 +1877,7 @@ char* get_myipaddr(int family)
 
     pp = (IP_ADAPTER_ADDRESSES*)malloc(size);
     if (pp == NULL) return NULL;
+    memset(pp, 0, size);
     err = GetAdaptersAddresses(family, flags, NULL, pp, &size);
     if (err != ERROR_SUCCESS) {
         free(pp);
@@ -2031,6 +2032,7 @@ unsigned char*  get_myipaddr_num(int family)
         free(htemp);
         return NULL;
     }
+    memset(haddr, 0, len*2);
 
     err = inet_pton(family, htemp, haddr);
     if (err!=1) {
@@ -2120,6 +2122,7 @@ char*  _get_localip_bydest(const char* dest, int family)
         free(sa);
         return NULL;
     }
+    memset(addr, 0, len);
 
     inet_ntop(family, pp, addr, len);
     free(sa);
@@ -2190,7 +2193,6 @@ unsigned char*  get_mynetaddr_num(int family)
         free(ip);
         return NULL;
     }
-
     for (i=0; i<len; i++) net[i] = ip[i] & mk[i];
 
     free(ip);

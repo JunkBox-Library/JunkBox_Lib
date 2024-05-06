@@ -373,6 +373,7 @@ char*  decode_mime_string(char* mime)
         len = strlen((const char*)mime);
         str = (char*)malloc(len+1);
         if (str==NULL) return NULL;
+        memset(str, 0, len+1);
 
         i = j = 0;
         while(mime[i]!='\0') {
@@ -387,6 +388,8 @@ char*  decode_mime_string(char* mime)
             free(str);
             return NULL;
         }
+        memset(buf, 0, len+1);
+
         if (str[0]=='\"' && str[len-1]=='\"' && str[len-2]!='\\') {
             memcpy(buf, str+1, len-2);
             buf[len-2] = '\0';
