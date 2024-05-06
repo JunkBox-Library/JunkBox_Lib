@@ -893,6 +893,7 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
     if (geometry_id==NULL || meshdata==NULL) return;
 
     // joints
+    tXML* avatar = NULL;
     if (joints!=NULL && joints_template!=NULL && visual_scene->next==NULL) {
         char buf[LNAME];
         memset(buf, 0, LNAME);
@@ -918,6 +919,9 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
             }
         }
         join_xml(visual_scene, joints_template);
+        //
+        avatar = get_xml_attr_node(joints_template, "name", "\"avatar\"");
+        if (avatar!=NULL) avatar = avatar->next;
     }
      
     //
@@ -964,6 +968,10 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
     for (int i=1; i<=4; i++) {
         for (int j=1; j<=4; j++) {
             append_xml_content_node(matrix, dtostr(affine.matrix.element(i, j)));
+            if (avatar!=NULL) {
+                double element = affine.matrix.element(i, j);
+                append_xml_content_node(avatar, dtostr(element));
+            }
         }
     }
 
@@ -1115,7 +1123,7 @@ void  ColladaXML::addCenterScene(void)
     tXML* matrix = add_xml_node(node_tag, "matrix");
     for (int i=1; i<=4; i++) {
         for (int j=1; j<=4; j++) {
-            append_xml_content_node(matrix, dtostr(affine.matrix.element(i,j)));
+            append_xml_content_node(matrix, dtostr(affine.matrix.element(i, j)));
         }
     }
     affine.free();
