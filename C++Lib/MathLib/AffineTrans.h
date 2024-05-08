@@ -36,16 +36,18 @@ public:
     bool             isInverse;
 
 public:
-    AffineTrans(void) { setup();}
+    AffineTrans(void) { init();}
     virtual ~AffineTrans(void) {}
 
+    void   init(void) { initComponents(); matrix = Matrix<T>(2, 4, 4);}
+    void   setup(void){ init();}
     void   initComponents(void) { initScale(); initRotate(); initShift(); isInverse = false;}
 
-    void   setup(void){ initComponents(); matrix = Matrix<T>(2, 4, 4);}
     void   set(Vector<T> s, Quaternion<T> q, Vector<T> t, bool inv=false) { scale=s; shift=t, rotate=q; isInverse=inv; computeMatrix(true);}
     void   free(void) { initComponents(); matrix.free();}
     void   clear(void){ initComponents(); matrix.clear();}
     void   dup(AffineTrans a);
+    AffineTrans<T>  dup(void);
 
     void   computeMatrix(bool with_scale=true);
     void   computeComponents(void);
@@ -142,6 +144,8 @@ template <typename T> inline AffineTrans<T>*  newAffineTrans(AffineTrans<T> p)
 
 /**
 変換の合成：A*B => Bの変換 -> Aの変換
+
+a, b ともにコンポーネントが計算されている事が条件．
 */
 template <typename T> inline AffineTrans<T> operator * (const AffineTrans<T> a, const AffineTrans<T> b)
 { 
@@ -153,6 +157,7 @@ template <typename T> inline AffineTrans<T> operator * (const AffineTrans<T> a, 
     
     AffineTrans<T> affine;
     affine.set(scale, rotate, shift, a.isInverse);
+    affine.computeMatrix(true);
 
     return affine;
 }
@@ -163,7 +168,7 @@ template <typename T> inline AffineTrans<T> operator * (const AffineTrans<T> a, 
 // Affine Transfer
 //
 
-// AffineTrans のコピーを作る．ただしマトリックスデータのメモリ部は共有しない．
+// AffineTrans のコピーを作る．マトリックスデータのメモリ部は共有しない．
 template <typename T> void  AffineTrans<T>::dup(AffineTrans<T> a)
 {
     *this = a;
@@ -173,12 +178,22 @@ template <typename T> void  AffineTrans<T>::dup(AffineTrans<T> a)
 }
 
 
+// 自分自身の コピーを作って返す．
+template <typename T>  AffineTrans<T> AffineTrans<T>::dup(void)
+{
+    AffineTrans<T> affine;
+    affine.dup(*this);
+
+    return affine;
+}
+
+
 // 3x3 の回転行列を得る
 template <typename T> Matrix<T>  AffineTrans<T>::getRotMatrix(void)
 {
     Matrix<T> mt;
 
-    if (matrix.element(4,4)==(T)1.0) {
+    if (matrix.element(4, 4)==(T)1.0) {
         mt.init(2, 3, 3);
         for (int j=1; j<=3; j++) { 
             for (int i=1; i<=3; i++) { 
@@ -200,26 +215,26 @@ template <typename T> AffineTrans<T>  AffineTrans<T>::getInvAffine(void)
     if (!isNormal()) return affine;
 
     Matrix<T> rsz(2, 3, 3);
-    rsz.element(1,1) = (T)1.0/scale.x;
-    rsz.element(2,2) = (T)1.0/scale.y;
-    rsz.element(3,3) = (T)1.0/scale.z;
+    rsz.element(1, 1) = (T)1.0/scale.x;
+    rsz.element(2, 2) = (T)1.0/scale.y;
+    rsz.element(3, 3) = (T)1.0/scale.z;
 
     Matrix<T> rmt = rsz*(~rotate).getRotMatrix();
     
-    affine.matrix.element(4,4) = (T)1.0;
+    affine.matrix.element(4, 4) = (T)1.0;
     for (int j=1; j<=3; j++) { 
         for (int i=1; i<=3; i++) { 
-            affine.matrix.element(i,j) = rmt.element(i,j);
+            affine.matrix.element(i, j) = rmt.element(i, j);
         }
     }
     rsz.free();
     rmt.free();
 
     Matrix<T> rst(2, 4, 4);
-    rst.element(1,1) = rst.element(2,2) = rst.element(3,3) = rst.element(4,4) = (T)1.0;
-    rst.element(1,4) = -shift.x;
-    rst.element(2,4) = -shift.y;
-    rst.element(3,4) = -shift.z;
+    rst.element(1, 1) = rst.element(2,2) = rst.element(3,3) = rst.element(4,4) = (T)1.0;
+    rst.element(1, 4) = -shift.x;
+    rst.element(2, 4) = -shift.y;
+    rst.element(3, 4) = -shift.z;
 
     affine.matrix = affine.matrix*rst;
     affine.isInverse = !isInverse;
@@ -236,14 +251,14 @@ template <typename T> void   AffineTrans<T>::computeMatrix(bool with_scale)
 {
     Matrix<T> sz(2, 3, 3);
     if (with_scale) {
-        sz.element(1,1) = scale.x;
-        sz.element(2,2) = scale.y;
-        sz.element(3,3) = scale.z;
+        sz.element(1, 1) = scale.x;
+        sz.element(2, 2) = scale.y;
+        sz.element(3, 3) = scale.z;
     }
     else {
-        sz.element(1,1) = (T)1.0;
-        sz.element(2,2) = (T)1.0;
-        sz.element(3,3) = (T)1.0;
+        sz.element(1, 1) = (T)1.0;
+        sz.element(2, 2) = (T)1.0;
+        sz.element(3, 3) = (T)1.0;
     }
     
     matrix.clear();
@@ -256,10 +271,13 @@ template <typename T> void   AffineTrans<T>::computeMatrix(bool with_scale)
     sz.free();
     mt.free();
 
-    matrix.element(1,4) = shift.x;
-    matrix.element(2,4) = shift.y;
-    matrix.element(3,4) = shift.z;
-    matrix.element(4,4) = (T)1.0;
+    matrix.element(1, 4) = shift.x;
+    matrix.element(2, 4) = shift.y;
+    matrix.element(3, 4) = shift.z;
+    matrix.element(4, 4) = (T)1.0;
+    matrix.element(4, 1) = (T)0.0;
+    matrix.element(4, 2) = (T)0.0;
+    matrix.element(4, 3) = (T)0.0;
 
     return;
 }
@@ -272,16 +290,16 @@ template <typename T> void   AffineTrans<T>::computeComponents(void)
     sx = sy = sz = (T)0.0;
     if (!isInverse) {
         for (int i=1; i<=3; i++) {
-            sx += matrix.element(i,1)*matrix.element(i,1);
-            sy += matrix.element(i,2)*matrix.element(i,2);
-            sz += matrix.element(i,3)*matrix.element(i,3);
+            sx += matrix.element(i, 1)*matrix.element(i, 1);
+            sy += matrix.element(i, 2)*matrix.element(i, 2);
+            sz += matrix.element(i, 3)*matrix.element(i, 3);
         }
     }
     else {
         for (int i=1; i<=3; i++) {
-            sx += matrix.element(1,i)*matrix.element(1,i);
-            sy += matrix.element(2,i)*matrix.element(2,i);
-            sz += matrix.element(3,i)*matrix.element(3,i);
+            sx += matrix.element(1, i)*matrix.element(1, i);
+            sy += matrix.element(2, i)*matrix.element(2, i);
+            sz += matrix.element(3, i)*matrix.element(3, i);
         }
     }
     sx = (T)sqrt(sx); 
@@ -295,16 +313,16 @@ template <typename T> void   AffineTrans<T>::computeComponents(void)
     Matrix<T> mt = getRotMatrix();
     if (!isInverse) {
         for (int i=1; i<=3; i++) {
-            mt.element(i,1) /= sx;
-            mt.element(i,2) /= sy;
-            mt.element(i,3) /= sz;
+            mt.element(i, 1) /= sx;
+            mt.element(i, 2) /= sy;
+            mt.element(i, 3) /= sz;
         }
     }
     else {
         for (int i=1; i<=3; i++) {
-            mt.element(1,i) /= sx;
-            mt.element(2,i) /= sy;
-            mt.element(3,i) /= sz;
+            mt.element(1, i) /= sx;
+            mt.element(2, i) /= sy;
+            mt.element(3, i) /= sz;
         }
     }
     rotate = RotMatrix2Quaternion<T>(mt);    

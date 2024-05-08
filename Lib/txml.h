@@ -111,7 +111,10 @@ typedef  tTree  tXML;   ///<
 // XML Format
 #define  XML_ONELINE_FORMAT         0           ///< 改行なしの一行にする．
 #define  XML_CRLF_FORMAT            1           ///< ノードの終わりを CR(0x0d), LF(0x0a)で改行する．
-#define  XML_INDENT_FORMAT          2           ///< 先頭にインデント(TAB)をつけ，ノードごとに改行する．
+#define  XML_TAB_FORMAT             2           ///< 先頭にインデント(TAB)をつけ，ノードごとに改行する．
+#define  XML_SPACE_FORMAT           3           ///< 先頭に空白2つ "  " をつけ，ノードごとに改行する．
+#define  XML_SPACE2_FORMAT          3           ///< 先頭に空白2つ "  " をつけ，ノードごとに改行する．
+#define  XML_SPACE4_FORMAT          4           ///< 先頭に空白4つ "    " をつけ，ノードごとに改行する．
 
 // 代用ノード名 (ldat.key.buf)
 #define  XML_COMMENT_NODE_KEY       "@COMMENT_NODE"

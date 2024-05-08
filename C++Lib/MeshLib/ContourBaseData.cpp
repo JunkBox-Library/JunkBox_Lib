@@ -341,17 +341,20 @@ void  SkinJointData::init(int n)
 
     if (n>0) {
         joint_num = n;
-        inverse_bind     = (Matrix<double>*)malloc(sizeof(Matrix<double>)*joint_num);
-        alt_inverse_bind = (Matrix<double>*)malloc(sizeof(Matrix<double>)*joint_num);
-        memset(inverse_bind,     0, sizeof(Matrix<double>)*joint_num);
-        memset(alt_inverse_bind, 0, sizeof(Matrix<double>)*joint_num);
+        int len_data = sizeof(AffineTrans<double>)*joint_num;
+        inverse_bind     = (AffineTrans<double>*)malloc(len_data);
+        alt_inverse_bind = (AffineTrans<double>*)malloc(len_data);
+        memset(inverse_bind,     0, len_data);
+        memset(alt_inverse_bind, 0, len_data);
         //
         for (int i=0; i<joint_num; i++) {
-            inverse_bind[i]     = Matrix<double>(2, 4, 4);
+            inverse_bind[i].init();
+            alt_inverse_bind[i].init();
+        /*
+            inverse_bind[i] = Matrix<double>(2, 4, 4);
             alt_inverse_bind[i] = Matrix<double>(2, 4, 4);
+        */
         }
-        bind_shape = Matrix<double>(2, 4, 4);
-        //
         joint_names.init(joint_num);
     }
 }

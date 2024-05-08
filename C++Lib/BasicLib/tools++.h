@@ -20,6 +20,8 @@ namespace jbxl {
 // Classes
 //
 
+#define  JBXL_ARRAYPARAM_MAX_NUM   64
+
 
 /**
  * 汎用配列パラメータ
@@ -29,7 +31,7 @@ template <typename T=double> class ArrayParam
 {
 private:
     int _size;
-    T*  _value;
+    T   _value[JBXL_ARRAYPARAM_MAX_NUM];
 
 public:
     ArrayParam(int n = 0)     { init(n);}
@@ -50,7 +52,11 @@ public:
 template <typename T> void  ArrayParam<T>::init(int n)
 {
     if (n<0) n = 0;
+    if (n>JBXL_ARRAYPARAM_MAX_NUM) n = JBXL_ARRAYPARAM_MAX_NUM;
     _size = n;
+    for (int i=0; i<JBXL_ARRAYPARAM_MAX_NUM; i++) _value[i] = (T)0;
+
+/*
     if (n>0) {
         _value = (T*)malloc(sizeof(T)*_size);
         if (_value!=NULL) memset(_value, 0, sizeof(T)*_size);
@@ -58,29 +64,40 @@ template <typename T> void  ArrayParam<T>::init(int n)
     else {
         _value = NULL;
     }
-
+*/
     return;
 }
 
 
 template <typename T> void  ArrayParam<T>::free(void)
 {
+    _size = 0;
+    for (int i=0; i<JBXL_ARRAYPARAM_MAX_NUM; i++) _value[i] = (T)0;
+/*
     if (_size>0) {
         _size = 0;
         //DEBUG_MODE PRINT_MESG("ArrayParam<T>::free: _value = %016x\n", _value);
         if (_value!=NULL) ::free(_value);
     }
     _value = NULL;
+*/
     return;
 }
 
 
 /**
- _value[i] がポインタの場合．（実行注意！）@n
+_value[i] がポインタの場合．（実行注意！）@n
 _valkue 自体は freeしない．
 */
 template <typename T> void  ArrayParam<T>::free_ptr(void)
 {
+    for (int i=0; i<_size; i++) {
+        if (_value[i]!=NULL) ::free(_value[i]);
+    }
+
+    _size = 0;
+    for (int i=0; i<JBXL_ARRAYPARAM_MAX_NUM; i++) _value[i] = (T)0;
+/*
     if (_size<=0 || _value==NULL) return;
 
     for (int i=0; i<_size; i++) {
@@ -89,16 +106,22 @@ template <typename T> void  ArrayParam<T>::free_ptr(void)
             _value[i] = NULL;
         }
     }
+*/
     return;
 }
 
 
 template <typename T> T  ArrayParam<T>::get_value(int n)
 {
+    if (n<0 || n>=_size) return (T)0;
+    return _value[n];
+
+/*
     if (_size<=0 || _value==NULL) return (T)0;
 
     if (n<0) n = 0;
     else if (n>=_size) n = _size-1;
+*/
 
     return _value[n];
 }
@@ -111,14 +134,16 @@ template <typename T> bool  ArrayParam<T>::set_value(int n, T val)
 {
     if (n>=_size || n<0) {
         PRINT_MESG("WARNING: ArrayParam<T>::set_value: size missmatch (%d !< %d)\n", n, _size);
+        return false;
     }
-
+    _value[n] = val;
+/*
     if (_size<=0 || _value==NULL) return false;
 
     if (n<0) n = 0;
     else if (n>=_size) n = _size - 1;
     _value[n] = val;
-
+*/
     return true;
 }
 
@@ -136,6 +161,15 @@ ArrayParam<T> のコピーを作る．
 */
 template <typename T> void ArrayParam<T>::dup(ArrayParam<T> a, bool del)
 {
+    UNUSED(del);
+
+    for (int i=0; i<JBXL_ARRAYPARAM_MAX_NUM; i++) _value[i] = (T)0;
+
+    _size = a.get_size();
+    for (int i=0; i<_size; i++) _value[i] = a.get_value(i);
+
+    return;
+/*
     int size = a.get_size();
     if (del) this->free();
     this->init(size);
@@ -143,6 +177,7 @@ template <typename T> void ArrayParam<T>::dup(ArrayParam<T> a, bool del)
     for (int i=0; i<size; i++) {
         this->_value[i] = a.get_value(i);
     }
+*/
 }
 
 

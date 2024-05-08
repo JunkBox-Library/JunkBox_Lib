@@ -139,6 +139,8 @@ int     isText_Buffer(Buffer buf);                                      ///< Buf
 Buffer  dump_Buffer(Buffer buf);                                        ///< Buffer型変数のデバッグ用 16進を Buffer型変数に出力する．
 int     recalc_strlen_Buffer(Buffer* buf);                              ///< Buffer型変数のデータ部を文字列と見なして，その長さを返す．
 
+void    add_indent_Buffer(Buffer* buf, char cc, int num);               ///< インデント(cc x num) を付加する．
+
 #define strcmp_Buffer(a, b)            cmp_Buffer((a), (b), 0)          ///< cmp_Buffer()
 #define strncmp_Buffer(a, b, n)        cmp_Buffer((a), (b), (n))        ///< cmp_Buffer()
 #define bincmp_Buffer(a, b)            cmp_Buffer((a), (b), 0)          ///< cmp_Buffer()

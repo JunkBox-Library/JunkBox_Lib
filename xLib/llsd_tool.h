@@ -6,7 +6,7 @@
 @file    llsd_tool.h
 @author  Fumi.Iseki (C)
 @sa https://wiki.secondlife.com/wiki/LLSD
-@sa http://www.nsl.tuis.ac.jp/xoops/modules/xpwiki/?LLSD
+@sa https://polaris.star-dust.jp/pukiwiki/?LLSD
 */ 
 
 #include "xtools.h"

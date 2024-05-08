@@ -46,9 +46,9 @@ public:
     void    clear(float  meter,     int axis=COLLADA_Z_UP, const char* ver=NULL) { clear((double)meter, axis, ver); }
     void    free (void);
 
-    void    outputFile(const char* fn, const char* path=NULL, int mode=XML_INDENT_FORMAT);
-    void    output_dae (FILE* fp, int mode=XML_INDENT_FORMAT) { print_xml(fp, xml, mode);}
-    void    output_tree(FILE* fp) { print_xml_tree(fp, xml, "    ");}
+    void    outputFile(const char* fn, const char* path=NULL, int mode=XML_SPACE_FORMAT);
+    void    output_dae (FILE* fp, int mode=XML_SPACE_FORMAT) { print_xml(fp, xml_tag, mode);}
+    void    output_tree(FILE* fp) { print_xml_tree(fp, xml_tag, "    ");}
 
 public:
     void    initCollada(double meter, int axis, const char* ver);
@@ -64,17 +64,17 @@ public:
     char*   addTexcrdSource(tXML* tag, MeshObjectData* meshdata);
     char*   addWeightSource(tXML* tag, MeshObjectData* meshdata, int joints_num, Vector<int>* weight_index);
 
-    char*   addVerticesPos (tXML* mesh, const char* position_id);
+    char*   addVerticesPos (tXML* mesh_tag, const char* position_id);
 
-    void    addSimpleTechniqueAccessor(tXML* source, const char* source_array_id, int count, int stride, const char* name, const char* type);
-    void    addPosTechniqueAccessor(tXML* source, const char* source_array_id, int count);
-    void    addMapTechniqueAccessor(tXML* source, const char* source_array_id, int count);
+    void    addSimpleTechniqueAccessor(tXML* source_tag, const char* source_array_id, int count, int stride, const char* name, const char* type);
+    void    addPosTechniqueAccessor(tXML* source_tag, const char* source_array_id, int count);
+    void    addMapTechniqueAccessor(tXML* source_tag, const char* source_array_id, int count);
 
-    void    addPolylists(tXML* mesh, MeshObjectData* meshdata, const char* vertex_id, const char* normal_id=NULL, const char* texcrd_id=NULL);
+    void    addPolylists(tXML* mesh_tag, MeshObjectData* meshdata, const char* vertex_id, const char* normal_id=NULL, const char* texcrd_id=NULL);
     char*   addImage(const char* filename);
     char*   addMaterial(const char* material);
     tXML*   addEffect(const char* material_url, const char* file_id, MaterialParam param);
-    void    addExtraBumpmap(tXML* effect, const char* bump_id);
+    void    addExtraBumpmap(tXML* effect_tag, const char* bump_id);
 
     bool    existSameID(tXML* top, const char* tag, const char* id);
 
@@ -91,36 +91,36 @@ public:
 private:
 
 public:
-    tXML*   xml;
+    tXML*   xml_tag;
     //
-    tXML*   collada;
-    tXML*   asset;
-    tXML*   contributor;
-    tXML*   author;
-    tXML*   authoring_tool;
-    tXML*   created;
-    tXML*   modified;
-    tXML*   unit;
-    tXML*   up_axis;
+    tXML*   collada_tag;
+    tXML*   asset_tag;
+    tXML*   contributor_tag;
+    tXML*   author_tag;
+    tXML*   authoring_tool_tag;
+    tXML*   created_tag;
+    tXML*   modified_tag;
+    tXML*   unit_tag;
+    tXML*   up_axis_tag;
 
-    tXML*   library_images;
-    tXML*   library_effects;
-    tXML*   library_materials;
-    tXML*   library_geometries;
-    tXML*   library_controllers;
-    tXML*   library_physics_scenes;
-    tXML*   library_physics_models;
-    tXML*   library_visual_scenes;
+    tXML*   library_images_tag;
+    tXML*   library_effects_tag;
+    tXML*   library_materials_tag;
+    tXML*   library_geometries_tag;
+    tXML*   library_controllers_tag;
+    tXML*   library_physics_scenes_tag;
+    tXML*   library_physics_models_tag;
+    tXML*   library_visual_scenes_tag;
 
-    tXML*   instance_physics_model;
+    tXML*   instance_physics_model_tag;
 
-    tXML*   visual_scene;
-    tXML*   physics_scene;
-    tXML*   physics_model;
+    tXML*   visual_scene_tag;
+    tXML*   physics_scene_tag;
+    tXML*   physics_model_tag;
 
-    tXML*   scene;
-    tXML*   instance_visual_scene;
-    tXML*   instance_physics_scene;
+    tXML*   scene_tag;
+    tXML*   instance_visual_scene_tag;
+    tXML*   instance_physics_scene_tag;
 
     bool    phantom_out;
     Buffer  blank_texture;

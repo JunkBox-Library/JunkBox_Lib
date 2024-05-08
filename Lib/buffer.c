@@ -1245,6 +1245,27 @@ int  recalc_strlen_Buffer(Buffer* buf)
 
 
 /**
+void    add_indent_Buffer(Buffer* buf, char* cc, int num);
+
+buf にインデント(cc x num個) を付加する．
+
+@param  buf  インデントを付加するバッファ．
+@param  cc   インデントの文字．' ' や '\t'
+param   len  インデントの文字数．
+*/
+void    add_indent_Buffer(Buffer* buf, char cc, int len)
+{
+    char* indent = (char*)malloc(len + 1);
+    if (indent!=NULL) {
+        memset(indent, cc, len);
+        indent[len] = '\0';
+        cat_s2Buffer(indent, buf);
+        free(indent);
+    }
+}
+
+
+/**
 void  chomp_Buffer(Buffer* str)
 
 最初の改行コード以降を無視する．@n

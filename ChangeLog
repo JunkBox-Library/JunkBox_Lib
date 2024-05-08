@@ -6,6 +6,8 @@ working now ..... v1.9.2alpha
 
 
 v1.9.2alpha
+	Lib/Buffer.c
+		add add_indent_Buffer() 
 	Lib/txml.c
 		add_xml_content()    -> add_xml_content_node()
 		append_xml_content() -> append_xml_content_node()

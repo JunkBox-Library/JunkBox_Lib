@@ -33,13 +33,13 @@ void  ColladaXML::init(double meter, int axis, const char* ver)
 void  ColladaXML::free(void)
 {
     free_Buffer(&blank_texture);
-    del_xml(&xml);
+    del_xml(&xml_tag);
 }
 
 
 void  ColladaXML::clear(double meter, int axis, const char* ver)
 {
-    del_xml(&xml);
+    del_xml(&xml_tag);
     init(meter, axis, ver);
 }
 
@@ -64,81 +64,72 @@ void  ColladaXML::initCollada(double meter, int axis, const char* ver)
     else           buf = make_Buffer_str(COLLADA_STR_VER);
 
     // COLLADA
-    xml     = init_xml_doc();
-    collada = add_xml_node(xml, "COLLADA");
+    xml_tag     = init_xml_doc();
+    collada_tag = add_xml_node(xml_tag, "COLLADA");
     //
-    add_xml_attr_str(collada, "xmlns",   COLLADA_STR_XMLNS);
-    add_xml_attr_str(collada, "version", _tochar(buf.buf));
+    add_xml_attr_str(collada_tag, "xmlns",   COLLADA_STR_XMLNS);
+    add_xml_attr_str(collada_tag, "version", _tochar(buf.buf));
 
     // asset
-    asset          = add_xml_node(collada, "asset");
-    contributor    = add_xml_node(asset, "contributor");
-    author         = add_xml_node(contributor, "author");
-    authoring_tool = add_xml_node(contributor, "authoring_tool");
-    created        = add_xml_node(asset, "created");
-    modified       = add_xml_node(asset, "modified");
-    unit           = add_xml_node(asset, "unit");
-    up_axis        = add_xml_node(asset, "up_axis");
+    asset_tag          = add_xml_node(collada_tag, "asset");
+    contributor_tag    = add_xml_node(asset_tag, "contributor");
+    author_tag         = add_xml_node(contributor_tag, "author");
+    authoring_tool_tag = add_xml_node(contributor_tag, "authoring_tool");
+    created_tag        = add_xml_node(asset_tag, "created");
+    modified_tag       = add_xml_node(asset_tag, "modified");
+    unit_tag           = add_xml_node(asset_tag, "unit");
+    up_axis_tag        = add_xml_node(asset_tag, "up_axis");
     
     //char* ltime = get_localtime('-', 'T', ':', 'Z');
     char* ltime = get_local_timestamp(time(0), "%Y-%m-%dT%H:%M:%SZ");
     //
-    add_xml_content_node(author, COLLADA_STR_AUTHOR);
-    add_xml_content_node(authoring_tool, COLLADA_STR_TOOL);
-    add_xml_content_node(created,  ltime);
-    add_xml_content_node(modified, ltime);
-    add_xml_attr_str(unit, "name", "meter");
-    add_xml_attr_float(unit, "meter", (float)meter);
+    add_xml_content_node(author_tag, COLLADA_STR_AUTHOR);
+    add_xml_content_node(authoring_tool_tag, COLLADA_STR_TOOL);
+    add_xml_content_node(created_tag,  ltime);
+    add_xml_content_node(modified_tag, ltime);
+    add_xml_attr_str(unit_tag, "name", "meter");
+    add_xml_attr_float(unit_tag, "meter", (float)meter);
     ::free(ltime);
 
-    if      (axis==COLLADA_X_UP) add_xml_content_node(up_axis, "X_UP");
-    else if (axis==COLLADA_Y_UP) add_xml_content_node(up_axis, "Y_UP");
-    else                         add_xml_content_node(up_axis, "Z_UP");
+    if      (axis==COLLADA_X_UP) add_xml_content_node(up_axis_tag, "X_UP");
+    else if (axis==COLLADA_Y_UP) add_xml_content_node(up_axis_tag, "Y_UP");
+    else                         add_xml_content_node(up_axis_tag, "Z_UP");
 
-    // library_images
-    library_images = add_xml_node(collada, "library_images");
-
-    // library_effects
-    library_effects = add_xml_node(collada, "library_effects");
-
-    // library_materials
-    library_materials = add_xml_node(collada, "library_materials");
-
-    // library_geometries
-    library_geometries = add_xml_node(collada, "library_geometries");
-
-    // library_controllers
-    library_controllers = add_xml_node(collada, "library_controllers");
+    library_images_tag      = add_xml_node(collada_tag, "library_images");
+    library_effects_tag     = add_xml_node(collada_tag, "library_effects");
+    library_materials_tag   = add_xml_node(collada_tag, "library_materials");
+    library_geometries_tag  = add_xml_node(collada_tag, "library_geometries");
+    library_controllers_tag = add_xml_node(collada_tag, "library_controllers");
 
     // library_physics_models
-    library_physics_models = add_xml_node(collada, "library_physics_models");
-    physics_model          = add_xml_node(library_physics_models, "physics_model");
-    add_xml_attr_str(physics_model, "id",   "Physics_Model");
-    add_xml_attr_str(physics_model, "name", "Physics_Model");
+    library_physics_models_tag = add_xml_node(collada_tag, "library_physics_models");
+    physics_model_tag          = add_xml_node(library_physics_models_tag, "physics_model");
+    add_xml_attr_str(physics_model_tag, "id",   "Physics_Model");
+    add_xml_attr_str(physics_model_tag, "name", "Physics_Model");
 
     // library_physics_scenes
-    library_physics_scenes = add_xml_node(collada, "library_physics_scenes");
-    physics_scene          = add_xml_node(library_physics_scenes, "physics_scene");
-    add_xml_attr_str(physics_scene, "id",   "Physics_Scene");
-    add_xml_attr_str(physics_scene, "name", "Physics_Scene");
-    instance_physics_model = add_xml_node(physics_scene, "instance_physics_model");
-    add_xml_attr_str(instance_physics_model, "url", "#Physics_Model");
-    //tXML* technique = add_xml_node(physics_scene, "technique_common");
-    //tXML* gravity = add_xml_node(technique, "gravity");
-    //add_xml_content(gravity, "0.000000 -9.810000 0.000000");
+    library_physics_scenes_tag = add_xml_node(collada_tag, "library_physics_scenes");
+    physics_scene_tag          = add_xml_node(library_physics_scenes_tag, "physics_scene");
+    add_xml_attr_str(physics_scene_tag, "id",   "Physics_Scene");
+    add_xml_attr_str(physics_scene_tag, "name", "Physics_Scene");
+    instance_physics_model_tag = add_xml_node(physics_scene_tag, "instance_physics_model");
+    add_xml_attr_str(instance_physics_model_tag, "url", "#Physics_Model");
+    //tXML* technique_tag = add_xml_node(physics_scene_tag, "technique_common");
+    //tXML* gravity_tag = add_xml_node(technique_tag, "gravity");
+    //add_xml_content(gravity_tag, "0.000000 -9.810000 0.000000");
 
     // library_visual_scenes
-    library_visual_scenes = add_xml_node(collada, "library_visual_scenes");
-    visual_scene          = add_xml_node(library_visual_scenes, "visual_scene");
-    add_xml_attr_str(visual_scene, "id",   "Scene");
-    add_xml_attr_str(visual_scene, "name", "Scene");
+    library_visual_scenes_tag = add_xml_node(collada_tag, "library_visual_scenes");
+    visual_scene_tag          = add_xml_node(library_visual_scenes_tag, "visual_scene");
+    add_xml_attr_str(visual_scene_tag, "id",   "Scene");
+    add_xml_attr_str(visual_scene_tag, "name", "Scene");
 
     // scence
-    scene = add_xml_node(collada, "scene");
-    instance_physics_scene = add_xml_node(scene, "instance_physics_scene");
-    add_xml_attr_str(instance_physics_scene, "url", "#Physics_Scene");
-    instance_visual_scene = add_xml_node(scene, "instance_visual_scene");
-    add_xml_attr_str(instance_visual_scene, "url", "#Scene");
+    scene_tag = add_xml_node(collada_tag, "scene");
+    instance_physics_scene_tag = add_xml_node(scene_tag, "instance_physics_scene");
+    add_xml_attr_str(instance_physics_scene_tag, "url", "#Physics_Scene");
+    instance_visual_scene_tag = add_xml_node(scene_tag, "instance_visual_scene");
+    add_xml_attr_str(instance_visual_scene_tag, "url", "#Scene");
     //
     free_Buffer(&buf);
 }
@@ -169,7 +160,7 @@ void  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdat
     Buffer controller_id = make_Buffer_str("avatar_");
     cat_Buffer(&randomstr, &controller_id);
 
-    tXML* controller_tag = add_xml_node(library_controllers, "controller");
+    tXML* controller_tag = add_xml_node(library_controllers_tag, "controller");
     add_xml_attr_str(controller_tag, "id", _tochar(controller_id.buf));
     add_xml_attr_str(controller_tag, "name",  "avater");
 
@@ -177,10 +168,11 @@ void  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdat
     add_xml_attr_str(skin_tag, "source", _tochar(geometry_id));
 
     // bind_shape_matrix
-    tXML* bind_shape_matrix = add_xml_node(skin_tag, "bind_shape_matrix");
+    tXML* bind_shape_tag = add_xml_node(skin_tag, "bind_shape_matrix");
     for (int i=1; i<=4; i++) {
         for (int j=1; j<=4; j++) {
-            append_xml_content_node(bind_shape_matrix, dtostr(joints->bind_shape.element(i, j)));
+            //joints->bind_shape.computeMatrix(false);        // Scale 無視
+            append_xml_content_node(bind_shape_tag, dtostr(joints->bind_shape.matrix.element(i, j)));
         }
     }
 
@@ -220,7 +212,8 @@ void  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdat
     for (int jnt=0; jnt<joints_num; jnt++) {
         for (int i=1; i<=4; i++) {
             for (int j=1; j<=4; j++) {
-                append_xml_content_node(invbind_float_tag, dtostr(joints->inverse_bind[jnt].element(i, j)));
+                joints->inverse_bind[jnt].computeMatrix(false); //  Scale 無視
+                append_xml_content_node(invbind_float_tag, dtostr(joints->inverse_bind[jnt].matrix.element(i, j)));
             }
         }
     }
@@ -239,9 +232,9 @@ void  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdat
     add_xml_attr_str(input_joint_tag, "semantic", "JOINT");
     add_xml_attr_str(input_joint_tag, "source", _tochar(joint_id.buf));
 
-    tXML* input_invbind = add_xml_node(joints_tag, "input");
-    add_xml_attr_str(input_invbind, "semantic", "INV_BIND_MATRIX");
-    add_xml_attr_str(input_invbind, "source", _tochar(invbind_id.buf));
+    tXML* input_invbind_tag = add_xml_node(joints_tag, "input");
+    add_xml_attr_str(input_invbind_tag, "semantic", "INV_BIND_MATRIX");
+    add_xml_attr_str(input_invbind_tag, "source", _tochar(invbind_id.buf));
 
     // vertex_weight
     tXML* vertex_weight_tag = add_xml_node(skin_tag, "vertex_weights");
@@ -256,8 +249,8 @@ void  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdat
     add_xml_attr_str(input_weight_tag, "source", weight_id);
     add_xml_attr_int(input_weight_tag, "offset", 1);
 
-    tXML* vcount = add_xml_node(vertex_weight_tag, "vcount");
-    tXML* vindex = add_xml_node(vertex_weight_tag, "v");
+    tXML* vcount_tag = add_xml_node(vertex_weight_tag, "vcount");
+    tXML* vindex_tag = add_xml_node(vertex_weight_tag, "v");
 
     int snum = 0;
     int wnum = 0;
@@ -266,11 +259,11 @@ void  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdat
     for (int i=0; i<meshdata->ttl_vertex*joints_num; i++) {
         if (weight_index[i].z==TRUE) {
             if (prev_vertex==-1) prev_vertex = weight_index[i].x;
-            append_xml_content_node(vindex, itostr(weight_index[i].y));
-            append_xml_content_node(vindex, itostr(wnum));
+            append_xml_content_node(vindex_tag, itostr(weight_index[i].y));
+            append_xml_content_node(vindex_tag, itostr(wnum));
             //            
             if (prev_vertex!=weight_index[i].x) {
-                append_xml_content_node(vcount, itostr(vnum));
+                append_xml_content_node(vcount_tag, itostr(vnum));
                 prev_vertex = weight_index[i].x;
                 snum++;
                 vnum = 1;
@@ -279,7 +272,7 @@ void  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdat
             wnum++;
         }
     }
-    append_xml_content_node(vcount, itostr(vnum));
+    append_xml_content_node(vcount_tag, itostr(vnum));
     snum++;
 
     add_xml_attr_str(vertex_weight_tag, "count", itostr(snum));
@@ -310,19 +303,19 @@ char*  ColladaXML::addGeometry(MeshObjectData* meshdata)
     if (geometry_name.buf==NULL) geometry_name = make_Buffer_str(geometry_id.buf + 1);
 
     // library_geometries
-    tXML* geomrtry = add_xml_node(library_geometries, "geometry");
-    add_xml_attr_str(geomrtry, "id",   _tochar(geometry_id.buf + 1));
-    add_xml_attr_str(geomrtry, "name", _tochar(geometry_name.buf));
-    tXML* mesh = add_xml_node(geomrtry, "mesh");
+    tXML* geomrtry_tag = add_xml_node(library_geometries_tag, "geometry");
+    add_xml_attr_str(geomrtry_tag, "id",   _tochar(geometry_id.buf + 1));
+    add_xml_attr_str(geomrtry_tag, "name", _tochar(geometry_name.buf));
+    tXML* mesh_tag = add_xml_node(geomrtry_tag, "mesh");
 
     // Source & Vertices
-    char* psitin_id = addVertexSource(mesh, meshdata);
-    char* normal_id = addNormalSource(mesh, meshdata);
-    char* texcrd_id = addTexcrdSource(mesh, meshdata);
-    char* vertex_id = addVerticesPos (mesh, psitin_id);
+    char* psitin_id = addVertexSource(mesh_tag, meshdata);
+    char* normal_id = addNormalSource(mesh_tag, meshdata);
+    char* texcrd_id = addTexcrdSource(mesh_tag, meshdata);
+    char* vertex_id = addVerticesPos (mesh_tag, psitin_id);
 
     // Polylist
-    addPolylists(mesh, meshdata, vertex_id, normal_id, texcrd_id);
+    addPolylists(mesh_tag, meshdata, vertex_id, normal_id, texcrd_id);
 
     freeNull(psitin_id);
     freeNull(normal_id);
@@ -347,25 +340,25 @@ char*  ColladaXML::addVertexSource(tXML* tag, MeshObjectData* meshdata)
     cat_Buffer(&randomstr, &source_array_id);
 
     int vnum = meshdata->ttl_vertex;
-    tXML* source = add_xml_node(tag, "source");
-    add_xml_attr_str(source, "id", _tochar(source_id.buf + 1));
-    tXML* source_array = add_xml_node(source, "float_array");
-    add_xml_attr_str(source_array, "id", _tochar(source_array_id.buf + 1));
-    add_xml_attr_int(source_array, "count", vnum*3);                            // 3 -> X, Y, Z の次元数
+    tXML* source_tag = add_xml_node(tag, "source");
+    add_xml_attr_str(source_tag, "id", _tochar(source_id.buf + 1));
+    tXML* source_array_tag = add_xml_node(source_tag, "float_array");
+    add_xml_attr_str(source_array_tag, "id", _tochar(source_array_id.buf + 1));
+    add_xml_attr_int(source_array_tag, "count", vnum*3);                            // 3 -> X, Y, Z の次元数
     //
-    if (add_xml_content_area(source_array, meshdata->ttl_vertex*10)) {
+    if (add_xml_content_area(source_array_tag, meshdata->ttl_vertex*10)) {
         MeshFacetNode* facet = meshdata->facet;
         while (facet!=NULL) {
             Vector<double>* vect = facet->vertex_value;
             for (int i=0; i<facet->num_vertex; i++) {
-                append_xml_content_node(source_array, dtostr(vect[i].x));
-                append_xml_content_node(source_array, dtostr(vect[i].y));
-                append_xml_content_node(source_array, dtostr(vect[i].z));
+                append_xml_content_node(source_array_tag, dtostr(vect[i].x));
+                append_xml_content_node(source_array_tag, dtostr(vect[i].y));
+                append_xml_content_node(source_array_tag, dtostr(vect[i].z));
             }
             facet = facet->next;
         }   
     }
-    addPosTechniqueAccessor(source, _tochar(source_array_id.buf), vnum);
+    addPosTechniqueAccessor(source_tag, _tochar(source_array_id.buf), vnum);
     
     free_Buffer(&randomstr);
     free_Buffer(&source_array_id);
@@ -385,25 +378,25 @@ char*  ColladaXML::addNormalSource(tXML* tag, MeshObjectData* meshdata)
     cat_Buffer(&randomstr, &source_array_id);
 
     int vnum = meshdata->ttl_vertex;
-    tXML* source = add_xml_node(tag, "source");
-    add_xml_attr_str(source, "id", _tochar(source_id.buf + 1));
-    tXML* source_array = add_xml_node(source, "float_array");
-    add_xml_attr_str(source_array, "id", _tochar(source_array_id.buf + 1));
-    add_xml_attr_int(source_array, "count", vnum*3);                            // 3 -> X, Y, Z の次元数
+    tXML* source_tag = add_xml_node(tag, "source");
+    add_xml_attr_str(source_tag, "id", _tochar(source_id.buf + 1));
+    tXML* source_array_tag = add_xml_node(source_tag, "float_array");
+    add_xml_attr_str(source_array_tag, "id", _tochar(source_array_id.buf + 1));
+    add_xml_attr_int(source_array_tag, "count", vnum*3);                            // 3 -> X, Y, Z の次元数
     //
-    if (add_xml_content_area(source_array, meshdata->ttl_vertex*10)) {
+    if (add_xml_content_area(source_array_tag, meshdata->ttl_vertex*10)) {
         MeshFacetNode* facet = meshdata->facet;
         while (facet!=NULL) {
             Vector<double>* vect = facet->normal_value;
             for (int i=0; i<facet->num_vertex; i++) {
-                append_xml_content_node(source_array, dtostr(vect[i].x));
-                append_xml_content_node(source_array, dtostr(vect[i].y));
-                append_xml_content_node(source_array, dtostr(vect[i].z));
+                append_xml_content_node(source_array_tag, dtostr(vect[i].x));
+                append_xml_content_node(source_array_tag, dtostr(vect[i].y));
+                append_xml_content_node(source_array_tag, dtostr(vect[i].z));
             }
             facet = facet->next;
         }
     }
-    addPosTechniqueAccessor(source, _tochar(source_array_id.buf), vnum);
+    addPosTechniqueAccessor(source_tag, _tochar(source_array_id.buf), vnum);
     
     free_Buffer(&randomstr);
     free_Buffer(&source_array_id);
@@ -424,13 +417,13 @@ char*  ColladaXML::addTexcrdSource(tXML* tag, MeshObjectData* meshdata)
     cat_Buffer(&randomstr, &source_array_id);
 
     int vnum = meshdata->ttl_vertex;
-    tXML* source = add_xml_node(tag, "source");
-    add_xml_attr_str(source, "id", _tochar(source_id.buf + 1));
-    tXML* source_array = add_xml_node(source, "float_array");
-    add_xml_attr_str(source_array, "id", _tochar(source_array_id.buf + 1));
-    add_xml_attr_int(source_array, "count", vnum*2);                            // 2 -> S,T (U, V) の次元数
+    tXML* source_tag = add_xml_node(tag, "source");
+    add_xml_attr_str(source_tag, "id", _tochar(source_id.buf + 1));
+    tXML* source_array_tag = add_xml_node(source_tag, "float_array");
+    add_xml_attr_str(source_array_tag, "id", _tochar(source_array_id.buf + 1));
+    add_xml_attr_int(source_array_tag, "count", vnum*2);                            // 2 -> S,T (U, V) の次元数
     //
-    if (add_xml_content_area(source_array, meshdata->ttl_texcrd*10)) {
+    if (add_xml_content_area(source_array_tag, meshdata->ttl_texcrd*10)) {
         MeshFacetNode* facet = meshdata->facet;
         while (facet!=NULL) {
             size_t len = facet->num_texcrd*sizeof(UVMap<double>);
@@ -446,15 +439,15 @@ char*  ColladaXML::addTexcrdSource(tXML* tag, MeshObjectData* meshdata)
                 facet->execAffineTransUVMap(uvmap, facet->num_texcrd);
 
                 for (int i=0; i<facet->num_texcrd; i++) {
-                    append_xml_content_node(source_array, dtostr(uvmap[i].u));
-                    append_xml_content_node(source_array, dtostr(uvmap[i].v));
+                    append_xml_content_node(source_array_tag, dtostr(uvmap[i].u));
+                    append_xml_content_node(source_array_tag, dtostr(uvmap[i].v));
                 }
                 ::free(uvmap);
             }
             facet = facet->next;
         }
     }
-    addMapTechniqueAccessor(source, _tochar(source_array_id.buf), vnum);
+    addMapTechniqueAccessor(source_tag, _tochar(source_array_id.buf), vnum);
     
     free_Buffer(&randomstr);
     free_Buffer(&source_array_id);
@@ -473,14 +466,14 @@ char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* meshdata, int join
     cat_Buffer(&randomstr, &source_id);
     cat_Buffer(&randomstr, &source_array_id);
 
-    tXML* source = add_xml_node(tag, "source");
-    add_xml_attr_str(source, "id", _tochar(source_id.buf + 1));
-    tXML* source_array = add_xml_node(source, "float_array");
-    add_xml_attr_str(source_array, "id", _tochar(source_array_id.buf + 1));
+    tXML* source_tag = add_xml_node(tag, "source");
+    add_xml_attr_str(source_tag, "id", _tochar(source_id.buf + 1));
+    tXML* source_array_tag = add_xml_node(source_tag, "float_array");
+    add_xml_attr_str(source_array_tag, "id", _tochar(source_array_id.buf + 1));
     //
     int count = 0;
     int vnum  = 0;
-    if (add_xml_content_area(source_array, meshdata->ttl_vertex*10)) {          // 1データ 10桁の領域．予め確保した方が早い．
+    if (add_xml_content_area(source_array_tag, meshdata->ttl_vertex*10)) {          // 1データ 10桁の領域．予め確保した方が早い．
         MeshFacetNode* facet = meshdata->facet;
         while (facet!=NULL) {
             ArrayParam<double>* weight = facet->weight_value;
@@ -491,7 +484,7 @@ char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* meshdata, int join
                     weight_index[vnum*joints_num + j].z = FALSE;
                     double value = weight[i].get_value(j);
                     if (value!=0.0) {
-                        append_xml_content_node(source_array, dtostr(value));
+                        append_xml_content_node(source_array_tag, dtostr(value));
                         weight_index[vnum*joints_num + j].z = TRUE;
                         count++;
                     }
@@ -501,13 +494,13 @@ char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* meshdata, int join
             facet = facet->next;
         }
     }
-    add_xml_attr_int(source_array, "count", count);
+    add_xml_attr_int(source_array_tag, "count", count);
 
     if (vnum!=meshdata->ttl_vertex) {
         PRINT_MESG("WARNING: ColladaXML::addWeightSource: no match vertex num (%d != %d)\n", vnum, meshdata->ttl_vertex);
     }
 
-    addSimpleTechniqueAccessor(source, _tochar(source_array_id.buf), count, 1, "WEIGHT", "float");
+    addSimpleTechniqueAccessor(source_tag, _tochar(source_array_id.buf), count, 1, "WEIGHT", "float");
 
     free_Buffer(&randomstr);
     free_Buffer(&source_array_id);
@@ -524,11 +517,11 @@ char*  ColladaXML::addVerticesPos(tXML* tag, const char* position_id)
     cat_Buffer(&randomstr, &vertex_id);
 
     // Vertices
-    tXML* vertices = add_xml_node(tag, "vertices");
-    add_xml_attr_str(vertices, "id", _tochar(vertex_id.buf + 1));
-    tXML* position_input = add_xml_node(vertices, "input");
-    add_xml_attr_str(position_input, "semantic", "POSITION");
-    add_xml_attr_str(position_input, "source", position_id);
+    tXML* vertices_tag = add_xml_node(tag, "vertices");
+    add_xml_attr_str(vertices_tag, "id", _tochar(vertex_id.buf + 1));
+    tXML* input_position_tag = add_xml_node(vertices_tag, "input");
+    add_xml_attr_str(input_position_tag, "semantic", "POSITION");
+    add_xml_attr_str(input_position_tag, "source", position_id);
 
     free_Buffer(&randomstr);
 
@@ -536,96 +529,98 @@ char*  ColladaXML::addVerticesPos(tXML* tag, const char* position_id)
 }
 
 
-void   ColladaXML::addSimpleTechniqueAccessor(tXML* source, const char* source_array_id, int count, int stride, const char* name, const char* type)
+void   ColladaXML::addSimpleTechniqueAccessor(tXML* source_tag, const char* source_array_id, int count, int stride, const char* name, const char* type)
 {
-    tXML* technique_common = add_xml_node(source, "technique_common");
-    tXML* accessor  = add_xml_node(technique_common, "accessor");
-    add_xml_attr_str(accessor, "source", source_array_id);
-    add_xml_attr_int(accessor, "count", count);
-    add_xml_attr_int(accessor, "stride", stride);
-    tXML* param = add_xml_node(accessor, "param");
-    add_xml_attr_str(param, "name", name);
-    add_xml_attr_str(param, "type", type);
+    if (source_tag==NULL || source_array_id==NULL) return;
+
+    tXML* technique_common_tag = add_xml_node(source_tag, "technique_common");
+    tXML* accessor_tag  = add_xml_node(technique_common_tag, "accessor");
+    add_xml_attr_str(accessor_tag, "source", source_array_id);
+    add_xml_attr_int(accessor_tag, "count", count);
+    add_xml_attr_int(accessor_tag, "stride", stride);
+    tXML* param_tag = add_xml_node(accessor_tag, "param");
+    add_xml_attr_str(param_tag, "name", name);
+    add_xml_attr_str(param_tag, "type", type);
 
     return;
 }
 
 
-void   ColladaXML::addPosTechniqueAccessor(tXML* source, const char* source_array_id, int count)
+void   ColladaXML::addPosTechniqueAccessor(tXML* source_tag, const char* source_array_id, int count)
 {
-    if (source==NULL || source_array_id==NULL) return;
+    if (source_tag==NULL || source_array_id==NULL) return;
 
-    tXML* technique_common = add_xml_node(source, "technique_common");
-    tXML* accessor = add_xml_node(technique_common, "accessor");
-    add_xml_attr_str(accessor, "source", source_array_id);
-    add_xml_attr_int(accessor, "count", count);
-    add_xml_attr_int(accessor, "stride", 3);
+    tXML* technique_common_tag = add_xml_node(source_tag, "technique_common");
+    tXML* accessor_tag = add_xml_node(technique_common_tag, "accessor");
+    add_xml_attr_str(accessor_tag, "source", source_array_id);
+    add_xml_attr_int(accessor_tag, "count", count);
+    add_xml_attr_int(accessor_tag, "stride", 3);
 
-    tXML* param_x = add_xml_node(accessor, "param");
-    tXML* param_y = add_xml_node(accessor, "param");
-    tXML* param_z = add_xml_node(accessor, "param");
-    add_xml_attr_str(param_x, "name", "X");
-    add_xml_attr_str(param_y, "name", "Y");
-    add_xml_attr_str(param_z, "name", "Z");
-    add_xml_attr_str(param_x, "type", "float");
-    add_xml_attr_str(param_y, "type", "float");
-    add_xml_attr_str(param_z, "type", "float");
+    tXML* param_x_tag = add_xml_node(accessor_tag, "param");
+    tXML* param_y_tag = add_xml_node(accessor_tag, "param");
+    tXML* param_z_tag = add_xml_node(accessor_tag, "param");
+    add_xml_attr_str(param_x_tag, "name", "X");
+    add_xml_attr_str(param_y_tag, "name", "Y");
+    add_xml_attr_str(param_z_tag, "name", "Z");
+    add_xml_attr_str(param_x_tag, "type", "float");
+    add_xml_attr_str(param_y_tag, "type", "float");
+    add_xml_attr_str(param_z_tag, "type", "float");
 
     return;
 }
 
 
-void   ColladaXML::addMapTechniqueAccessor(tXML* source, const char* source_array_id, int count)
+void   ColladaXML::addMapTechniqueAccessor(tXML* source_tag, const char* source_array_id, int count)
 {
-    if (source==NULL || source_array_id==NULL) return;
+    if (source_tag==NULL || source_array_id==NULL) return;
 
-    tXML* technique_common = add_xml_node(source, "technique_common");
-    tXML* accessor = add_xml_node(technique_common, "accessor");
-    add_xml_attr_str(accessor, "source", source_array_id);
-    add_xml_attr_int(accessor, "count", count);
-    add_xml_attr_int(accessor, "stride", 2);
+    tXML* technique_common_tag = add_xml_node(source_tag, "technique_common");
+    tXML* accessor_tag = add_xml_node(technique_common_tag, "accessor");
+    add_xml_attr_str(accessor_tag, "source", source_array_id);
+    add_xml_attr_int(accessor_tag, "count", count);
+    add_xml_attr_int(accessor_tag, "stride", 2);
 
-    tXML* param_s = add_xml_node(accessor, "param");
-    tXML* param_t = add_xml_node(accessor, "param");
-    add_xml_attr_str(param_s, "name", "S");
-    add_xml_attr_str(param_t, "name", "T");
-    add_xml_attr_str(param_s, "type", "float");
-    add_xml_attr_str(param_t, "type", "float");
+    tXML* param_s_tag = add_xml_node(accessor_tag, "param");
+    tXML* param_t_tag = add_xml_node(accessor_tag, "param");
+    add_xml_attr_str(param_s_tag, "name", "S");
+    add_xml_attr_str(param_t_tag, "name", "T");
+    add_xml_attr_str(param_s_tag, "type", "float");
+    add_xml_attr_str(param_t_tag, "type", "float");
 
     return;
 }
 
 
 // Polylists
-void   ColladaXML::addPolylists(tXML* mesh, MeshObjectData* meshdata, const char* vertex_id, const char* normal_id, const char* texcrd_id)
+void   ColladaXML::addPolylists(tXML* mesh_tag, MeshObjectData* meshdata, const char* vertex_id, const char* normal_id, const char* texcrd_id)
 {
-    if (vertex_id==NULL || meshdata==NULL) return;
+    if (mesh_tag==NULL || vertex_id==NULL || meshdata==NULL) return;
 
     int pnum = 0;
     MeshFacetNode* facet = meshdata->facet;
 
     while (facet!=NULL) {
         //
-        tXML* polylist = add_xml_node(mesh, "polylist");
-        add_xml_attr_int(polylist, "count", facet->num_polygon);
+        tXML* polylist_tag = add_xml_node(mesh_tag, "polylist");
+        add_xml_attr_int(polylist_tag, "count", facet->num_polygon);
 
         // Material
         if (facet->material_param.enable && facet->material_id.buf!=NULL) {
             //
-            add_xml_attr_str(polylist, "material", _tochar(facet->material_id.buf + 1));
+            add_xml_attr_str(polylist_tag, "material", _tochar(facet->material_id.buf + 1));
             if (!facet->same_material) {
                 char* material = _tochar(facet->material_id.buf + 1);
-                bool exist_same_material = existSameID(library_materials, "<library_materials><material>", material);
+                bool exist_same_material = existSameID(library_materials_tag, "<library_materials><material>", material);
                 if (!exist_same_material) { // 一番最初
                     char* material_url = addMaterial(_tochar(facet->material_id.buf + 1));
                     char* file_id = addImage(facet->material_param.getTextureName());
-                    tXML* profile = addEffect(material_url, file_id, facet->material_param);
+                    tXML* profile_tag = addEffect(material_url, file_id, facet->material_param);
                     ::free(material_url);
                     ::free(file_id);
                     // Bumpmap
                     char* bump_id = addImage(facet->material_param.getBumpMapName());
                     if (bump_id!=NULL) {
-                        addExtraBumpmap(profile, bump_id);
+                        addExtraBumpmap(profile_tag, bump_id);
                         ::free(bump_id);
                     }
                 }
@@ -633,40 +628,40 @@ void   ColladaXML::addPolylists(tXML* mesh, MeshObjectData* meshdata, const char
         }
 
         //
-        tXML* vertex_input = add_xml_node(polylist, "input");
-        add_xml_attr_str(vertex_input, "semantic", "VERTEX");
-        add_xml_attr_str(vertex_input, "source", vertex_id);
-        add_xml_attr_int(vertex_input, "offset", 0);
+        tXML* input_vertex_tag = add_xml_node(polylist_tag, "input");
+        add_xml_attr_str(input_vertex_tag, "semantic", "VERTEX");
+        add_xml_attr_str(input_vertex_tag, "source", vertex_id);
+        add_xml_attr_int(input_vertex_tag, "offset", 0);
 
         if (normal_id!=NULL) {
-            tXML* normal_input = add_xml_node(polylist, "input");
-            add_xml_attr_str(normal_input, "semantic", "NORMAL");
-            add_xml_attr_str(normal_input, "source", normal_id);
-            add_xml_attr_int(normal_input, "offset", 0);
+            tXML* input_normal_tag = add_xml_node(polylist_tag, "input");
+            add_xml_attr_str(input_normal_tag, "semantic", "NORMAL");
+            add_xml_attr_str(input_normal_tag, "source", normal_id);
+            add_xml_attr_int(input_normal_tag, "offset", 0);
         }
     
         if (texcrd_id!=NULL) {
-            tXML* normal_input = add_xml_node(polylist, "input");
-            add_xml_attr_str(normal_input, "semantic", "TEXCOORD");
-            add_xml_attr_str(normal_input, "source", texcrd_id);
-            add_xml_attr_int(normal_input, "offset", 0);
+            tXML* input_uvmap_tag = add_xml_node(polylist_tag, "input");
+            add_xml_attr_str(input_uvmap_tag, "semantic", "TEXCOORD");
+            add_xml_attr_str(input_uvmap_tag, "source", texcrd_id);
+            add_xml_attr_int(input_uvmap_tag, "offset", 0);
         }
     
-        tXML* vcount = add_xml_node(polylist, "vcount");
-        if (add_xml_content_area(vcount, facet->num_polygon*10)) {          // 1データ 10桁の領域．予め確保した方が早い．
+        tXML* vcount_tag = add_xml_node(polylist_tag, "vcount");
+        if (add_xml_content_area(vcount_tag, facet->num_polygon*10)) {          // 1データ 10桁の領域．予め確保した方が早い．
             for (int i=0; i<facet->num_polygon; i++) {
-                append_xml_content_node(vcount, itostr(meshdata->num_vcount));
+                append_xml_content_node(vcount_tag, itostr(meshdata->num_vcount));
             }
         }
 
-        tXML* p_data = add_xml_node(polylist, "p");
-        if (add_xml_content_area(p_data, meshdata->num_vcount*10)) {        // 1データ 10桁の領域．予め確保した方が早い．
+        tXML* p_data_tag = add_xml_node(polylist_tag, "p");
+        if (add_xml_content_area(p_data_tag, meshdata->num_vcount*10)) {        // 1データ 10桁の領域．予め確保した方が早い．
             for (int i=0; i<facet->num_polygon; i++) {
                 int n = i*meshdata->num_vcount;
                 for (int j=0; j<meshdata->num_vcount; j++) {
-                    append_xml_content_node(p_data, itostr(facet->data_index[n+j] + pnum));
+                    append_xml_content_node(p_data_tag, itostr(facet->data_index[n+j] + pnum));
                 }
-                append_xml_content_node(p_data, "");
+                append_xml_content_node(p_data_tag, "");
             }
         }
 
@@ -686,16 +681,16 @@ char*  ColladaXML::addImage(const char* fn)
     Buffer file_id  = replace_sBuffer_str(temp_id , " ", "_");
     free_Buffer(&temp_id);
 
-    bool exist_same_image = existSameID(library_images, "<library_images><image>", _tochar(file_id.buf));
+    bool exist_same_image = existSameID(library_images_tag, "<library_images><image>", _tochar(file_id.buf));
     if (!exist_same_image) {
-        tXML* image = add_xml_node(library_images, "image");
-        add_xml_attr_str(image, "id",   _tochar(file_id.buf));
-        add_xml_attr_str(image, "name", _tochar(file_id.buf));
-        add_xml_attr_int(image, "height", 0);
-        add_xml_attr_int(image, "width",  0);
+        tXML* image_tag = add_xml_node(library_images_tag, "image");
+        add_xml_attr_str(image_tag, "id",   _tochar(file_id.buf));
+        add_xml_attr_str(image_tag, "name", _tochar(file_id.buf));
+        add_xml_attr_int(image_tag, "height", 0);
+        add_xml_attr_int(image_tag, "width",  0);
 
-        tXML* init_from = add_xml_node(image, "init_from");
-        append_xml_content_node(init_from, _tochar(filename.buf));
+        tXML* init_from_tag = add_xml_node(image_tag, "init_from");
+        append_xml_content_node(init_from_tag, _tochar(filename.buf));
     }
 
     free_Buffer(&filename);
@@ -712,10 +707,10 @@ char*  ColladaXML::addMaterial(const char* material_id)
     cat_s2Buffer(material_id, &material_url);
     cat_s2Buffer("_URL", &material_url);
 
-    tXML* material = add_xml_node(library_materials, "material");
-    add_xml_attr_str(material, "id", material_id);
-    tXML* instance_effect = add_xml_node(material, "instance_effect");
-    add_xml_attr_str(instance_effect, "url", _tochar(material_url.buf));
+    tXML* material_tag = add_xml_node(library_materials_tag, "material");
+    add_xml_attr_str(material_tag, "id", material_id);
+    tXML* instance_effect_tag = add_xml_node(material_tag, "instance_effect");
+    add_xml_attr_str(instance_effect_tag, "url", _tochar(material_url.buf));
 
     return _tochar(material_url.buf);
 }
@@ -738,73 +733,72 @@ tXML*  ColladaXML::addEffect(const char* material_url, const char* file_id, Mate
     cat_s2Buffer("-sampler", &smp);
     free_Buffer(&randomstr);
 
-    tXML* effect = add_xml_node(library_effects, "effect");
-    add_xml_attr_str(effect, "id", material_url+1);
-    tXML* profile = add_xml_node(effect, "profile_COMMON");
+    tXML* effect_tag = add_xml_node(library_effects_tag, "effect");
+    add_xml_attr_str(effect_tag, "id", material_url+1);
+    tXML* profile_tag = add_xml_node(effect_tag, "profile_COMMON");
 
     if (!isBlankTexture(mparam.getTextureName())) {
-        tXML* newparam;
-        newparam = add_xml_node(profile, "newparam");
-        add_xml_attr_str(newparam, "sid", _tochar(srf.buf));
-        tXML* surface = add_xml_node(newparam, "surface");
-        add_xml_attr_str(surface, "type", "2D");
-        tXML* init_from = add_xml_node(surface, "init_from");
-        append_xml_content_node(init_from, _tochar(fid.buf));
+        tXML* newparam_tag = add_xml_node(profile_tag, "newparam");
+        add_xml_attr_str(newparam_tag, "sid", _tochar(srf.buf));
+        tXML* surface_tag = add_xml_node(newparam_tag, "surface");
+        add_xml_attr_str(surface_tag, "type", "2D");
+        tXML* init_from_tag = add_xml_node(surface_tag, "init_from");
+        append_xml_content_node(init_from_tag, _tochar(fid.buf));
 
-        newparam = add_xml_node(profile, "newparam");
-        add_xml_attr_str(newparam, "sid", _tochar(smp.buf));
-        tXML* sample = add_xml_node(newparam, "sampler2D");
-        tXML* source = add_xml_node(sample, "source");
-        append_xml_content_node(source, _tochar(srf.buf));
+        newparam_tag = add_xml_node(profile_tag, "newparam");
+        add_xml_attr_str(newparam_tag, "sid", _tochar(smp.buf));
+        tXML* sample_tag = add_xml_node(newparam_tag, "sampler2D");
+        tXML* source_tag = add_xml_node(sample_tag, "source");
+        append_xml_content_node(source_tag, _tochar(srf.buf));
     }
 
-    tXML* technique = add_xml_node(profile, "technique");
-    add_xml_attr_str(technique, "sid", "common");
-    tXML* phong = add_xml_node(technique, "phong");
+    tXML* technique_tag = add_xml_node(profile_tag, "technique");
+    add_xml_attr_str(technique_tag, "sid", "common");
+    tXML* phong_tag = add_xml_node(technique_tag, "phong");
 
     // emission (glow)
     if (mparam.isSetGlow()) {
-        tXML* emission = add_xml_node(phong, "emission");
-        tXML* color = add_xml_node(emission, "color");
-        for (int i=0; i<3; i++) append_xml_content_node(color, dtostr(mparam.getGlow()));
-        append_xml_content_node(color, "1.0");   // alpha
+        tXML* emission_tag = add_xml_node(phong_tag, "emission");
+        tXML* color_tag = add_xml_node(emission_tag, "color");
+        for (int i=0; i<3; i++) append_xml_content_node(color_tag, dtostr(mparam.getGlow()));
+        append_xml_content_node(color_tag, "1.0");   // alpha
     }
 
     // ambient (bright)
     if (mparam.isSetBright()) {
-        tXML* ambient = add_xml_node(phong, "ambient");
-        tXML* color = add_xml_node(ambient, "color");
-        for (int i=0; i<3; i++) append_xml_content_node(color, dtostr(mparam.getBright()));
-        append_xml_content_node(color, "1.0");   // alpha
+        tXML* ambient_tag = add_xml_node(phong_tag, "ambient");
+        tXML* color_tag = add_xml_node(ambient_tag, "color");
+        for (int i=0; i<3; i++) append_xml_content_node(color_tag, dtostr(mparam.getBright()));
+        append_xml_content_node(color_tag, "1.0");   // alpha
     }
 
     // diffuse
-    tXML* diffuse = NULL;
+    tXML* diffuse_tag = NULL;
     if (!isBlankTexture(mparam.getTextureName())) {
-        diffuse = add_xml_node(phong, "diffuse");
-        tXML* texture = add_xml_node(diffuse, "texture");
-        add_xml_attr_str(texture, "texture",  _tochar(smp.buf));
-        add_xml_attr_str(texture, "texcoord", _tochar(fid.buf));
+        diffuse_tag = add_xml_node(phong_tag, "diffuse");
+        tXML* texture_tag = add_xml_node(diffuse_tag, "texture");
+        add_xml_attr_str(texture_tag, "texture",  _tochar(smp.buf));
+        add_xml_attr_str(texture_tag, "texcoord", _tochar(fid.buf));
     }
 
     // color
     if (mparam.texture.isSetColor()) {
         bool no_texture = true;
-        if (diffuse!=NULL) no_texture = false;
+        if (diffuse_tag!=NULL) no_texture = false;
         //
         if (no_texture || forUnity5) {
             // テクスチャがない場合 または Unity5 の場合は <diffuse>を新しく作成．
             // テクスチャが存在 かつ Unity5 の場合は Colladaの規格に違反しているが，カラーを読むために必要．
             // また，Unity2022, Unity2023 はカラーを読まない（たぶん）．
-            diffuse = add_xml_node(phong, "diffuse");
+            diffuse_tag = add_xml_node(phong_tag, "diffuse");
         }
         //
-        tXML* color = add_xml_node(diffuse, "color");
-        //add_xml_attr_str(color, "sid", "diffuse");
+        tXML* color_tag = add_xml_node(diffuse_tag, "color");
+        //add_xml_attr_str(color_tag, "sid", "diffuse");
         for (int i=0; i<4; i++) {
             double col = mparam.texture.getColor(i);
             if (forUnity && col==0.0) col = 0.0001;
-            append_xml_content_node(color, dtostr(col));
+            append_xml_content_node(color_tag, dtostr(col));
         }
     }
 
@@ -812,33 +806,33 @@ tXML*  ColladaXML::addEffect(const char* material_url, const char* file_id, Mate
     if (mparam.isTransparency()) {
         double alpha = Min(mparam.getTransparent(), mparam.texture.getColor(3));
         if (forUnity && alpha<0.01) alpha = 0.01;
-        tXML* transparency = add_xml_node(phong, "transparency");
-        tXML* transfloat   = add_xml_node(transparency, "float");
-        append_xml_content_node(transfloat, dtostr(alpha));
+        tXML* transparency_tag = add_xml_node(phong_tag, "transparency");
+        tXML* transfloat_tag   = add_xml_node(transparency_tag, "float");
+        append_xml_content_node(transfloat_tag, dtostr(alpha));
     }
 
     // specular map & shininess 
     if (mparam.isSetShininess()) {
-        tXML* specular = add_xml_node(phong, "specular");
-        tXML* color = add_xml_node(specular, "color");
-        for (int i=0; i<4; i++) append_xml_content_node(color, dtostr(mparam.specmap.getColor(i)));
+        tXML* specular_tag = add_xml_node(phong_tag, "specular");
+        tXML* color_tag = add_xml_node(specular_tag, "color");
+        for (int i=0; i<4; i++) append_xml_content_node(color_tag, dtostr(mparam.specmap.getColor(i)));
         //
-        tXML* shininess = add_xml_node(phong, "shininess");
-        tXML* shinfloat = add_xml_node(shininess, "float");
-        append_xml_content_node(shinfloat, dtostr(mparam.getShininess()));
+        tXML* shininess_tag = add_xml_node(phong_tag, "shininess");
+        tXML* shinfloat_tag = add_xml_node(shininess_tag, "float");
+        append_xml_content_node(shinfloat_tag, dtostr(mparam.getShininess()));
     }
 
     free_Buffer(&fid);
     free_Buffer(&srf);
     free_Buffer(&smp);
 
-    return profile;
+    return profile_tag;
 }
 
 
-void  ColladaXML::addExtraBumpmap(tXML* profile, const char* bump_id)
+void  ColladaXML::addExtraBumpmap(tXML* profile_tag, const char* bump_id)
 {
-    if (profile==NULL || bump_id==NULL) return;
+    if (profile_tag==NULL || bump_id==NULL) return;
 
     Buffer fid = make_Buffer_str(bump_id);
     Buffer srf = make_Buffer_str(bump_id);
@@ -853,29 +847,28 @@ void  ColladaXML::addExtraBumpmap(tXML* profile, const char* bump_id)
     cat_s2Buffer("-sampler", &smp);
     free_Buffer(&randomstr);
 
-    tXML* newparam;
-    newparam = insert_xml_node(profile, "newparam");
-    add_xml_attr_str(newparam, "sid", _tochar(smp.buf));
-    tXML* sample = add_xml_node(newparam, "sampler2D");
-    tXML* source = add_xml_node(sample, "source");
-    append_xml_content_node(source, _tochar(srf.buf));
+    tXML* newparam_tag = insert_xml_node(profile_tag, "newparam");
+    add_xml_attr_str(newparam_tag, "sid", _tochar(smp.buf));
+    tXML* sample_tag = add_xml_node(newparam_tag, "sampler2D");
+    tXML* source_tag = add_xml_node(sample_tag, "source");
+    append_xml_content_node(source_tag, _tochar(srf.buf));
 
-    newparam = insert_xml_node(profile, "newparam");
-    add_xml_attr_str(newparam, "sid", _tochar(srf.buf));
-    tXML* surface = add_xml_node(newparam, "surface");
-    add_xml_attr_str(surface, "type", "2D");
-    tXML* init_from = add_xml_node(surface, "init_from");
-    append_xml_content_node(init_from, _tochar(fid.buf));
+    newparam_tag = insert_xml_node(profile_tag, "newparam");
+    add_xml_attr_str(newparam_tag, "sid", _tochar(srf.buf));
+    tXML* surface_tag = add_xml_node(newparam_tag, "surface");
+    add_xml_attr_str(surface_tag, "type", "2D");
+    tXML* init_from_tag = add_xml_node(surface_tag, "init_from");
+    append_xml_content_node(init_from_tag, _tochar(fid.buf));
 
-    tXML* technique = get_xml_node_bystr(profile, "<technique>");
-    tXML* extra = add_xml_node(technique, "extra");
-    tXML* techbump = add_xml_node(extra, "technique");
-    add_xml_attr_str(techbump, "profile", "BumpMap");
-    tXML* bump = add_xml_node(techbump, "bump");
+    tXML* technique_tag = get_xml_node_bystr(profile_tag, "<technique>");
+    tXML* extra_tag = add_xml_node(technique_tag, "extra");
+    tXML* techbump_tag = add_xml_node(extra_tag, "technique");
+    add_xml_attr_str(techbump_tag, "profile", "BumpMap");
+    tXML* bump_tag = add_xml_node(techbump_tag, "bump");
 
-    tXML* texture = add_xml_node(bump, "texture");
-    add_xml_attr_str(texture, "texture",  _tochar(smp.buf));
-    add_xml_attr_str(texture, "texcoord", _tochar(fid.buf));
+    tXML* texture_tag = add_xml_node(bump_tag, "texture");
+    add_xml_attr_str(texture_tag, "texture",  _tochar(smp.buf));
+    add_xml_attr_str(texture_tag, "texcoord", _tochar(fid.buf));
 
     free_Buffer(&fid);
     free_Buffer(&srf);
@@ -888,13 +881,22 @@ void  ColladaXML::addExtraBumpmap(tXML* profile, const char* bump_id)
 /**
  Scene への配置（位置，サイズ，回転，コライダー, Joints）
 */
-void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template)
+void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template_tag)
 {
     if (geometry_id==NULL || meshdata==NULL) return;
 
+    //
+    bool local_affine = true;
+    AffineTrans<double> affine;
+    if (meshdata->affineTrans!=NULL) {
+        local_affine = false;
+        affine.free();
+        affine = *(meshdata->affineTrans);
+    }
+
     // joints
-    tXML* avatar = NULL;
-    if (joints!=NULL && joints_template!=NULL && visual_scene->next==NULL) {
+    tXML* avatar_tag = NULL;
+    if (joints!=NULL && joints_template_tag!=NULL && visual_scene_tag!=NULL && visual_scene_tag->next==NULL) {
         char buf[LNAME];
         memset(buf, 0, LNAME);
         buf[0] = '"';
@@ -907,31 +909,38 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
                 memcpy(buf + 1, joint_name, len);
                 buf[len + 1] = '"';
                 buf[len + 2] = '\0';
-                tXML* xml = get_xml_attr_node(joints_template, "name", (const char*)buf);
-                if (xml!=NULL) {
-                    tXML* matrix = xml->next;
+
+                tXML* node_tag = get_xml_attr_node(joints_template_tag, "name", (const char*)buf);
+                if (node_tag!=NULL) {
+                    tXML* matrix_tag = node_tag->next;
                     for (int i=1; i<=4; i++) {
                         for (int j=1; j<=4; j++) {
-                            append_xml_content_node(matrix, dtostr(joints->alt_inverse_bind[jnt].element(i, j)));
+                            double element = joints->alt_inverse_bind[jnt].matrix.element(i, j);
+                            append_xml_content_node(matrix_tag, dtostr(element));
                         }
                     }
                 }
             }
         }
-        join_xml(visual_scene, joints_template);
         //
-        avatar = get_xml_attr_node(joints_template, "name", "\"avatar\"");
-        if (avatar!=NULL) avatar = avatar->next;
+        AffineTrans<double> mpelvis_inverse = joints->alt_inverse_bind[0].getInvAffine();
+        AffineTrans<double> skeleton_offset = affine * mpelvis_inverse;
+        skeleton_offset.computeMatrix(false);
+
+        avatar_tag = get_xml_attr_node(joints_template_tag, "name", "\"avatar\"");
+        if (avatar_tag!=NULL) avatar_tag = avatar_tag->next;
+        for (int i=1; i<=4; i++) {
+            for (int j=1; j<=4; j++) {
+                double element = skeleton_offset.matrix.element(i, j);
+                append_xml_content_node(avatar_tag, dtostr(element));
+            }
+        }
+
+        join_xml(visual_scene_tag, joints_template_tag);
+        skeleton_offset.free();
+        mpelvis_inverse.free();
     }
      
-    //
-    bool local_affine = true;
-    AffineTrans<double> affine;
-    if (meshdata->affineTrans!=NULL) {
-        local_affine = false;
-        affine.free();
-        affine = *(meshdata->affineTrans);
-    }
 
     Buffer geometry_name = dup_Buffer(meshdata->data_name);
     if (geometry_name.buf==NULL) geometry_name = make_Buffer_str(geometry_id+1);
@@ -941,22 +950,22 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
     Buffer node_id = make_Buffer_str("#NODE_");
     cat_Buffer(&randomstr, &node_id);
 
-    tXML* node_tag = add_xml_node(visual_scene, "node");
+    tXML* node_tag = add_xml_node(visual_scene_tag, "node");
     add_xml_attr_str(node_tag, "id",   _tochar(node_id.buf + 1));
     add_xml_attr_str(node_tag, "name", _tochar(geometry_name.buf));
     add_xml_attr_str(node_tag, "type", "NODE");
 
     // Collider
-    tXML* rigid_body = NULL;
-    tXML* instance_rigid_body = NULL;
+    tXML* rigid_body_tag = NULL;
+    tXML* instance_rigid_body_tag = NULL;
     if (collider) {
-        rigid_body = add_xml_node(physics_model, "rigid_body");
-        add_xml_attr_str(rigid_body, "sid",  _tochar(node_id.buf + 1));
-        add_xml_attr_str(rigid_body, "name", _tochar(geometry_name.buf));
+        rigid_body_tag = add_xml_node(physics_model_tag, "rigid_body");
+        add_xml_attr_str(rigid_body_tag, "sid",  _tochar(node_id.buf + 1));
+        add_xml_attr_str(rigid_body_tag, "name", _tochar(geometry_name.buf));
         //
-        instance_rigid_body = add_xml_node(instance_physics_model, "instance_rigid_body");
-        add_xml_attr_str(instance_rigid_body, "body",   _tochar(node_id.buf + 1));
-        add_xml_attr_str(instance_rigid_body, "target", _tochar(node_id.buf));
+        instance_rigid_body_tag = add_xml_node(instance_physics_model_tag, "instance_rigid_body");
+        add_xml_attr_str(instance_rigid_body_tag, "body",   _tochar(node_id.buf + 1));
+        add_xml_attr_str(instance_rigid_body_tag, "target", _tochar(node_id.buf));
     }
 
     free_Buffer(&randomstr);
@@ -964,75 +973,71 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
 
     // 回転行列
     affine.computeMatrix(false);
-    tXML* matrix = add_xml_node(node_tag, "matrix");
+    tXML* matrix_tag = add_xml_node(node_tag, "matrix");
     for (int i=1; i<=4; i++) {
         for (int j=1; j<=4; j++) {
-            append_xml_content_node(matrix, dtostr(affine.matrix.element(i, j)));
-            if (avatar!=NULL) {
-                double element = affine.matrix.element(i, j);
-                append_xml_content_node(avatar, dtostr(element));
-            }
+            append_xml_content_node(matrix_tag, dtostr(affine.matrix.element(i, j)));
         }
     }
 
     // オイラー角
 /*
-    tXML* translate = add_xml_node(node_tag, "translate");
-    add_xml_attr_str(translate, "sid", "location");
-    append_xml_content_node(translate, dtostr(affine.shift.x));
-    append_xml_content_node(translate, dtostr(affine.shift.y));
-    append_xml_content_node(translate, dtostr(affine.shift.z));
+    tXML* translate_tag = add_xml_node(node_tag, "translate");
+    add_xml_attr_str(translate_tag, "sid", "location");
+    append_xml_content_node(translate_tag, dtostr(affine.shift.x));
+    append_xml_content_node(translate_tag, dtostr(affine.shift.y));
+    append_xml_content_node(translate_tag, dtostr(affine.shift.z));
     //
     Vector<double> euler = affine.rotate.getEulerZYX();
-    tXML* rotate_z = add_xml_node(node_tag, "rotate");
-    add_xml_attr_str(rotate_z, "sid", "rotationZ");
-    append_xml_content_node(rotate_z, "0 0 1");
-    append_xml_content_node(rotate_z, dtostr(euler.x));
+    tXML* rotate_z_tag = add_xml_node(node_tag, "rotate");
+    add_xml_attr_str(rotate_z_tag, "sid", "rotationZ");
+    append_xml_content_node(rotate_z_tag, "0 0 1");
+    append_xml_content_node(rotate_z_tag, dtostr(euler.x));
 
-    tXML* rotate_y = add_xml_node(node_tag, "rotate");
-    add_xml_attr_str(rotate_y, "sid", "rotationY");
-    append_xml_content_node(rotate_y, "0 1 0");
-    append_xml_content_node(rotate_y, dtostr(euler.y));
+    tXML* rotate_y_tag = add_xml_node(node_tag, "rotate");
+    add_xml_attr_str(rotate_y_tag, "sid", "rotationY");
+    append_xml_content_node(rotate_y_tag, "0 1 0");
+    append_xml_content_node(rotate_y_tag, dtostr(euler.y));
 
-    tXML* rotate_x = add_xml_node(node_tag, "rotate");
-    add_xml_attr_str(rotate_x, "sid", "rotationX");
-    append_xml_content_node(rotate_x, "1 0 0");
-    append_xml_content_node(rotate_x, dtostr(euler.z));
+    tXML* rotate_x_tag = add_xml_node(node_tag, "rotate");
+    add_xml_attr_str(rotate_x_tag, "sid", "rotationX");
+    append_xml_content_node(rotate_x_tag, "1 0 0");
+    append_xml_content_node(rotate_x_tag, dtostr(euler.z));
 */
     
-    tXML* scale = add_xml_node(node_tag, "scale");
-    add_xml_attr_str(scale, "sid", "scale");
-    append_xml_content_node(scale, dtostr(affine.scale.x));
-    append_xml_content_node(scale, dtostr(affine.scale.y));
-    append_xml_content_node(scale, dtostr(affine.scale.z));
+    tXML* scale_tag = add_xml_node(node_tag, "scale");
+    add_xml_attr_str(scale_tag, "sid", "scale");
+    append_xml_content_node(scale_tag, dtostr(affine.scale.x));
+    append_xml_content_node(scale_tag, dtostr(affine.scale.y));
+    append_xml_content_node(scale_tag, dtostr(affine.scale.z));
 
-    tXML* instance = add_xml_node(node_tag, "instance_geometry");
-    add_xml_attr_str(instance, "url", geometry_id);
+    tXML* instance_tag = add_xml_node(node_tag, "instance_geometry");
+    add_xml_attr_str(instance_tag, "url", geometry_id);
 
-    tXML* bind_material = add_xml_node(instance, "bind_material");
-    tXML* technique_common = add_xml_node(bind_material, "technique_common");
+    tXML* bind_material_tag = add_xml_node(instance_tag, "bind_material");
+    tXML* technique_common_tag = add_xml_node(bind_material_tag, "technique_common");
     
-    tXML* instance_material;
+    tXML* instance_material_tag;
     MeshFacetNode* facet = meshdata->facet;
     while(facet!=NULL) {
         if (!facet->same_material) {
-            instance_material = add_xml_node(technique_common, "instance_material");
-            add_xml_attr_str(instance_material, "symbol", _tochar(facet->material_id.buf + 1));
-            add_xml_attr_str(instance_material, "target", _tochar(facet->material_id.buf));
+            instance_material_tag = add_xml_node(technique_common_tag, "instance_material");
+            add_xml_attr_str(instance_material_tag, "symbol", _tochar(facet->material_id.buf + 1));
+            add_xml_attr_str(instance_material_tag, "target", _tochar(facet->material_id.buf));
         }
         facet = facet->next;
     }
 
     // Collider: physics_model
     if (collider) {
-        technique_common = add_xml_node(rigid_body, "technique_common");
-        tXML* dynamic = add_xml_node(technique_common, "dynamic");
-        tXML* mass    = add_xml_node(technique_common, "mass");
-        add_xml_content_node(dynamic, "false");
-        add_xml_content_node(mass, "0");
-        tXML* shape   = add_xml_node(technique_common, "shape");
-        instance      = add_xml_node(shape, "instance_geometry");
-        add_xml_attr_str(instance, "url", geometry_id);
+        technique_common_tag = add_xml_node(rigid_body_tag, "technique_common");
+        tXML* dynamic_tag = add_xml_node(technique_common_tag, "dynamic");
+        tXML* mass_tag    = add_xml_node(technique_common_tag, "mass");
+        add_xml_content_node(dynamic_tag, "false");
+        add_xml_content_node(mass_tag, "0");
+        tXML* shape_tag   = add_xml_node(technique_common_tag, "shape");
+        instance_tag      = add_xml_node(shape_tag, "instance_geometry");
+        add_xml_attr_str(instance_tag, "url", geometry_id);
     }
 
     //
@@ -1112,7 +1117,7 @@ void  ColladaXML::addCenterObject(void)
 //
 void  ColladaXML::addCenterScene(void)
 {
-    tXML* node_tag = add_xml_node(visual_scene, "node");
+    tXML* node_tag = add_xml_node(visual_scene_tag, "node");
     add_xml_attr_str(node_tag, "id",   "#NODE_DUMMY");
     add_xml_attr_str(node_tag, "name", "center_origin");
     add_xml_attr_str(node_tag, "type", "NODE");
@@ -1120,10 +1125,10 @@ void  ColladaXML::addCenterScene(void)
     // 回転行列
     AffineTrans<double> affine;
     affine.computeMatrix(false);
-    tXML* matrix = add_xml_node(node_tag, "matrix");
+    tXML* matrix_tag = add_xml_node(node_tag, "matrix");
     for (int i=1; i<=4; i++) {
         for (int j=1; j<=4; j++) {
-            append_xml_content_node(matrix, dtostr(affine.matrix.element(i, j)));
+            append_xml_content_node(matrix_tag, dtostr(affine.matrix.element(i, j)));
         }
     }
     affine.free();

@@ -877,13 +877,15 @@ void   close_xml(tXML* pp)
 Buffer  xml_inverse_parse(tXML* pp, int mode)
 
 ppに格納された XMLデータを元の書式に戻して Bufferに格納する．xml_parse() の逆．@n
-@b XML_CRLF_FORMAT, @b XML_INDENT_FORMAT でノード値がある場合は，値を囲むノードは改行しない．
+@b XML_CRLF_FORMAT, @b XML_TAB_FORMAT @b XML_SPACE_FORMAT @b XML_SPACE4_FORMAT でノード値がある場合は，値を囲むノードは改行しない．
 
-@param  pp    XMLデータの格納されたツリーへのポインタ
-@param  mode  元のXMLへ戻す時の書式
-@param  mode  @b XML_ONELINE_FORMAT 改行なしの一行にする．
-@param  mode  @b XML_CRLF_FORMAT    ノードの終わりを CR(0x0d), LF(0x0a)で改行する．
-@param  mode  @b XML_INDENT_FORMAT  先頭にインデント(TAB)をつけ，ノードごとに改行 CR LF (0x0d,0x0a)する．
+@param  pp      XMLデータの格納されたツリーへのポインタ
+@param  mode    元のXMLへ戻す時の書式
+@param  mode    @b XML_ONELINE_FORMAT 改行なしの一行にする．
+@param  mode    @b XML_CRLF_FORMAT    ノードの終わりを CR(0x0d), LF(0x0a)で改行する．
+@param  mode    @b XML_TAB_FORMAT     先頭にインデント(TAB)をつけ，ノードごとに改行 CR LF (0x0d,0x0a)する．
+@param  mode    @b XML_SPACE_FORMAT   先頭に空白2つをつけ，ノードごとに改行 CR LF (0x0d,0x0a)する．
+@param  mode    @b XML_SPACE4_FORMAT  先頭に空白4つをつけ，ノードごとに改行 CR LF (0x0d,0x0a)する．
 
 @return 変換したXMLデータを格納した Buffer変数．
 */
@@ -919,7 +921,9 @@ ppに格納された XMLデータを元の書式に戻して Bufferに格納す�
 @param  mode    元のXMLへ戻す時の書式
 @param  mode    @b XML_ONELINE_FORMAT 改行なしの一行にする．
 @param  mode    @b XML_CRLF_FORMAT    ノードの終わりを CR(0x0d), LF(0x0a)で改行する．
-@param  mode    @b XML_INDENT_FORMAT  先頭にインデント(TAB)をつけ，ノードごとに改行する．
+@param  mode    @b XML_TAB_FORMAT     先頭にインデント(TAB)をつけ，ノードごとに改行する．
+@param  mode    @b XML_SPACE_FORMAT   先頭に空白2つをつけ，ノードごとに改行 CR LF (0x0d,0x0a)する．
+@param  mode    @b XML_SPACE4_FORMAT  先頭に空白4つをつけ，ノードごとに改行 CR LF (0x0d,0x0a)する．
 @param  indent  インデントを付け始める深さ．modeが @b XML_INDENT_MODE のときのみ有効．
 */
 void  _xml_to_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
@@ -948,8 +952,10 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
 @param  mode    元のXMLへ戻す時の書式
 @param  mode    @b XML_ONELINE_FORMAT 改行なしの一行にする．
 @param  mode    @b XML_CRLF_FORMAT    ノードの終わりを CR(0x0d), LF(0x0a)で改行する．
-@param  mode    @b XML_INDENT_FORMAT  先頭にインデント(TAB)をつけ，ノードごとに改行する．
-@param  indent  インデントを付け始める深さ．modeが XML_INDENT_MODE のときのみ有効．
+@param  mode    @b XML_TAB_FORMAT  先頭にインデント(TAB)をつけ，ノードごとに改行する．
+@param  mode    @b XML_SPACE_FORMAT   先頭に空白2つをつけ，ノードごとに改行 CR LF (0x0d,0x0a)する．
+@param  mode    @b XML_SPACE4_FORMAT  先頭に空白4つをつけ，ノードごとに改行 CR LF (0x0d,0x0a)する．
+@param  indent  インデントを付け始める深さ．modeが XML_TAB_FORMAT, XML_SPACE_FORMAT, ML_SPACE4_FORMAT のときのみ有効．
 */
 void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
 {
@@ -957,18 +963,18 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
 
     // Name TAG
     if (pp->ldat.id==XML_NAME_NODE) {
-        if (mode==XML_INDENT_FORMAT || mode==XML_CRLF_FORMAT) {
+        if (mode!=XML_ONELINE_FORMAT) {
             if (buf->vldsz>0 && buf->buf[buf->vldsz-1]!='\n') cat_s2Buffer("\r\n", buf);
         }
         //
-        if (mode==XML_INDENT_FORMAT) {
-            char* tabs = (char*)malloc(pp->depth-indent+1);
-            if (tabs!=NULL) {
-                for (i=indent; i<pp->depth; i++) tabs[i-indent] = '\t';
-                tabs[pp->depth-indent] = '\0';
-                cat_s2Buffer(tabs, buf);
-                free(tabs);
-            }
+        if (mode==XML_TAB_FORMAT) {
+            add_indent_Buffer(buf, '\t', pp->depth - indent);
+        }
+        else if (mode==XML_SPACE_FORMAT) {
+            add_indent_Buffer(buf, ' ', pp->depth*2 - indent);
+        }
+        else if (mode==XML_SPACE4_FORMAT) {
+            add_indent_Buffer(buf, ' ', pp->depth*4 - indent);
         }
 
         cat_s2Buffer("<", buf);
@@ -985,7 +991,7 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
                 cat_Buffer(&(pp->ldat.key), buf);
                 cat_s2Buffer(">", buf);
             }
-            if (mode==XML_INDENT_FORMAT || mode==XML_CRLF_FORMAT) {
+            if (mode!=XML_ONELINE_FORMAT) {
                 cat_s2Buffer("\r\n", buf);
             }
         }
@@ -1019,14 +1025,14 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
 
     // xml TAG
     else if (pp->ldat.id==XML_DOC_NODE) {
-        if (mode==XML_INDENT_FORMAT) {
-            char* tabs = (char*)malloc(pp->depth-indent+1);
-            if (tabs!=NULL) {
-                for (i=indent; i<pp->depth; i++) tabs[i-indent] = '\t';
-                tabs[pp->depth-indent] = '\0';
-                cat_s2Buffer(tabs, buf);
-                free(tabs);
-            }
+        if (mode==XML_TAB_FORMAT) {
+            add_indent_Buffer(buf, '\t', pp->depth - indent);
+        }
+        else if (mode==XML_SPACE_FORMAT) {
+            add_indent_Buffer(buf, ' ', pp->depth*2 - indent);
+        }
+        else if (mode==XML_SPACE4_FORMAT) {
+            add_indent_Buffer(buf, ' ', pp->depth*4 - indent);
         }
 
         cat_s2Buffer("<?", buf);
@@ -1038,23 +1044,23 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
         }
         cat_s2Buffer("?>", buf);
 
-        if (mode==XML_INDENT_FORMAT || mode==XML_CRLF_FORMAT) cat_s2Buffer("\r\n", buf);
+        if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer("\r\n", buf);
     }
 
     // Comment TAG
     else if (pp->ldat.id==XML_COMMENT_NODE) {
-        if (mode==XML_INDENT_FORMAT || mode==XML_CRLF_FORMAT) {
+        if (mode!=XML_ONELINE_FORMAT) {
             if (buf->buf[buf->vldsz-1]!='\n') cat_s2Buffer("\r\n", buf);
         }
 
-        if (mode==XML_INDENT_FORMAT) {
-            char* tabs = (char*)malloc(pp->depth-indent+1);
-            if (tabs!=NULL) {
-                for (i=indent; i<pp->depth; i++) tabs[i-indent] = '\t';
-                tabs[pp->depth-indent] = '\0';
-                cat_s2Buffer(tabs, buf);
-                free(tabs);
-            }
+        if (mode==XML_TAB_FORMAT) {
+            add_indent_Buffer(buf, '\t', pp->depth - indent);
+        }
+        else if (mode==XML_SPACE_FORMAT) {
+            add_indent_Buffer(buf, ' ', pp->depth*2 - indent);
+        }
+        else if (mode==XML_SPACE4_FORMAT) {
+            add_indent_Buffer(buf, ' ', pp->depth*4 - indent);
         }
 
         cat_s2Buffer("<!--", buf);
@@ -1063,23 +1069,23 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
         }
         cat_s2Buffer("-->", buf);
 
-        if (mode==XML_INDENT_FORMAT || mode==XML_CRLF_FORMAT) cat_s2Buffer("\r\n", buf);
+        if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer("\r\n", buf);
     }
 
     // Data TAG
     else if (pp->ldat.id==XML_DATA_NODE) {
-        if (mode==XML_INDENT_FORMAT || mode==XML_CRLF_FORMAT) {
+        if (mode!=XML_ONELINE_FORMAT) {
             if (buf->buf[buf->vldsz-1]!='\n') cat_s2Buffer("\r\n", buf);
         }
         //
-        if (mode==XML_INDENT_FORMAT) {
-            char* tabs = (char*)malloc(pp->depth-indent+1);
-            if (tabs!=NULL) {
-                for (i=indent; i<pp->depth; i++) tabs[i-indent] = '\t';
-                tabs[pp->depth-indent] = '\0';
-                cat_s2Buffer(tabs, buf);
-                free(tabs);
-            }
+        if (mode==XML_TAB_FORMAT) {
+            add_indent_Buffer(buf, '\t', pp->depth - indent);
+        }
+        else if (mode==XML_SPACE_FORMAT) {
+            add_indent_Buffer(buf, ' ', pp->depth*2 - indent);
+        }
+        else if (mode==XML_SPACE4_FORMAT) {
+            add_indent_Buffer(buf, ' ', pp->depth*4 - indent);
         }
 
         cat_s2Buffer("<!", buf);
@@ -1088,23 +1094,23 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
         }
         cat_s2Buffer(">", buf);
 
-        if (mode==XML_INDENT_FORMAT || mode==XML_CRLF_FORMAT) cat_s2Buffer("\r\n", buf);
+        if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer("\r\n", buf);
     }
 
     // Processing TAG
     else if (pp->ldat.id==XML_PROCESS_NODE) {
-        if (mode==XML_INDENT_FORMAT || mode==XML_CRLF_FORMAT) {
+        if (mode!=XML_ONELINE_FORMAT) {
             if (buf->buf[buf->vldsz-1]!='\n') cat_s2Buffer("\r\n", buf);
         }
         //
-        if (mode==XML_INDENT_FORMAT) {
-            char* tabs = (char*)malloc(pp->depth-indent+1);
-            if (tabs!=NULL) {
-                for (i=indent; i<pp->depth; i++) tabs[i-indent] = '\t';
-                tabs[pp->depth-indent] = '\0';
-                cat_s2Buffer(tabs, buf);
-                free(tabs);
-            }
+        if (mode==XML_TAB_FORMAT) {
+            add_indent_Buffer(buf, '\t', pp->depth - indent);
+        }
+        else if (mode==XML_SPACE_FORMAT) {
+            add_indent_Buffer(buf, ' ', pp->depth*2 - indent);
+        }
+        else if (mode==XML_SPACE4_FORMAT) {
+            add_indent_Buffer(buf, ' ', pp->depth*4 - indent);
         }
 
         cat_s2Buffer("<?", buf);
@@ -1116,7 +1122,7 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
         }
         cat_s2Buffer(" ?>", buf);
 
-        if (mode==XML_INDENT_FORMAT || mode==XML_CRLF_FORMAT) cat_s2Buffer("\r\n", buf);
+        if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer("\r\n", buf);
     }
 
     return;
@@ -1133,32 +1139,31 @@ void  xml_close_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
 @param  mode    元のXMLへ戻す時の書式
 @param  mode    @b XML_ONELINE_FORMAT 改行なしの一行にする．
 @param  mode    @b XML_CRLF_FORMAT    ノードの終わりを CR(0x0d), LF(0x0a)で改行する．
-@param  mode    @b XML_INDENT_FORMAT  先頭にインデント(TAB)をつけ，ノードごとに改行する．
+@param  mode    @b XML_TAB_FORMAT     先頭にインデント(TAB)をつけ，ノードごとに改行する．
+@param  mode    @b XML_SPACE_FORMAT   先頭に空白2つをつけ，ノードごとに改行 CR LF (0x0d,0x0a)する．
+@param  mode    @b XML_SPACE4_FORMAT  先頭に空白4つをつけ，ノードごとに改行 CR LF (0x0d,0x0a)する．
 @param  indent  インデントを付け始める深さ．modeが XML_INDENT_MODE のときのみ有効．
 */
 void  xml_close_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
 {
-    int i;
-
     if (pp->ldat.id==XML_NAME_NODE) {
         if (pp->next!=NULL) {
-            if (mode==XML_INDENT_FORMAT) {
-                if (pp->next->ldat.id!=XML_CONTENT_NODE || pp->next->ysis!=NULL) {
-                    char* tabs = (char*)malloc(pp->depth-indent+1);
-                    if (tabs!=NULL) {
-                        for (i=indent; i<pp->depth; i++) tabs[i-indent] = '\t';
-                        tabs[pp->depth-indent] = '\0';
-                        cat_s2Buffer(tabs, buf);
-                        free(tabs);
-                    }
+            if (pp->next->ldat.id!=XML_CONTENT_NODE || pp->next->ysis!=NULL) {
+                if (mode==XML_TAB_FORMAT) {
+                    add_indent_Buffer(buf, '\t', pp->depth - indent);
+                }
+                else if (mode==XML_SPACE_FORMAT) {
+                    add_indent_Buffer(buf, ' ', pp->depth*2 - indent);
+                }
+                else if (mode==XML_SPACE4_FORMAT) {
+                    add_indent_Buffer(buf, ' ', pp->depth*4 - indent);
                 }
             }
-
             cat_s2Buffer("</", buf);
             cat_Buffer(&(pp->ldat.key), buf);
             cat_s2Buffer(">", buf);
 
-            if (mode==XML_INDENT_FORMAT || mode==XML_CRLF_FORMAT) cat_s2Buffer("\r\n", buf);
+            if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer("\r\n", buf);
         }
     }
 
@@ -1685,7 +1690,7 @@ XMLの表示（出力）．
 
 @param  fp    出力するファイルへのポインタ．NULLの場合は stderr
 @param  pp    表示を開始するXMLノードへのポインタ．
-@param  mode  @b XML_ONELINE_FORMAT, @b XML_CRLF_FORMAT, @b XML_INDENT_FORMAT
+@param  mode  @b XML_ONELINE_FORMAT, @b XML_CRLF_FORMAT, @b XML_TAB_FORMAT, @b XML_SPACE_FORMAT, @b XML_SPACE4_FORMAT
 */
 void   print_xml(FILE* fp, tXML* pp, int mode)
 {
