@@ -344,7 +344,8 @@ template <typename T> void   AffineTrans<T>::computeComponents(void)
 // 変換行列を用いて，ベクトルを変換する．
 template <typename T> Vector<T>  AffineTrans<T>::execMatrixTrans(Vector<T> v)
 {
-    if (matrix.element(4,4)!=(T)1.0) computeMatrix(true);
+    //if (matrix.element(4,4)!=(T)1.0) computeMatrix(true);
+    computeMatrix(true);
 
     Matrix<T> mv(1, 4);
     mv.mx[0] = v.x;

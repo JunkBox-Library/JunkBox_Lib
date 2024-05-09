@@ -57,7 +57,7 @@ public:
 
     char*   addGeometry(MeshObjectData* meshdata);
     void    addController(const char* geometry_id, MeshObjectData* meshdata, SkinJointData* skin_joint);
-    void    addScene(const char* geometry_id, MeshObjectData* meshdata, bool collider, SkinJointData* skin_join, tXML* joints_template);
+    void    addScene(const char* geometry_id, MeshObjectData* meshdata, bool collider, SkinJointData* skin_join);
 
     char*   addVertexSource(tXML* tag, MeshObjectData* meshdata);
     char*   addNormalSource(tXML* tag, MeshObjectData* meshdata);
@@ -81,12 +81,8 @@ public:
     void    setBlankTexture(const char* name) { if(name!=NULL) blank_texture = make_Buffer_bystr(name);}
     bool    isBlankTexture (const char* name);
 
-public:
-    // for Unity
-    bool    forUnity5;
-    bool    forUnity;
-    void    addCenterObject(void);
-    void    addCenterScene(void);
+    Vector<double> getObjectCenter();
+    void    setJointLocation(void);
 
 private:
 
@@ -122,8 +118,22 @@ public:
     tXML*   instance_visual_scene_tag;
     tXML*   instance_physics_scene_tag;
 
+    tXML*   joints_template_tag;
+
+public:
+    int     total_vertex;
+    Vector<double> center;
+    AffineTrans<double> skeleton;
+
     bool    phantom_out;
     Buffer  blank_texture;
+
+// for Unity
+public:
+    bool    forUnity5;
+    bool    forUnity;
+    void    addCenterObject(void);
+    void    addCenterScene(void);
 };
 
 
