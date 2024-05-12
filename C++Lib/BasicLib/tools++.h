@@ -56,10 +56,8 @@ template <typename T> void  ArrayParam<T>::init(int n)
         _value = NULL;
         return;
     }
-//print_message("=====> %d * %d = %d\n", sizeof(T), _size , sizeof(T)*_size);
     if (n>0) _value = (T*)malloc(sizeof(T)*_size);
     else     _value = NULL;
-//print_message("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
 
     return;
 }
