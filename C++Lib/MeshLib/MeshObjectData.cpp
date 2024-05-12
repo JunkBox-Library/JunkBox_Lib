@@ -53,7 +53,7 @@ void  MeshObjectData::free_value(void)
     freeNull(impvtx_value);
     freeNull(impnrm_value);
     freeNull(impmap_value);
-    freeArrayParams<double>(impwgt_value, num_import);
+    freeArrayParams<int>(impwgt_value, num_import);
 
     impvtx_value = NULL;
     impnrm_value = NULL;
@@ -95,7 +95,7 @@ bool  MeshObjectData::addData(ContourBaseData* contours, MaterialParam* param)
 
 
 /**
-bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<double>* wgt, int vnum, MaterialParam* param, bool useBrep)
+bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<int>* wgt, int vnum, MaterialParam* param, bool useBrep)
 
 指定した頂点ベクトルのデータを追加し，MeshObjectのデータ（通常はCONTOUR すなわちポリゴン単位）を作成する．@n
 vct, nrm, map は3個づつ組になって三角ポリゴンを表す．従って vnumは必ず3の倍数になるはず．@n
@@ -110,7 +110,7 @@ vct, nrm, map は3個づつ組になって三角ポリゴンを表す．従っ�
 @param useBrep  BREPを使用して頂点を配置する．
 @retval         true: 処理の成功．false: 処理の失敗．
 */
-bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<double>* wgt, int vnum, MaterialParam* param, bool useBrep)
+bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<int>* wgt, int vnum, MaterialParam* param, bool useBrep)
 {
     DEBUG_MODE PRINT_MESG("MeshObjectData::addData() for Vector<>: start.\n");
     bool ret = importTriData(vct, nrm, map, wgt, vnum);
@@ -160,7 +160,7 @@ bool  MeshObjectData::addData(TriPolygonData* tridata, int tnum, int pnum, Mater
 
 
 /**
-bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<double>* wgt, int vnum)
+bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<int>* wgt, int vnum)
 
 指定した頂点ベクトルのデータを取り込む．@n
 vct, nrm, map は3個づつ組になって三角ポリゴンを表す．従って vnumは必ず3の倍数になるはず．
@@ -172,7 +172,7 @@ vct, nrm, map は3個づつ組になって三角ポリゴンを表す．従っ�
 @param vnum     データ数
 @retval         true: 処理の成功．false: 処理の失敗．
 */
-bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<double>* wgt, int vnum)
+bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<int>* wgt, int vnum)
 {
     DEBUG_MODE PRINT_MESG("MeshObjectData::importTriData: for Vector<>: start.\n");
     if (vct==NULL) return false;
@@ -216,8 +216,8 @@ bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UV
 
     // Vertex Weight (option)
     if (wgt!=NULL) {
-        int wsize = sizeof(ArrayParam<double>)*vnum;
-        impwgt_value = (ArrayParam<double>*)malloc(wsize);
+        int wsize = sizeof(ArrayParam<int>)*vnum;
+        impwgt_value = (ArrayParam<int>*)malloc(wsize);
         if (impwgt_value!=NULL) {
             memset(impwgt_value, 0, wsize);
             for (int i=0; i<vnum; i++) {
@@ -322,8 +322,8 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
     // Vertex Weight (option)
     impwgt_value = NULL;
     if (tridata[0].has_weight) {
-        int wsize = sizeof(ArrayParam<double>)*vnum;
-        impwgt_value = (ArrayParam<double>*)malloc(wsize);
+        int wsize = sizeof(ArrayParam<int>)*vnum;
+        impwgt_value = (ArrayParam<int>*)malloc(wsize);
         if (impwgt_value!=NULL) {
             memset(impwgt_value, 0, vnum);
             for (int i=0, n=0; i<tnum; i++) {
@@ -414,7 +414,7 @@ bool  MeshObjectData::addNode(const char* name, MaterialParam* param, bool useBr
     freeNull(impvtx_value);
     freeNull(impnrm_value);
     freeNull(impmap_value);
-    freeArrayParams<double>(impwgt_value, node->num_vertex);
+    freeArrayParams<int>(impwgt_value, node->num_vertex);
     impwgt_value = NULL;
 
     DEBUG_MODE PRINT_MESG("MeshObjectData::addNode(): for TriPolygonData or Vector<>: end.\n");

@@ -116,7 +116,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
     while (*pp!='\0') {
         // 
         if (*pp=='{') {
-            //print_message("open  { \n");
+            //PRINT_MESG("open  { \n");
             pp++;
             //
             if (json->ctrl!=JBXL_JSON_NODE_OPENED) {
@@ -188,7 +188,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 
         //
         else if (*pp=='[') {
-            //print_message("open  [ \n");
+            //PRINT_MESG("open  [ \n");
             pt = skip_char_pair(pp, '[', ']');
             if (*pt=='\0') {
                 json = _json_parse_term(json, pp, pt, "[");
@@ -223,7 +223,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 
         //
         else if (*pp==',') {
-            //print_message("next  , \n");
+            //PRINT_MESG("next  , \n");
             pt = pp + 1;
             // 次の \", \', {, } を見つける
             //while (*pt!='\0' && *pt!='\'' && *pt!='\"' && *pt!='{' && *pt!='}' && *pt!='[') pt++;
@@ -276,7 +276,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 
         //
         else if (*pp==':') {
-            //print_message("next  : \n");
+            //PRINT_MESG("next  : \n");
             pt = pp + 1;
             while (*pt==' ') pt++;
             if (*pt=='\0') {
@@ -331,7 +331,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
 
         //
         else if (*pp=='}') {
-            //print_message("close } \n");
+            //PRINT_MESG("close } \n");
             if (json->prev!=NULL) json = json->prev;
             //
             pt = pp = pp + 1;
@@ -693,7 +693,7 @@ void  _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* spac
             if (space[0]!='\0') for(i=0; i<pp->depth; i++) cat_s2Buffer(space, buf);
             //
             if (pp->ldat.id==JSON_BRACKET_NODE) {
-                //print_message("JSON_BRACKET_NODE\n");
+                //PRINT_MESG("JSON_BRACKET_NODE\n");
                 cat_s2Buffer("{", buf);
                 if (pp->next!=NULL) {
                     if (crlf[0]!='\0') cat_s2Buffer(crlf, buf);
@@ -705,7 +705,7 @@ void  _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* spac
             }
             //
             else if (pp->ldat.id==JSON_DATA_NODE) {
-                //print_message("JSON_DATA_NODE\n");
+                //PRINT_MESG("JSON_DATA_NODE\n");
                 cat_s2Buffer("\"", buf);
                 cat_s2Buffer(pp->ldat.key.buf, buf);
                 cat_s2Buffer("\"", buf);
@@ -733,7 +733,7 @@ void  _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* spac
             //
             // array
             else if (pp->ldat.id==JSON_ARRAY_NODE) {
-                //print_message("JSON_ARRAY_NODE\n");
+                //PRINT_MESG("JSON_ARRAY_NODE\n");
                 if (pp->ldat.key.buf!=NULL) {
                     cat_s2Buffer("\"", buf);
                     cat_s2Buffer(pp->ldat.key.buf, buf);
@@ -755,7 +755,7 @@ void  _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* spac
             }
 
             else if (pp->ldat.id==JSON_ARRAY_VALUE_NODE) {
-                //print_message("JSON_ARRAY_VALUE_NODE\n");
+                //PRINT_MESG("JSON_ARRAY_VALUE_NODE\n");
                 if (pp->ldat.lv==JSON_VALUE_OBJ) {
                     if (pp->ldat.val.buf==NULL) {
                         cat_s2Buffer("{", buf);

@@ -260,7 +260,7 @@ public:
     Vector<double>      point;              ///< 頂点の座標．
     Vector<double>      normal;             ///< 法線ベクトル．周りの Contour の法線ベクトルの平均．
     UVMap<double>       uvmap;              ///< 曲面のUV座標
-    ArrayParam<double>  weight;             ///< 頂点の重み
+    ArrayParam<int>     weight;             ///< 頂点の重み．要正規化．
 
     // optional
     long int            index;              ///< シーケンシャルに増加する一意的な番号．Octree に格納されるときに設定される．

@@ -1883,6 +1883,37 @@ int  swapl(unsigned int p)
 }
 
 
+/** 
+long long int swapd(unsigned long long int p)
+
+int型 64bit pを8bitづつ逆順にする
+
+ntohl(), htonl()の代替関数．Windows用．
+
+@param  p  入れ替える値
+@return 処理後の値
+*/
+long long int swapd(unsigned long long int p)
+{
+    long long int r;
+    uByte* t;
+    uByte* f;
+     
+    t = (uByte*)&r;
+    f = (uByte*)&p;
+    t[0] = f[7];
+    t[1] = f[6];
+    t[2] = f[5];
+    t[3] = f[4];
+    t[4] = f[3];
+    t[5] = f[2];
+    t[6] = f[1];
+    t[7] = f[0];
+
+    return r;
+}
+
+
 /**
 void  reverse_str(uByte* p, int s)
 

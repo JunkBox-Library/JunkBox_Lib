@@ -108,7 +108,7 @@ void  ContourBaseData::free(void)
     freeNull(vertex);
     freeNull(normal);
     freeNull(texcrd);
-    freeArrayParams<double>(weight, num_data);
+    freeArrayParams<int>(weight, num_data);
 
     init(0, 0);
 }
@@ -117,10 +117,10 @@ void  ContourBaseData::free(void)
 bool  ContourBaseData::getm(void)
 {
     index  = (int*)malloc(sizeof(int)*num_index);
-    vertex = (Vector<double>*)malloc(sizeof(Vector<double>)*num_data);
-    normal = (Vector<double>*)malloc(sizeof(Vector<double>)*num_data);
-    texcrd = (UVMap <double>*)malloc(sizeof(UVMap<double>) *num_data);
-    weight = (ArrayParam<double>*)malloc(sizeof(ArrayParam<double>)*num_data);
+    vertex = (Vector<double>*) malloc(sizeof(Vector<double>)*num_data);
+    normal = (Vector<double>*) malloc(sizeof(Vector<double>)*num_data);
+    texcrd = (UVMap <double>*) malloc(sizeof(UVMap<double>) *num_data);
+    weight = (ArrayParam<int>*)malloc(sizeof(ArrayParam<int>)*num_data);
 
     if (index==NULL || vertex==NULL || normal==NULL || texcrd==NULL) {
         this->free();
@@ -131,7 +131,7 @@ bool  ContourBaseData::getm(void)
     memset(vertex, 0, sizeof(Vector<double>)*num_data);
     memset(normal, 0, sizeof(Vector<double>)*num_data);
     memset(texcrd, 0, sizeof(UVMap<double>) *num_data);
-    memset(weight, 0, sizeof(ArrayParam<double>)*num_data);
+    memset(weight, 0, sizeof(ArrayParam<int>)*num_data);
 
     return true;
 }

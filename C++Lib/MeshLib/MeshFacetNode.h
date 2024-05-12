@@ -46,10 +46,10 @@ public:
 
     int*    data_index;             ///< インデックスデータ．要素数は num_index
 
-    Vector<double>*     vertex_value;   ///< 頂点データの並び．要素数は num_vertex
-    Vector<double>*     normal_value;   ///< 法線ベクトルデータの並び．要素数は num_vertex
-    UVMap<double>*      texcrd_value;   ///< テクスチャマップの並び．要素数は num_texcrd
-    ArrayParam<double>* weight_value;   ///< 頂点の重み．Jointを持つデータに使用される．要素数は num_vertex
+    Vector<double>*  vertex_value;  ///< 頂点データの並び．要素数は num_vertex
+    Vector<double>*  normal_value;  ///< 法線ベクトルデータの並び．要素数は num_vertex
+    UVMap<double>*   texcrd_value;  ///< テクスチャマップの並び．要素数は num_texcrd
+    ArrayParam<int>* weight_value;  ///< 頂点の重み．Jointを持つデータに使用される．要素数は num_vertex
 
     MeshFacetNode* next;
     MeshFacetNode* prev;
@@ -80,8 +80,8 @@ public:
 public:
     bool    computeVertexDirect(ContourBaseData* facetdata);
     bool    computeVertexByBREP(ContourBaseData* facetdata);
-    bool    computeVertexDirect(Vector<double>* vtx, Vector<double>* nml, UVMap<double>* map, ArrayParam<double>* wgt, int num, int vcount=3);
-    bool    computeVertexByBREP(Vector<double>* vtx, Vector<double>* nml, UVMap<double>* map, ArrayParam<double>* wgt, int num, int vcount=3);
+    bool    computeVertexDirect(Vector<double>* vtx, Vector<double>* nml, UVMap<double>* map, ArrayParam<int>* wgt, int num, int vcount=3);
+    bool    computeVertexByBREP(Vector<double>* vtx, Vector<double>* nml, UVMap<double>* map, ArrayParam<int>* wgt, int num, int vcount=3);
 };
 
 

@@ -99,6 +99,7 @@ int main(int argc, char** argv)
     n = 0;
     while (postn!=NULL) {
         int vertex_num = 0;
+        int joints_num = 0;
         // POSITION
         if (postn->altp!=NULL) {
             //fprintf(stdout, "%s\n", postn->altp->ldat.key.buf);
@@ -117,13 +118,13 @@ int main(int argc, char** argv)
         if (vertex_num>0 && weght!=NULL && weght->altp!=NULL) {
             //fprintf(stdout, "%s\n", weght->altp->ldat.key.buf);
             Buffer wgt = decode_base64_Buffer(weght->altp->ldat.key);
-            uWord* weight = llsd_bin_get_skin_weight((uByte*)wgt.buf, wgt.vldsz, vertex_num);
+            uWord* weight = llsd_bin_get_skin_weight((uByte*)wgt.buf, wgt.vldsz, vertex_num, &joints_num);
 
             fprintf(stdout, "====== WEIGHT (%d) =========\n", n);
-            if (n==0) {  // n>0 は省略
+            if (n==0 && weight!=NULL) {  // n>0 は省略
                 for (int i=0; i<vertex_num; i++) {
-                    for (int j=0; j<LLSD_JOINT_MAX_NUMBER; j++) {
-                        int pos = i*LLSD_JOINT_MAX_NUMBER + j;
+                    for (int j=0; j<joints_num; j++) {
+                        int pos = i*joints_num + j;
                         if (weight[pos]!=0) fprintf(stdout, "[%d,%2d = %d] ", i, j, weight[pos]);
                         //if (weight[pos]!=0) fprintf(stdout, "[%d,%2d] ", i, j);
                     }

@@ -31,7 +31,7 @@ Buffer  llsd_bin_get_str(uByte** ptr)
     int size = ntohl(*(int*)(*ptr));
     (*ptr) += 4;
     
-    char* str = (char*)malloc(size+1);
+    char* str = (char*)malloc(size + 1);
     if (str!=NULL) {
         memcpy(str, *ptr, size);
         str[size] = '\0';
@@ -93,15 +93,8 @@ double  llsd_bin_get_real(uByte** ptr)
 
     tmp = ntohull(*(long long int*)(*ptr));
 
-    long long int* ptmp = (long long int*)&tmp;
-    double* valuep = (double*)ptmp;
+    double* valuep = (double*)&tmp;
     double  value  = *valuep;
-
-/*  UnionPtr uptr;
-    uptr.llintp = (long long int*)&tmp;
-    double  value = *(uptr.drealp);
-*/
-//  double  value = *(double*)(&tmp);
 
     (*ptr) += 8;
 
@@ -183,10 +176,10 @@ int  llsd_bin_get_length(uByte* ptr, int sz)
         else if (*buf==LLSD_MAKER_INT)   buf += 5;
         else if (*buf==LLSD_MAKER_REAL)  buf += 9;
         else if (*buf==LLSD_MAKER_UUID)  buf += 17;
-        else if (*buf==LLSD_MAKER_BIN)   buf += ntohl(*(int*)(buf+1)) + 5;
-        else if (*buf==LLSD_MAKER_STR)   buf += ntohl(*(int*)(buf+1)) + 5;
-        else if (*buf==LLSD_MAKER_URI)   buf += ntohl(*(int*)(buf+1)) + 5;
-        else if (*buf==LLSD_MAKER_KEY)   buf += ntohl(*(int*)(buf+1)) + 5;
+        else if (*buf==LLSD_MAKER_BIN)   buf += ntohl(*(int*)(buf + 1)) + 5;
+        else if (*buf==LLSD_MAKER_STR)   buf += ntohl(*(int*)(buf + 1)) + 5;
+        else if (*buf==LLSD_MAKER_URI)   buf += ntohl(*(int*)(buf + 1)) + 5;
+        else if (*buf==LLSD_MAKER_KEY)   buf += ntohl(*(int*)(buf + 1)) + 5;
         else if (*buf==LLSD_MAKER_DATE)  buf += 9;
         else if (*buf!=LLSD_MAKER_MAP && *buf!=LLSD_MAKER_ARRAY &&
                  *buf!=LLSD_MAKER_MAP_END && *buf!=LLSD_MAKER_ARRAY_END) {
@@ -500,6 +493,7 @@ tXML*  llsd_bin_get_block_data(uByte* buf, int sz, const char* key)
     Buffer dec = gz_decode_data(enc);
 
     hdsz = llsd_bin_get_length(dec.buf, dec.vldsz);
+    if (dec.vldsz!=hdsz) PRINT_MESG("Warning: llsd_bin_get_block_data:i mismarch of data size (%d != %d)\n", hdsz, dec.vldsz);
     xml  = llsd_bin_parse(dec.buf, hdsz);
 
     return xml;
@@ -507,7 +501,7 @@ tXML*  llsd_bin_get_block_data(uByte* buf, int sz, const char* key)
 
 
 /**
-uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num);
+uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num, int* joints_num)
 
 llmesh の LODデータから weight データを抜き出して，uWord の 2次元配列に格納する．
 ちょっとメモリの無駄遣いをしている．
@@ -516,24 +510,23 @@ llmesh の LODデータから weight データを抜き出して，uWord の 2�
 @param  sz  : buf のサイズ．
 @param  vertex_num : 対応する頂点の数．
 
-@retval 2Byte の Weightデータ．weight[頂点*LLSD_JOINT_MAX_NUMBER + Joint]. 
+@retval 2Byte の Weightデータ．weight[頂点*(*joints_num) + joint]. 
 */
-uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num)
+uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num, int* joints_num)
 {
     if (buf==NULL) return NULL;
 
-    int len = sizeof(uWord)*LLSD_JOINT_MAX_NUMBER*vertex_num;
-    uWord* weight = (uWord*)malloc(len);
-    if (weight==NULL) return NULL;
-    memset(weight, 0, len);
+    int max_joints = 4;      // 一つの頂点が持つ重み情報の数の最大値（対象Jointの最大数）．
 
-    int invrtx = 0;
-    int vertex = 0;
-    int pos = 0;
-
-    uByte* pweight = buf;
+    if (joints_num!=NULL) *joints_num = 0;
+    int jnum   = 0;         // Jointのカウンター
+    int vertex = 0;         // 頂点の数
+    int invrtx = 0;         // 一個の Jointに対する重みデータの数
+    int pos    = 0;         // 処理中のデータの位置
+    //
+    // joint の数を数える and データの整合性をチェック．
     while (pos < sz && vertex < vertex_num) {
-        uByte joint = *(pweight + pos);
+        uByte joint = *(buf + pos);
         pos++;
 
         if (joint==0xff) {
@@ -541,11 +534,10 @@ uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num)
             vertex++;
         }
         else {
+            if ((int)joint>jnum) jnum = (int)joint;
             invrtx++;
-            weight[vertex*LLSD_JOINT_MAX_NUMBER + (int)joint] = *(uWord*)(pweight + pos);
             pos += 2;
-            //
-            if (invrtx%4==0) {
+            if (invrtx%max_joints==0) {
                 invrtx = 0;
                 vertex++;
             }
@@ -554,8 +546,51 @@ uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num)
 
     if (pos!=sz || vertex!=vertex_num) {
         PRINT_MESG("WARNING: llsd_bin_get_skin_weight: missmatch length %d != %d or %d != %d\n", pos, sz, vertex, vertex_num);
+        //max_joints = jnum + 1;  // 事実上，無限
+    }
+    DEBUG_MODE {
+        PRINT_MESG("llsd_bin_get_skin_weight: joints_num = %d\n", jnum + 1);
     }
 
+    int len = sizeof(uWord)*(jnum+1)*vertex_num;
+    uWord* weight = (uWord*)malloc(len);
+    if (weight==NULL) {
+        PRINT_MESG("ERROR: llsd_bin_get_skin_weight: no more memory (%d)\n", len);
+        return NULL;
+    }
+    memset(weight, 0, len);
+
+    invrtx = 0;
+    pos = 0;
+    vertex = 0;
+    //
+    while (pos < sz && vertex < vertex_num) {
+        uByte joint = *(buf + pos);
+        pos++;
+
+        if (joint==0xff) {
+            invrtx = 0;
+            vertex++;
+        }
+        else {
+            invrtx++;
+            weight[vertex*jnum + (int)joint] = *(uWord*)(buf + pos);
+            pos += 2;
+            if (invrtx%max_joints==0) {
+                invrtx = 0;
+                vertex++;
+            }
+        }
+    }
+
+    if (pos!=sz || vertex!=vertex_num) {
+        PRINT_MESG("ERROR: llsd_bin_get_skin_weight: missmatch length %d != %d\n", vertex, vertex_num);
+        free(weight);
+        weight = NULL;
+        jnum = 0;
+    }
+
+    if (joints_num!=NULL) *joints_num = jnum + 1;
     return weight;
 }
 

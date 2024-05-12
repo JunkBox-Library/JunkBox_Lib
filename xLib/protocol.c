@@ -649,7 +649,7 @@ void  print_protocol_header(tList* pp, int content)
     while (pp!=NULL) { /*&& !ex_strcmp(HDLIST_END_KEY,      (char*)pp->ldat.key.buf) */
                     //&& !ex_strcmp(HDLIST_CONTENTS_KEY, (char*)pp->ldat.key.buf)) {
         if (content==ON || !ex_strcmp(HDLIST_CONTENTS_KEY, (char*)pp->ldat.key.buf)) {
-            print_message("[%s] [%s]\n", (char*)pp->ldat.key.buf, (char*)pp->ldat.val.buf);
+            PRINT_MESG("[%s] [%s]\n", (char*)pp->ldat.key.buf, (char*)pp->ldat.val.buf);
         }
         pp = pp->next;
     }

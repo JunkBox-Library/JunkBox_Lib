@@ -133,7 +133,7 @@ void  MeshFacetNode::free_value(void)
     freeNull(vertex_value); 
     freeNull(normal_value); 
     freeNull(texcrd_value); 
-    freeArrayParams<double>(weight_value, num_vertex); 
+    freeArrayParams<int>(weight_value, num_vertex); 
 
     data_index   = NULL;
     vertex_value = NULL;
@@ -175,10 +175,10 @@ bool  MeshFacetNode::getm(int vertex, int polygon, int vcount)
     num_texcrd = num_vertex;
 
     data_index   = (int*)malloc(sizeof(int)*num_index);
-    vertex_value = (Vector<double>*)malloc(sizeof(Vector<double>)*num_vertex);
-    normal_value = (Vector<double>*)malloc(sizeof(Vector<double>)*num_vertex);
-    texcrd_value = (UVMap<double>*) malloc(sizeof(UVMap<double>) *num_texcrd);
-    weight_value = (ArrayParam<double>*)malloc(sizeof(ArrayParam<double>)*num_vertex);     // option
+    vertex_value = (Vector<double>*) malloc(sizeof(Vector<double>)*num_vertex);
+    normal_value = (Vector<double>*) malloc(sizeof(Vector<double>)*num_vertex);
+    texcrd_value = (UVMap<double>*)  malloc(sizeof(UVMap<double>) *num_texcrd);
+    weight_value = (ArrayParam<int>*)malloc(sizeof(ArrayParam<int>)*num_vertex);     // option
 
     if (data_index==NULL || vertex_value==NULL || normal_value==NULL || texcrd_value==NULL) {
         this->free();
@@ -189,7 +189,7 @@ bool  MeshFacetNode::getm(int vertex, int polygon, int vcount)
     memset(vertex_value, 0, sizeof(Vector<double>)*num_vertex);
     memset(normal_value, 0, sizeof(Vector<double>)*num_vertex);
     memset(texcrd_value, 0, sizeof(UVMap<double>) *num_texcrd);
-    memset(weight_value, 0, sizeof(ArrayParam<double>)*num_vertex);
+    memset(weight_value, 0, sizeof(ArrayParam<int>)*num_vertex);
 
     return true;
 }
@@ -298,7 +298,7 @@ bool  MeshFacetNode::computeVertexByBREP(ContourBaseData* facetdata)
 
 
 /**
-bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, ArrayParam<double>* impwgt, int impnum, int vcount)
+bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, ArrayParam<int>* impwgt, int impnum, int vcount)
 
 整列化（インデックス化ではない）された頂点データを直接 MeshObjectのデータとしてインポートする．@n
 元のデータの再現性が良い．処理時間が早い．@n
@@ -312,7 +312,7 @@ bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>*
 @param vcount ポリゴンの頂点数．通常は 3
 @return インポートに成功したかどうか．
 */
-bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, ArrayParam<double>* impwgt, int impnum, int vcount)
+bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, ArrayParam<int>* impwgt, int impnum, int vcount)
 {
     if (impvtx==NULL || impnrm==NULL) return false;
 
@@ -340,7 +340,7 @@ bool  MeshFacetNode::computeVertexDirect(Vector<double>* impvtx, Vector<double>*
 
 
 /**
-bool  MeshFacetNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, ArrayParam<double>* impwgt, int impnum, int vcount)
+bool  MeshFacetNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, ArrayParam<int>* impwgt, int impnum, int vcount)
 
 BREPを使用して，頂点データを処理する．頂点データは再インデックス化される@n
 データがインデックス化されていない場合，重複頂点を削除するのでデータサイズが小さくなる．@n
@@ -355,7 +355,7 @@ BREPを使用して，頂点データを処理する．頂点データは再イ�
 @param vcount ポリゴンの頂点数．通常は 3
 @return インポートに成功したかどうか．
 */
-bool  MeshFacetNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, ArrayParam<double>* impwgt, int impnum, int vcount)
+bool  MeshFacetNode::computeVertexByBREP(Vector<double>* impvtx, Vector<double>* impnrm, UVMap<double>* impmap, ArrayParam<int>* impwgt, int impnum, int vcount)
 {
     if (impvtx==NULL) return false;
 

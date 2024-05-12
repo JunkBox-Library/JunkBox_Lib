@@ -1927,7 +1927,7 @@ int  ssl_tcp_recv_Buffer_wait(int sock, SSL* ssl, Buffer* str, int tm)
     cc = ssl_tcp_recv_wait(sock, ssl, (char*)str->buf, str->bufsz, tm);
     if (cc>=0) str->vldsz = cc;
 
-    //print_message("ssl_tcp_recv_Buffer_wait : %s\n", (char*)str->buf);
+    //PRINT_MESG("ssl_tcp_recv_Buffer_wait : %s\n", (char*)str->buf);
     return cc;
 }
 

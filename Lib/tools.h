@@ -262,6 +262,7 @@ unsigned long long int ntohull(unsigned long long int s);        ///< Network形
 void    swap_byte(void* p, int s, int b);                        ///< sの長さのpのバイト順序をbバイト毎に逆順にする．
 short   swaps(unsigned short p);                                 ///< 16bit の上下8bitを入れ替える．
 int     swapl(unsigned int   p);                                 ///< 32bit pを8bitづつ逆順にする
+long long int swapd(unsigned long long int   p);                 ///< 64bit pを8bitづつ逆順にする
 void    reverse_str(uByte* p, int s);                            ///< バイト(octet)列を逆順にする．
 void    upper_string(char* str);
 #define int_swap(p, s)     {int swap=(p); (p)=(s); (s)=swap;}    ///< データを入れ替える

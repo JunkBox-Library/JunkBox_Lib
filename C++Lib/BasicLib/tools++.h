@@ -25,7 +25,8 @@ namespace jbxl {
  * 汎用配列パラメータ
 
 */
-template <typename T=double> class ArrayParam
+//template <typename T=double> class ArrayParam
+template <typename T> class ArrayParam
 {
 private:
     int _size;
@@ -51,8 +52,14 @@ template <typename T> void  ArrayParam<T>::init(int n)
 {
     if (n<0) n = 0;
     _size = n;
+    if (_size==0) {
+        _value = NULL;
+        return;
+    }
+//print_message("=====> %d * %d = %d\n", sizeof(T), _size , sizeof(T)*_size);
     if (n>0) _value = (T*)malloc(sizeof(T)*_size);
     else     _value = NULL;
+//print_message("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
 
     return;
 }

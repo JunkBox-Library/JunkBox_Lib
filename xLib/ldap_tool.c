@@ -300,7 +300,7 @@ int  check_ldap_passwd(LDAP* ld, JBXL_LDAP_Dn* user, JBXL_LDAP_Dn* ldap_bind)
     for (ent = ldap_first_entry(ld, res); ent != NULL; ent = ldap_next_entry(ld, ent)) {
         for (attr = ldap_first_attribute(ld, ent, &ber); attr != NULL; attr = ldap_next_attribute(ld, ent, ber)) {
             char** dn = ldap_get_values(ld, ent, attr);
-            print_message("%s => %s\n", attr, *dn);
+            PRINT_MESG("%s => %s\n", attr, *dn);
             ldap_memfree(attr);
             free(*dn);
         }
