@@ -1,6 +1,6 @@
 #
 #
-SUBJ = jpeg_color2mono 
+SUBJ = jpeg2k jpeg_color2mono 
 
 
 #
@@ -26,7 +26,7 @@ LIB_EXT = $(LIB_EXT_DIR)/libextend.a
 
 #DEBUG = -DEBUG
 
-CFLAGS  = -fPIC -DHAVE_CONFIG_H -I$(LIB_DIR) -I$(LIB_BSC_DIR) -I$(LIB_GLB_DIR) -I$(LIB_EXT_DIR) $(DEBUG) -DENABLE_JPEGLIB
+CFLAGS  = -fPIC -DHAVE_CONFIG_H -I$(LIB_DIR) -I$(LIB_BSC_DIR) -I$(LIB_GLB_DIR) -I$(LIB_EXT_DIR) $(DEBUG) -DENABLE_JPEGLIB  -DENABLE_OPENJPEG -DOPENJPEG_VERSION=25 -DHAVE_OPENJPEG_H -I/usr/local/include/openjpeg-2.5
 
 
 BLIB = -L$(LIB_BSC_DIR) -lbasic -lm 
@@ -52,6 +52,9 @@ clean:
 #
 #
 #
+jpeg2k: jpeg2k.o $(LIB_BSC) $(LIB_GLB) $(LIB_EXT) 
+	$(CC) $(@).o $(ELIB) $(GLIB) $(BLIB) -O2 -o $@  -L/usr/local/lib -ljpeg -lssl -lcrypto -lcrypt -lz -lopenjp2
+
 jpeg_color2mono: jpeg_color2mono.o $(LIB_BSC) $(LIB_GLB) $(LIB_EXT) 
 	$(CC) $(@).o $(ELIB) $(GLIB) $(BLIB) -O2 -o $@  -L/usr/local/lib -ljpeg -lssl -lcrypto -lcrypt -lz
 

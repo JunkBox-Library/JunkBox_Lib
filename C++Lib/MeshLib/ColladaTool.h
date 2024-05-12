@@ -82,7 +82,8 @@ public:
     bool    isBlankTexture (const char* name);
 
     Vector<double> getObjectCenter();
-    void    setJointLocation(void);
+    void    setJointLocationMatrix(void);
+    void    delete_noused_joints(tXML* delete_tag);
 
 private:
 

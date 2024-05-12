@@ -951,21 +951,29 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
                 }
             }
         }
+
+        // 不要な Jointを削除
+        tXML* delete_tag = get_xml_attr_node(joints_template_tag, "name","\"mPelvis\"");
+        if (delete_tag!=NULL) {
+            delete_noused_joints(delete_tag);
+        }
+
+        // xml の結合
         join_xml(visual_scene_tag, joints_template_tag);
 
-        // joint のスケールと回転行列（?）
+        //**********************************************************************************
+        // jointの位置合わせ用変換行列を計算
         AffineTrans<double> joint_space = joints->inverse_bind[0] * joints->bind_shape;
         AffineTrans<double> joint_trans = joint_space.getInvAffine();
         skeleton = joint_trans * affine;
         skeleton.shift =  - joints->alt_inverse_bind[0].shift;
         joint_space.free();
         joint_trans.free();
+        //**********************************************************************************
     }
-     
 
     Buffer geometry_name = dup_Buffer(meshdata->data_name);
     if (geometry_name.buf==NULL) geometry_name = make_Buffer_str(geometry_id+1);
-
     //
     Buffer randomstr = make_Buffer_randomstr(8);
     Buffer node_id = make_Buffer_str("#NODE_");
@@ -1025,10 +1033,8 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
     add_xml_attr_str(rotate_x_tag, "sid", "rotationX");
     append_xml_content_node(rotate_x_tag, "1 0 0");
     append_xml_content_node(rotate_x_tag, dtostr(euler.z));
-*/
     
     // Scale
-/*
     tXML* scale_tag = add_xml_node(node_tag, "scale");
     add_xml_attr_str(scale_tag, "sid", "scale");
     append_xml_content_node(scale_tag, dtostr(affine.scale.x));
@@ -1140,7 +1146,11 @@ Vector<double> ColladaXML::getObjectCenter()
 }
 
 
-void  ColladaXML::setJointLocation(void)
+/**
+void  ColladaXML::setJointLocationMatrix(void)
+
+*/
+void  ColladaXML::setJointLocationMatrix(void)
 {
     tXML* avatar_tag = get_xml_node_str(collada_tag, "<library_visual_scenes><visual_scene><node><matrix>");
     if (avatar_tag!=NULL) {
@@ -1160,6 +1170,31 @@ void  ColladaXML::setJointLocation(void)
     return;
 }
 
+
+void  ColladaXML::delete_noused_joints(tXML* delete_tag)
+{
+    if (delete_tag==NULL) return;
+
+    if (!strcasecmp((char*)delete_tag->ldat.key.buf, "matrix")) {
+        if (delete_tag->next==NULL) {
+            delete_tag->ctrl = TREE_DELETE_NODE;
+            if (delete_tag->prev!=NULL) delete_tag->prev->ctrl = TREE_DELETE_NODE;
+        } 
+    }
+
+    if (delete_tag->next!=NULL) {
+        delete_noused_joints(delete_tag->next);
+    }
+    if (delete_tag->ysis!=NULL) {
+        delete_noused_joints(delete_tag->ysis);
+    }
+
+    if (delete_tag->ctrl == TREE_DELETE_NODE) {
+        del_tTree_node(&delete_tag);
+    }
+    return;
+}
+    
 
 
 ////////////////////////////////////////////////////////////////////////////////

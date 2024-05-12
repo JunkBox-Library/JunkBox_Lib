@@ -53,6 +53,7 @@ typedef  tList        tTree;
 #define    TREE_NOCMP_COPY_NODE            101        ///< 比較対照から外し，最後にコピー処理を行うノード．通常は無条件で一致させる．
 #define    TREE_COPY_NODE                  102        ///< 後でコピー処理を行うノード．copy_tTree_byctrl()など．
 #define    TREE_NOSIS_NODE                 103        ///< このノードの姉妹ノードは処理しない．一部の関数のみ有効．
+#define    TREE_DELETE_NODE                104        ///< 後で削除処理を行うノード．
 #define    TREE_ALREADY_FOUND_NODE         110        ///< 検索などにおいて既に見つけたノード．見つけたことを確定したノード．
 #define    TREE_ALREADY_FOUND_NODE_TEMP    111        ///< 一時的に比較対照から外す場合にノード．作業中に設定．
 
