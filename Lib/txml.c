@@ -2363,7 +2363,7 @@ tXML*  get_xml_node_bystr(tXML* pp, const char* str)
 
     tx = xml_parse((char*)str);
     tt = get_xml_node(pp, tx);
-    del_xml(&tx);
+    del_all_xml(&tx);
     return tt;
 }
 
@@ -2382,7 +2382,7 @@ int  set_xml_node_bystr(tXML* pp, const char* str, const char* val)
 
     tx = xml_parse((char*)str);
     rt = set_xml_node(pp, tx, val);
-    del_xml(&tx);
+    del_all_xml(&tx);
     return rt;
 }
 
@@ -2401,7 +2401,7 @@ int  set_xml_end_node_bystr(tXML* pp, const char* str)
 
     tx = xml_parse((char*)str);
     rt = set_xml_end_node(pp, tx);
-    del_xml(&tx);
+    del_all_xml(&tx);
     return rt;
 }
 
@@ -2420,7 +2420,7 @@ tXML*  get_xml_content_bystr(tXML* pp, const char* str)
 
     tx = xml_parse((char*)str);
     tt = get_xml_content(pp, tx);
-    del_xml(&tx);
+    del_all_xml(&tx);
     return tt;
 }
 
@@ -2504,7 +2504,7 @@ int  set_xml_content_bystr(tXML* pp, const char* str, const char* val)
 
     tx = xml_parse((char*)str);
     rt = set_xml_content(pp, tx, val);
-    del_xml(&tx);
+    del_all_xml(&tx);
     return rt;
 }
 
@@ -2523,7 +2523,7 @@ tList*  get_xml_attr_bystr(tXML* pp, const char* str)
 
     tx = xml_parse((char*)str);
     tt = get_xml_attr(pp, tx);
-    del_xml(&tx);
+    del_all_xml(&tx);
     return tt;
 }
 
@@ -2615,7 +2615,7 @@ int  set_xml_attr_bystr(tXML* pp, const char* str, tList* at)
 
     tx = xml_parse((char*)str);
     rt = set_xml_attr(pp, tx, at);
-    del_xml(&tx);
+    del_all_xml(&tx);
     return rt;
 }
 
@@ -2634,7 +2634,7 @@ int  replace_xml_content_bystr(tXML*pp, const char* str, const char* src, const 
 
     tx = xml_parse((char*)str);
     rt = replace_xml_content(pp, tx, src, dst);
-    del_xml(&tx);
+    del_all_xml(&tx);
     return rt;
 }
 
@@ -2770,7 +2770,7 @@ tList*  get_xml_node_list_bystr(tXML* pp, const char* str)
 
     tx = xml_parse((char*)str);
     tt = get_xml_node_list(pp, tx);
-    del_xml(&tx);
+    del_all_xml(&tx);
 
     return tt;
 }
@@ -2790,7 +2790,7 @@ tList*  get_xml_content_list_bystr(tXML* pp, const char* str)
 
     tx = xml_parse((char*)str);
     tt = get_xml_content_list(pp, tx);
-    del_xml(&tx);
+    del_all_xml(&tx);
 
     return tt;
 }
@@ -2810,7 +2810,7 @@ int  set_xml_content_list_bystr(tXML* pp, const char* str, const char* content)
 
     tx = xml_parse((char*)str);
     rt = set_xml_content_list(pp, tx, content);
-    del_xml(&tx);
+    del_all_xml(&tx);
 
     return rt;
 }

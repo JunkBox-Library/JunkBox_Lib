@@ -16,7 +16,7 @@ using namespace jbxl;
 
 ColladaXML::~ColladaXML(void)
 { 
-    //DEBUG_INFO("DESTRUCTOR: ColladaXML");
+    DEBUG_MODE PRINT_MESG("ColladaXML::DESTRUCTOR:\n");
 }
 
 
@@ -37,14 +37,14 @@ void  ColladaXML::init(double meter, int axis, const char* ver)
 void  ColladaXML::free(void)
 {
     free_Buffer(&blank_texture);
-    del_xml(&xml_tag);
+    del_all_xml(&xml_tag);
     skeleton.free();
 }
 
 
 void  ColladaXML::clear(double meter, int axis, const char* ver)
 {
-    del_xml(&xml_tag);
+    del_all_xml(&xml_tag);
     init(meter, axis, ver);
 }
 
@@ -148,7 +148,7 @@ void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointDa
 
     if (joints_template!=NULL) {
         if (joints_template_tag==NULL) joints_template_tag = joints_template;
-        else del_xml(&joints_template);
+        else del_all_xml(&joints_template);
     }
 
     char* geom_id = addGeometry(meshdata);              // 幾何情報を配置
@@ -1099,8 +1099,8 @@ bool  ColladaXML::existSameID(tXML* top, const char* tag, const char* id)
         lst = lst->next;
     }
 
-    del_xml(&xml);
-    del_xml(&lst);
+    del_all_xml(&xml);
+    del_all_xml(&lst);
     free_Buffer(&cmpid);
 
     return ret;

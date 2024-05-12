@@ -779,7 +779,7 @@ int   save_https_xml(int cofd, SSL* ssl, tList** pl, tXML** xml, char** recvfn, 
         if (xml!=NULL && *pl!=NULL && *recvfn!=NULL && cc>0) {
             Buffer buf = search_protocol_header(*pl, (char*)"Content-Type", 1);
             *xml = xml_parse_file(*recvfn);
-            if (*xml!=NULL && (*xml)->state<0) del_xml(xml);
+            if (*xml!=NULL && (*xml)->state<0) del_all_xml(xml);
             free_Buffer(&buf);
         }
     }

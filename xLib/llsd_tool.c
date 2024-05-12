@@ -485,7 +485,7 @@ tXML*  llsd_bin_get_block_data(uByte* buf, int sz, const char* key)
         ofst = llsd_xml_get_content_int(xml, key, "offset");
         size = llsd_xml_get_content_int(xml, key, "size");
     }
-    del_xml(&xml);
+    del_all_xml(&xml);
     if (ofst<0 || size<=0) return NULL;
 
     //
