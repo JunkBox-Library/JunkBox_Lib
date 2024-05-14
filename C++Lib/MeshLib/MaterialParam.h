@@ -13,13 +13,13 @@
 #define  MATERIAL_ALPHA_NONE            0
 #define  MATERIAL_ALPHA_BLENDING        1
 #define  MATERIAL_ALPHA_MASKING         2
-#define  MATERIAL_ALPHA_EMISSIVE        3     // 未実装
+#define  MATERIAL_ALPHA_EMISSIVE        3      // 未実装
 
 // テクスチャのマッピング方法
 #define  MATERIAL_MAPPING_DEFAULT       0
 #define  MATERIAL_MAPPING_PLANAR        2
-#define  MATERIAL_MAPPING_SPHERICAL     4     // 未実装
-#define  MATERIAL_MAPPING_CYLINDRICAL   6     // 未実装
+#define  MATERIAL_MAPPING_SPHERICAL     4      // 未実装
+#define  MATERIAL_MAPPING_CYLINDRICAL   6      // 未実装
 
 //
 #define  MATERIAL_ATTR_LEN              24     // Base64 string len = 32

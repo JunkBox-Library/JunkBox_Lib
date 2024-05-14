@@ -44,8 +44,7 @@ public:
     int     num_vertex;             ///< 頂点のデータ数．（vertex_value, normal_value の要素数）
     int     num_texcrd;             ///< テクスチャ画像の座標数．通常は num_vertex に等しい．（texcrd_value の要素数）
 
-    int*    data_index;             ///< インデックスデータ．要素数は num_index
-
+    int*             data_index;    ///< インデックスデータ．要素数は num_index
     Vector<double>*  vertex_value;  ///< 頂点データの並び．要素数は num_vertex
     Vector<double>*  normal_value;  ///< 法線ベクトルデータの並び．要素数は num_vertex
     UVMap<double>*   texcrd_value;  ///< テクスチャマップの並び．要素数は num_texcrd
@@ -60,7 +59,9 @@ public:
 
     void    init(void);
     void    free(void);
+//    void    free_all(void);
     void    free_value(void);
+    void    del_nodes(MeshFacetNode* next);
     void    clear(void);
 
     void    set (int vertex,   int polygon,   int vcount=3);
@@ -86,7 +87,7 @@ public:
 
 
 inline void  freeMeshFacetNode(MeshFacetNode*& node) { if(node!=NULL) { node->free(); delete node; node=NULL;} }
-void  freeMeshObjectList(MeshFacetNode*& node);
+void  freeMeshFacetList(MeshFacetNode*& node);
 
 MeshFacetNode*  DelMeshFacetNode(MeshFacetNode* node);
 MeshFacetNode*  AddMeshFacetNode(MeshFacetNode* list, MeshFacetNode* node);

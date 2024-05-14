@@ -43,7 +43,7 @@ void  MeshObjectData::free(void)
 
     delAffineTrans();
 
-    freeMeshObjectList(facet);
+    freeMeshFacetList(facet);
     facet = facet_end = NULL;
 }
 
@@ -182,6 +182,7 @@ bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UV
     int lsize = sizeof(Vector<double>)*vnum;
 
     // Vertex Position
+    if (impvtx_value!=NULL) freeNull(impvtx_value);
     impvtx_value = (Vector<double>*)malloc(lsize);
     if (impvtx_value!=NULL) {
         memcpy(impvtx_value, vct, lsize);
@@ -190,6 +191,7 @@ bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UV
 
     // Normal Vector
     if (nrm!=NULL) {
+        if (impnrm_value!=NULL) freeNull(impnrm_value);
         impnrm_value = (Vector<double>*)malloc(lsize);
         if (impnrm_value!=NULL) {
             memcpy(impnrm_value, nrm, lsize);
@@ -203,6 +205,7 @@ bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UV
     // UV Map
     if (map!=NULL) {
         int msize = sizeof(UVMap<double>)*vnum;
+        if (impmap_value!=NULL) freeNull(impmap_value);
         impmap_value = (UVMap<double>*)malloc(msize);
         if (impmap_value!=NULL) {
             memcpy(impmap_value, map, msize);
@@ -216,6 +219,7 @@ bool  MeshObjectData::importTriData(Vector<double>* vct, Vector<double>* nrm, UV
 
     // Vertex Weight (option)
     if (wgt!=NULL) {
+        if (impwgt_value!=NULL) freeArrayParams<int>(impwgt_value, num_import);
         int wsize = sizeof(ArrayParam<int>)*vnum;
         impwgt_value = (ArrayParam<int>*)malloc(wsize);
         if (impwgt_value!=NULL) {
@@ -264,6 +268,7 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
     int lsize = sizeof(Vector<double>)*vnum;
 
     // Vertex Position
+    if (impvtx_value!=NULL) freeNull(impvtx_value);
     impvtx_value = (Vector<double>*)malloc(lsize);
     if (impvtx_value!=NULL) {
         for (int i=0, n=0; i<tnum; i++) {
@@ -278,7 +283,7 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
     else return false;
 
     // Normal Vector
-    impnrm_value = NULL;
+    if (impnrm_value!=NULL) freeNull(impnrm_value);
     if (tridata[0].has_normal) {
         impnrm_value = (Vector<double>*)malloc(lsize);
         if (impnrm_value!=NULL) {
@@ -298,7 +303,7 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
     }
 
     // UV Map
-    impmap_value = NULL;
+    if (impmap_value!=NULL) freeNull(impmap_value);
     if (tridata[0].has_texcrd) {
         int msize = sizeof(UVMap<double>)*vnum;
         impmap_value = (UVMap<double>*)malloc(msize);
@@ -320,7 +325,7 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
     }
 
     // Vertex Weight (option)
-    impwgt_value = NULL;
+    if (impwgt_value!=NULL) freeArrayParams<int>(impwgt_value, num_import);
     if (tridata[0].has_weight) {
         int wsize = sizeof(ArrayParam<int>)*vnum;
         impwgt_value = (ArrayParam<int>*)malloc(wsize);
@@ -452,7 +457,6 @@ void  MeshObjectData::setMaterialParam(MaterialParam param, int num)
             node = node->next;
         }
     }
-
     return;
 }
 

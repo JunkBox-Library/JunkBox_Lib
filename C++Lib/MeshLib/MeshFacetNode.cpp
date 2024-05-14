@@ -65,7 +65,6 @@ void  MeshFacetNode::setMaterialParam(MaterialParam mparam)
         }
         node = node->next;
     }
-
     return;
 }
 
@@ -118,11 +117,13 @@ void  MeshFacetNode::set(int vertex, int polygon, int vcount)
 }
 
 
+/**
+next 以降は freeMeshFacetList() で解放する．
+*/
 void  MeshFacetNode::free(void)
 {
     delMaterialParam();
     free_Buffer(&material_id);
-
     free_value();
 }
 
@@ -469,12 +470,12 @@ UVMap<double>*  MeshFacetNode::generatePlanarUVMap(Vector<double> scale, UVMap<d
 
 ///////////////////////////////////////////////////////////////////
 
-void  jbxl::freeMeshObjectList(MeshFacetNode*& node)
+void  jbxl::freeMeshFacetList(MeshFacetNode*& node)
 {
     if (node==NULL) return;
 
     MeshFacetNode* next = node->next;
-    if (next!=NULL) freeMeshObjectList(next);
+    if (next!=NULL) freeMeshFacetList(next);
 
     freeMeshFacetNode(node);
 
@@ -495,6 +496,10 @@ MeshFacetNode*  jbxl::DelMeshFacetNode(MeshFacetNode* node)
 
     return next;
 }
+
+
+// in MeshFacetNode.h
+// inline void  freeMeshFacetNode(MeshFacetNode*& node) { if(node!=NULL) { node->free(); delete node; node=NULL;} }
 
 
 MeshFacetNode*  jbxl::AddMeshFacetNode(MeshFacetNode* list, MeshFacetNode* node)

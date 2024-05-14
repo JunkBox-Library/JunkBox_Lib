@@ -17,8 +17,10 @@
 int   DebugMode     = OFF;
 int   UnitTestMode  = OFF;
 
-int   KanjiCode     = CODE_UTF8;                     ///< システムの漢字コード
-int   HostEndian    = UNKNOWN_ENDIAN;                ///< システムの Endian
+int   KanjiCode     = CODE_UTF8;                    ///< システムの漢字コード
+int   HostEndian    = UNKNOWN_ENDIAN;               ///< システムの Endian
+
+unsigned long int UsedMemoryBase = 0;               ///< メモリチェック用
 
 //
 unsigned char  LocalIPNum[4]   = {0x7f, 0x00, 0x00, 0x01};    ///< 127.0.0.1 のバイナリ
@@ -3658,6 +3660,19 @@ unsigned long int get_free_memory(void)
     unsigned long int mem = info.freeram;
     return mem*info.mem_unit/1024;
 }
+
+
+void  memory_check_start(void)
+{
+    UsedMemoryBase = get_used_memory();
+}
+
+
+unsigned long int  memory_check(void)
+{
+    return get_used_memory() - UsedMemoryBase;
+}
+
 
 #endif
 

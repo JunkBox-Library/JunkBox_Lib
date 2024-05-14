@@ -863,7 +863,6 @@ void   close_xml(tXML* pp)
             pp = pp->ysis;
         } while(pp!=NULL);
     }  
-       
     return;
 }
 
@@ -937,7 +936,6 @@ void  _xml_to_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
         
         pp = pp->ysis;
     } while(pp!=NULL);
-
     return;
 }
 
@@ -1124,7 +1122,6 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
 
         if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer("\r\n", buf);
     }
-
     return;
 }
 
@@ -1166,7 +1163,6 @@ void  xml_close_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
             if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer("\r\n", buf);
         }
     }
-
     return;
 }
 

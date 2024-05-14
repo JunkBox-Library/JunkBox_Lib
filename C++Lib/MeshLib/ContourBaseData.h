@@ -191,11 +191,6 @@ public:
     AffineTrans<double>* inverse_bind;
     AffineTrans<double>* alt_inverse_bind;
     AffineTrans<double>  bind_shape;
-/*
-    Matrix<double>*      inverse_bind;
-    Matrix<double>*      alt_inverse_bind;
-    Matrix<double>       bind_shape;
-*/
     ArrayParam<char*>    joint_names;
 
 public:

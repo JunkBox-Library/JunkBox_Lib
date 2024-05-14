@@ -107,46 +107,46 @@
 
 
 typedef union _union_val {
-    long long int            llint;
-    unsigned long long int   ullint;
-    long int                 lint;
-    unsigned long int        ulint;
-    int                      nint;
-    unsigned int             uint;
-    short int                sint;
-    unsigned short int       usint;
-    char                     nchar;
-    unsigned char            uchar;
-    double                   dreal;
-    float                    real;
-    sDWord                   sdword;
-    uDWord                   udword;
-    sWord                    sword;
-    uWord                    uword;
-    sByte                    sbyte;
-    uByte                    ubyte;
+    long long int           llint;
+    unsigned long long int  ullint;
+    long int                lint;
+    unsigned long int       ulint;
+    int                     nint;
+    unsigned int            uint;
+    short int               sint;
+    unsigned short int      usint;
+    char                    nchar;
+    unsigned char           uchar;
+    double                  dreal;
+    float                   real;
+    sDWord                  sdword;
+    uDWord                  udword;
+    sWord                   sword;
+    uWord                   uword;
+    sByte                   sbyte;
+    uByte                   ubyte;
 } unionVal;
     
 
 typedef union _union_ptr {
-    long long int*           llintp;
-    unsigned long long int*  ullintp;
-    long int*                lintp;
-    unsigned long int*       ulintp;
-    int*                     nintp;
-    unsigned int*            uintp;
-    short int*               sintp;
-    unsigned short int*      usintp;
-    char*                    ncharp;
-    unsigned char*           ucharp;
-    double*                  drealp;
-    float*                   realp;
-    sDWord*                  sdwordp;
-    uDWord*                  udwordp;
-    sWord*                   swordp;
-    uWord*                   uwordp;
-    sByte*                   sbytep;
-    uByte*                   ubytep;
+    long long int*          llintp;
+    unsigned long long int* ullintp;
+    long int*               lintp;
+    unsigned long int*      ulintp;
+    int*                    nintp;
+    unsigned int*           uintp;
+    short int*              sintp;
+    unsigned short int*     usintp;
+    char*                   ncharp;
+    unsigned char*          ucharp;
+    double*                 drealp;
+    float*                  realp;
+    sDWord*                 sdwordp;
+    uDWord*                 udwordp;
+    sWord*                  swordp;
+    uWord*                  uwordp;
+    sByte*                  sbytep;
+    uByte*                  ubytep;
 } unionPtr;
     
 
@@ -185,14 +185,15 @@ extern int   UnitTestMode;      ///< ユニット単体でのテストを行う�
 extern int   KanjiCode;         ///< 処理用漢字コード．CODE_US, CODE_SJIS, CODE_EDUがある．デフォルトは CODE_US．
 extern int   HostEndian;        ///< ホストの Endian
 
-extern unsigned char  LocalIPNum[4];     ///< 127.0.0.1 のバイナリ
-extern unsigned char  LocalIPNum6[16];   ///< ::1 のバイナリ
+extern unsigned char  LocalIPNum[4];        ///< 127.0.0.1 のバイナリ
+extern unsigned char  LocalIPNum6[16];      ///< ::1 のバイナリ
 
 #define  LOCAL_IPv4     "127.0.0.1"
 #define  LOCAL_IPv6     "::1"
 #define  LOCAL_IPADDR   LOCAL_IPv4
 #define  LOCAL_IPADDR6  LOCAL_IPv6
 
+extern unsigned long int UsedMemoryBase;
 
 // not C++
 #ifndef CPLUSPLUS
@@ -388,6 +389,9 @@ unsigned char*  guid2uuid(unsigned char* p);            ///< guid を uuid に�
 // プロセス
 unsigned long int get_used_memory(void);                ///< 使用中のメモリサイズを得る．
 unsigned long int get_free_memory(void);                ///< 未使用のメモリサイズを得る．
+
+void    memory_check_start(void);
+unsigned long int  memory_check(void);
 
 void    set_sigterm_child(void (*handler)(int));        ///< child プロセス終了時の処理を設定．
 void    sigterm_child(int signal);                      ///< child プロセス終了時の処理

@@ -209,7 +209,7 @@ void  TriPolygonData::init(void)
 void  TriPolygonData::free(void)
 {
     for (int i=0; i<3; i++) {
-        if (!weight[i].get_size()) weight[i].free();
+        weight[i].free();
     }
     init();
 }
@@ -350,10 +350,6 @@ void  SkinJointData::init(int n)
         for (int i=0; i<joint_num; i++) {
             inverse_bind[i].init();
             alt_inverse_bind[i].init();
-        /*
-            inverse_bind[i] = Matrix<double>(2, 4, 4);
-            alt_inverse_bind[i] = Matrix<double>(2, 4, 4);
-        */
         }
         joint_names.init(joint_num);
     }

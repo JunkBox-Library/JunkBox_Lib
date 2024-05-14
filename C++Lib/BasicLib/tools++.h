@@ -132,15 +132,13 @@ ArrayParam<T> のコピーを作る．
 
 @param  param  コピーするデータ．
 @param  del    最初にデータを free()するか？　true: 最初に free()する（デフォルト），false: free() しない．
-
 */
 template <typename T> void ArrayParam<T>::dup(ArrayParam<T> a, bool del)
 {
-    int size = a.get_size();
     if (del) this->free();
-    this->init(size);
+    this->init(a.get_size());
 
-    for (int i=0; i<size; i++) {
+    for (int i=0; i<this->_size; i++) {
         this->_value[i] = a.get_value(i);
     }
 }
