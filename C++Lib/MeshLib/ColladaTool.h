@@ -53,7 +53,7 @@ public:
 public:
     void    initCollada(double meter, int axis, const char* ver);
     void    initCollada(float  meter, int axis, const char* ver) { initCollada((double)meter, axis, ver); }
-    void    addObject(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tXML* joints_template=NULL);
+    void    addObject(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tXML* joints_template=NULL, tList* joints_name=NULL);
 
     char*   addGeometry(MeshObjectData* meshdata);
     void    addController(const char* geometry_id, MeshObjectData* meshdata, SkinJointData* skin_joint);
@@ -83,7 +83,7 @@ public:
 
     Vector<double> getObjectCenter();
     void    setJointLocationMatrix(void);
-    void    delete_noused_joints(tXML* delete_tag);
+    void    delete_bento_joints(void);
 
 private:
 
@@ -119,12 +119,14 @@ public:
     tXML*   instance_visual_scene_tag;
     tXML*   instance_physics_scene_tag;
 
-    tXML*   joints_template_tag;
-
 public:
     int     total_vertex;
     Vector<double> center;
     AffineTrans<double> skeleton;
+
+    tXML*   joints_template_tag;
+    tList*  joints_bento_name;
+    bool    has_bento_joints;
 
     bool    phantom_out;
     Buffer  blank_texture;

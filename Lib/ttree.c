@@ -527,6 +527,7 @@ int  replace_all_tTree_node(tTree* tp, char* key, char* src, char* dst, int len)
 tTree*  del_tTree(tTree** pp) 
 
 指定したノード以下のツリーを削除する．
+姉妹ノードは削除しない．
 
 @param[in]  *pp  削除するツリーの先頭ノード
 @param[out] *pp  NULL
@@ -544,7 +545,10 @@ tTree*  del_tTree(tTree** pp)
     // 自分自身の削除
     pt = (*pp)->prev;
     if (pt!=NULL) {
-        if (pt->next==*pp) pt->next = (*pp)->ysis;
+        if (pt->next==*pp) {
+            if ((*pp)->ysis!=NULL) pt->next = (*pp)->ysis;
+            else                   pt->next = (*pp)->esis;
+        }
         if (pt->yngr==*pp) pt->yngr = (*pp)->esis;
         pt->num--;
     }

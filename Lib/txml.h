@@ -196,6 +196,7 @@ tXML*   dup_merge_xml(tXML* pp, tXML* tp);                                  ///<
 
 #define free_xml(p)                 free_tTree_node((p))                    ///< free_tTree_node()
 #define del_xml(p)                  del_tTree((p))                          ///< 指定したノード以下のXMLツリー（ppの姉妹は含まない）を削除する．
+#define del_xml_node(p)             del_tTree_node((p))                     ///< 指定したノードを削除する．
 #define del_all_xml(p)              del_all_tTree((p))                      ///< XMLツリーの全ノードの削除．ポインタ ppのノードを含むXMLツリー全体を削除する．
 #define del_sisters_xml(p)          del_sisters_tTree((p))                  ///< 指定したノード以下のXMLツリー（ppの姉妹を含む）を削除する．
 #define del_sisters_children_xml(p) del_sisters_children_tTree((p))         ///< 指定したノードの姉妹XMLツリー，子XMLツリーを削除する．指定したXMLノードも削除する．

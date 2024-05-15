@@ -11,6 +11,7 @@
 #endif
 
 #include "llsd_tool.h"
+#include <math.h>
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,6 +96,7 @@ double  llsd_bin_get_real(uByte** ptr)
 
     double* valuep = (double*)&tmp;
     double  value  = *valuep;
+    if (isnan(value)) value = 0.0;
 
     (*ptr) += 8;
 

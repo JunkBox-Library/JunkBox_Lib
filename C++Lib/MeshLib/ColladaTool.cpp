@@ -23,6 +23,11 @@ ColladaXML::~ColladaXML(void)
 void  ColladaXML::init(double meter, int axis, const char* ver)
 {
     initCollada(meter, axis, ver);
+    //
+    joints_template_tag = NULL;
+    joints_bento_name   = NULL;
+    has_bento_joints    = false;
+
     blank_texture = init_Buffer();
     phantom_out   = true;
     forUnity5     = false;
@@ -38,6 +43,7 @@ void  ColladaXML::free(void)
 {
     free_Buffer(&blank_texture);
     del_all_xml(&xml_tag);
+    if (joints_bento_name!=NULL) del_tList(&joints_bento_name);
     skeleton.free();
 }
 
@@ -137,18 +143,33 @@ void  ColladaXML::initCollada(double meter, int axis, const char* ver)
     add_xml_attr_str(instance_visual_scene_tag, "url", "#Scene");
     //
 
-    joints_template_tag = NULL;
     free_Buffer(&buf);
 }
 
 
-void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template)
+void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template, tList* joints_name)
 {
     if (meshdata==NULL) return;
 
-    if (joints_template!=NULL) {
-        if (joints_template_tag==NULL) joints_template_tag = joints_template;
-        else del_all_xml(&joints_template);
+    if (joints!=NULL && joints_template!=NULL) {
+        if (joints_template_tag==NULL) {
+            joints_template_tag = joints_template;
+            joints_bento_name   = joints_name;
+            // Bento
+            int joints_num = joints->joint_names.get_size();
+            for (int j=0; j<joints_num; j++) {
+                char* jname = joints->joint_names.get_value(j);
+                tList* lst  = search_key_tList(joints_bento_name, jname, 1);
+                if (lst!=NULL) {
+                    has_bento_joints = true;
+                    break;
+                }
+            }
+        }
+        else {
+            del_all_xml(&joints_template);
+            del_all_tList(&joints_name);
+        }
     }
 
     char* geom_id = addGeometry(meshdata);              // 幾何情報を配置
@@ -183,12 +204,11 @@ void  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdat
     tXML* bind_shape_tag = add_xml_node(skin_tag, "bind_shape_matrix");
     for (int i=1; i<=4; i++) {
         for (int j=1; j<=4; j++) {
-            //joints->bind_shape.computeMatrix(false);        // Scale 無視
             append_xml_content_node(bind_shape_tag, dtostr(joints->bind_shape.matrix.element(i, j)));
         }
     }
 
-    // sourece JOINT
+    // source JOINT
     Buffer joint_id = make_Buffer_str("#SOURCE_JOINT_");
     cat_Buffer(&randomstr, &joint_id);
     Buffer joint_name_id = make_Buffer_str("#SOURCE_JOINT_ARRAY_");
@@ -945,17 +965,17 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
                     for (int i=1; i<=4; i++) {
                         for (int j=1; j<=4; j++) {
                             double element = joints->alt_inverse_bind[jnt].matrix.element(i, j);
-                            append_xml_content_node(matrix_tag, dtostr(element));
+                            if (i==1 && j==1) set_xml_content_node(matrix_tag, dtostr(element));
+                            else           append_xml_content_node(matrix_tag, dtostr(element));
                         }
                     }
                 }
             }
         }
 
-        // 不要な Jointを削除
-        tXML* delete_tag = get_xml_attr_node(joints_template_tag, "name","\"mPelvis\"");
-        if (delete_tag!=NULL) {
-            delete_noused_joints(delete_tag);
+        if (!has_bento_joints) {
+            // 不要な Bento Joints を削除
+            delete_bento_joints();
         }
 
         // xml の結合
@@ -1163,7 +1183,8 @@ void  ColladaXML::setJointLocationMatrix(void)
         for (int i=1; i<=4; i++) {
             for (int j=1; j<=4; j++) {
                 double element = skeleton.matrix.element(i, j);
-                append_xml_content_node(avatar_tag, dtostr(element));
+                if (i==1 && j==1) set_xml_content_node(avatar_tag, dtostr(element));
+                else           append_xml_content_node(avatar_tag, dtostr(element));
             }
         }
     }
@@ -1171,26 +1192,43 @@ void  ColladaXML::setJointLocationMatrix(void)
 }
 
 
-void  ColladaXML::delete_noused_joints(tXML* delete_tag)
+void  ColladaXML::delete_bento_joints(void)
 {
-    if (delete_tag==NULL) return;
+    tXML* pelvis_tag = get_xml_attr_node(joints_template_tag, "name","\"mPelvis\"");
+    if (pelvis_tag==NULL) return;
 
-    if (!strcasecmp((char*)delete_tag->ldat.key.buf, "matrix")) {
-        if (delete_tag->next==NULL) {
-            delete_tag->ctrl = TREE_DELETE_NODE;
-            if (delete_tag->prev!=NULL) delete_tag->prev->ctrl = TREE_DELETE_NODE;
-        } 
-    }
+    char buf[LNAME];
+    memset(buf, 0, LNAME);
+    buf[0] = '"';
 
-    if (delete_tag->next!=NULL) {
-        delete_noused_joints(delete_tag->next);
-    }
-    if (delete_tag->ysis!=NULL) {
-        delete_noused_joints(delete_tag->ysis);
-    }
+    tList* lp = joints_bento_name;
+    while (lp!=NULL) {
+        char* bento = (char*)lp->ldat.key.buf;
+        int len = (int)strlen(bento);
+        memcpy(buf + 1, bento, len);
+        buf[len + 1] = '"';
+        buf[len + 2] = '\0';
+        tXML* del_tag = get_xml_attr_node(pelvis_tag, "name", (const char*)buf);
+        //
+        if (del_tag!=NULL) {
+            if (del_tag->next!=NULL) {
+                tXML* next = del_tag->next;
+                while (next->esis!=NULL) next = next->esis;
 
-    if (delete_tag->ctrl == TREE_DELETE_NODE) {
-        del_tTree_node(&delete_tag);
+                if (next->ysis!=NULL) {
+                    if (!strcasecmp((char*)next->ysis->ldat.key.buf, "extra")) {
+                        tXML* ysis = next->ysis;
+                        del_xml(&ysis);
+                    }
+                }
+                if (!strcasecmp((char*)next->ldat.key.buf, "matrix")) {
+                    del_xml(&next);
+                }
+            } 
+            del_tTree_node(&del_tag);
+        }
+        //
+        lp = lp->next;
     }
     return;
 }
