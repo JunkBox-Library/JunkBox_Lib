@@ -545,16 +545,16 @@ uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num, int* joints
             }
         }
     }
+    jnum = jnum + 1;
 
     if (pos!=sz || vertex!=vertex_num) {
         PRINT_MESG("WARNING: llsd_bin_get_skin_weight: missmatch length %d != %d or %d != %d\n", pos, sz, vertex, vertex_num);
-        //max_joints = jnum + 1;  // 事実上，無限
     }
     DEBUG_MODE {
-        PRINT_MESG("llsd_bin_get_skin_weight: joints_num = %d\n", jnum + 1);
+        PRINT_MESG("llsd_bin_get_skin_weight: joints_num = %d\n", jnum);
     }
 
-    int len = sizeof(uWord)*(jnum+1)*vertex_num;
+    int len = sizeof(uWord)*jnum*vertex_num;
     uWord* weight = (uWord*)malloc(len);
     if (weight==NULL) {
         PRINT_MESG("ERROR: llsd_bin_get_skin_weight: no more memory (%d)\n", len);
@@ -592,7 +592,7 @@ uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num, int* joints
         jnum = 0;
     }
 
-    if (joints_num!=NULL) *joints_num = jnum + 1;
+    if (joints_num!=NULL) *joints_num = jnum;
     return weight;
 }
 
