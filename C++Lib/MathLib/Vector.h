@@ -172,18 +172,18 @@ template <typename T, typename R> inline Vector<T> operator / (const R d, const 
     return v;
 }
 
-template <typename T> inline Vector<T> operator += (const Vector<T> a, const Vector<T> b)
+template <typename T> inline Vector<T> operator += (Vector<T> a, const Vector<T> b)
 { a = a + b; return a; }
 
 
-template <typename T, typename R> inline Vector<T> operator += (const Vector<T> a, const Vector<R> b)
+template <typename T, typename R> inline Vector<T> operator += (Vector<T> a, const Vector<R> b)
 { a = a + Cast<T>(b); return a; }
 
 
-template <typename T> inline Vector<T> operator -= (const Vector<T> a, const Vector<T> b)
+template <typename T> inline Vector<T> operator -= (Vector<T> a, const Vector<T> b)
 { a = a - b; return a; }
 
-template <typename T, typename R> inline Vector<T> operator -= (const Vector<T> a, const Vector<R> b)
+template <typename T, typename R> inline Vector<T> operator -= (Vector<T> a, const Vector<R> b)
 { a = a - Cast<T>(b); return a; }
 
 
