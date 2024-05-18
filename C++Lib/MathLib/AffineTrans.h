@@ -33,17 +33,15 @@ public:
     Vector<T>        scale;
     Quaternion<T>    rotate;
 
-    bool             isInverse;
-
 public:
     AffineTrans(void) { init();}
     virtual ~AffineTrans(void) {}
 
     void   init(void) { initComponents(); matrix = Matrix<T>(2, 4, 4);}
     void   setup(void){ init();}
-    void   initComponents(void) { initScale(); initRotate(); initShift(); isInverse = false;}
+    void   initComponents(void) { initScale(); initRotate(); initShift();}
 
-    void   set(Vector<T> s, Quaternion<T> q, Vector<T> t, bool inv=false) { scale=s; shift=t, rotate=q; isInverse=inv; computeMatrix(true);}
+    void   set(Vector<T> s, Quaternion<T> q, Vector<T> t) { scale=s; shift=t, rotate=q; computeMatrix(true);}
     void   free(void) { initComponents(); matrix.free();}
     void   clear(void){ initComponents(); matrix.clear();}
     void   dup(AffineTrans a);
@@ -87,15 +85,11 @@ public:
 
     Vector<T> execMatrixTrans(Vector<T> v);
 
-    Vector<T> execTrans(Vector<T> v)    { if(!isInverse) return execShift(execRotate(execScale(v))); 
-                                          else           return execScale(execRotate(execShift(v)));}
-    Vector<T> execInvTrans(Vector<T> v) { if(!isInverse) return execInvScale(execInvRotate(execInvShift(v)));
-                                          else           return execInvShift(execInvRotate(execInvScale(v)));}
+    Vector<T> execTrans(Vector<T> v)    { return execShift(execRotate(execScale(v)));}
+    Vector<T> execInvTrans(Vector<T> v) { return execInvScale(execInvRotate(execInvShift(v)));}
 
-    Vector<T> execRotateScale(Vector<T> v)    { if(!isInverse) return execRotate(execScale(v)); 
-                                                else           return execScale(execRotate(v));}
-    Vector<T> execInvRotateScale(Vector<T> v) { if(!isInverse) return execInvScale(execInvRotate(v));
-                                                else           return execInvRotate(execInvScale(v));}
+    Vector<T> execRotateScale(Vector<T> v)    { return execRotate(execScale(v));} 
+    Vector<T> execInvRotateScale(Vector<T> v) { return execInvScale(execInvRotate(v));}
     //
     Vector<T> execShift(Vector<T> v)    { return Vector<T>(v.x+shift.x, v.y+shift.y, v.z+shift.z, (T)0.0, Min(v.c, shift.c));}
     Vector<T> execInvShift(Vector<T> v) { return Vector<T>(v.x-shift.x, v.y-shift.y, v.z-shift.z, (T)0.0, Min(v.c, shift.c));}
@@ -105,15 +99,12 @@ public:
     Vector<T> execInvRotate(Vector<T> v){ return VectorInvRotation(v, rotate);}
 
     //
-    T* execTrans(T* v)    { if(!isInverse) return execShift(execRotate(execScale(v))); 
-                            else           return execScale(execRotate(execShift(v)));}
-    T* execInvTrans(T* v) { if(!isInverse) return execInvScale(execInvRotate(execInvShift(v)));
-                            else           return execInvShift(execInvRotate(execInvScale(v)));}
+/*
+    T* execTrans(T* v)    { return execShift(execRotate(execScale(v)));}
+    T* execInvTrans(T* v) { return execInvScale(execInvRotate(execInvShift(v)));}
 
-    T* execRotateScale(T* v)    { if(!isInverse) return execRotate(execScale(v)); 
-                                  else           return execScale(execRotate(v));}
-    T* execInvRotateScale(T* v) { if(!isInverse) return execInvScale(execInvRotate(v));
-                                  else           return execInvRotate(execInvScale(v));}
+    T* execRotateScale(T* v)    { return execRotate(execScale(v));}
+    T* execInvRotateScale(T* v) { return execInvScale(execInvRotate(v));}
 
     T*  execShift(T* v)    { v[0]+=shift.x; v[1]+=shift.y; v[2]+=shift.z; return v;}
     T*  execInvShift(T* v) { v[0]-=shift.x; v[1]-=shift.y; v[2]-=shift.z; return v;}
@@ -121,6 +112,7 @@ public:
     T*  execInvScale(T* v) { v[0]/=scale.x; v[1]/=scale.y; v[2]/=scale.z; return v;}
     T*  execRotate(T* v)   { return VectorRotation(v, rotate);}
     T*  execInvRotate(T* v){ return VectorInvRotation(v, rotate);}
+*/
 };
 
 
@@ -147,17 +139,21 @@ template <typename T> inline AffineTrans<T>*  newAffineTrans(AffineTrans<T> p)
 
 a, b ともにコンポーネントが計算されている事が条件．
 */
-template <typename T> inline AffineTrans<T> operator * (const AffineTrans<T> a, const AffineTrans<T> b)
+template <typename T> inline AffineTrans<T> operator * (AffineTrans<T> a, AffineTrans<T> b)
 { 
-    Quaternion<T> rotate = a.rotate * b.rotate;
-    Vector<T> shift = a.shift + b.shift;
-    //
-    Vector<T> scale;
-    scale.set(a.scale.x*b.scale.x, a.scale.y*b.scale.y, a.scale.z*b.scale.z, (T)0.0, Min(a.scale.c, b.scale.c));
-    
+    a.computeMatrix();
+    b.computeMatrix();
+
     AffineTrans<T> affine;
-    affine.set(scale, rotate, shift, a.isInverse);
-    affine.computeMatrix(true);
+    for (int i=1; i<=4; i++) {
+        for (int j=1; j<=4; j++) {
+            affine.matrix.element(i,j) = (T)0.0;
+            for (int k=1; k<=4; k++) {
+                affine.matrix.element(i,j) += a.matrix.element(i,k)*b.matrix.element(k,j);
+            }
+        }
+    }
+    affine.computeComponents();
 
     return affine;
 }
@@ -237,7 +233,6 @@ template <typename T> AffineTrans<T>  AffineTrans<T>::getInvAffine(void)
     rst.element(3, 4) = -shift.z;
 
     affine.matrix = affine.matrix*rst;
-    affine.isInverse = !isInverse;
     affine.computeComponents();
 
     rst.free();
@@ -288,19 +283,10 @@ template <typename T> void   AffineTrans<T>::computeComponents(void)
 {
     T sx, sy, sz; 
     sx = sy = sz = (T)0.0;
-    if (!isInverse) {
-        for (int i=1; i<=3; i++) {
-            sx += matrix.element(i, 1)*matrix.element(i, 1);
-            sy += matrix.element(i, 2)*matrix.element(i, 2);
-            sz += matrix.element(i, 3)*matrix.element(i, 3);
-        }
-    }
-    else {
-        for (int i=1; i<=3; i++) {
-            sx += matrix.element(1, i)*matrix.element(1, i);
-            sy += matrix.element(2, i)*matrix.element(2, i);
-            sz += matrix.element(3, i)*matrix.element(3, i);
-        }
+    for (int i=1; i<=3; i++) {
+        sx += matrix.element(i, 1)*matrix.element(i, 1);
+        sy += matrix.element(i, 2)*matrix.element(i, 2);
+        sz += matrix.element(i, 3)*matrix.element(i, 3);
     }
     sx = (T)sqrt(sx); 
     sy = (T)sqrt(sy); 
@@ -311,32 +297,16 @@ template <typename T> void   AffineTrans<T>::computeComponents(void)
 
     //
     Matrix<T> mt = getRotMatrix();
-    if (!isInverse) {
-        for (int i=1; i<=3; i++) {
-            mt.element(i, 1) /= sx;
-            mt.element(i, 2) /= sy;
-            mt.element(i, 3) /= sz;
-        }
-    }
-    else {
-        for (int i=1; i<=3; i++) {
-            mt.element(1, i) /= sx;
-            mt.element(2, i) /= sy;
-            mt.element(3, i) /= sz;
-        }
+    for (int i=1; i<=3; i++) {
+        mt.element(i, 1) /= sx;
+        mt.element(i, 2) /= sy;
+        mt.element(i, 3) /= sz;
     }
     rotate = RotMatrix2Quaternion<T>(mt);    
     mt.free();
 
     //
-    if (!isInverse) {
-        shift.set(matrix.element(1,4), matrix.element(2,4), matrix.element(3,4));
-    }
-    else {
-        Vector<T> sh(matrix.element(1,4)/sx, matrix.element(2,4)/sy, matrix.element(3,4)/sz);
-        shift = rotate.execInvRotate(sh);
-    }
-
+    shift.set(matrix.element(1,4), matrix.element(2,4), matrix.element(3,4));
     return;
 }
 

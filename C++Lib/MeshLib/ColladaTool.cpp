@@ -26,6 +26,7 @@ void  ColladaXML::init(double meter, int axis, const char* ver)
     //
     joints_template_tag = NULL;
     joints_bento_name   = NULL;
+    has_joints          = false;
     has_bento_joints    = false;
 
     blank_texture = init_Buffer();
@@ -153,6 +154,7 @@ void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointDa
 
     if (joints!=NULL && joints_template!=NULL) {
         if (joints_template_tag==NULL) {
+            has_joints = true;
             joints_template_tag = joints_template;
             joints_bento_name   = joints_name;
             // Bento
@@ -172,29 +174,32 @@ void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointDa
         }
     }
 
-    char* geom_id = addGeometry(meshdata);              // 幾何情報を配置
-    addController(geom_id, meshdata, joints);           // Joints 情報を配置
-    addScene(geom_id, meshdata, collider, joints);      // Scene への配置（位置，サイズ，回転，コライダー, Joints）
+    //
+    char* geom_id = addGeometry(meshdata);                          // 幾何情報を配置
+    char* ctrl_id = addController(geom_id, meshdata, joints);       // Joints 情報を配置
+    addScene(geom_id, ctrl_id, meshdata, collider, joints);         // Scene への配置（位置，サイズ，回転，コライダー, Joints）
     
     if (geom_id!=NULL) ::free(geom_id);
+    if (ctrl_id!=NULL) ::free(ctrl_id);
     return;
 }
 
 
-void  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdata, SkinJointData* joints)
+char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdata, SkinJointData* joints)
 {
-    if (geometry_id==NULL || meshdata==NULL || joints==NULL) return;
+    if (geometry_id==NULL || meshdata==NULL || joints==NULL) return NULL;
 
     Buffer geometry_name = dup_Buffer(meshdata->data_name);
     if (geometry_name.buf==NULL) geometry_name = make_Buffer_str(geometry_id+1);
 
     Buffer randomstr = make_Buffer_randomstr(8);
 
-    Buffer controller_id = make_Buffer_str("avatar_");
+    //Buffer controller_id = make_Buffer_str("avatar_");
+    Buffer controller_id = make_Buffer_str("#AVATAR_");
     cat_Buffer(&randomstr, &controller_id);
 
     tXML* controller_tag = add_xml_node(library_controllers_tag, "controller");
-    add_xml_attr_str(controller_tag, "id", _tochar(controller_id.buf));
+    add_xml_attr_str(controller_tag, "id", _tochar(controller_id.buf + 1));
     add_xml_attr_str(controller_tag, "name",  "avater");
 
     tXML* skin_tag = add_xml_node(controller_tag, "skin");
@@ -310,14 +315,14 @@ void  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdat
 
     free_Buffer(&geometry_name);
     free_Buffer(&randomstr);
-    free_Buffer(&controller_id);
+    //free_Buffer(&controller_id);
     free_Buffer(&joint_id);
     free_Buffer(&joint_name_id);
     free_Buffer(&invbind_id);
     free_Buffer(&invbind_float_id);
     if (weight_id!=NULL) ::free(weight_id);
 
-    return;
+    return _tochar(controller_id.buf);
 }
 
 
@@ -932,9 +937,9 @@ void  ColladaXML::addExtraBumpmap(tXML* profile_tag, const char* bump_id)
 /**
  Scene への配置（位置，サイズ，回転，コライダー, Joints）
 */
-void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bool collider, SkinJointData* joints)
+void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObjectData* meshdata, bool collider, SkinJointData* joints)
 {
-    if (geometry_id==NULL || meshdata==NULL) return;
+    if ((geometry_id==NULL && controller_id==NULL) || meshdata==NULL) return;
 
     bool local_affine = true;
     AffineTrans<double> affine;
@@ -944,8 +949,9 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
         affine = *(meshdata->affineTrans);
     }
 
+    Vector<double> pelvis = Vector<double>(0.0, 0.0, 1.067);
     // joints
-    if (joints!=NULL && joints_template_tag!=NULL && visual_scene_tag!=NULL && visual_scene_tag->next==NULL) {
+    if (has_joints && (visual_scene_tag!=NULL && visual_scene_tag->next==NULL)) {
         char buf[LNAME];
         memset(buf, 0, LNAME);
         buf[0] = '"';
@@ -970,6 +976,12 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
                         }
                     }
                 }
+                // Pelvis の座標
+                if (!strcasecmp(joint_name, "mPelvis")) {
+                    pelvis.x = joints->alt_inverse_bind[jnt].matrix.element(1, 4);
+                    pelvis.y = joints->alt_inverse_bind[jnt].matrix.element(2, 4);
+                    pelvis.z = joints->alt_inverse_bind[jnt].matrix.element(3, 4);
+                }
             }
         }
 
@@ -977,23 +989,27 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
             // 不要な Bento Joints を削除
             delete_bento_joints();
         }
-
-        // xml の結合
+        // joints_template の結合
         join_xml(visual_scene_tag, joints_template_tag);
 
         //**********************************************************************************
         // jointの位置合わせ用変換行列を計算
         AffineTrans<double> joint_space = joints->inverse_bind[0] * joints->bind_shape;
         AffineTrans<double> joint_trans = joint_space.getInvAffine();
-        skeleton = joint_trans * affine;
-        skeleton.shift =  - joints->alt_inverse_bind[0].shift;
+
+        Vector<double> shift = joint_trans.execRotateScale(pelvis);
+        joint_trans.shift = joint_trans.shift - shift;
+
+        skeleton = affine*joint_trans;
+        setJointLocationMatrix();
+
         joint_space.free();
         joint_trans.free();
         //**********************************************************************************
     }
 
     Buffer geometry_name = dup_Buffer(meshdata->data_name);
-    if (geometry_name.buf==NULL) geometry_name = make_Buffer_str(geometry_id+1);
+    if (geometry_name.buf==NULL) geometry_name = make_Buffer_str(geometry_id + 1);
     //
     Buffer randomstr = make_Buffer_randomstr(8);
     Buffer node_id = make_Buffer_str("#NODE_");
@@ -1062,8 +1078,15 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
     append_xml_content_node(scale_tag, dtostr(affine.scale.z));
 */
 
-    tXML* instance_tag = add_xml_node(node_tag, "instance_geometry");
-    add_xml_attr_str(instance_tag, "url", geometry_id);
+    tXML* instance_tag = NULL;
+    if (controller_id!=NULL) {
+        instance_tag = add_xml_node(node_tag, "instance_controller");
+        add_xml_attr_str(instance_tag, "url", controller_id);
+    }
+    else {
+        instance_tag = add_xml_node(node_tag, "instance_geometry");
+        add_xml_attr_str(instance_tag, "url", geometry_id);
+    }
 
     tXML* bind_material_tag = add_xml_node(instance_tag, "bind_material");
     tXML* technique_common_tag = add_xml_node(bind_material_tag, "technique_common");
@@ -1087,8 +1110,15 @@ void  ColladaXML::addScene(const char* geometry_id, MeshObjectData* meshdata, bo
         add_xml_content_node(dynamic_tag, "false");
         add_xml_content_node(mass_tag, "0");
         tXML* shape_tag   = add_xml_node(technique_common_tag, "shape");
-        instance_tag      = add_xml_node(shape_tag, "instance_geometry");
-        add_xml_attr_str(instance_tag, "url", geometry_id);
+        //
+        if (controller_id!=NULL) {
+            instance_tag = add_xml_node(shape_tag, "instance_controller");
+            add_xml_attr_str(instance_tag, "url", controller_id);
+        }
+        else {
+            instance_tag = add_xml_node(shape_tag, "instance_geometry");
+            add_xml_attr_str(instance_tag, "url", geometry_id);
+        }
     }
 
     //
@@ -1172,14 +1202,12 @@ void  ColladaXML::setJointLocationMatrix(void)
 */
 void  ColladaXML::setJointLocationMatrix(void)
 {
+    if (!has_joints) return;
+
     tXML* avatar_tag = get_xml_node_str(collada_tag, "<library_visual_scenes><visual_scene><node><matrix>");
     if (avatar_tag!=NULL) {
-        if (total_vertex>0) getObjectCenter();
-        skeleton.shift.x += center.x;
-        skeleton.shift.y += center.y;
-        skeleton.shift.z += center.z;
         skeleton.computeMatrix();
-
+        //
         for (int i=1; i<=4; i++) {
             for (int j=1; j<=4; j++) {
                 double element = skeleton.matrix.element(i, j);

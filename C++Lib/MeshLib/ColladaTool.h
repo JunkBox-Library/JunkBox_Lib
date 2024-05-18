@@ -56,8 +56,8 @@ public:
     void    addObject(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tXML* joints_template=NULL, tList* joints_name=NULL);
 
     char*   addGeometry(MeshObjectData* meshdata);
-    void    addController(const char* geometry_id, MeshObjectData* meshdata, SkinJointData* skin_joint);
-    void    addScene(const char* geometry_id, MeshObjectData* meshdata, bool collider, SkinJointData* skin_join);
+    char*   addController(const char* geometry_id, MeshObjectData* meshdata, SkinJointData* skin_joint);
+    void    addScene(const char* geometry_id, char* controll_id, MeshObjectData* meshdata, bool collider, SkinJointData* skin_join);
 
     char*   addVertexSource(tXML* tag, MeshObjectData* meshdata);
     char*   addNormalSource(tXML* tag, MeshObjectData* meshdata);
@@ -126,6 +126,7 @@ public:
 
     tXML*   joints_template_tag;
     tList*  joints_bento_name;
+    bool    has_joints;
     bool    has_bento_joints;
 
     bool    phantom_out;
