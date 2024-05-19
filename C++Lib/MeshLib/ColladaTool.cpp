@@ -25,9 +25,9 @@ void  ColladaXML::init(double meter, int axis, const char* ver)
     initCollada(meter, axis, ver);
     //
     joints_template_tag = NULL;
-    joints_bento_name   = NULL;
+    //joints_bento_name   = NULL;
     has_joints          = false;
-    has_bento_joints    = false;
+    //has_bento_joints    = false;
 
     blank_texture = init_Buffer();
     phantom_out   = true;
@@ -44,7 +44,7 @@ void  ColladaXML::free(void)
 {
     free_Buffer(&blank_texture);
     del_all_xml(&xml_tag);
-    if (joints_bento_name!=NULL) del_tList(&joints_bento_name);
+    //if (joints_bento_name!=NULL) del_tList(&joints_bento_name);
     skeleton.free();
 }
 
@@ -148,7 +148,8 @@ void  ColladaXML::initCollada(double meter, int axis, const char* ver)
 }
 
 
-void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template, tList* joints_name)
+//void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template, tList* joints_name)
+void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template)
 {
     if (meshdata==NULL) return;
 
@@ -156,8 +157,9 @@ void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointDa
         if (joints_template_tag==NULL) {
             has_joints = true;
             joints_template_tag = joints_template;
-            joints_bento_name   = joints_name;
+            //joints_bento_name   = joints_name;
             // Bento
+            /*
             int joints_num = joints->joint_names.get_size();
             for (int j=0; j<joints_num; j++) {
                 char* jname = joints->joint_names.get_value(j);
@@ -166,11 +168,11 @@ void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointDa
                     has_bento_joints = true;
                     break;
                 }
-            }
+            }*/
         }
         else {
             del_all_xml(&joints_template);
-            del_all_tList(&joints_name);
+            //del_all_tList(&joints_name);
         }
     }
 
@@ -560,7 +562,7 @@ char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* meshdata, Vector<i
                     weight_index[vnum*joints_num].x = i;
                     weight_index[vnum*joints_num].y = 0;
                     weight_index[vnum*joints_num].z = TRUE;
-                    append_xml_content_node(source_array_tag, "0.00");
+                    append_xml_content_node(source_array_tag, "0.000000");
                     count++;
                 }
                 vnum++;
@@ -988,8 +990,9 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
                     for (int i=1; i<=4; i++) {
                         for (int j=1; j<=4; j++) {
                             double element = joints->alt_inverse_bind[jnt].matrix.element(i, j);
-                            if (i==1 && j==1) set_xml_content_node(matrix_tag, dtostr(element));
-                            else           append_xml_content_node(matrix_tag, dtostr(element));
+                            //if (i==1 && j==1) set_xml_content_node(matrix_tag, dtostr(element));
+                            //else           append_xml_content_node(matrix_tag, dtostr(element));
+                            append_xml_content_node(matrix_tag, dtostr(element));
                         }
                     }
                 }
@@ -1002,10 +1005,14 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
             }
         }
 
+/*
         if (!has_bento_joints) {
             // 不要な Bento Joints を削除
-            delete_bento_joints();
+            tXML* pelvis_tag = get_xml_attr_node(joints_template_tag, "name","\"mPelvis\"");
+            deleteListJoints(pelvis_tag, ....);
         }
+*/
+
         // joints_template の結合
         join_xml(visual_scene_tag, joints_template_tag);
 
@@ -1016,9 +1023,12 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
 
         Vector<double> shift = joint_trans.execRotateScale(pelvis);
         joint_trans.shift = joint_trans.shift - shift;
+        skeleton = affine*joint_trans;      // Joint -> Real の Affine変換
 
-        skeleton = affine*joint_trans;
         setJointLocationMatrix();
+
+        tXML* pelvis_tag = get_xml_attr_node(joints_template_tag, "name","\"mPelvis\"");
+        deleteNousedJoints(pelvis_tag);
 
         joint_space.free();
         joint_trans.free();
@@ -1049,54 +1059,10 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
         add_xml_attr_str(instance_rigid_body_tag, "body",   _tochar(node_id.buf + 1));
         add_xml_attr_str(instance_rigid_body_tag, "target", _tochar(node_id.buf));
     }
-
     free_Buffer(&randomstr);
     free_Buffer(&node_id);
 
-/*
-    // 回転行列
-    //affine.computeMatrix(false);
-    tXML* matrix_tag = add_xml_node(node_tag, "matrix");
-    affine.computeMatrix();
-    for (int i=1; i<=4; i++) {
-        for (int j=1; j<=4; j++) {
-            append_xml_content_node(matrix_tag, dtostr(affine.matrix.element(i, j)));
-        }
-    }
-*/
-
-/*
-    // オイラー角
-    tXML* translate_tag = add_xml_node(node_tag, "translate");
-    add_xml_attr_str(translate_tag, "sid", "location");
-    append_xml_content_node(translate_tag, dtostr(affine.shift.x));
-    append_xml_content_node(translate_tag, dtostr(affine.shift.y));
-    append_xml_content_node(translate_tag, dtostr(affine.shift.z));
-    //
-    Vector<double> euler = affine.rotate.getEulerZYX();
-    tXML* rotate_z_tag = add_xml_node(node_tag, "rotate");
-    add_xml_attr_str(rotate_z_tag, "sid", "rotationZ");
-    append_xml_content_node(rotate_z_tag, "0 0 1");
-    append_xml_content_node(rotate_z_tag, dtostr(euler.x));
-
-    tXML* rotate_y_tag = add_xml_node(node_tag, "rotate");
-    add_xml_attr_str(rotate_y_tag, "sid", "rotationY");
-    append_xml_content_node(rotate_y_tag, "0 1 0");
-    append_xml_content_node(rotate_y_tag, dtostr(euler.y));
-
-    tXML* rotate_x_tag = add_xml_node(node_tag, "rotate");
-    add_xml_attr_str(rotate_x_tag, "sid", "rotationX");
-    append_xml_content_node(rotate_x_tag, "1 0 0");
-    append_xml_content_node(rotate_x_tag, dtostr(euler.z));
-    
-    // Scale
-    tXML* scale_tag = add_xml_node(node_tag, "scale");
-    add_xml_attr_str(scale_tag, "sid", "scale");
-    append_xml_content_node(scale_tag, dtostr(affine.scale.x));
-    append_xml_content_node(scale_tag, dtostr(affine.scale.y));
-    append_xml_content_node(scale_tag, dtostr(affine.scale.z));
-*/
-
+    // Controller
     tXML* matrix_tag = add_xml_node(node_tag, "matrix");
     tXML* instance_tag = NULL;
     if (controller_id!=NULL) {
@@ -1104,17 +1070,27 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
         //
         instance_tag = add_xml_node(node_tag, "instance_controller");
         add_xml_attr_str(instance_tag, "url", controller_id);
-        tXML* skeleton_tag = add_xml_node(instance_tag, "skeleton");
-        set_xml_content_node(skeleton_tag, "#mPelvis");
+        //
+        char buf[LNAME];
+        memset(buf, 0, LNAME);
+        buf[0] = '#';
+        const char* joint_name = (const char*)joints->joint_names.get_value(0);
+        if (joint_name!=NULL) {
+            int len = (int)strlen(joint_name);
+            memcpy(buf + 1, joint_name, len);
+            buf[len + 1] = '\0';
+            tXML* skeleton_tag = add_xml_node(instance_tag, "skeleton");
+            set_xml_content_node(skeleton_tag, buf);
+        }
     }
     else {
+        // Controller for no skin
         affine.computeMatrix();
         for (int i=1; i<=4; i++) {
             for (int j=1; j<=4; j++) {
                 append_xml_content_node(matrix_tag, dtostr(affine.matrix.element(i, j)));
             }
         }
-        //
         instance_tag = add_xml_node(node_tag, "instance_geometry");
         add_xml_attr_str(instance_tag, "url", geometry_id);
     }
@@ -1242,8 +1218,9 @@ void  ColladaXML::setJointLocationMatrix(void)
         for (int i=1; i<=4; i++) {
             for (int j=1; j<=4; j++) {
                 double element = skeleton.matrix.element(i, j);
-                if (i==1 && j==1) set_xml_content_node(avatar_tag, dtostr(element));
-                else           append_xml_content_node(avatar_tag, dtostr(element));
+                //if (i==1 && j==1) set_xml_content_node(avatar_tag, dtostr(element));
+                //else           append_xml_content_node(avatar_tag, dtostr(element));
+                append_xml_content_node(avatar_tag, dtostr(element));
             }
         }
     }
@@ -1251,41 +1228,71 @@ void  ColladaXML::setJointLocationMatrix(void)
 }
 
 
-void  ColladaXML::delete_bento_joints(void)
+void  ColladaXML::deleteJoint(tXML* delete_tag)
 {
-    tXML* pelvis_tag = get_xml_attr_node(joints_template_tag, "name","\"mPelvis\"");
-    if (pelvis_tag==NULL) return;
+    if (delete_tag==NULL) return;
+
+    if (delete_tag->next!=NULL) {
+        tXML* next = delete_tag->next;
+        while (next->esis!=NULL) next = next->esis;
+
+        if (next->ysis!=NULL) {
+            if (!strcasecmp((char*)next->ysis->ldat.key.buf, "extra")) {
+                tXML* ysis = next->ysis;
+                del_xml(&ysis);
+            }
+        }
+        if (!strcasecmp((char*)next->ldat.key.buf, "matrix")) {
+            del_xml(&next);
+        }
+    } 
+    del_xml_node(&delete_tag);
+}
+
+
+// <matrix> のデータが空の Joint を削除する．
+void  ColladaXML::deleteNousedJoints(tXML* delete_tag)
+{
+    if (delete_tag==NULL) return;
+
+    if (!strcasecmp((char*)delete_tag->ldat.key.buf, "matrix")) {
+        if (delete_tag->next==NULL) {
+            if (delete_tag->prev!=NULL) delete_tag->prev->ctrl = TREE_DELETE_NODE;
+        }
+    }
+
+    if (delete_tag->next!=NULL) {
+        deleteNousedJoints(delete_tag->next);
+    }
+    if (delete_tag->ysis!=NULL) {
+        deleteNousedJoints(delete_tag->ysis);
+    }
+
+    if (delete_tag->ctrl == TREE_DELETE_NODE) {
+        deleteJoint(delete_tag);
+    }
+}
+
+
+// joints_name にあるジョイントを削除する．
+void  ColladaXML::deleteListJoints(tXML* top_tag, tList* joints_name)
+{
+    if (top_tag==NULL) return;
 
     char buf[LNAME];
     memset(buf, 0, LNAME);
     buf[0] = '"';
 
-    tList* lp = joints_bento_name;
+    tList* lp = joints_name;
     while (lp!=NULL) {
-        char* bento = (char*)lp->ldat.key.buf;
-        int len = (int)strlen(bento);
-        memcpy(buf + 1, bento, len);
+        char* jname = (char*)lp->ldat.key.buf;
+        int len = (int)strlen(jname);
+        memcpy(buf + 1, jname, len);
         buf[len + 1] = '"';
         buf[len + 2] = '\0';
-        tXML* del_tag = get_xml_attr_node(pelvis_tag, "name", (const char*)buf);
+        tXML* del_tag = get_xml_attr_node(top_tag, "name", (const char*)buf);
         //
-        if (del_tag!=NULL) {
-            if (del_tag->next!=NULL) {
-                tXML* next = del_tag->next;
-                while (next->esis!=NULL) next = next->esis;
-
-                if (next->ysis!=NULL) {
-                    if (!strcasecmp((char*)next->ysis->ldat.key.buf, "extra")) {
-                        tXML* ysis = next->ysis;
-                        del_xml(&ysis);
-                    }
-                }
-                if (!strcasecmp((char*)next->ldat.key.buf, "matrix")) {
-                    del_xml(&next);
-                }
-            } 
-            del_tTree_node(&del_tag);
-        }
+        deleteJoint(del_tag);
         //
         lp = lp->next;
     }

@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     Buffer buf;
     tTree* tt;
 
-    int  mode = 2, dflg = OFF;
+    int  mode = 3, dflg = OFF;
     
     for (i=1; i<argc; i++) {
         if      (!strcmp(argv[i],"-0"))  mode = 0;

@@ -53,7 +53,8 @@ public:
 public:
     void    initCollada(double meter, int axis, const char* ver);
     void    initCollada(float  meter, int axis, const char* ver) { initCollada((double)meter, axis, ver); }
-    void    addObject(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tXML* joints_template=NULL, tList* joints_name=NULL);
+    //void    addObject(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tXML* joints_template=NULL, tList* joints_name=NULL);
+    void    addObject(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tXML* joints_template=NULL);
 
     char*   addGeometry(MeshObjectData* meshdata);
     char*   addController(const char* geometry_id, MeshObjectData* meshdata, SkinJointData* skin_joint);
@@ -76,14 +77,17 @@ public:
     tXML*   addEffect(const char* material_url, const char* file_id, MaterialParam param);
     void    addExtraBumpmap(tXML* effect_tag, const char* bump_id);
 
+    void    deleteJoint(tXML* delete_tag);
+
     bool    existSameID(tXML* top, const char* tag, const char* id);
 
     void    setBlankTexture(const char* name) { if(name!=NULL) blank_texture = make_Buffer_bystr(name);}
     bool    isBlankTexture (const char* name);
 
-    Vector<double> getObjectCenter();
     void    setJointLocationMatrix(void);
-    void    delete_bento_joints(void);
+    void    deleteNousedJoints(tXML* delete_tag);
+    void    deleteListJoints(tXML* top_tag, tList* joints_name);
+    Vector<double> getObjectCenter();
 
 private:
 
@@ -125,9 +129,9 @@ public:
     AffineTrans<double> skeleton;
 
     tXML*   joints_template_tag;
-    tList*  joints_bento_name;
+    //tList*  joints_bento_name;
     bool    has_joints;
-    bool    has_bento_joints;
+    //bool    has_bento_joints;
 
     bool    phantom_out;
     Buffer  blank_texture;
