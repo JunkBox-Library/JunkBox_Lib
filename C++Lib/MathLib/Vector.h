@@ -142,7 +142,7 @@ template <typename T, typename R> inline Vector<T> operator + (const R c, Vector
 
 
 template <typename T> inline Vector<T> operator - (const Vector<T> a, const Vector<T> b)
-{ return Vector<T>(a.x  -b.x, a.y - b.y, a.z - b.z, 0.0, Min(a.c, b.c), a.d); }
+{ return Vector<T>(a.x - b.x, a.y - b.y, a.z - b.z, 0.0, Min(a.c, b.c), a.d); }
 
 
 template <typename T, typename R> inline Vector<T> operator - (const Vector<T> a, R c)
@@ -172,21 +172,20 @@ template <typename T, typename R> inline Vector<T> operator / (const R d, const 
     return v;
 }
 
-/*
-template <typename T> inline Vector<T> operator += (Vector<T> a, const Vector<T> b)
-{ return (a + b); }
+
+template <typename T> inline Vector<T> operator += (Vector<T>& a, const Vector<T> b)
+{ a = a + b; return a; }
 
 
-template <typename T, typename R> inline Vector<T> operator += (const Vector<T> a, const Vector<R> b)
-{ return  (a + Cast<T>(b)); }
+template <typename T, typename R> inline Vector<T> operator += (Vector<T>& a, const Vector<R> b)
+{ a = a + Cast<T>(b); return a; }
 
 
-template <typename T> inline Vector<T> operator -= (Vector<T> a, const Vector<T> b)
+template <typename T> inline Vector<T> operator -= (Vector<T>& a, const Vector<T> b)
 { a = a - b; return a; }
 
-template <typename T, typename R> inline Vector<T> operator -= (Vector<T> a, const Vector<R> b)
-{ return (a - Cast<T>(b)); }
-*/
+template <typename T, typename R> inline Vector<T> operator -= (Vector<T>& a, const Vector<R> b)
+{ a = a - Cast<T>(b); return a; }
 
 
 /// Cross product  外積
@@ -675,21 +674,19 @@ template <typename T> inline bool operator != (const UVMap<T> a, const UVMap<T> 
 { return (a.u != b.u || a.v != b.v); }
 
 
-/*
-template <typename T> inline UVMap<T> operator += (UVMap<T> a, const UVMap<T> b)
-{ return (a + b); }
+template <typename T> inline UVMap<T> operator += (UVMap<T>& a, const UVMap<T> b)
+{ a = a + b; return a; }
 
 
-template <typename T, typename R> inline UVMap<T> operator += (UVMap<T> a, const UVMap<R> b)
-{ return (a + Cast<T>(b)); }
+template <typename T, typename R> inline UVMap<T> operator += (UVMap<T>& a, const UVMap<R> b)
+{ a = a + Cast<T>(b); return a; }
 
 
-template <typename T> inline UVMap<T> operator -= (UVMap<T> a, const UVMap<T> b)
-{ return (a - b); }
+template <typename T> inline UVMap<T> operator -= (UVMap<T>& a, const UVMap<T> b)
+{ a = a - b; return a; }
 
-template <typename T, typename R> inline UVMap<T> operator -= (UVMap<T> a, const UVMap<R> b)
-{ return (a - Cast<T>(b)); }
-*/
+template <typename T, typename R> inline UVMap<T> operator -= (UVMap<T>& a, const UVMap<R> b)
+{ a = a - Cast<T>(b); return a; }
 
 
 }       // namespace

@@ -10,6 +10,14 @@ int main()
 
     Vector<double> eul1(1.0, 2.0, 1.0);
     Vector<double> eul2 = - eul1;
+
+    Vector<double> xxxx(3.0, 1.0, 0.0);
+    printf(" %lf, %lf, %lf\n", xxxx.x, xxxx.y, xxxx.z);
+    xxxx -= eul1;
+    printf(" %lf, %lf, %lf\n", xxxx.x, xxxx.y, xxxx.z);
+    printf("\n");
+
+
 /*
     Vector4<double> x, y;
 

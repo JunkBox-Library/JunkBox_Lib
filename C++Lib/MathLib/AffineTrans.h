@@ -97,22 +97,6 @@ public:
     Vector<T> execInvScale(Vector<T> v) { return Vector<T>(v.x/scale.x, v.y/scale.y, v.z/scale.z, (T)0.0, Min(v.c, scale.c));}
     Vector<T> execRotate(Vector<T> v)   { return VectorRotation(v, rotate);}
     Vector<T> execInvRotate(Vector<T> v){ return VectorInvRotation(v, rotate);}
-
-    //
-/*
-    T* execTrans(T* v)    { return execShift(execRotate(execScale(v)));}
-    T* execInvTrans(T* v) { return execInvScale(execInvRotate(execInvShift(v)));}
-
-    T* execRotateScale(T* v)    { return execRotate(execScale(v));}
-    T* execInvRotateScale(T* v) { return execInvScale(execInvRotate(v));}
-
-    T*  execShift(T* v)    { v[0]+=shift.x; v[1]+=shift.y; v[2]+=shift.z; return v;}
-    T*  execInvShift(T* v) { v[0]-=shift.x; v[1]-=shift.y; v[2]-=shift.z; return v;}
-    T*  execScale(T* v)    { v[0]*=scale.x; v[1]*=scale.y; v[2]*=scale.z; return v;}
-    T*  execInvScale(T* v) { v[0]/=scale.x; v[1]/=scale.y; v[2]/=scale.z; return v;}
-    T*  execRotate(T* v)   { return VectorRotation(v, rotate);}
-    T*  execInvRotate(T* v){ return VectorInvRotation(v, rotate);}
-*/
 };
 
 
