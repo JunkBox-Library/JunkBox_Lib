@@ -70,14 +70,14 @@ BOOL  COpenNiDevice::init(char* fname, BOOL use_image)
     m_enu_dev = EnuDev_None;
 
     if (fname==NULL) {
-        copy_s2Buffer("COpenNiDevice::init ERROR: File name is NULL", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::init: File name is NULL", &m_err_mesg);
         return FALSE;
     }
     //
     BOOL ret = create_Context(fname);
     if (ret) ret = create_Player(TRUE);
     if (!ret) {
-        copy_s2Buffer("COpenNiDevice::init ERROR: create error!!", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::init: create error!!", &m_err_mesg);
         return FALSE;
     }
     //
@@ -104,7 +104,7 @@ BOOL  COpenNiDevice::init(char* fname, BOOL use_image)
         depth->GetMapOutputMode(outputMode);
     }
     else {
-        copy_s2Buffer("COpenNiDevice::init ERROR: No Generators", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::init: No Generators", &m_err_mesg);
         return FALSE;
     }
 
@@ -138,7 +138,7 @@ BOOL  COpenNiDevice::create_Context(char* fname)
     if (context==NULL) {
         context = new xn::Context();
         if (context==NULL) {
-            copy_s2Buffer("COpenNiDevice::create_Context ERROR: context is NULL", &m_err_mesg);
+            copy_s2Buffer("ERROR: COpenNiDevice::create_Context: context is NULL", &m_err_mesg);
             return FALSE;
         }
     }
@@ -147,7 +147,7 @@ BOOL  COpenNiDevice::create_Context(char* fname)
     if (rc==XN_STATUS_OK && fname!=NULL) rc = context->OpenFileRecording(fname);
 
     if (rc!=XN_STATUS_OK) {
-        copy_s2Buffer("COpenNiDevice::create_Context ERROR: ", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::create_Context: ", &m_err_mesg);
         cat_s2Buffer (::xnGetStatusString(rc), &m_err_mesg);
         return FALSE;
     }
@@ -160,14 +160,14 @@ BOOL  COpenNiDevice::create_Image(BOOL easy)
     if (!m_has_camera) return FALSE;
 
     if (context==NULL) {
-        copy_s2Buffer("COpenNiDevice::create_Image ERROR: context is NULL", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::create_Image: context is NULL", &m_err_mesg);
         return FALSE;
     }
 
     if (image==NULL) {
         image = new xn::ImageGenerator();
         if (image==NULL) {
-            copy_s2Buffer("COpenNiDevice::create_Image ERROR: fail to create image generator", &m_err_mesg);
+            copy_s2Buffer("ERROR: COpenNiDevice::create_Image: fail to create image generator", &m_err_mesg);
             m_has_camera = FALSE;
             return FALSE;
         }
@@ -184,7 +184,7 @@ BOOL  COpenNiDevice::create_Image(BOOL easy)
     }
 
     if (rc!=XN_STATUS_OK) {
-        copy_s2Buffer("COpenNiDevice::create_Image ERROR: ", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::create_Image: ", &m_err_mesg);
         cat_s2Buffer (::xnGetStatusString(rc), &m_err_mesg);
         delete_Image();
         return FALSE;
@@ -201,14 +201,14 @@ BOOL  COpenNiDevice::create_Image(BOOL easy)
 BOOL  COpenNiDevice::create_Depth(BOOL easy)
 {
     if (context==NULL) {
-        copy_s2Buffer("COpenNiDevice::create_Depth ERROR: context is NULL", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::create_Depth: context is NULL", &m_err_mesg);
         return FALSE;
     }
 
     if (depth==NULL) {
         depth = new xn::DepthGenerator();
         if (depth==NULL) {
-            copy_s2Buffer("COpenNiDevice::create_Depth ERROR: fail to create depth generator", &m_err_mesg);
+            copy_s2Buffer("ERROR: COpenNiDevice::create_Depth: fail to create depth generator", &m_err_mesg);
             return FALSE;
         }
     }
@@ -232,7 +232,7 @@ BOOL  COpenNiDevice::create_Depth(BOOL easy)
     }
     
     if (rc!=XN_STATUS_OK) {
-        copy_s2Buffer("COpenNiDevice::create_Depth ERROR: ", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::create_Depth: ", &m_err_mesg);
         cat_s2Buffer (::xnGetStatusString(rc), &m_err_mesg);
         delete_Depth();
         return FALSE;
@@ -249,14 +249,14 @@ BOOL  COpenNiDevice::create_Depth(BOOL easy)
 BOOL  COpenNiDevice::create_User(BOOL easy)
 {
     if (context==NULL) {
-        copy_s2Buffer("COpenNiDevice::create_User ERROR: context is NULL", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::create_User: context is NULL", &m_err_mesg);
         return FALSE;
     }
 
     if (user==NULL) {
         user = new xn::UserGenerator();
         if (user==NULL) {
-            copy_s2Buffer("COpenNiDevice::create_User ERROR: fail to create user generator", &m_err_mesg);
+            copy_s2Buffer("ERROR: COpenNiDevice::create_User: fail to create user generator", &m_err_mesg);
             return FALSE;
         }
     }
@@ -271,7 +271,7 @@ BOOL  COpenNiDevice::create_User(BOOL easy)
     }
 
     if (rc!=XN_STATUS_OK) {
-        copy_s2Buffer("COpenNiDevice::create_User ERROR: ", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::create_User: ", &m_err_mesg);
         cat_s2Buffer (::xnGetStatusString(rc), &m_err_mesg);
         delete_User();
         return FALSE;
@@ -285,14 +285,14 @@ BOOL  COpenNiDevice::create_User(BOOL easy)
 BOOL  COpenNiDevice::create_Player(BOOL easy)
 {
     if (context==NULL) {
-        copy_s2Buffer("COpenNiDevice::create_Player ERROR: context is NULL", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::create_Player: context is NULL", &m_err_mesg);
         return FALSE;
     }   
 
     if (player==NULL) {
         player = new xn::Player();
         if (player==NULL) {
-            copy_s2Buffer("COpenNiDevice::create_Player ERROR: fail to create player generator", &m_err_mesg);
+            copy_s2Buffer("ERROR: COpenNiDevice::create_Player: fail to create player generator", &m_err_mesg);
             return FALSE;
         }
     }
@@ -306,7 +306,7 @@ BOOL  COpenNiDevice::create_Player(BOOL easy)
     }
     
     if (rc!=XN_STATUS_OK) {
-        copy_s2Buffer("COpenNiDevice::create_Player EROR: ", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::create_Player: ", &m_err_mesg);
         cat_s2Buffer (::xnGetStatusString(rc), &m_err_mesg);
         delete_Player();
         return FALSE;
@@ -394,18 +394,18 @@ void   COpenNiDevice::delete_Player(void)
 BOOL  COpenNiDevice::setup_Tracking(int profile, double smooth)
 {
     if (user==NULL) {
-        copy_s2Buffer("COpenNiDevice::setup_Tracking ERROR: user is NULL", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::setup_Tracking: user is NULL", &m_err_mesg);
         return FALSE;
     }
     if (!user->IsCapabilitySupported(XN_CAPABILITY_SKELETON)) {
-        copy_s2Buffer("COpenNiDevice::setup_Tracking ERROR: not support skeleton", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::setup_Tracking: not support skeleton", &m_err_mesg);
         return FALSE;
     }
 
     if (skeleton==NULL) {
         skeleton = new xn::SkeletonCapability(*user);
         if (skeleton==NULL) {
-            copy_s2Buffer("COpenNiDevice::setup_Tracking ERROR: fail to make skeleton capability", &m_err_mesg);
+            copy_s2Buffer("ERROR: COpenNiDevice::setup_Tracking: fail to make skeleton capability", &m_err_mesg);
             return FALSE;
         }
     }
@@ -451,11 +451,11 @@ void  COpenNiDevice::clear_Tracking(void)
 BOOL  COpenNiDevice::create_Recorder(char* file_name, BOOL use_image)
 {
     if (context==NULL) {
-        copy_s2Buffer("COpenNiDevice::create_Recorder ERROR: context is NULL", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::create_Recorder: context is NULL", &m_err_mesg);
         return FALSE;
     }   
     if (depth==NULL) {
-        copy_s2Buffer("COpenNiDevice::create_Recorder ERROR: depth is NULL", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::create_Recorder: depth is NULL", &m_err_mesg);
         return FALSE;
     }
 
@@ -466,7 +466,7 @@ BOOL  COpenNiDevice::create_Recorder(char* file_name, BOOL use_image)
     if (rc==XN_STATUS_OK) rc = recorder->AddNodeToRecording(*depth, XN_CODEC_16Z);  
     
     if (rc!=XN_STATUS_OK) {
-        copy_s2Buffer("COpenNiDevice::create_Recorder ERROR: ", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::create_Recorder: ", &m_err_mesg);
         cat_s2Buffer (::xnGetStatusString(rc), &m_err_mesg);
         return FALSE;
     }
@@ -508,7 +508,7 @@ BOOL  COpenNiDevice::start_Recorde(char* file_name, BOOL use_image)
         if (ret) {
             rc = recorder->Record();
             if (rc!=XN_STATUS_OK) {
-                copy_s2Buffer("COpenNiDevice::start_Recorde ERROR: ", &m_err_mesg);
+                copy_s2Buffer("ERROR: COpenNiDevice::start_Recorde: ", &m_err_mesg);
                 cat_s2Buffer (::xnGetStatusString(rc), &m_err_mesg);
                 ret = FALSE;
             }
@@ -629,13 +629,13 @@ void  COpenNiDevice::clear_CallBacks()
 BOOL  COpenNiDevice::set_UserCallbacks(xn::UserGenerator::UserHandler newUser, xn::UserGenerator::UserHandler lostUser, void* cookie)
 {
     if (user==NULL) {
-        copy_s2Buffer("COpenNiDevice::set_UserCallbacks ERROR: user is NULL", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::set_UserCallbacks: user is NULL", &m_err_mesg);
         return FALSE;
     }
 
     rc = user->RegisterUserCallbacks(newUser, lostUser, cookie, userCallbacks);
     if (rc!=XN_STATUS_OK) {
-        copy_s2Buffer("COpenNiDevice::set_UserCallbacks ERROR: ", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::set_UserCallbacks: ", &m_err_mesg);
         cat_s2Buffer (::xnGetStatusString(rc), &m_err_mesg);
         unset_UserCallbacks();
         return FALSE;
@@ -647,13 +647,13 @@ BOOL  COpenNiDevice::set_UserCallbacks(xn::UserGenerator::UserHandler newUser, x
 BOOL  COpenNiDevice::set_CalibCallbacks(xn::SkeletonCapability::CalibrationStart calibStart, xn::SkeletonCapability::CalibrationEnd calibEnd, void* cookie)
 {
     if (skeleton==NULL) {
-        copy_s2Buffer("COpenNiDevice::set_CalibCallbacks ERROR: skeleton is NULL", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::set_CalibCallbacks: skeleton is NULL", &m_err_mesg);
         return FALSE;
     }
 
     rc = skeleton->RegisterCalibrationCallbacks(calibStart, calibEnd, cookie, calibCallbacks);
     if (rc!=XN_STATUS_OK) {
-        copy_s2Buffer("COpenNiDevice::set_CalibCallbacks ERROR: ", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiDevice::set_CalibCallbacks: ", &m_err_mesg);
         cat_s2Buffer (::xnGetStatusString(rc), &m_err_mesg);
         unset_CalibCallbacks();
         return FALSE;
@@ -689,23 +689,23 @@ void  COpenNiDevice::unset_CalibCallbacks()
 
 void  XN_CALLBACK_TYPE jbxl::userDetect(xn::UserGenerator& user, unsigned int nId, void* cookie)
 {
-    DEBUG_INFO("jbxl::userDetect(): User is detected. (%d)", nId);
+    DEBUG_INFO("INFO: jbxl::userDetect(): User is detected. (%d)", nId);
     if (cookie==NULL) return;
     
     user.GetSkeletonCap().RequestCalibration(nId, TRUE);
     
-    DEBUG_INFO("jbxl::userDetect(): Start Pose Detection. (%d)", nId);
+    DEBUG_INFO("INFO: jbxl::userDetect(): Start Pose Detection. (%d)", nId);
 }
 
 
 void  XN_CALLBACK_TYPE jbxl::userLost(xn::UserGenerator& user, unsigned int nId, void* cookie)
 {
-    DEBUG_INFO("jbxl::userLost(): Lost user. (%d)", nId);
+    DEBUG_INFO("INFO: jbxl::userLost(): Lost user. (%d)", nId);
 
     if (user.GetSkeletonCap().IsValid()) {
         if (user.GetSkeletonCap().IsTracking(nId)) {
             user.GetSkeletonCap().StopTracking(nId);
-            DEBUG_INFO("jbxl::userLost(): Stop Tracking. (%d)", nId);
+            DEBUG_INFO("INFO: jbxl::userLost(): Stop Tracking. (%d)", nId);
         }
     }
 }
@@ -715,13 +715,13 @@ void  XN_CALLBACK_TYPE jbxl::userLost(xn::UserGenerator& user, unsigned int nId,
 
 void  XN_CALLBACK_TYPE jbxl::calibStart(xn::SkeletonCapability& skeleton, unsigned int nId, void* cookie)
 {
-    DEBUG_INFO("jbxl::calibStart(): Start Calibration. (%d)", nId);
+    DEBUG_INFO("INFO: jbxl::calibStart(): Start Calibration. (%d)", nId);
 }
 
 
 void  XN_CALLBACK_TYPE jbxl::calibEnd(xn::SkeletonCapability& skeleton, unsigned int nId, XnBool success, void* cookie)
 {
-    DEBUG_INFO("jbxl::calibEnd(): End Calibration. (%d)", nId);
+    DEBUG_INFO("INFO: jbxl::calibEnd(): End Calibration. (%d)", nId);
     if (cookie==NULL) return;
 
     //
@@ -730,7 +730,7 @@ void  XN_CALLBACK_TYPE jbxl::calibEnd(xn::SkeletonCapability& skeleton, unsigned
         if (success) {
             if (user!=NULL) {
                 user->GetSkeletonCap().StartTracking(nId);
-                DEBUG_INFO("jbxl::calibEnd(): Start Tracking. (%d)", nId);
+                DEBUG_INFO("INFO: jbxl::calibEnd(): Start Tracking. (%d)", nId);
             }
         }
     }

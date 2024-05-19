@@ -31,7 +31,7 @@ Buffer  llsd_bin_get_str(uByte** ptr)
 
     int size = ntohl(*(int*)(*ptr));
     (*ptr) += 4;
-    
+
     char* str = (char*)malloc(size + 1);
     if (str!=NULL) {
         memcpy(str, *ptr, size);
@@ -140,7 +140,7 @@ Buffer  llsd_bin_get_bin(uByte** ptr)
 
     int size = ntohl(*(int*)(*ptr));
     (*ptr) += 4;
-    
+
     uByte* bin = (uByte*)malloc(size);
     if (bin!=NULL) {
         memcpy(bin, *ptr, size);
@@ -208,7 +208,7 @@ int  llsd_bin_get_length(uByte* ptr, int sz)
         }
 
         if (cc==0) break;
-    }   
+    }
 
     free_Buffer(&stack);
 
@@ -306,7 +306,7 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
             if (xml->state==JBXL_XML_NODE_OPENED) {
                 xml->state = JBXL_XML_NODE_CLOSED;
                 xml = xml->prev;
-            }   
+            }
         }
         //
         else if (*ptr==LLSD_MAKER_ARRAY_END) {
@@ -314,7 +314,7 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
             if (xml->state==JBXL_XML_NODE_OPENED) {
                 xml->state = JBXL_XML_NODE_CLOSED;
                 xml = xml->prev;
-            }   
+            }
         }
         //
         else if (*ptr==LLSD_MAKER_KEY) {
@@ -506,22 +506,21 @@ tXML*  llsd_bin_get_block_data(uByte* buf, int sz, const char* key)
 uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num, int* joints_num)
 
 llmesh の LODデータから weight データを抜き出して，uWord の 2次元配列に格納する．
-ちょっとメモリの無駄遣いをしている．
 
 @param  buf : Weghtデータが格納されたバイナリデータ．
 @param  sz  : buf のサイズ．
 @param  vertex_num : 対応する頂点の数．
 
-@retval 2Byte の Weightデータ．weight[頂点*(*joints_num) + joint]. 
+@retval 2Byte の Weightデータ．weight[頂点*(*joints_num) + joint].
 */
 uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num, int* joints_num)
 {
     if (buf==NULL) return NULL;
 
-    int max_joints = 4;      // 一つの頂点が持つ重み情報の数の最大値（対象Jointの最大数）．
+    int max_joints = 4;      // 一つの頂点が持つ重み情報の数の最大値（対象Jointの最大数）
 
     if (joints_num!=NULL) *joints_num = 0;
-    int jnum   = 0;         // Jointのカウンター
+    int jnum   = 0;         // Jointの数
     int vertex = 0;         // 頂点の数
     int invrtx = 0;         // 一個の Jointに対する重みデータの数
     int pos    = 0;         // 処理中のデータの位置
@@ -530,7 +529,7 @@ uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num, int* joints
     while (pos < sz && vertex < vertex_num) {
         uByte joint = *(buf + pos);
         pos++;
-
+        //
         if (joint==0xff) {
             invrtx = 0;
             vertex++;
@@ -545,7 +544,7 @@ uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num, int* joints
             }
         }
     }
-    jnum = jnum + 1;
+    jnum = jnum + 1;    // Jointの数
 
     if (pos!=sz || vertex!=vertex_num) {
         PRINT_MESG("WARNING: llsd_bin_get_skin_weight: missmatch length %d != %d or %d != %d\n", pos, sz, vertex, vertex_num);
@@ -558,25 +557,28 @@ uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num, int* joints
     uWord* weight = (uWord*)malloc(len);
     if (weight==NULL) {
         PRINT_MESG("ERROR: llsd_bin_get_skin_weight: no more memory (%d)\n", len);
+        if (joints_num!=NULL) *joints_num = 0;
         return NULL;
     }
     memset(weight, 0, len);
 
     invrtx = 0;
-    pos = 0;
     vertex = 0;
+    pos    = 0;
     //
     while (pos < sz && vertex < vertex_num) {
         uByte joint = *(buf + pos);
         pos++;
-
+        //
         if (joint==0xff) {
             invrtx = 0;
             vertex++;
         }
         else {
             invrtx++;
-            weight[vertex*jnum + (int)joint] = *(uWord*)(buf + pos);
+            //int value = (int)*(uWord*)(buf + pos);
+            int value = *(uByte*)(buf + pos) + *(uByte*)(buf + pos + 1)*256;
+            weight[vertex*jnum + (int)joint] = value;
             pos += 2;
             if (invrtx%max_joints==0) {
                 invrtx = 0;
@@ -602,8 +604,8 @@ uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num, int* joints
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-// XML LLSD of Single Data 
-//  
+// XML LLSD of Single Data
+//
 
 int  llsd_xml_contain_key(tXML* xml, const char* key)
 {
@@ -690,7 +692,7 @@ Buffer  llsd_xml_get_content_bin(tXML* xml, const char* key, const char* item)
     char* ret = get_xml_char_content_bystr(xml, (char*)buf.buf);
     free_Buffer(&buf);
     buf = make_Buffer_bystr(ret);
-    
+
     Buffer bin = decode_base64_Buffer(buf);
     free_Buffer(&buf);
 

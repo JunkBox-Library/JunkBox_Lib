@@ -62,7 +62,7 @@ public:
     char*   addVertexSource(tXML* tag, MeshObjectData* meshdata);
     char*   addNormalSource(tXML* tag, MeshObjectData* meshdata);
     char*   addTexcrdSource(tXML* tag, MeshObjectData* meshdata);
-    char*   addWeightSource(tXML* tag, MeshObjectData* meshdata, Vector<int>* weight_index);
+    char*   addWeightSource(tXML* tag, MeshObjectData* meshdata, Vector<int>* weight_index, int joints_num);
 
     char*   addVerticesPos (tXML* mesh_tag, const char* position_id);
 

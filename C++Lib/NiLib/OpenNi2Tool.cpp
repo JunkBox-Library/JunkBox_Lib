@@ -211,7 +211,7 @@ double  COpenNiTool::joint_RotationConfidence(int j)
 BOOL  COpenNiTool::start_Detection(int profile, double smooth)
 {
     if (device->m_state==NI_STATE_DETECT_EXEC) {
-        copy_s2Buffer("COpenNiTool:start_Detection WARNING: detection is already executed", &m_err_mesg);
+        copy_s2Buffer("WARNING: COpenNiTool:start_Detection detection is already executed", &m_err_mesg);
         return FALSE;
     }
 
@@ -227,7 +227,7 @@ BOOL  COpenNiTool::start_Detection(int profile, double smooth)
         device->m_state = NI_STATE_DETECT_STOPPING;
         device->delete_User();
         device->m_state = NI_STATE_DETECT_STOPPED;
-        copy_s2Buffer("COpenNiTool:start_Detection ERROR: Myabe NITE is not installed!!", &m_err_mesg);
+        copy_s2Buffer("ERROR: COpenNiTool:start_Detection: Myabe NITE is not installed!!", &m_err_mesg);
         return FALSE;
     }
     device->m_state = NI_STATE_DETECT_EXEC;
@@ -239,7 +239,7 @@ BOOL  COpenNiTool::start_Detection(int profile, double smooth)
 BOOL  COpenNiTool::stop_Detection(void)
 {
     if (device->m_state==NI_STATE_DETECT_STOPPED) {
-        copy_s2Buffer("COpenNiTool:stop_Detection WARNING: detection is already stopped", &m_err_mesg);
+        copy_s2Buffer("WARNING: COpenNiTool:stop_Detection: detection is already stopped", &m_err_mesg);
         return FALSE;
     }
 

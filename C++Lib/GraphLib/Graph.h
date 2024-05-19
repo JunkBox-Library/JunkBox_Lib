@@ -795,7 +795,7 @@ template <typename T>  int  MSGraph_Paint(MSGraph<T> vp, int x, int y, int mn, i
     int  i, j, k, ss;
 
     if (cc<=mx && cc>=mn) {
-        DEBUG_MODE PRINT_MESG("MSGRAPH_PAINT: WARNING: c = %d. Not be %d< c <%d\n", cc, mn, mx); 
+        DEBUG_MODE PRINT_MESG("WARNING: MSGraph_Paint: c = %d. Not be %d< c <%d\n", cc, mn, mx); 
         return 0;
     }
 
@@ -894,7 +894,7 @@ template <typename T>  int  MSGraph_Paint3D(MSGraph<T> vp, int x, int y, int z, 
     if (xp.gp[y*xp.xs+x]>(T)mx || xp.gp[y*xp.xs+x]<(T)mn) return 0;
     ss += MSGraph_Paint(xp, x, y, mn, mx, cc, mode);
     if (mode<0) {
-        DEBUG_MODE PRINT_MESG("MSGRAPH_PAINT3D: zz = %d\n", z);
+        DEBUG_MODE PRINT_MESG("WARNING: MSGraph_Paint3D: zz = %d\n", z);
     }
 
     for (i=0; i<ps; i++) {

@@ -1423,7 +1423,7 @@ template <typename T> Quaternion<T>  SlerpQuaternion(Quaternion<T> qa, Quaternio
         if (t<=(T)0.5) return qa;
         else           return qb;
     }
-    //if (dot<0.0) DEBUG_WARN("SlerpQuaternion: dot = %f", dot);
+    //if (dot<0.0) DEBUG_WARN("WARNING: SlerpQuaternion: dot = %f", dot);
 
     //
     T th = (T)acos(dot);

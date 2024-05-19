@@ -63,7 +63,7 @@ Buffer  gz_decode_data(Buffer enc)
             inflateEnd(&zstrm);
             free_Buffer(&wrk);
             //
-            DEBUG_MODE PRINT_MESG("GZ_DECODE_DATA: ERROR: inflate error = %d\n", ret);
+            DEBUG_MODE PRINT_MESG("ERROR: GZ_DECODE_DATA: inflate error = %d\n", ret);
             dec.state = JBXL_ERROR;
             return dec;
         }
@@ -162,7 +162,7 @@ int  gz_decode_fp(FILE* infp, FILE* otfp)
                 fwrite(otbuf, BUFSZ-zstrm.avail_out, 1, otfp);          
                 //
                 inflateEnd(&zstrm);
-                DEBUG_MODE PRINT_MESG("GZ_DECODE_FP: ERROR: inflate error = %d\n", ret);
+                DEBUG_MODE PRINT_MESG("ERROR: GZ_DECODE_FP: inflate error = %d\n", ret);
                 if (sz==0) sz = JBXL_ERROR;
                 return sz;
             }

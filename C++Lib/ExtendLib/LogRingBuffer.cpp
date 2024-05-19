@@ -12,11 +12,11 @@ using namespace jbxl;
 
 CLogRingBuffer::~CLogRingBuffer(void)
 {
-    //DEBUG_INFO("DESTRUCTOR: CLogRingBuffer");
+    //DEBUG_INFO("INFO: DESTRUCTOR: CLogRingBuffer");
 
     if (pBuf!=NULL) del_Buffer_dim(&pBuf);
 
-    //DEBUG_INFO("DESTRUCTOR: CLogRingBuffer");
+    //DEBUG_INFO("INFO: DESTRUCTOR: CLogRingBuffer");
 }
 
 
@@ -104,7 +104,7 @@ void  CLogRingBuffer::putRingBuffer(Buffer buf, int input, int kind)
         total += dim[i].vldsz;
     }
     if (buf.vldsz!=total) {
-        DEBUG_ERR("CLogRingBuffer::putRingBuffer(): ERROR: mismatch total data size!! %d %d", buf.vldsz, total);
+        DEBUG_ERR("ERROR: CLogRingBuffer::putRingBuffer(): mismatch total data size!! %d %d", buf.vldsz, total);
     }
 #endif
     
@@ -173,7 +173,7 @@ void  CLogRingBuffer::putRingBuffer(Buffer buf, int input, int kind)
         if (wPos+1<maxLineY) maxLineY = maxBufSize;
         else  maxLineY = wPos + 1;
     }
-    //DEBUG_WARN("MaxY = %d", maxLineY);
+    //DEBUG_WARN("WARNING: MaxY = %d", maxLineY);
     
     if (recalcX) {
         maxLineX = 0;

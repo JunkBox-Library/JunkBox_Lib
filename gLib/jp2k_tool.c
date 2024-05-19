@@ -178,7 +178,7 @@ JP2KImage  read_jp2k_data(unsigned char* data, int len, int format)
         codec = opj_create_decompress(CODEC_JPT);
     }
     else {
-        PRINT_MESG("JBXL::readJPEG2KData: ERROR: unknown file format!\n");
+        PRINT_MESG("ERROR: JBXL::readJPEG2KData: unknown file format!\n");
         jp.state = JBXL_GRAPH_NODATA_ERROR;
         return jp;
     }

@@ -14,7 +14,7 @@ using namespace jbxl;
 
 CBVHTool::~CBVHTool(void)
 { 
-    DEBUG_INFO("DESTRUCTOR: CBVHTool");
+    DEBUG_INFO("INFO: DESTRUCTOR: CBVHTool");
 
     free_data();
 }

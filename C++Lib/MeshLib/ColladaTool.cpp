@@ -257,9 +257,10 @@ char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshda
 
     // source WEIGHT
     int vec_len = sizeof(Vector<int>)*meshdata->ttl_vertex*joints_num;
-    Vector<int>* weight_index = (Vector<int>*)malloc(vec_len);    // x: vertex num, y: joint num, z: FALSE->データなし, TRUE->データあり
+    Vector<int>* weight_index = (Vector<int>*)malloc(vec_len);
+    if (weight_index==NULL) return NULL;
     memset(weight_index, 0, vec_len);
-    char* weight_id = addWeightSource(skin_tag, meshdata, weight_index);
+    char* weight_id = addWeightSource(skin_tag, meshdata, weight_index, joints_num); // x: vertex num, y: joint num, z: FALSE->データなし, TRUE->データあり
 
     // joints
     tXML* joints_tag = add_xml_node(skin_tag, "joints");
@@ -272,26 +273,27 @@ char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshda
     add_xml_attr_str(input_invbind_tag, "semantic", "INV_BIND_MATRIX");
     add_xml_attr_str(input_invbind_tag, "source", _tochar(invbind_id.buf));
 
-    // vertex_weight
-    tXML* vertex_weight_tag = add_xml_node(skin_tag, "vertex_weights");
+    // vertex_weights
+    tXML* vertex_weights_tag = add_xml_node(skin_tag, "vertex_weights");
 
-    tXML* input_joint2_tag = add_xml_node(vertex_weight_tag, "input");
+    tXML* input_joint2_tag = add_xml_node(vertex_weights_tag, "input");
     add_xml_attr_str(input_joint2_tag, "semantic", "JOINT");
     add_xml_attr_str(input_joint2_tag, "source", _tochar(joint_id.buf));
     add_xml_attr_int(input_joint2_tag, "offset", 0);
 
-    tXML* input_weight_tag = add_xml_node(vertex_weight_tag, "input");
+    tXML* input_weight_tag = add_xml_node(vertex_weights_tag, "input");
     add_xml_attr_str(input_weight_tag, "semantic", "WEIGHT");
     add_xml_attr_str(input_weight_tag, "source", weight_id);
     add_xml_attr_int(input_weight_tag, "offset", 1);
 
-    tXML* vcount_tag = add_xml_node(vertex_weight_tag, "vcount");
-    tXML* vindex_tag = add_xml_node(vertex_weight_tag, "v");
+    tXML* vcount_tag = add_xml_node(vertex_weights_tag, "vcount");
+    tXML* vindex_tag = add_xml_node(vertex_weights_tag, "v");
 
     int snum = 0;
     int wnum = 0;
     int vnum = 0;
     int prev_vertex = -1;
+    //
     for (int i=0; i<meshdata->ttl_vertex*joints_num; i++) {
         if (weight_index[i].z==TRUE) {
             if (prev_vertex==-1) prev_vertex = weight_index[i].x;               // vertex number
@@ -310,8 +312,11 @@ char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshda
     }
     append_xml_content_node(vcount_tag, itostr(vnum));
     snum++;
-
-    add_xml_attr_str(vertex_weight_tag, "count", itostr(snum));
+    
+    if (snum!=meshdata->ttl_vertex) {
+        PRINT_MESG("WARNING: ColladaXML::addController: Vcount and Vertex number missmatched (%d != %d), Valid data num = %d\n", snum, meshdata->ttl_vertex, wnum);
+    }
+    add_xml_attr_str(vertex_weights_tag, "count", itostr(snum));
 
     free_Buffer(&geometry_name);
     free_Buffer(&randomstr);
@@ -506,7 +511,7 @@ char*  ColladaXML::addTexcrdSource(tXML* tag, MeshObjectData* meshdata)
 }
 
 
-char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* meshdata, Vector<int>* weight_index)
+char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* meshdata, Vector<int>* weight_index, int joints_num)
 {
     if (tag==NULL || meshdata==NULL) return NULL;
 
@@ -529,21 +534,34 @@ char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* meshdata, Vector<i
             ArrayParam<int>* weight = facet->weight_value;
             for (int i=0; i<facet->num_vertex; i++) {
                 int total = 0;
-                int joints_num = weight[i].get_size();
-                for (int j=0; j<joints_num; j++) {
+                int jnum = weight[i].get_size();        // その頂点で有効なジョイントの最大値
+                for (int j=0; j<jnum; j++) {
                     total += weight[i].get_value(j);
                 }
-                for (int j=0; j<joints_num; j++) {
-                    weight_index[vnum*joints_num + j].x = i;
-                    weight_index[vnum*joints_num + j].y = j;
-                    weight_index[vnum*joints_num + j].z = FALSE;
-                    int weight_value = weight[i].get_value(j);
-                    if (weight_value!=0 && total!=0) {
-                        double value = weight_value/(double)total;
-                        append_xml_content_node(source_array_tag, dtostr(value));
-                        weight_index[vnum*joints_num + j].z = TRUE;
-                        count++;
+
+                if (total!=0) {
+                    for (int j=0; j<joints_num; j++) {
+                        weight_index[joints_num*vnum + j].x = i;
+                        weight_index[joints_num*vnum + j].y = j;
+                        weight_index[joints_num*vnum + j].z = FALSE;
+
+                        int weight_value = 0;
+                        if (j<jnum) weight_value = weight[i].get_value(j);
+
+                        if (weight_value!=0) {
+                            double value = weight_value/(double)total;
+                            append_xml_content_node(source_array_tag, dtostr(value));
+                            weight_index[vnum*joints_num + j].z = TRUE;
+                            count++;
+                        }
                     }
+                }
+                else {
+                    weight_index[vnum*joints_num].x = i;
+                    weight_index[vnum*joints_num].y = 0;
+                    weight_index[vnum*joints_num].z = TRUE;
+                    append_xml_content_node(source_array_tag, "0.00");
+                    count++;
                 }
                 vnum++;
             }
@@ -555,7 +573,6 @@ char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* meshdata, Vector<i
     if (vnum!=meshdata->ttl_vertex) {
         PRINT_MESG("WARNING: ColladaXML::addWeightSource: no match vertex num (%d != %d)\n", vnum, meshdata->ttl_vertex);
     }
-
     addSimpleTechniqueAccessor(source_tag, _tochar(source_array_id.buf), count, 1, "WEIGHT", "float");
 
     free_Buffer(&randomstr);
@@ -1036,18 +1053,20 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
     free_Buffer(&randomstr);
     free_Buffer(&node_id);
 
+/*
     // 回転行列
     //affine.computeMatrix(false);
-    affine.computeMatrix();
     tXML* matrix_tag = add_xml_node(node_tag, "matrix");
+    affine.computeMatrix();
     for (int i=1; i<=4; i++) {
         for (int j=1; j<=4; j++) {
             append_xml_content_node(matrix_tag, dtostr(affine.matrix.element(i, j)));
         }
     }
+*/
 
-    // オイラー角
 /*
+    // オイラー角
     tXML* translate_tag = add_xml_node(node_tag, "translate");
     add_xml_attr_str(translate_tag, "sid", "location");
     append_xml_content_node(translate_tag, dtostr(affine.shift.x));
@@ -1078,12 +1097,24 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
     append_xml_content_node(scale_tag, dtostr(affine.scale.z));
 */
 
+    tXML* matrix_tag = add_xml_node(node_tag, "matrix");
     tXML* instance_tag = NULL;
     if (controller_id!=NULL) {
+        set_xml_content_node(matrix_tag, "1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1");
+        //
         instance_tag = add_xml_node(node_tag, "instance_controller");
         add_xml_attr_str(instance_tag, "url", controller_id);
+        tXML* skeleton_tag = add_xml_node(instance_tag, "skeleton");
+        set_xml_content_node(skeleton_tag, "#mPelvis");
     }
     else {
+        affine.computeMatrix();
+        for (int i=1; i<=4; i++) {
+            for (int j=1; j<=4; j++) {
+                append_xml_content_node(matrix_tag, dtostr(affine.matrix.element(i, j)));
+            }
+        }
+        //
         instance_tag = add_xml_node(node_tag, "instance_geometry");
         add_xml_attr_str(instance_tag, "url", geometry_id);
     }

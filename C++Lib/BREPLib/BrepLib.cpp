@@ -16,7 +16,7 @@ using namespace jbxl;
 
 BrepSolidList::~BrepSolidList(void)
 {
-    DEBUG_INFO("DESTRUCTOR: BrepSolidList");
+    DEBUG_INFO("INFO: DESTRUCTOR: BrepSolidList");
 }
 
 
