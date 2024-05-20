@@ -993,6 +993,9 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
                         }
                     }
                 }
+                else {
+                    PRINT_MESG("ERROR: ColladaXML::addScene: Joint (%s) is not found in Joints template file!\n", joint_name);
+                }
                 // Pelvis の座標
                 if (!strcasecmp(joint_name, "mPelvis")) {
                     pelvis.x = joints->alt_inverse_bind[jnt].matrix.element(1, 4);
