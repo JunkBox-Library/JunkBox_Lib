@@ -148,7 +148,6 @@ void  ColladaXML::initCollada(double meter, int axis, const char* ver)
 }
 
 
-//void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template, tList* joints_name)
 void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template)
 {
     if (meshdata==NULL) return;
@@ -183,6 +182,16 @@ void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointDa
     
     if (geom_id!=NULL) ::free(geom_id);
     if (ctrl_id!=NULL) ::free(ctrl_id);
+    return;
+}
+
+
+void  ColladaXML::closeSolid(void)
+{
+    tXML* pelvis_tag = get_xml_attr_node(joints_template_tag, "name","\"mPelvis\"");
+    if (pelvis_tag==NULL) PRINT_MESG("WARNING: ColladaXML::closeObject: not found mPelvis in Joints template file.\n");
+    deleteNousedJoints(pelvis_tag);
+
     return;
 }
 
@@ -970,11 +979,12 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
 
     Vector<double> pelvis = Vector<double>(0.0, 0.0, 1.067);
     // joints
-    if (has_joints && (visual_scene_tag!=NULL && visual_scene_tag->next==NULL)) {
+    if (has_joints && visual_scene_tag!=NULL) {
         char buf[LNAME];
         memset(buf, 0, LNAME);
         buf[0] = '"';
 
+        int pelvis_num = -1;
         int joints_num = joints->joint_names.get_size();
         for (int jnt=0; jnt<joints_num; jnt++) {
             const char* joint_name = (const char*)joints->joint_names.get_value(jnt);
@@ -990,9 +1000,8 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
                     for (int i=1; i<=4; i++) {
                         for (int j=1; j<=4; j++) {
                             double element = joints->alt_inverse_bind[jnt].matrix.element(i, j);
-                            //if (i==1 && j==1) set_xml_content_node(matrix_tag, dtostr(element));
-                            //else           append_xml_content_node(matrix_tag, dtostr(element));
-                            append_xml_content_node(matrix_tag, dtostr(element));
+                            if (i==1 && j==1) set_xml_content_node(matrix_tag, dtostr(element));
+                            else           append_xml_content_node(matrix_tag, dtostr(element));
                         }
                     }
                 }
@@ -1001,38 +1010,30 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
                     pelvis.x = joints->alt_inverse_bind[jnt].matrix.element(1, 4);
                     pelvis.y = joints->alt_inverse_bind[jnt].matrix.element(2, 4);
                     pelvis.z = joints->alt_inverse_bind[jnt].matrix.element(3, 4);
+                    pelvis_num = jnt;
                 }
             }
         }
 
-/*
-        if (!has_bento_joints) {
-            // 不要な Bento Joints を削除
-            tXML* pelvis_tag = get_xml_attr_node(joints_template_tag, "name","\"mPelvis\"");
-            deleteListJoints(pelvis_tag, ....);
-        }
-*/
-
         // joints_template の結合
-        join_xml(visual_scene_tag, joints_template_tag);
+        if (visual_scene_tag->next==NULL) {
+            join_xml(visual_scene_tag, joints_template_tag);
+        }
 
         //**********************************************************************************
         // jointの位置合わせ用変換行列を計算
-        AffineTrans<double> joint_space = joints->inverse_bind[0] * joints->bind_shape;
-        AffineTrans<double> joint_trans = joint_space.getInvAffine();
+        if (pelvis_num >= 0) {
+            AffineTrans<double> joint_space = joints->inverse_bind[pelvis_num] * joints->bind_shape;
+            AffineTrans<double> joint_trans = joint_space.getInvAffine();
 
-        Vector<double> shift = joint_trans.execRotateScale(pelvis);
-        joint_trans.shift = joint_trans.shift - shift;
-        skeleton = affine*joint_trans;      // Joint -> Real の Affine変換
-
-        setJointLocationMatrix();
-
-        tXML* pelvis_tag = get_xml_attr_node(joints_template_tag, "name","\"mPelvis\"");
-        deleteNousedJoints(pelvis_tag);
-
-        joint_space.free();
-        joint_trans.free();
-        //**********************************************************************************
+            Vector<double> shift = joint_trans.execRotateScale(pelvis);
+            joint_trans.shift = joint_trans.shift - shift;
+            skeleton = affine*joint_trans;      // Joint -> Real の Affine変換
+            setJointLocationMatrix();
+            //
+            joint_space.free();
+            joint_trans.free();
+        }
     }
 
     Buffer geometry_name = dup_Buffer(meshdata->data_name);
@@ -1062,15 +1063,21 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
     free_Buffer(&randomstr);
     free_Buffer(&node_id);
 
-    // Controller
+    // 位置
+    affine.computeMatrix();
     tXML* matrix_tag = add_xml_node(node_tag, "matrix");
+    for (int i = 1; i <= 4; i++) {
+        for (int j = 1; j <= 4; j++) {
+            append_xml_content_node(matrix_tag, dtostr(affine.matrix.element(i, j)));
+        }
+    }
+
+    // Controller
     tXML* instance_tag = NULL;
     if (controller_id!=NULL) {
-        set_xml_content_node(matrix_tag, "1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1");
-        //
         instance_tag = add_xml_node(node_tag, "instance_controller");
         add_xml_attr_str(instance_tag, "url", controller_id);
-        //
+        /*
         char buf[LNAME];
         memset(buf, 0, LNAME);
         buf[0] = '#';
@@ -1081,16 +1088,11 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
             buf[len + 1] = '\0';
             tXML* skeleton_tag = add_xml_node(instance_tag, "skeleton");
             set_xml_content_node(skeleton_tag, buf);
-        }
+        }*/
+        tXML* skeleton_tag = add_xml_node(instance_tag, "skeleton");
+        set_xml_content_node(skeleton_tag, "mPelvis");
     }
     else {
-        // Controller for no skin
-        affine.computeMatrix();
-        for (int i=1; i<=4; i++) {
-            for (int j=1; j<=4; j++) {
-                append_xml_content_node(matrix_tag, dtostr(affine.matrix.element(i, j)));
-            }
-        }
         instance_tag = add_xml_node(node_tag, "instance_geometry");
         add_xml_attr_str(instance_tag, "url", geometry_id);
     }
@@ -1218,9 +1220,8 @@ void  ColladaXML::setJointLocationMatrix(void)
         for (int i=1; i<=4; i++) {
             for (int j=1; j<=4; j++) {
                 double element = skeleton.matrix.element(i, j);
-                //if (i==1 && j==1) set_xml_content_node(avatar_tag, dtostr(element));
-                //else           append_xml_content_node(avatar_tag, dtostr(element));
-                append_xml_content_node(avatar_tag, dtostr(element));
+                if (i==1 && j==1) set_xml_content_node(avatar_tag, dtostr(element));
+                else           append_xml_content_node(avatar_tag, dtostr(element));
             }
         }
     }

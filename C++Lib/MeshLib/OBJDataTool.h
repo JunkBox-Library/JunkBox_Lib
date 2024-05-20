@@ -75,6 +75,7 @@ public:
 
 public:
     void    addObject(MeshObjectData* meshdata, bool collider);
+    void    closeSolid(void) {}
 
     void    outputFile(const char* fn, const char* out_path, const char* tex_dirn, const char* mtl_dirn);
     void    output_mtl(const char* mtl_path, const char* tex_dirn);

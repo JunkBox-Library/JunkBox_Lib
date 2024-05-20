@@ -77,6 +77,7 @@ public:
     tXML*   addEffect(const char* material_url, const char* file_id, MaterialParam param);
     void    addExtraBumpmap(tXML* effect_tag, const char* bump_id);
 
+    void    closeSolid(void);
     void    deleteJoint(tXML* delete_tag);
 
     bool    existSameID(tXML* top, const char* tag, const char* id);
