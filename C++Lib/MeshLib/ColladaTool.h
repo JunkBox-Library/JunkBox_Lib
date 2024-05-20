@@ -53,7 +53,6 @@ public:
 public:
     void    initCollada(double meter, int axis, const char* ver);
     void    initCollada(float  meter, int axis, const char* ver) { initCollada((double)meter, axis, ver); }
-    //void    addObject(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tXML* joints_template=NULL, tList* joints_name=NULL);
     void    addObject(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tXML* joints_template=NULL);
 
     char*   addGeometry(MeshObjectData* meshdata);
@@ -130,10 +129,7 @@ public:
     AffineTrans<double> skeleton;
 
     tXML*   joints_template_tag;
-    //tList*  joints_bento_name;
     bool    has_joints;
-    //bool    has_bento_joints;
-
     bool    phantom_out;
     Buffer  blank_texture;
 

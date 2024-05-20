@@ -4,7 +4,7 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT([junkbox_lib], [1.9.2alpha], [fiseki@star-dust.jp], [JunkBox_Lib])
+AC_INIT([junkbox_lib], [1.9.2], [fiseki@star-dust.jp], [JunkBox_Lib])
 AC_CONFIG_SRCDIR([Lib/tools.c])
 AC_CONFIG_HEADER([config.h])
 

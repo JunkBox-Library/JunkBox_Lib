@@ -2,13 +2,20 @@
 #
 
 rewrite configure.ac, doxygen.conf
-working now ..... v1.9.2alpha
+working now ..... v1.9.3alpha
+
+v1.9.3alpha
 
 
-v1.9.2alpha
-	C++Lib/Math/AffineTrans.h
-		isInvese 廃止
-	 	オペレータ * のヘッポコミス!
+v1.9.2 '24/05/20
+	C++Lib/MeshLib/ColladaTool.cpp
+		Joints support
+	C++Lib/Math/
+		Vector.h
+			operator +=, -= fix
+		AffineTrans.h
+			isInvese 廃止
+	 		オペレータ * のヘッポコミス!
 	Lib/Buffer.c
 		add add_indent_Buffer() 
 	Lib/txml.c

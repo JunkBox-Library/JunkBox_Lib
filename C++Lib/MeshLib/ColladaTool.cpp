@@ -25,9 +25,7 @@ void  ColladaXML::init(double meter, int axis, const char* ver)
     initCollada(meter, axis, ver);
     //
     joints_template_tag = NULL;
-    //joints_bento_name   = NULL;
     has_joints          = false;
-    //has_bento_joints    = false;
 
     blank_texture = init_Buffer();
     phantom_out   = true;
@@ -44,7 +42,6 @@ void  ColladaXML::free(void)
 {
     free_Buffer(&blank_texture);
     del_all_xml(&xml_tag);
-    //if (joints_bento_name!=NULL) del_tList(&joints_bento_name);
     skeleton.free();
 }
 
@@ -156,22 +153,9 @@ void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointDa
         if (joints_template_tag==NULL) {
             has_joints = true;
             joints_template_tag = joints_template;
-            //joints_bento_name   = joints_name;
-            // Bento
-            /*
-            int joints_num = joints->joint_names.get_size();
-            for (int j=0; j<joints_num; j++) {
-                char* jname = joints->joint_names.get_value(j);
-                tList* lst  = search_key_tList(joints_bento_name, jname, 1);
-                if (lst!=NULL) {
-                    has_bento_joints = true;
-                    break;
-                }
-            }*/
         }
         else {
             del_all_xml(&joints_template);
-            //del_all_tList(&joints_name);
         }
     }
 
@@ -205,7 +189,6 @@ char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshda
 
     Buffer randomstr = make_Buffer_randomstr(8);
 
-    //Buffer controller_id = make_Buffer_str("avatar_");
     Buffer controller_id = make_Buffer_str("#AVATAR_");
     cat_Buffer(&randomstr, &controller_id);
 
@@ -271,11 +254,10 @@ char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshda
     Vector<int>* weight_index = (Vector<int>*)malloc(vec_len);
     if (weight_index==NULL) return NULL;
     memset(weight_index, 0, vec_len);
-    char* weight_id = addWeightSource(skin_tag, meshdata, weight_index, joints_num); // x: vertex num, y: joint num, z: FALSE->データなし, TRUE->データあり
+    char* weight_id = addWeightSource(skin_tag, meshdata, weight_index, joints_num);
 
     // joints
     tXML* joints_tag = add_xml_node(skin_tag, "joints");
-
     tXML* input_joint_tag = add_xml_node(joints_tag, "input");
     add_xml_attr_str(input_joint_tag, "semantic", "JOINT");
     add_xml_attr_str(input_joint_tag, "source", _tochar(joint_id.buf));
@@ -286,7 +268,6 @@ char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshda
 
     // vertex_weights
     tXML* vertex_weights_tag = add_xml_node(skin_tag, "vertex_weights");
-
     tXML* input_joint2_tag = add_xml_node(vertex_weights_tag, "input");
     add_xml_attr_str(input_joint2_tag, "semantic", "JOINT");
     add_xml_attr_str(input_joint2_tag, "source", _tochar(joint_id.buf));
@@ -331,7 +312,6 @@ char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshda
 
     free_Buffer(&geometry_name);
     free_Buffer(&randomstr);
-    //free_Buffer(&controller_id);
     free_Buffer(&joint_id);
     free_Buffer(&joint_name_id);
     free_Buffer(&invbind_id);
@@ -522,9 +502,17 @@ char*  ColladaXML::addTexcrdSource(tXML* tag, MeshObjectData* meshdata)
 }
 
 
+/**
+char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* meshdata, Vector<int>* weight_index, int joints_num)
+
+@retval  weight_index[].x: vertex No.
+@retval  weight_index[].y: joint No.
+@retval  weight_index[].z: FALSE->データなし, TRUE->データあり
+@return  source_id
+*/
 char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* meshdata, Vector<int>* weight_index, int joints_num)
 {
-    if (tag==NULL || meshdata==NULL) return NULL;
+    if (tag==NULL || meshdata==NULL || weight_index==NULL) return NULL;
 
     Buffer randomstr = make_Buffer_randomstr(8);
     Buffer source_id = make_Buffer_str("#SOURCE_WEIGHT_");
@@ -872,8 +860,8 @@ tXML*  ColladaXML::addEffect(const char* material_url, const char* file_id, Mate
         //
         if (no_texture || forUnity5) {
             // テクスチャがない場合 または Unity5 の場合は <diffuse>を新しく作成．
-            // テクスチャが存在 かつ Unity5 の場合は Colladaの規格に違反しているが，カラーを読むために必要．
-            // また，Unity2022, Unity2023 はカラーを読まない（たぶん）．
+            // テクスチャが存在 かつ Unity5 の場合は カラーを読むために必要．
+            // ただし，Unity2022, Unity2023 はカラーを読まない（たぶん）．
             diffuse_tag = add_xml_node(phong_tag, "diffuse");
         }
         //
@@ -1077,18 +1065,7 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
     if (controller_id!=NULL) {
         instance_tag = add_xml_node(node_tag, "instance_controller");
         add_xml_attr_str(instance_tag, "url", controller_id);
-        /*
-        char buf[LNAME];
-        memset(buf, 0, LNAME);
-        buf[0] = '#';
-        const char* joint_name = (const char*)joints->joint_names.get_value(0);
-        if (joint_name!=NULL) {
-            int len = (int)strlen(joint_name);
-            memcpy(buf + 1, joint_name, len);
-            buf[len + 1] = '\0';
-            tXML* skeleton_tag = add_xml_node(instance_tag, "skeleton");
-            set_xml_content_node(skeleton_tag, buf);
-        }*/
+        //
         tXML* skeleton_tag = add_xml_node(instance_tag, "skeleton");
         set_xml_content_node(skeleton_tag, "mPelvis");
     }
@@ -1207,7 +1184,6 @@ Vector<double> ColladaXML::getObjectCenter()
 
 /**
 void  ColladaXML::setJointLocationMatrix(void)
-
 */
 void  ColladaXML::setJointLocationMatrix(void)
 {
@@ -1276,6 +1252,7 @@ void  ColladaXML::deleteNousedJoints(tXML* delete_tag)
 
 
 // joints_name にあるジョイントを削除する．
+// 未使用
 void  ColladaXML::deleteListJoints(tXML* top_tag, tList* joints_name)
 {
     if (top_tag==NULL) return;

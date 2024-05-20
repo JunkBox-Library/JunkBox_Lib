@@ -41,6 +41,7 @@ public:
 public:
     int     addObject(MeshObjectData* mesh) { return addSolid(mesh);}   // 有効なファセットの数を返す
     int     addSolid (MeshObjectData* mesh);                            // 有効なファセットの数を返す
+    void    closeSolid(void) {}
     void    outputFile(const char* fn, const char* path=NULL, bool asciifile=true);
 
     BREP_SOLID*  getMerge(CVCounter* counter=NULL);
