@@ -21,16 +21,17 @@ OBJData::~OBJData(void)
 
 void  OBJData::init(int n)
 {
-    this->obj_name = init_Buffer();
-    this->num_obj  = n;
+    this->obj_name    = init_Buffer();
+    this->num_obj     = n;
     this->phantom_out = true;
+    this->no_offset   = false;
 
-    this->forUnity = true;
-    this->forUE    = false;
+    this->forUnity    = true;
+    this->forUE       = false;
 
-    this->next     = NULL;
-    this->geo_node = NULL;
-    this->mtl_node = NULL;
+    this->next        = NULL;
+    this->geo_node    = NULL;
+    this->mtl_node    = NULL;
     this->affineTrans = NULL;
 }
 
@@ -163,29 +164,27 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
 
 
 /**
-Vector<double>  OBJData::execAffineTrans(bool origin)
+Vector<double>  OBJData::execAffineTrans(void)
 
 OBJデータの Affine変換を行う．
-origin が trueの場合，データの中心を原点に戻し，実際の位置をオフセットで返す．
+no_offset が trueの場合，データの中心を原点に戻し，実際の位置をオフセットで返す．
 
-@param  origin  データを原点に戻すか？
 @retval データのオフセット．
 */
-Vector<double>  OBJData::execAffineTrans(bool origin)
+Vector<double>  OBJData::execAffineTrans(void)
 {
     Vector<double> center(0.0, 0.0, 0.0);
-    int total = 0;
 
-    OBJData* obj = this->next;
+    OBJData* obj = this->next;  // Top はアンカー
+    if (obj!=NULL && no_offset) center = obj->affineTrans->shift;
+
     while (obj!=NULL) {
         if (obj->affineTrans!=NULL) {
             OBJFacetGeoNode* facet = obj->geo_node;
             while(facet!=NULL) {
                 for (int i=0; i<facet->num_vertex; i++) {
-                    facet->vv[i] = obj->affineTrans->execTrans(facet->vv[i]);
-                    facet->vn[i] = obj->affineTrans->execRotate(facet->vn[i]);
-                    center = center + facet->vv[i];
-                    total++;
+                    facet->vv[i] = obj->affineTrans->execTrans(facet->vv[i]) - center;  // 頂点座標
+                    facet->vn[i] = obj->affineTrans->execRotate(facet->vn[i]);          // 法線ベクトル
                 }
                 facet = facet->next;
             }
@@ -193,26 +192,6 @@ Vector<double>  OBJData::execAffineTrans(bool origin)
         obj = obj->next;
     }
 
-    if (origin) {
-        // Come back!
-        center = center / total;
-        obj = this->next;
-        while (obj != NULL) {
-            if (obj->affineTrans != NULL) {
-                OBJFacetGeoNode* facet = obj->geo_node;
-                while (facet != NULL) {
-                    for (int i = 0; i < facet->num_vertex; i++) {
-                        facet->vv[i] = facet->vv[i] - center;
-                    }
-                    facet = facet->next;
-                }
-            }
-            obj = obj->next;
-        }
-    }
-    else {
-        center.init();      // 0.0
-    }
     return center;
 }
 
@@ -282,7 +261,7 @@ void  OBJData::output_mtl(const char* mtl_path, const char* tex_dirn)
 
                     // outpust
                     fprintf(fp, "#\n");
-                    fprintf(fp, "newmtl %s\n", node->material.buf+1);         // マテリアル名
+                    fprintf(fp, "newmtl %s\n", node->material.buf+1);                   // マテリアル名
 
                     if (node->map_kd.buf!=NULL) {
                         fprintf(fp, "map_Kd %s%s\n", tex_dirn, node->map_kd.buf);       // Texture ファイル名
@@ -353,7 +332,7 @@ void  OBJData::output_obj(const char* obj_path, const char* mtl_path)
         OBJFacetGeoNode* facet = obj->geo_node;
         while(facet!=NULL) {
             fprintf(fp, "#\n# FACET\n");
-            fprintf(fp, "mtllib %s\n", mtl_path);       // ファイル名
+            fprintf(fp, "mtllib %s\n", mtl_path);               // ファイル名
 
             for (int i=0; i<facet->num_vertex; i++) {
                 Vector<float> vv = Vector<float>((float)facet->vv[i].x, (float)facet->vv[i].y, (float)facet->vv[i].z);
@@ -378,7 +357,7 @@ void  OBJData::output_obj(const char* obj_path, const char* mtl_path)
                 }
             }
             //
-            fprintf(fp, "usemtl %s\n", facet->material.buf+1);                          // マテリアル名
+            fprintf(fp, "usemtl %s\n", facet->material.buf+1);  // マテリアル名
             for (int i=0; i<facet->num_index/3; i++) {
                 fprintf(fp, "f %d/%d/%d", facet->data_index[i*3  ]+p_num, facet->data_index[i*3  ]+p_num, facet->data_index[i*3  ]+p_num);
                 fprintf(fp, " %d/%d/%d ", facet->data_index[i*3+1]+p_num, facet->data_index[i*3+1]+p_num, facet->data_index[i*3+1]+p_num);

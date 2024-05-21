@@ -26,14 +26,14 @@ void  ColladaXML::init(double meter, int axis, const char* ver)
     //
     joints_template_tag = NULL;
     has_joints          = false;
+    no_offset           = false;
 
     blank_texture = init_Buffer();
     phantom_out   = true;
     forUnity5     = false;
     forUnity      = true;
      
-    total_vertex  = 0;
-    center.init();
+    affineTrans   = NULL;;
     skeleton.init();
 }
 
@@ -43,6 +43,9 @@ void  ColladaXML::free(void)
     free_Buffer(&blank_texture);
     del_all_xml(&xml_tag);
     skeleton.free();
+
+    if (affineTrans!=NULL) affineTrans->free();
+    affineTrans = NULL;
 }
 
 
@@ -158,7 +161,6 @@ void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointDa
             del_all_xml(&joints_template);
         }
     }
-
     //
     char* geom_id = addGeometry(meshdata);                          // 幾何情報を配置
     char* ctrl_id = addController(geom_id, meshdata, joints);       // Joints 情報を配置
@@ -172,9 +174,15 @@ void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointDa
 
 void  ColladaXML::closeSolid(void)
 {
-    tXML* pelvis_tag = get_xml_attr_node(joints_template_tag, "name","\"mPelvis\"");
-    if (pelvis_tag==NULL) PRINT_MESG("WARNING: ColladaXML::closeObject: not found mPelvis in Joints template file.\n");
-    deleteNousedJoints(pelvis_tag);
+    if (has_joints) {
+        tXML* pelvis_tag = get_xml_attr_node(joints_template_tag, "name","\"mPelvis\"");
+        if (pelvis_tag!=NULL) {
+            deleteNousedJoints(pelvis_tag);
+        }
+        else {
+            PRINT_MESG("WARNING: ColladaXML::closeObject: not found mPelvis in Joints template file.\n");
+        }
+    }
 
     return;
 }
@@ -394,20 +402,6 @@ char*  ColladaXML::addVertexSource(tXML* tag, MeshObjectData* meshdata)
     
     free_Buffer(&randomstr);
     free_Buffer(&source_array_id);
-
-    // Center of Object
-    total_vertex += vnum;                // total vertex number of object
-    if (meshdata->affineTrans!=NULL) {
-        meshdata->affineTrans->computeMatrix();
-        MeshFacetNode* facet = meshdata->facet;
-        while (facet!=NULL) {
-            Vector<double>* vect = facet->vertex_value;
-            for (int i=0; i<facet->num_vertex; i++) {
-                center = center + meshdata->affineTrans->execMatrixTrans(vect[i]); 
-            }
-            facet = facet->next;
-        }   
-    }
 
     return _tochar(source_id.buf);
 }
@@ -963,6 +957,11 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
         local_affine = false;
         affine.free();
         affine = *(meshdata->affineTrans);
+        //
+        if (affineTrans==NULL) {
+            affineTrans = new AffineTrans<double>();
+            affineTrans->setShift(affine.shift);
+        }
     }
 
     Vector<double> pelvis = Vector<double>(0.0, 0.0, 1.067);
@@ -1055,6 +1054,7 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
     free_Buffer(&node_id);
 
     // 位置
+    if (no_offset) affine.shift = affine.shift - affineTrans->shift;
     affine.computeMatrix();
     tXML* matrix_tag = add_xml_node(node_tag, "matrix");
     for (int i = 1; i <= 4; i++) {
@@ -1173,18 +1173,6 @@ void  ColladaXML::outputFile(const char* fname, const char* path, int mode)
 }
 
 
-Vector<double> ColladaXML::getObjectCenter()
-{
-    if (total_vertex>0) {
-        center.x = center.x/total_vertex; 
-        center.y = center.y/total_vertex; 
-        center.z = center.z/total_vertex; 
-    }
-    total_vertex = 0;
-    return center;
-}
-
-
 /**
 void  ColladaXML::setJointLocationMatrix(void)
 */
@@ -1194,6 +1182,7 @@ void  ColladaXML::setJointLocationMatrix(void)
 
     tXML* avatar_tag = get_xml_node_str(collada_tag, "<library_visual_scenes><visual_scene><node><matrix>");
     if (avatar_tag!=NULL) {
+        if (no_offset) skeleton.shift = skeleton.shift - affineTrans->shift;
         skeleton.computeMatrix();
         //
         for (int i=1; i<=4; i++) {

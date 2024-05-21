@@ -25,7 +25,7 @@ namespace jbxl {
 #define  OBJDATATOOL_STR_AUTHOR     "JBXL OBJ Data Tool Library (C) 2024 by Fumi.Iseki"
 #define  OBJDATATOOL_STR_VER        "version 1.0.0, 1 Feb. 2024"
 
-#define  OBJDATATOOL_MAX_FACET      500     ///< Max Facts Number per File
+#define  OBJDATATOOL_MAX_FACET      500     ///< Max Facets number per File
 
 class  OBJData;
 class  OBJFacetGeoNode;
@@ -37,19 +37,22 @@ class  OBJFacetMtlNode;
 
 /**
 先頭のデータはアンカー．
-アンカーでない場合は num_obj == -1
+
+num_obj はアンカーのみ有効な値を持つ．アンカーでない場合は num_obj == -1
+
 */
 class  OBJData
 {
 public:
-    OBJData(int n=0) { this->init(n);}    // デフォルト（n=0）ではアンカーを作る
+    OBJData(int n=0) { this->init(n);}  // n: OBJデータの総数．デフォルト（n=0）ではアンカーを作る
     virtual ~OBJData(void);
 
 public:
     Buffer  obj_name;
     bool    phantom_out;
-    int     num_obj;
+    int     num_obj;                    // nextに続くOBJデータの総数．        
 
+    bool    no_offset;
     bool    forUnity;
     bool    forUE;
     int     engine;
@@ -71,7 +74,7 @@ public:
 
     void    setAffineTrans (AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}
     void    delAffineTrans (void) { freeAffineTrans(this->affineTrans);}
-    Vector<double> execAffineTrans(bool origin);
+    Vector<double> execAffineTrans(void);
 
 public:
     void    addObject(MeshObjectData* meshdata, bool collider);

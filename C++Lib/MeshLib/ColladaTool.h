@@ -87,7 +87,6 @@ public:
     void    setJointLocationMatrix(void);
     void    deleteNousedJoints(tXML* delete_tag);
     void    deleteListJoints(tXML* top_tag, tList* joints_name);
-    Vector<double> getObjectCenter();
 
 private:
 
@@ -124,12 +123,12 @@ public:
     tXML*   instance_physics_scene_tag;
 
 public:
-    int     total_vertex;
-    Vector<double> center;
-    AffineTrans<double> skeleton;
+    AffineTrans<double>* affineTrans;
+    AffineTrans<double>  skeleton;
 
     tXML*   joints_template_tag;
     bool    has_joints;
+    bool    no_offset;
     bool    phantom_out;
     Buffer  blank_texture;
 
