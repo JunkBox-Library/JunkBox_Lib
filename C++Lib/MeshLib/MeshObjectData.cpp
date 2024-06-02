@@ -17,6 +17,7 @@ using namespace jbxl;
 void  MeshObjectData::init(const char* name)
 {
     data_name    = make_Buffer_str(name);
+    alt_name     = make_Buffer_str(name);
 
     ttl_index    = 0;
     ttl_vertex   = 0;
@@ -39,6 +40,7 @@ void  MeshObjectData::init(const char* name)
 void  MeshObjectData::free(void)
 {
     free_Buffer(&data_name);
+    free_Buffer(&alt_name);
     free_value();
 
     delAffineTrans();

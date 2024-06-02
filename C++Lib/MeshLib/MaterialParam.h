@@ -33,12 +33,14 @@
 #define  MATERIAL_ATTR_GLOW             6
 #define  MATERIAL_ATTR_BRIGHT           7
 #define  MATERIAL_ATTR_LIGHT            8
-// 9-12 予備
+#define  MATERIAL_ATTR_ALPHAMODE        9
+// 10-12 予備
 #define  MATERIAL_ATTR_SHIFT_U          13     // short 2Byte
 #define  MATERIAL_ATTR_SHIFT_V          15     // short 2Byte
 #define  MATERIAL_ATTR_SCALE_U          17     // short 2Byte
 #define  MATERIAL_ATTR_SCALE_V          19     // short 2Byte
 #define  MATERIAL_ATTR_ROTATE           21     // short 2Byte
+//
 #define  MATERIAL_ATTR_OBJECT           23     //
 
 

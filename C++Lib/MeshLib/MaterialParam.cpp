@@ -344,11 +344,13 @@ char*  MaterialParam::getBase64Params(unsigned char obj, unsigned char cc)
 {
     uByte attr[MATERIAL_ATTR_LEN];
 
-    double red    = texture.getColor(0);
-    double green  = texture.getColor(1);
-    double blue   = texture.getColor(2);
-    double transp = getTransparent();
-    double cutoff = texture.getAlphaCutoff();
+    double red     = texture.getColor(0);
+    double green   = texture.getColor(1);
+    double blue    = texture.getColor(2);
+    double transp  = getTransparent();
+    double cutoff  = texture.getAlphaCutoff();
+    int  alphaMode = texture.getAlphaMode();
+    bool hasAlpha  = texture.getAlphaChannel();
     /*
     short int rotate = (short int)((int)(texture.getRotate()*2000.)%32768);     // 2Byte化
     short int shiftu = (short int)((int)(texture.getShiftU()*2000.)%32768);
@@ -356,6 +358,10 @@ char*  MaterialParam::getBase64Params(unsigned char obj, unsigned char cc)
     short int scaleu = (short int)((int)(texture.getScaleU()*100. )%32768);
     short int scalev = (short int)((int)(texture.getScaleV()*100. )%32768);
     */
+    int alphamode = 0;
+    if (hasAlpha) alphamode = alphaMode*10 + 1;
+    else          alphamode = alphaMode*10;
+
     memset(attr, 0, MATERIAL_ATTR_LEN);
     attr[MATERIAL_ATTR_COLOR_RED]   = (uByte)((1.0 - red   )*255);
     attr[MATERIAL_ATTR_COLOR_GREEN] = (uByte)((1.0 - green )*255);
@@ -366,7 +372,7 @@ char*  MaterialParam::getBase64Params(unsigned char obj, unsigned char cc)
     attr[MATERIAL_ATTR_GLOW]        = (uByte)(glow*255);
     attr[MATERIAL_ATTR_BRIGHT]      = (uByte)(bright*255);
     attr[MATERIAL_ATTR_LIGHT]       = (uByte)(light*255);
-    attr[MATERIAL_ATTR_OBJECT]      = (uByte)obj;
+    attr[MATERIAL_ATTR_ALPHAMODE]   = (uByte)(alphamode);
     /*
     memcpy(attr + MATERIAL_ATTR_SHIFT_U, &shiftu, 2);
     memcpy(attr + MATERIAL_ATTR_SHIFT_V, &shiftv, 2);
@@ -374,6 +380,8 @@ char*  MaterialParam::getBase64Params(unsigned char obj, unsigned char cc)
     memcpy(attr + MATERIAL_ATTR_SCALE_V, &scalev, 2);
     memcpy(attr + MATERIAL_ATTR_ROTATE,  &rotate, 2);
     */
+    attr[MATERIAL_ATTR_OBJECT]      = (uByte)obj;
+
     char* params = (char*)encode_base64_filename(attr, MATERIAL_ATTR_LEN, cc);  // 要 free   / -> cc
 
     return params;

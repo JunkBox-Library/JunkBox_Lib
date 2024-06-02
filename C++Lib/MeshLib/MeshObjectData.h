@@ -22,6 +22,7 @@ class  MeshObjectData
 {
 public:
     Buffer  data_name;                  ///< データ名
+    Buffer  alt_name;                   ///< 別名
 
     int     ttl_index;                  ///< インデックスの総数（実質的データ数）
     int     ttl_vertex;                 ///< 頂点データの総数．
@@ -54,6 +55,8 @@ public:
     //
     void    setName(const char* str) { free_Buffer(&data_name); data_name=make_Buffer_str(str);}
     char*   getName(void) { return _tochar(data_name.buf);}
+    void    setAltName(const char* str) { free_Buffer(&alt_name); alt_name=make_Buffer_str(str);}
+    char*   getAltName(void) { return _tochar(alt_name.buf);}
     
     void    setAffineTrans(AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}
     void    delAffineTrans(void) { freeAffineTrans(affineTrans);}
