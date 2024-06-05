@@ -53,9 +53,9 @@ public:
     void    clear(void);
 
     //
-    void    setName(const char* str) { free_Buffer(&data_name); data_name=make_Buffer_str(str);}
+    void    setName(const char* str) { free_Buffer(&data_name); data_name=make_Buffer_str(str); canonical_filename_Buffer(&data_name);}
     char*   getName(void) { return _tochar(data_name.buf);}
-    void    setAltName(const char* str) { free_Buffer(&alt_name); alt_name=make_Buffer_str(str);}
+    void    setAltName(const char* str) { free_Buffer(&alt_name); alt_name=make_Buffer_str(str); canonical_filename_Buffer(&alt_name);}
     char*   getAltName(void) { return _tochar(alt_name.buf);}
     
     void    setAffineTrans(AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}

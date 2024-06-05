@@ -206,7 +206,11 @@ void  OBJData::outputFile(const char* fname, const char* out_path, const char* t
     if (file_name.buf[0]=='.') file_name.buf[0] = '_';
     //
     Buffer obj_path;
+#ifdef WIN32
+    if (out_path==NULL) obj_path = make_Buffer_bystr(".\\");
+#else
     if (out_path==NULL) obj_path = make_Buffer_bystr("./");
+#endif
     else                obj_path = make_Buffer_bystr(out_path);
     //
     Buffer rel_tex;    //  相対パス
@@ -504,12 +508,15 @@ void  OBJFacetMtlNode::setup_params(void)
 
     if (texture.isSetTexture()) {       // map_Kd
         this->map_kd = make_Buffer_str(texture.getName());
+        canonical_filename_Buffer(&this->map_kd);
     }
     if (specmap.isSetTexture()) {       // map_Ks
         this->map_ks = make_Buffer_str(specmap.getName());
+        canonical_filename_Buffer(&this->map_ks);
     }
     if (bumpmap.isSetTexture()) {       // map_bump
         this->map_bump = make_Buffer_str(bumpmap.getName());
+        canonical_filename_Buffer(&this->map_bump);
     }
 
     this->ka = Vector<double>(1.0, 1.0, 1.0);

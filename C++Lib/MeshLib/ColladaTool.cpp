@@ -344,7 +344,6 @@ char*  ColladaXML::addGeometry(MeshObjectData* meshdata)
     if (geometry_name.buf!=NULL) {
         cat_s2Buffer("_", &geometry_name);
         cat_Buffer(&randomstr, &geometry_name);
-        PRINT_MESG("=====> %s\n", (char*)geometry_name.buf);
     }
     else {
         geometry_name = make_Buffer_str(geometry_id.buf + 1);
@@ -752,9 +751,8 @@ char*  ColladaXML::addImage(const char* fn)
     if (fn==NULL) return NULL;
 
     Buffer filename = make_Buffer_str(fn);
-    Buffer temp_id  = replace_sBuffer_str(filename, ".", "_");
-    Buffer file_id  = replace_sBuffer_str(temp_id , " ", "_");
-    free_Buffer(&temp_id);
+    canonical_filename_Buffer(&filename);
+    Buffer file_id  = replace_sBuffer_str(filename, ".", "_");
 
     bool exist_same_image = existSameID(library_images_tag, "<library_images><image>", _tochar(file_id.buf));
     if (!exist_same_image) {
@@ -769,7 +767,6 @@ char*  ColladaXML::addImage(const char* fn)
     }
 
     free_Buffer(&filename);
-
     return _tochar(file_id.buf);
 }
 
