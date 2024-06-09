@@ -285,6 +285,7 @@ void  MaterialParam::setFullName(const char* ext)
 }
 
 
+/*
 double MaterialParam::getTransparent(void)
 {
     int    almode = texture.getAlphaMode();
@@ -300,15 +301,15 @@ double MaterialParam::getTransparent(void)
     }
     if (cutoff==0.0 && almode!=MATERIAL_ALPHA_BLENDING) transp = 1.0;    // cutoff==0.0 のときは Blending Modeとするため
     transparent = transp;
-
     return transp;
 }
+*/
 
 
 void  MaterialParam::printParam(FILE* fp)
 {
     if (!enable) {
-        fprintf(fp, "MaterialParam is disable\n");
+        fprintf(fp, "MaterialParam::printParam: MaterialParam is disable\n");
         return;
     }
 
@@ -347,7 +348,8 @@ char*  MaterialParam::getBase64Params(unsigned char obj, unsigned char cc)
     double red     = texture.getColor(0);
     double green   = texture.getColor(1);
     double blue    = texture.getColor(2);
-    double transp  = getTransparent();
+    double transp  = texture.getColor(3);
+    //double transp  = getTransparent();
     double cutoff  = texture.getAlphaCutoff();
     int  alphaMode = texture.getAlphaMode();
     bool hasAlpha  = texture.getAlphaChannel();

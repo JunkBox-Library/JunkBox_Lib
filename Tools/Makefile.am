@@ -5,7 +5,7 @@ LIB_EXT_DIR = ../xLib
 LIB_BSC = $(LIB_BSC_DIR)/libbasic.a
 LIB_EXT = $(LIB_EXT_DIR)/libextend.a
 
-SUBJ = c2doc fdump printxml llsd_dump
+SUBJ = c2doc fdump printxml llsd_dump base64_filename
 
 if DISABLE_WIN
     SUBJ += check_ip_allow
@@ -21,6 +21,9 @@ c2doc_LDADD = $(LIB_BSC)
 
 fdump_SOURCES = fdump.c
 fdump_LDADD = $(LIB_BSC)
+
+printxml_SOURCES = base64_filename.c
+base64_filename_LDADD = $(LIB_BSC)
 
 printxml_SOURCES = printxml.c
 printxml_LDADD = $(LIB_BSC)

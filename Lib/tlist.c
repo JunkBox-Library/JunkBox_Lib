@@ -421,12 +421,21 @@ tList*  add_tList_node_bydata(tList* pp, tList_data ldat)
     pt = new_tList_node();
     pt->ldat = ldat;
 
-    if (pp==NULL) return pt;
+    if (pp==NULL) {
+        return pt;
+    }
+    //
+    if (pp->next==NULL) {
+        pt->next = NULL;
+        pt->prev = pp;
+        pp->next = pt;
+        return pt;
+    }
 
     pt->next = pp->next;
     pt->prev = pp;
     pp->next = pt;
-    if (pt->next!=NULL) (pt->next)->prev = pt;    
+    pt->next->prev = pt;
 
     return pt;
 }

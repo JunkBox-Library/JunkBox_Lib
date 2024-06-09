@@ -523,7 +523,8 @@ void  OBJFacetMtlNode::setup_params(void)
     this->kd = texture.getColor();
     this->ks = specmap.getColor();
 
-    this->dd = this->material_param.getTransparent();
+    //this->dd = this->material_param.getTransparent();
+    this->dd = texture.getColor(3);
     this->ni = this->material_param.getShininess()*10.;
     if (this->ni<1.0) this->ni = 1.0;
 

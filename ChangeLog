@@ -6,6 +6,7 @@ working now ..... v1.9.3alpha
 
 v1.9.3alpha
 	fix ColladaTool.cpp
+	add_resource_list() に第5引数 mode を追加．mode==0 の場合，互換あり．
 
 v1.9.2 '24/05/20
 	C++Lib/MeshLib/ColladaTool.cpp

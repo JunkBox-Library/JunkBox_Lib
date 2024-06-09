@@ -876,7 +876,8 @@ tXML*  ColladaXML::addEffect(const char* material_url, const char* file_id, Mate
 
     // transparency (alpha channel) 
     if (mparam.isTransparency()) {
-        double alpha = Min(mparam.getTransparent(), mparam.texture.getColor(3));
+        //double alpha = Min(mparam.getTransparent(), mparam.texture.getColor(3));
+        double alpha = mparam.texture.getColor(3);
         if (forUnity && alpha<0.01) alpha = 0.01;
         tXML* transparency_tag = add_xml_node(phong_tag, "transparency");
         tXML* transfloat_tag   = add_xml_node(transparency_tag, "float");

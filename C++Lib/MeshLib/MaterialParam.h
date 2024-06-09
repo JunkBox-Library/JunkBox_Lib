@@ -218,7 +218,7 @@ public:
     void    setEnvironment(double e) { if(e>1.0) e = 1.0; else if(e<0.0) e = 0.0; environment = e;}
     void    setLight(double l)       { if(l>1.0) l = 1.0; else if(l<0.0) l = 0.0; light = l;}
 
-    double  getTransparent(void);
+    //double  getTransparent(void);
     double  getShininess(void)   { return shininess;}
     double  getGlow(void)        { return glow;}
     double  getBright(void)      { return bright;}

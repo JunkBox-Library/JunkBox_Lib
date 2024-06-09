@@ -137,7 +137,8 @@ void    canonical_filename_Buffer(Buffer* fname);                       ///< fna
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Resource (file) List
-tList*  add_resource_list(const char* path, int keylen, tList* list, tList* extn);  ///< ディレクトリ pathを検索して，リソースリストにファイルを追加し，リストの先頭を返す．
+tList*  _add_key_val_list(tList* pp, tList* list, const char* key, const char* val, int mode);
+tList*  add_resource_list(const char* path, int keylen, tList* list, tList* extn, int mode);  ///< ディレクトリ pathを検索して，リソースリストにファイルを追加し，リストの先頭を返す．
 char*   get_resource_path(const char* name, tList* lp);                 ///< リソースの名前から，ファイルのパスを得る．戻り値は free() してはいけない．
 
 
