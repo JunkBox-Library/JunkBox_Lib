@@ -208,7 +208,7 @@ void  MaterialParam::init(void)
 
     paramstr = init_Buffer();
 
-    transparent = 1.0;
+//    transparent = 1.0;
     shininess   = 0.0;
     glow        = 0.0;
     bright      = 0.0;
@@ -318,7 +318,7 @@ void  MaterialParam::printParam(FILE* fp)
     if (specmap.isSetTexture()) specmap.printParam(fp);
 
     fprintf(fp, "MaterialParam.paramstr    = %s\n", paramstr.buf);
-    fprintf(fp, "MaterialParam.transparent = %f\n", transparent);
+//    fprintf(fp, "MaterialParam.transparent = %f\n", transparent);
     fprintf(fp, "MaterialParam.shininess   = %f\n", shininess);
     fprintf(fp, "MaterialParam.glow        = %f\n", glow);
     fprintf(fp, "MaterialParam.bright      = %f\n", bright);
@@ -352,7 +352,7 @@ char*  MaterialParam::getBase64Params(unsigned char obj, unsigned char cc)
     //double transp  = getTransparent();
     double cutoff  = texture.getAlphaCutoff();
     int  alphaMode = texture.getAlphaMode();
-    bool hasAlpha  = texture.getAlphaChannel();
+    bool hasAlpha  = texture.hasAlphaChannel();
     /*
     short int rotate = (short int)((int)(texture.getRotate()*2000.)%32768);     // 2Byte化
     short int shiftu = (short int)((int)(texture.getShiftU()*2000.)%32768);

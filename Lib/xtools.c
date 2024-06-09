@@ -2078,6 +2078,7 @@ tList*  _add_key_val_list(tList* pp, tList* list, const char* key, const char* v
             return pp;
         }
         else if (mode==2) {     // 上書き
+            if (pp==fnd) pp = fnd->prev;
             del_tList_node(&fnd);
         }
     }
@@ -2100,11 +2101,12 @@ tList*  add_resource_list(const char* path, int keylen, tList* list, tList* extn
 @param list   追加操作を行うリスト．NULLなら新しいリストそ作成して返す．
 @param extn   除外拡張子のリスト．
 @param mode   同じキーがあった場合の処理．0: 重複登録，1: 先に登録されたものを優先，2:後に登録されるものを優先
-@return リソースのリスト
+@return リソースのリスト（アンカー付き）
 */
 tList*  add_resource_list(const char* path, int keylen, tList* list, tList* extn, int mode)
 {
     if (path==NULL) return list;
+    if (list==NULL) list = new_tList_anchor_node();
 
     tList* pp = find_tList_end(list);
     tList* lp = get_dir_files(path);
@@ -2148,6 +2150,8 @@ char*   get_resource_path(const char* name, tList* lp)
 char*   get_resource_path(const char* name, tList* lp)
 {
     if (name==NULL) return NULL;
+    if (lp==NULL) return NULL;
+    if (lp->ldat.id==TLIST_ANCHOR_NODE) lp = lp->next;
 
     while (lp!=NULL) {
         if (!strcasecmp((char*)lp->ldat.key.buf, name)) {

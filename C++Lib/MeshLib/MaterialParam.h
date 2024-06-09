@@ -80,10 +80,11 @@ public:
 
     void    dup(TextureParam m);
 
+    bool    hasAlphaChannel(void) { return alphaChannel;}
     bool    isSetTexture(void) { return (name.buf!=NULL);}
     bool    isSetColor  (void) { return (color[0]!=1.0 || color[1]!=1.0 || color[2]!=1.0 || color[3]!=1.0);}
-    bool    isSetAlpha  (void) { return (alphaChannel && (alphaMode==MATERIAL_ALPHA_BLENDING || alphaMode==MATERIAL_ALPHA_MASKING));}
-    bool    isSetParams (void) { return (isSetColor() || isSetAlpha());}
+    //bool    isSetAlpha  (void) { return (alphaChannel && (alphaMode==MATERIAL_ALPHA_BLENDING || alphaMode==MATERIAL_ALPHA_MASKING));}
+    //bool    isSetParams (void) { return (isSetColor() || isSetAlpha());}
 
     bool    isSetShift  (void) { return (shiftU!=0.0 || shiftV!=0.0);}
     bool    isSetScale  (void) { return (scaleU!=1.0 || scaleV!=1.0);}
@@ -111,15 +112,16 @@ public:
 
     Vector<double> getColor(void) { return Vector<double>(color[0], color[1], color[2]);}
     double  getColor(int c) { if(c<0) c = 0; else if(c>3) c = 3; return color[c];}
-    double  getAlpha(void)  { return color[3];}
+    double  getTransparent(void)  { return color[3];}
     double  getShiftU(void) { return shiftU;}
     double  getShiftV(void) { return shiftV;}
     double  getScaleU(void) { return scaleU;}
     double  getScaleV(void) { return scaleV;}
     double  getRotate(void) { return rotate;}
 
-    bool    getAlphaChannel(void) { return alphaChannel;}
-    int     getAlphaMode(void)    { if (color[3]<0.99) return MATERIAL_ALPHA_BLENDING; else return alphaMode;}
+    //bool    getAlphaChannel(void) { return alphaChannel;}
+    //int     getAlphaMode(void)    { if (color[3]<0.99) return MATERIAL_ALPHA_BLENDING; else return alphaMode;}
+    int     getAlphaMode(void)    { return alphaMode;}
     double  getAlphaCutoff(void)  { return alphaCutoff;}
 
     void    execTrans (UVMap<double>* uv, int n);    ///< Rotate -> Scale -> Shift
@@ -152,7 +154,7 @@ class  MaterialParam
 private:
     Buffer  paramstr;       ///< パラメータ文字列 (Base64文字列)
 
-    double  transparent;    ///< テクスチャのアルファチャンネルの係数．
+//    double  transparent;    ///< テクスチャのアルファチャンネルの係数．
     double  shininess;      ///< 輝き
     double  glow;           ///< 発光
     double  bright;         ///< 明るさ
@@ -186,15 +188,15 @@ public:
     bool    isSetBumpMap(void) { return bumpmap.isSetTexture();}
     bool    isSetSpecMap(void) { return specmap.isSetTexture();}
 
-    bool    isSetTextureParams(void) { return (texture.isSetParams() || bumpmap.isSetParams() || specmap.isSetParams());}
-    bool    isSetParams (void) { return (isSetTransparent() || isSetGlow() || isSetShininess() || isSetBright());}
+    //bool    isSetTextureParams(void) { return (texture.isSetColor() || bumpmap.isSetColor() || specmap.isSetColor());}
+    //bool    isSetParams (void) { return (isSetTransparent() || isSetGlow() || isSetShininess() || isSetBright());}
 
     bool    isSetGlow   (void) { return (glow!=0.0);}
     bool    isSetBright (void) { return (bright!=0.0);}
     bool    isSetShininess  (void) { return (shininess!=0.0);}
-    bool    isSetTransparent(void) { return (transparent<0.99);}
+    bool    isSetTransparent(void) { return (texture.getColor(3)<0.99);}
 
-    bool    isTransparency(void) { return (texture.isSetAlpha() || isSetTransparent() || texture.getColor(3)<0.99);}
+    bool    isTransparency(void) { return (texture.hasAlphaChannel() || isSetTransparent());}
 
     void    setTextureName(const char* name) { texture.setName(name);}
     void    setBumpMapName(const char* name) { bumpmap.setName(name);}
@@ -210,7 +212,7 @@ public:
     void    addParamString(const char* param) { if(param!=NULL) cat_s2Buffer (param, &paramstr);}
     char*   getParamString(void) { return (char*)paramstr.buf;}     // 禁 free
 
-    void    setTransparent(double a) { if(a>1.0) a = 1.0; else if(a<0.0) a = 0.0; transparent = a;}
+//    void    setTransparent(double a) { if(a>1.0) a = 1.0; else if(a<0.0) a = 0.0; transparent = a;}
     void    setShininess(double s)   { if(s>1.0) s = 1.0; else if(s<0.0) s = 0.0; shininess = s;}
     void    setGlow(double g)        { if(g>1.0) g = 1.0; else if(g<0.0) g = 0.0; glow = g;}
     void    setBright(double b)      { if(b>1.0) b = 1.0; else if(b<0.0) b = 0.0; bright = b;}
