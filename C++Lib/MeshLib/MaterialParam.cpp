@@ -79,6 +79,7 @@ void  TextureParam::execScale(UVMap<double>* uv, int num)
 
 void  TextureParam::execInvScale(UVMap<double>* uv, int num)
 {
+    if (scaleU<=0.0 || scaleV<=0.0) return;
     double uu, vv;
 
     for (int i=0; i<num; i++) {
@@ -122,9 +123,9 @@ void  TextureParam::execInvRotate(UVMap<double>* uv, int num)
 
 void  TextureParam::execTrans(UVMap<double>* uv, int num)
 {
-    //DEBUG_MODE PRINT_MESG("%f %f, %f %f, %f\n", shiftU, shiftV, scaleU, scaleV, rotate);
-    if (flipU) { execFlipU(uv, num); flipU = false;}    
-    if (flipV) { execFlipV(uv, num); flipV = false;}    
+    DEBUG_MODE PRINT_MESG("JBXL::TextureParam::execTrans: shift = (%f %f), scale = (%f %f), rot = %f\n", shiftU, shiftV, scaleU, scaleV, rotate);
+    if (flipU) { execFlipU(uv, num); flipU = false;}
+    if (flipV) { execFlipV(uv, num); flipV = false;}
     if (isSetRotate()) execRotate(uv, num);
     if (isSetScale())  execScale (uv, num);
     if (isSetShift())  execShift (uv, num);
@@ -135,8 +136,8 @@ void  TextureParam::execTrans(UVMap<double>* uv, int num)
 
 void  TextureParam::execInvTrans(UVMap<double>* uv, int num)
 {
-    if (flipU) { execFlipU(uv, num); flipU = false;}    
-    if (flipV) { execFlipV(uv, num); flipV = false;}    
+    if (flipU) { execFlipU(uv, num); flipU = false;}
+    if (flipV) { execFlipV(uv, num); flipV = false;}
     if (isSetShift())  execInvShift (uv, num);
     if (isSetScale())  execInvScale (uv, num);
     if (isSetRotate()) execInvRotate(uv, num);
@@ -343,6 +344,8 @@ void  MaterialParam::printParam(FILE* fp)
 */
 char*  MaterialParam::getBase64Params(unsigned char obj, unsigned char cc)
 {
+    //printParam(stderr);
+
     uByte attr[MATERIAL_ATTR_LEN];
 
     double red     = texture.getColor(0);

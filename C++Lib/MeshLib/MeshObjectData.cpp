@@ -146,6 +146,7 @@ pnum を指定すると，指定されたポリゴンデータのみが追加さ
 bool  MeshObjectData::addData(TriPolygonData* tridata, int tnum, int pnum, MaterialParam* param, bool useBrep)
 {
     DEBUG_MODE PRINT_MESG("MeshObjectData::addData() for TriPolygonData: start.\n");
+
     bool ret = importTriData(tridata, tnum, pnum);
     if (ret) {
         char* name = NULL;
@@ -275,7 +276,8 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
     if (impvtx_value!=NULL) freeNull(impvtx_value);
     impvtx_value = (Vector<double>*)malloc(lsize);
     if (impvtx_value!=NULL) {
-        for (int i=0, n=0; i<tnum; i++) {
+        int n = 0;
+        for (int i=0; i<tnum; i++) {
             if (tridata[i].polygonNum==pnum || pnum<0) {
                 impvtx_value[n*3]   = tridata[i].vertex[0];
                 impvtx_value[n*3+1] = tridata[i].vertex[1];
@@ -291,7 +293,8 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
     if (tridata[0].has_normal) {
         impnrm_value = (Vector<double>*)malloc(lsize);
         if (impnrm_value!=NULL) {
-            for (int i=0, n=0; i<tnum; i++) {
+            int n = 0;
+            for (int i=0; i<tnum; i++) {
                 if (tridata[i].polygonNum==pnum || pnum<0) {
                     impnrm_value[n*3]   = tridata[i].normal[0];
                     impnrm_value[n*3+1] = tridata[i].normal[1];
@@ -312,7 +315,8 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
         int msize = sizeof(UVMap<double>)*vnum;
         impmap_value = (UVMap<double>*)malloc(msize);
         if (impmap_value!=NULL) {
-            for (int i=0, n=0; i<tnum; i++) {
+            int n = 0;
+            for (int i=0; i<tnum; i++) {
                 if (tridata[i].polygonNum==pnum || pnum<0) {
                     impmap_value[n*3]   = tridata[i].texcrd[0];
                     impmap_value[n*3+1] = tridata[i].texcrd[1];
@@ -326,6 +330,7 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
             freeNull(impnrm_value);
             return false;
         }
+
     }
 
     // Vertex Weight (option)
@@ -350,7 +355,7 @@ bool  MeshObjectData::importTriData(TriPolygonData* tridata, int tnum, int pnum)
     num_vcount = 3;         // Contour（ポリゴン）を形成する頂点数
     num_import = vnum;      // 総頂点数
 
-    DEBUG_MODE PRINT_MESG("MeshObjectData::importTriData: for TriPolygonData: end.\n");
+    DEBUG_MODE PRINT_MESG("MeshObjectData::importTriData: for TriPolygonData (%d): end.\n", vnum);
     return true;
 }
 
