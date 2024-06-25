@@ -5,6 +5,7 @@ rewrite configure.ac, doxygen.conf
 working now ..... v1.9.3alpha
 
 v1.9.3alpha
+	Jpeg2000 allow partial
 	read_index_tList_fp() 値の中に区切り文字が存在しても大丈夫にした．ex.) パスの空白など．
 	fix ColladaTool.cpp
 	add_resource_list() に第5引数 mode を追加．mode==0 の場合，互換あり．

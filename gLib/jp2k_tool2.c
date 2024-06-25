@@ -197,12 +197,30 @@ JP2KImage  read_jp2k_data(const char* fname, int format)
         jp.state = JBXL_GRAPH_ERROR;
         return jp;
     }
+
+    // allow_partial
+    if (!opj_decoder_set_strict_mode(codec, OPJ_FALSE)) {       // #define OPJ_FALSE 0
+        opj_stream_destroy(stream);
+        opj_destroy_codec(codec);
+        jp.state = JBXL_GRAPH_ERROR;
+        return jp;
+    }
+
+    /*
+    if (!opj_codec_set_threads(codec, 1)) {
+        opj_stream_destroy(stream);
+        opj_destroy_codec(codec);
+        jp.state = JBXL_GRAPH_ERROR;
+        return jp;
+    }*/
+
     if (!opj_read_header(stream, codec, &jp.image)){
         opj_stream_destroy(stream);
         opj_destroy_codec(codec);
         jp.state = JBXL_GRAPH_ERROR;
         return jp;
     }
+
     if (!opj_set_decode_area(codec, jp.image, 0, 0, 0, 0)){
         opj_stream_destroy(stream);
         opj_destroy_codec(codec);
@@ -210,6 +228,7 @@ JP2KImage  read_jp2k_data(const char* fname, int format)
         jp.state = JBXL_GRAPH_ERROR;
         return jp;
     }
+
     if (!(opj_decode(codec, stream, jp.image) && opj_end_decompress(codec, stream))) {
         opj_destroy_codec(codec);
         opj_stream_destroy(stream);
