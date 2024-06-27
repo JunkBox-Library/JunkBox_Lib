@@ -277,25 +277,7 @@ JPEG2KImage  jbxl::readJPEG2KData(const char* fname, int format)
 }
 
 
-/**
-JPEG 2000のヘッダからファイルの種類を返す．@n
-ただし，ヘッダから JP2K_FMT_JPTであることは判別できないので，注意する．
-
-@param buf ヘッダ情報の入った Buffer変数．最低12Byte必要．
-@return    ファイル種別 (JP2K_FMT_NONE, JP2K_FMT_JP2, JP2K_FMT_J2K)
-*/
-int  jbxl::isJPEG2KHeader(Buffer buf)
-{
-    int format = JP2K_FMT_NONE;
-
-    if (!memcmp(buf.buf, JP2K_MAGIC_RFC3745_JP2, 12) || !memcmp(buf.buf, JP2K_MAGIC_JP2, 4)) {
-        format = JP2K_FMT_JP2;
-    }
-    else if (!memcmp(buf.buf, JP2K_MAGIC_J2K, 4)) {
-        format = JP2K_FMT_J2K;
-    }
-    return format;
-}
+#include "Jpeg2KToolCommon.cpp"
 
 
 #endif      // OPENJPEG_VER >= JP2K_VER_20

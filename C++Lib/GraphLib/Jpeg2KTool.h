@@ -126,7 +126,8 @@ JPEG2KImage readJPEG2KData(FILE* fp, int format);
 //int       writeJPEG2KFile(const char* fname, JPEG2KImage jp);
 //int       writeJPEG2KData(FILE* fp,    JPEG2KImage jp);
 
-int         isJPEG2KHeader(Buffer buf);
+int       isJPEG2KHeader(Buffer buf);
+int       repairJPEG2KFile(const char* fname, const char* writef);
 
 //CmnHead       JPEG2KImage2CmnHead(JPEG2KImage jp);
 //JPEG2KImage   CmnHead2JPEGImage(CmnHead hd);

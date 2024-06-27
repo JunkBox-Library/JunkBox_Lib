@@ -309,6 +309,7 @@ char*   get_gmt_timestamp(time_t date, const char* format);             ///< 要
 void    print_escape(const char* format, char* mesg);                   ///< エスケープ文字を含むメッセージの出力（stderr）
 void    fdump(FILE* fp, unsigned char* mesg, int n);                    ///< 16進ダンプを吐き出す
 void    print_16x(FILE* fp, unsigned char* mesg, int n);                ///< 16進ダンプを吐き出す（１行）
+#define print_hex(o, m, n)  fdump((o), (m), (n))
 
 // 漢字コード
 void    kanji_convert(unsigned char* mesg);                             ///< 大域変数 KnjiCodeに従って漢字コードを変換する．

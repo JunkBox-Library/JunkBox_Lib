@@ -288,6 +288,7 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
     while (ptr<end  && !(xml==snode && *ptr!=LLSD_MAKER_MAP && *ptr!=LLSD_MAKER_ARRAY)) {
         //
         if (*ptr==LLSD_MAKER_MAP) {
+            //PRINT_MESG("LLSD_MAKER_MAP\n");
             ptr++;
             int num = llsd_bin_get_map(&ptr);
             xml = add_tTree_node_bystr(xml, XML_NAME_NODE, num, "map", NULL, NULL, 0);
@@ -295,6 +296,7 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
         }
         //
         else if (*ptr==LLSD_MAKER_ARRAY) {
+            //PRINT_MESG("LLSD_MAKER_ARRAY\n");
             ptr++;
             int num = llsd_bin_get_map(&ptr);
             xml = add_tTree_node_bystr(xml, XML_NAME_NODE, num, "array", NULL, NULL, 0);
@@ -302,6 +304,7 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
         }
         //
         else if (*ptr==LLSD_MAKER_MAP_END) {
+            //PRINT_MESG("LLSD_MAKER_MAP_END\n");
             ptr++;
             if (xml->state==JBXL_XML_NODE_OPENED) {
                 xml->state = JBXL_XML_NODE_CLOSED;
@@ -310,6 +313,7 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
         }
         //
         else if (*ptr==LLSD_MAKER_ARRAY_END) {
+            //PRINT_MESG("LLSD_MAKER_ARRAY_END)\n");
             ptr++;
             if (xml->state==JBXL_XML_NODE_OPENED) {
                 xml->state = JBXL_XML_NODE_CLOSED;
@@ -318,6 +322,7 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
         }
         //
         else if (*ptr==LLSD_MAKER_KEY) {
+            //PRINT_MESG("LLSD_MAKER_KEY\n");
             ptr++;
             Buffer key = llsd_bin_get_key(&ptr);
             xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "key", NULL, NULL, 0);
@@ -330,6 +335,7 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
         }
         //
         else if (*ptr==LLSD_MAKER_STR) {
+            //PRINT_MESG("LLSD_MAKER_STR\n");
             ptr++;
             Buffer str = llsd_bin_get_str(&ptr);
             xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "string", NULL, NULL, 0);
@@ -342,8 +348,9 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
         }
         //
         else if (*ptr==LLSD_MAKER_UUID) {
+            //PRINT_MESG("LLSD_MAKER_UUID\n");
             ptr++;
-            Buffer uuid = llsd_bin_get_uri(&ptr);
+            Buffer uuid = llsd_bin_get_uuid(&ptr);
             char*  guid = (char*)uuid2guid(uuid.buf);
             xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "uuid", NULL, NULL, 0);
             xml = add_tTree_node_bystr(xml, XML_CONTENT_NODE, 0, guid, NULL, NULL, 0);
@@ -356,6 +363,7 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
         }
         //
         else if (*ptr==LLSD_MAKER_URI) {
+            //PRINT_MESG("LLSD_MAKER_URI\n");
             ptr++;
             Buffer str = llsd_bin_get_uri(&ptr);
             xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "uri", NULL, NULL, 0);
@@ -368,6 +376,7 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
         }
         //
         else if (*ptr==LLSD_MAKER_INT) {
+            //PRINT_MESG("LLSD_MAKER_INT\n");
             ptr++;
             int val = llsd_bin_get_int(&ptr);
             xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "integer", NULL, NULL, 0);
@@ -381,6 +390,7 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
         }
         //
         else if (*ptr==LLSD_MAKER_DATE) {
+            //PRINT_MESG("LLSD_MAKER_DATE\n");
             ptr++;
             unsigned long long int val = llsd_bin_get_date(&ptr);
             xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "date", NULL, NULL, 0);
@@ -394,6 +404,7 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
         }
         //
         else if (*ptr==LLSD_MAKER_REAL) {
+            //PRINT_MESG("LLSD_MAKER_REAL\n");
             ptr++;
             double val = llsd_bin_get_real(&ptr);
             xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "real", NULL, NULL, 0);
@@ -407,6 +418,7 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
         }
         //
         else if (*ptr==LLSD_MAKER_BIN) {
+            //PRINT_MESG("LLSD_MAKER_BUN\n");
             ptr++;
             Buffer bin = llsd_bin_get_bin(&ptr);
             Buffer b64 = encode_base64_Buffer(bin);
@@ -421,6 +433,7 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
         }
         //
         else if (*ptr==LLSD_MAKER_TRUE) {
+            //PRINT_MESG("LLSD_MAKER_TRUE\n");
             ptr++;
             xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "boolean", NULL, NULL, 0);
             xml = add_tTree_node_bystr(xml, XML_CONTENT_NODE, 0, "true", NULL, NULL, 0);
@@ -431,6 +444,7 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
         }
         //
         else if (*ptr==LLSD_MAKER_FALSE) {
+            //PRINT_MESG("LLSD_MAKER_FALSE\n");
             ptr++;
             xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 1, "boolean", NULL, NULL, 0);
             xml = add_tTree_node_bystr(xml, XML_CONTENT_NODE, 0, "false", NULL, NULL, 0);
@@ -441,13 +455,14 @@ tXML*  llsd_bin_main_parse(tXML* xml, uByte* ptr, int sz)
         }
         //
         else if (*ptr==LLSD_MAKER_UNDEF) {
+            //PRINT_MESG("LLSD_MAKER_UNDEF\n");
             ptr++;
             xml = add_tTree_node_bystr(xml, XML_NAME_NODE, 0, "undef", NULL, NULL, 0);
             xml->state = JBXL_XML_NODE_CLOSED;
             xml = xml->prev;
         }
         else {
-            PRINT_MESG("ERROR: llsd_bin_main_parse: unknown marker: %c (%04x)\n", *ptr, *ptr);
+            PRINT_MESG("WARNING: llsd_bin_main_parse: unknown marker: %c (%04x)\n", *ptr, *ptr);
             ptr++;
         }
     }
