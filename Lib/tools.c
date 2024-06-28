@@ -2286,12 +2286,14 @@ unsigned long int   file_size(const char* fn)
 通常のファイルの大きさを返す．シンボリックリンクなどは 0．
 
 @param  fn  ファイル名
-@return ファイルのサイズ
+@return ファイルのサイズ．ファイルが存在しない場合は -1. fn が NULL の場合は -2
  */
 unsigned long int   file_size(const char* fn)                                              
-{                                      
+{
+    if (fn==NULL) return -2;
+    if (!file_exist(fn)) return -1;
+
     struct stat stbuf;                                               
-                                                                   
     stat(fn, &stbuf);
 
 #ifdef WIN32
