@@ -86,14 +86,14 @@ CONTOUR(ポリゴン)を選択的に処理することはできない．予め C
 */
 bool  MeshObjectData::addData(ContourBaseData* contours, MaterialParam* param)
 {
-    DEBUG_MODE PRINT_MESG("MeshObjectData::addData() for ContourBaseData: start.\n");
+    DEBUG_MODE PRINT_MESG("MeshObjectData::addData(): for ContourBaseData: start.\n");
     char* name = NULL;
     if (param!=NULL) name = param->getParamString();
 
     bool ret = addNode(contours, name, param);
     if (ret && param!=NULL) facet_end->setMaterialParam(*param);    // Materialデータを追加
 
-    DEBUG_MODE PRINT_MESG("MeshObjectData::addData() for ContourBaseData: end.\n");
+    DEBUG_MODE PRINT_MESG("MeshObjectData::addData(): for ContourBaseData: end.\n");
     return ret;
 }
 
@@ -116,7 +116,7 @@ vct, nrm, map は3個づつ組になって三角ポリゴンを表す．従っ�
 */
 bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<double>* map, ArrayParam<int>* wgt, int vnum, MaterialParam* param, bool useBrep)
 {
-    DEBUG_MODE PRINT_MESG("MeshObjectData::addData() for Vector<>: start.\n");
+    DEBUG_MODE PRINT_MESG("MeshObjectData::addData(): for Vector<>: start.\n");
     bool ret = importTriData(vct, nrm, map, wgt, vnum);
     if (ret) {
         char* name = NULL;
@@ -125,7 +125,7 @@ bool  MeshObjectData::addData(Vector<double>* vct, Vector<double>* nrm, UVMap<do
     }
     if (ret && param!=NULL) facet_end->setMaterialParam(*param);    // Materialデータを追加
 
-    DEBUG_MODE PRINT_MESG("MeshObjectData::addData() for Vector<>: end.\n");
+    DEBUG_MODE PRINT_MESG("MeshObjectData::addData(): for Vector<>: end.\n");
     return ret;
 }
 
@@ -145,7 +145,7 @@ pnum を指定すると，指定されたポリゴンデータのみが追加さ
 */
 bool  MeshObjectData::addData(TriPolygonData* tridata, int tnum, int pnum, MaterialParam* param, bool useBrep)
 {
-    DEBUG_MODE PRINT_MESG("MeshObjectData::addData() for TriPolygonData: start.\n");
+    DEBUG_MODE PRINT_MESG("MeshObjectData::addData(): for TriPolygonData: start.\n");
 
     bool ret = importTriData(tridata, tnum, pnum);
     if (ret) {
@@ -159,7 +159,7 @@ bool  MeshObjectData::addData(TriPolygonData* tridata, int tnum, int pnum, Mater
         if (param!=NULL) facet_end->setMaterialParam(*param);       // Materialデータを追加
     }
 
-    DEBUG_MODE PRINT_MESG("MeshObjectData::addData() for TriPolygonData: end.\n");
+    DEBUG_MODE PRINT_MESG("MeshObjectData::addData(): for TriPolygonData: end.\n");
     return ret;
 }
 
