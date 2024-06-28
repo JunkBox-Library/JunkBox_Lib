@@ -975,7 +975,7 @@ int   save_tagged_Buffer(Buffer buf, FILE* fp, unsigned int mode, int prfm)
     }
 
     tag.vldsz = 2;
-    cc = save_Buffer2_fp(tag, enc, fp); 
+    cc = save_Buffer2_format_fp(tag, enc, fp); 
     free_Buffer(&enc);
     free_Buffer(&tag);
 
@@ -1018,7 +1018,7 @@ Buffer  read_tagged_Buffer(FILE* fp, unsigned int* mode)
     buf = init_Buffer();
     if (mode==NULL) return buf;
 
-    if (!read_Buffer2_fp(&tag, &enc, fp)) return buf;
+    if (!read_Buffer2_format_fp(&tag, &enc, fp)) return buf;
 
     kind = *mode & 0x0f;                // データの種別
     mthd = *mode & 0xf0;                // データの形式
@@ -2094,6 +2094,7 @@ tList*  _add_key_val_list(tList* pp, tList* list, const char* key, const char* v
 tList*  add_resource_list(const char* path, int keylen, tList* list, tList* extn, int mode)
 
 ディレクトリ pathを検索して，リソースリストにファイルを追加し，リストの先頭を返す．@n
+ただし，サイズが 0のファイルは登録しない．@n
 リソースリストのキーは，リソースのファイル名の先頭 keylen文字とする．keylenが 0以下ならファイル名全体をキーとする．
 
 @param path   検索するディレクトリ名
@@ -2114,23 +2115,24 @@ tList*  add_resource_list(const char* path, int keylen, tList* list, tList* extn
 
     // Generate Key. ファイル名の先頭 keylen文字をキーにする．
     while (lp!=NULL) {
-        Buffer fn = make_Buffer_bystr(get_file_name((char*)lp->ldat.val.buf));  // ファイル名
-        char* ext = get_file_extension((char*)fn.buf);
-        //
-        if (extn==NULL || strncasecmp_tList(extn, ext, 0, 1)==NULL) {   // 拡張子の検査
-            if (keylen<=0) {
-                pp = _add_key_val_list(pp, list, (char*)fn.buf, (char*)lp->ldat.val.buf, mode);
+        if (file_size((char*)lp->ldat.val.buf)>0) {
+            Buffer fn = make_Buffer_bystr(get_file_name((char*)lp->ldat.val.buf));  // ファイル名
+            char* ext = get_file_extension((char*)fn.buf);
+            //
+            if (extn==NULL || strncasecmp_tList(extn, ext, 0, 1)==NULL) {   // 拡張子の検査
+                if (keylen<=0) {
+                    pp = _add_key_val_list(pp, list, (char*)fn.buf, (char*)lp->ldat.val.buf, mode);
+                }
+                else if (fn.vldsz>=keylen) {
+                    fn.buf[keylen] = '\0';
+                    fn.vldsz = keylen;
+                    pp = _add_key_val_list(pp, list, (char*)fn.buf, (char*)lp->ldat.val.buf, mode);
+                }
             }
-            else if (fn.vldsz>=keylen) {
-                fn.buf[keylen] = '\0';
-                fn.vldsz = keylen;
-                pp = _add_key_val_list(pp, list, (char*)fn.buf, (char*)lp->ldat.val.buf, mode);
-            }
+            if (list==NULL) list = pp;
+            free_Buffer(&fn);
         }
-
-        if (list==NULL) list = pp;
         lp = lp->next;
-        free_Buffer(&fn);
     }
 
     del_all_tList(&tp);
@@ -2159,7 +2161,6 @@ char*   get_resource_path(const char* name, tList* lp)
         }
         lp = lp->next;
     }
-
     return NULL;
 }
 

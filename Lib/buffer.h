@@ -177,10 +177,10 @@ void    rewrite_sBuffer_bystr(Buffer* buf, const char* frm, const char* tos);   
 void    rewrite_Buffer_bychar(Buffer* buf, const char frm, const char toc);         ///< buf.buf中の文字 frmを tocで置き換える
 
 // ヘッダ(書式)付き特殊ファイルI/O
-int     save_Buffer_fp(Buffer, FILE*);                              ///< ファイル fp へ Buffer型変数の buf部を書き込む
-Buffer  read_Buffer_fp(FILE*);                                      ///< ファイル fp から Buffer型変数の buf部を読み込む
-int     save_Buffer2_fp(Buffer  key, Buffer  buf, FILE* fp);        ///< ファイル fp へ 2つのBuffer型変数 keyと bufを書き込む
-int     read_Buffer2_fp(Buffer* key, Buffer* buf, FILE* fp);        ///< ファイル fp から 2つのBuffer型変数の keyと bufを読み込む．
+int     save_Buffer_format_fp(Buffer, FILE*);                       ///< ファイル fp へ Buffer型変数の buf部を書き込む
+Buffer  read_Buffer_format_fp(FILE*);                               ///< ファイル fp から Buffer型変数の buf部を読み込む
+int     save_Buffer2_format_fp(Buffer  key, Buffer  buf, FILE* fp); ///< ファイル fp へ 2つのBuffer型変数 keyと bufを書き込む
+int     read_Buffer2_format_fp(Buffer* key, Buffer* buf, FILE* fp); ///< ファイル fp から 2つのBuffer型変数の keyと bufを読み込む．
 
 // Buffer型を利用した 簡易char型リングスタック
 char    pop_char_ringStack(Buffer* buf);                            ///< 簡易 char型 ringStack POP

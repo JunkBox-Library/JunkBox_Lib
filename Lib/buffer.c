@@ -1645,7 +1645,7 @@ void  rewrite_Buffer_bychar(Buffer* buf, const char frm, const char toc)
 // 
 
 /**
-int   save_Buffer2_fp(Buffer key, Buffer buf, FILE* fp)
+int   save_Buffer2_format_fp(Buffer key, Buffer buf, FILE* fp)
 
 ファイル fp へ 2つのBuffer型変数 keyと bufを書き込む．@n
 データ検索用ファイルを作成するときに使用する．
@@ -1657,14 +1657,14 @@ int   save_Buffer2_fp(Buffer key, Buffer buf, FILE* fp)
 @retval TRUE　書き込み成功．
 @retval FALSE 書き込みに失敗．ファイルの内容は保証されない．
 */
-int   save_Buffer2_fp(Buffer key, Buffer buf, FILE* fp)
+int   save_Buffer2_format_fp(Buffer key, Buffer buf, FILE* fp)
 {
     int   cc;
     
-    cc = save_Buffer_fp(key, fp);
+    cc = save_Buffer_format_fp(key, fp);
     if (!cc) return FALSE;
 
-    cc = save_Buffer_fp(buf, fp);
+    cc = save_Buffer_format_fp(buf, fp);
     if (!cc) return FALSE;
     
     return TRUE;
@@ -1672,7 +1672,7 @@ int   save_Buffer2_fp(Buffer key, Buffer buf, FILE* fp)
 
 
 /**
-int   save_Buffer_fp(Buffer buf, FILE* fp)
+int   save_Buffer_format_fp(Buffer buf, FILE* fp)
 
 ファイル fp へ Buffer型変数の buf部を書き込む．@n
 buf部に先立ち，buf部の大きさが intで書き込まれる．
@@ -1683,7 +1683,7 @@ buf部に先立ち，buf部の大きさが intで書き込まれる．
 @retval TRUE　書き込み成功．
 @retval FALSE 書き込みに失敗．ファイルの内容は保証されない．
 */
-int   save_Buffer_fp(Buffer buf, FILE* fp)
+int   save_Buffer_format_fp(Buffer buf, FILE* fp)
 {
     int   cc, sz;
 
@@ -1699,7 +1699,7 @@ int   save_Buffer_fp(Buffer buf, FILE* fp)
 
 
 /**
-Buffer  read_Buffer_fp(FILE* fp)
+Buffer  read_Buffer_format_fp(FILE* fp)
 
 ファイル fp から Buffer型変数の buf部を読み込む．@n
 ただしファイルの先頭にファイルサイズを示す4Byteの値が必要
@@ -1707,7 +1707,7 @@ Buffer  read_Buffer_fp(FILE* fp)
 @param  fp  ファイルディスクリプタ
 @return 読み込んだ buf部を持つ Buffer型変数．
 */
-Buffer  read_Buffer_fp(FILE* fp)
+Buffer  read_Buffer_format_fp(FILE* fp)
 {
     int     cc, sz;
     Buffer  buf;
@@ -1731,7 +1731,7 @@ Buffer  read_Buffer_fp(FILE* fp)
 
 
 /**
-int  read_Buffer2_fp(Buffer* key, Buffer* buf, FILE* fp)
+int  read_Buffer2_format_fp(Buffer* key, Buffer* buf, FILE* fp)
 
 ファイル fp から 2つのBuffer型変数の keyと bufを読み込む．@n
 データ検索用ファイルからの読み込み時に使用する．
@@ -1743,17 +1743,17 @@ int  read_Buffer2_fp(Buffer* key, Buffer* buf, FILE* fp)
 @retval TRUE  読み込み成功．
 @retval FALSE 読み込みに失敗．
 */
-int  read_Buffer2_fp(Buffer* key, Buffer* buf, FILE* fp)
+int  read_Buffer2_format_fp(Buffer* key, Buffer* buf, FILE* fp)
 {
     if (key==NULL || buf==NULL) return FALSE;
 
     *key = init_Buffer();
     *buf = init_Buffer();
     
-    *key = read_Buffer_fp(fp);
+    *key = read_Buffer_format_fp(fp);
     if (key->buf==NULL) return FALSE;
 
-    *buf = read_Buffer_fp(fp);
+    *buf = read_Buffer_format_fp(fp);
     if (buf->buf==NULL) {
         free_Buffer(key);
         return FALSE;

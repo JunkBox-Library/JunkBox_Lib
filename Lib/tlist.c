@@ -2313,13 +2313,13 @@ tList*  read_Buffer_tList_fp(FILE* fp)
 
     if (fp==NULL) return NULL;
 
-    cc = read_Buffer2_fp(&key, &val, fp);
+    cc = read_Buffer2_format_fp(&key, &val, fp);
     while (!feof(fp) && cc) {
         lt = add_tList_node_Buffer(lt, key, val);
         if (lp==NULL) lp = lt;
         free_Buffer(&key);    
         free_Buffer(&val);    
-        cc = read_Buffer2_fp(&key, &val, fp);
+        cc = read_Buffer2_format_fp(&key, &val, fp);
     }
     
     free_Buffer(&key);    
@@ -2373,7 +2373,7 @@ int  save_Buffer_tList_fp(FILE* fp, tList* lp)
     if (fp==NULL) return FALSE;
 
     while (lp!=NULL && cc) {
-        cc = save_Buffer2_fp(lp->ldat.key, lp->ldat.val, fp);    
+        cc = save_Buffer2_format_fp(lp->ldat.key, lp->ldat.val, fp);    
         lp = lp->next;
     }
 
