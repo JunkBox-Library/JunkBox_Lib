@@ -2094,7 +2094,6 @@ tList*  _add_key_val_list(tList* pp, tList* list, const char* key, const char* v
 tList*  add_resource_list(const char* path, int keylen, tList* list, tList* extn, int mode)
 
 ディレクトリ pathを検索して，リソースリストにファイルを追加し，リストの先頭を返す．@n
-ただし，サイズが 0のファイルは登録しない．@n
 リソースリストのキーは，リソースのファイル名の先頭 keylen文字とする．keylenが 0以下ならファイル名全体をキーとする．
 
 @param path   検索するディレクトリ名
@@ -2115,23 +2114,21 @@ tList*  add_resource_list(const char* path, int keylen, tList* list, tList* extn
 
     // Generate Key. ファイル名の先頭 keylen文字をキーにする．
     while (lp!=NULL) {
-        if (file_size((char*)lp->ldat.val.buf)>0) {
-            Buffer fn = make_Buffer_bystr(get_file_name((char*)lp->ldat.val.buf));  // ファイル名
-            char* ext = get_file_extension((char*)fn.buf);
-            //
-            if (extn==NULL || strncasecmp_tList(extn, ext, 0, 1)==NULL) {   // 拡張子の検査
-                if (keylen<=0) {
-                    pp = _add_key_val_list(pp, list, (char*)fn.buf, (char*)lp->ldat.val.buf, mode);
-                }
-                else if (fn.vldsz>=keylen) {
-                    fn.buf[keylen] = '\0';
-                    fn.vldsz = keylen;
-                    pp = _add_key_val_list(pp, list, (char*)fn.buf, (char*)lp->ldat.val.buf, mode);
-                }
+        Buffer fn = make_Buffer_bystr(get_file_name((char*)lp->ldat.val.buf));  // ファイル名
+        char* ext = get_file_extension((char*)fn.buf);
+        //
+        if (extn==NULL || strncasecmp_tList(extn, ext, 0, 1)==NULL) {   // 拡張子の検査
+            if (keylen<=0) {
+                pp = _add_key_val_list(pp, list, (char*)fn.buf, (char*)lp->ldat.val.buf, mode);
             }
-            if (list==NULL) list = pp;
-            free_Buffer(&fn);
+            else if (fn.vldsz>=keylen) {
+                fn.buf[keylen] = '\0';
+                fn.vldsz = keylen;
+                pp = _add_key_val_list(pp, list, (char*)fn.buf, (char*)lp->ldat.val.buf, mode);
+            }
         }
+        if (list==NULL) list = pp;
+        free_Buffer(&fn);
         lp = lp->next;
     }
 
