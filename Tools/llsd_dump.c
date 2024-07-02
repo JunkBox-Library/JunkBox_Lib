@@ -79,7 +79,8 @@ int main(int argc, char** argv)
             fprintf(stdout, "====== INDEX (%d, %d) =========\n", n, idx.vldsz/2);
             if (n==0) {  // n>0 は省略
                 uWord* dat = (uWord*)idx.buf;
-                for (int i=0; i<idx.vldsz/2; i++) fprintf(stdout, "%d ", dat[i]);
+                int i;
+                for (i=0; i<idx.vldsz/2; i++) fprintf(stdout, "%d ", dat[i]);
                 fprintf(stdout, "\n");
             }
             free_Buffer(&idx);
@@ -107,7 +108,8 @@ int main(int argc, char** argv)
             fprintf(stdout, "====== POSITION (%d, %d) =========\n", n, pos.vldsz/2);
             if (n==0) {  // n>0 は省略
                 uWord* dat = (uWord*)pos.buf;
-                for (int i=0; i<pos.vldsz/2; i++) fprintf(stdout, "%d ", dat[i]);
+                int i;
+                for (i=0; i<pos.vldsz/2; i++) fprintf(stdout, "%d ", dat[i]);
                 fprintf(stdout, "\n");
             }
             vertex_num = pos.vldsz/6;
@@ -122,8 +124,9 @@ int main(int argc, char** argv)
 
             fprintf(stdout, "====== WEIGHT (%d) =========\n", n);
             if (n==0 && weight!=NULL) {  // n>0 は省略
-                for (int i=0; i<vertex_num; i++) {
-                    for (int j=0; j<joints_num; j++) {
+                int i, j;
+                for (i=0; i<vertex_num; i++) {
+                    for (j=0; j<joints_num; j++) {
                         int pos = i*joints_num + j;
                         if (weight[pos]!=0) fprintf(stdout, "[%d,%2d = %d] ", i, j, weight[pos]);
                         //if (weight[pos]!=0) fprintf(stdout, "[%d,%2d] ", i, j);
@@ -154,7 +157,8 @@ int main(int argc, char** argv)
             fprintf(stdout, "====== NORMAL (%d, %d) =========\n", n, nml.vldsz/2);
             if (n==0) {  // n>0 は省略
                 uWord* dat = (uWord*)nml.buf;
-                for (int i=0; i<nml.vldsz/2; i++) fprintf(stdout, "%d ", dat[i]);
+                int i;
+                for (i=0; i<nml.vldsz/2; i++) fprintf(stdout, "%d ", dat[i]);
                 fprintf(stdout, "\n");
             }
             free_Buffer(&nml);
@@ -176,7 +180,8 @@ int main(int argc, char** argv)
             fprintf(stdout, "====== UVMAP (%d, %d) =========\n", n, uvm.vldsz/2);
             if (n==0) {  // n>0 は省略
                 uWord* dat = (uWord*)uvm.buf;
-                for (int i=0; i<uvm.vldsz/2; i++) fprintf(stdout, "%d ", dat[i]);
+                int i;
+                for (i=0; i<uvm.vldsz/2; i++) fprintf(stdout, "%d ", dat[i]);
                 fprintf(stdout, "\n");
             }
             free_Buffer(&uvm);
