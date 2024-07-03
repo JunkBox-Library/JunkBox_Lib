@@ -27,7 +27,7 @@ Tiny JSON tjson.h v1.0 @n
 #define  JSON_ANCHOR_NODE    JBXL_STATE_ANCHOR      ///< アンカーノード
 #define  JSON_TEMP_NODE             -1              ///< 一時的なノード．削除対象．
 #define  JSON_BRACKET_NODE           1              ///< '{' を格納したノード．key は持たない．
-#define  JSON_DATA_NODE              2              ///< 通常のノード
+#define  JSON_DATA_NODE              2              ///< key:val の形の通常のノード
 #define  JSON_ARRAY_NODE             3              ///< 配列ノード．処理された場合，JSON_ARRAY_VALUE_NODE を子ノードとして持つ．
 #define  JSON_ARRAY_VALUE_NODE       4              ///< 配列の要素データのノード．
 
@@ -57,10 +57,11 @@ Tiny JSON tjson.h v1.0 @n
 #define del_json_anchor(t)      del_tTree_anchor_node((t))  ///< JSONデータの ANCHORノードを削除   del_tTree_anchor_node()
 #define del_json_anchor_node(t) del_tTree_anchor_node((t))  ///< JSONデータの ANCHORノードを削除   del_tTree_anchor_node()
 
-#define del_json(j)             del_tTree((j))          ///< JSONデータの削除           del_tTree()
-#define del_json_node(j)        del_tTree_node((j))     ///< JSONデータのノード削除     del_tTree_node()
-#define free_json(j)            free_tTree_node((j))    ///< JSONデータのノードデータを解放     free_tTree_node() 
-#define free_json_node(j)       free_tTree_node((j))    ///< JSONデータのノードデータを解放     free_tTree_node() 
+#define del_json(j)             del_tTree((j))              ///< JSONデータの削除           del_tTree()
+#define del_all_json(j)         del_all_tTree((j))          ///< 全JSONデータの削除         del_all_tTree()
+#define del_json_node(j)        del_tTree_node((j))         ///< JSONデータのノード削除     del_tTree_node()
+#define free_json(j)            free_tTree_node((j))        ///< JSONデータのノードデータを解放     free_tTree_node() 
+#define free_json_node(j)       free_tTree_node((j))        ///< JSONデータのノードデータを解放     free_tTree_node() 
 
 
 /** @typedef tJson
@@ -111,12 +112,12 @@ typedef  tTree  tJson;
     JSON_ANCHOR_NODE            アンカーノード
     JSON_TEMP_NODE              一時的なノード．削除対象．
     JSON_BRACKET_NODE           '{' を格納したノード．key は持たない． 
-    JSON_DATA_NODE              通常のノード
+    JSON_DATA_NODE              key:val の形の通常のノード
     JSON_ARRAY_NODE             配列ノード．処理された場合，JSON_ARRAY_VALUE_NODE を子ノードとして持つ．
     JSON_ARRAY_VALUE_NODE       配列の要素データのノード．
 @endcode
 
-4. 属性値の形式（ldat.lv）
+4. 属性値(val)の形式（ldat.lv）
 @code
     JSON_VALUE_UNRESOLV
     JSON_VALUE_NULL  
@@ -154,8 +155,8 @@ typedef  tTree  tJson;
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Parser
 
-tJson*   json_parse(char* pp, int num);                         ///< 文字列のJSONデータを解釈して，tJsonのツリーを生成する．
-tJson*   json_parse_prop(tJson* json, char* pp, int num);       ///< JSON Main Parser
+tJson*   json_parse(char* pp, int num);                         ///< 文字列のJSONデータを解釈して，tJsonのツリーを生成する．ANCHOR付き．
+tJson*   json_parse_prop(tJson* json, char* pp, int num);       ///< JSON Main Parser．ANCHOR付き．
 tJson*   json_parse_seq (tJson* json, char* pp, int num);       ///< 断片化した JSONデータを読み込んで処理する．
 tJson*   json_array_parse(tJson* json, char* pp, int num);      ///< JSONデータの 配列ノードの値（配列データ）を処理する．
 
@@ -186,9 +187,11 @@ void     json_set_str_val(tJson* json, char* str);                      ///< jso
 void     json_copy_val (tJson* f_json, tJson* t_json);                  ///< f_json から t_json へ属性値をコピーする．
 void     json_copy_data(tJson* f_json, tJson* t_json);                  ///< f_json から t_json へ属性名と属性値をコピーする．
 
-void     insert_json_nodes(tJson* parent, tJson* child);
+void     json_insert_node(tJson* parent, tJson* child);
+tJson*   json_append_node_key(tJson* json, char* key);
 
-tJson*   join_json(tJson* parenr, tJson** child);                       ///< parent の子として child そのものを繋げる．
+//
+tJson*   join_json(tJson* parent, tJson** child);                       ///< parent の子として child そのものを繋げる．
 #define  dup_merge_json(p, c)               dup_merge_tTree((p), (c))   ///< p の子として c の複製を繋げる．
 
 
@@ -209,7 +212,7 @@ tJson*   search_sister_json(tJson* pp, int nn);                             ///<
 tJson*   search_key_json(tJson* pp, char* key, int needval, int nn);        ///< 名前（属性名）が key である nn番目のノードへのポインタを返す
 tJson*   search_key_child_json(tJson* pp, char* key, int needval);          ///< 子の姉妹ノードで名前（属性名）が key である nn番目のノードへのポインタを返す．      
 tJson*   search_key_sister_json(tJson* pp, char* key, int needval);         ///< 姉妹ノードで名前（属性名）が key である nn番目のノードへのポインタを返す．      
-tJson*   search_key_json_obj(tJson* pp, char* key, int nn);                 ///< 名前（属性名）が key である nn番目のオブジェクトノードへのポインタを返す． ex.) "hoge": {
+tJson*   search_key_json_obj(tJson* pp, char* key, int nn);                 ///< 名前（属性名）が key である nn番目のオブジェクトノード（属性値が SON_VALUE_OBJ）へのポインタを返す． ex.) "hoge": {
 tJson*   search_double_key_json(tJson* pp, char* key1, char* key2, int needval);  ///< 属性名が key1 -> key2 の親子関係を持つ，key2ノードのポインタを返す．
 
 tJson*   _search_key_json(tJson* pp, char* key, int need, int* nn);         ///< search_key_json() の補助関数
@@ -227,7 +230,7 @@ char*    get_string_from_json(tJson* json);                                 ///<
 //
 tList*   search_all_node_strval_json(tJson* json, char* name, char* val);   ///< 指定した条件に合う全てのノードへのポインタを，リストに格納して返す．
 tList*   _search_all_node_strval_json(tList* list, tJson* pp, char* name, char* val);   ///< search_all_node_strval_json() の補助関数   
-// ex.) search_all_node_strval_json(json, "ARRAY_VALUE", "jupyterhub-j20047si");
+// ex.) search_all_node_strval_json(json, "ARRAY_VALUE", "jupyterhub-j20000xx");
 
 
 #endif  // __JBXL_TINY_JSON_H_

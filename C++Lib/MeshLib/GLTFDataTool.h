@@ -1,13 +1,14 @@
-﻿#ifndef  __JBXL_CPP_FBX_TOOL_H_
-#define  __JBXL_CPP_FBX_TOOL_H_
+﻿#ifndef  __JBXL_CPP_GLTF_TOOL_H_
+#define  __JBXL_CPP_GLTF_TOOL_H_
 
 /**
-  Wavefront FBX ファイル用ツール
+  Wavefront GLTF ファイル用ツール
 
 */
 
 #include  "tools++.h"
 #include  "txml.h"
+#include  "tjson.h"
 
 #include  "TriBrep.h"
 #include  "Rotation.h"
@@ -19,23 +20,28 @@
 namespace jbxl {
 
 
+#define  GLTF_STR_COPYRIGHT    "from OpenSimulator"
+#define  GLTF_STR_GENERATOR    "JBXL glTF Tool Library (C) 2024 v1.0 by Fumi.Iseki"
+#define  GLTF_STR_VERSION      "2.0"
+
+
 //////////////////////////////////////////////////////////////////////////////////////////
 //
 
 /**
 先頭のデータはアンカー．
-アンカーでない場合は num_fbx == -1
+アンカーでない場合は num_gltf == -1
 */
-class  FBXData
+class  GLTFData
 {
 public:
-    FBXData(int n=0) { this->init(n);}  // n: FBXデータの総数．デフォルト（n=0）ではアンカーを作る
-    virtual ~FBXData(void);
+    GLTFData(int n=0) { this->init(n);}  // n: GLTFデータの総数．デフォルト（n=0）ではアンカーを作る
+    virtual ~GLTFData(void);
 
 public:
-    Buffer  fbx_name;
+    Buffer  gltf_name;
     bool    phantom_out;
-    int     num_fbx;                    // nextに続くFBXデータの総数．
+    int     num_gltf;                    // nextに続くGLTFデータの総数．
     bool    has_joints;
     bool    no_offset;
 
@@ -46,7 +52,9 @@ public:
     AffineTrans<double>* affineTrans;
     AffineTrans<double>  skeleton;
 
-    FBXData* next;
+    GLTFData* next;
+
+    tJson*  json_data;
 
 public:
     void    init(int n); 
@@ -61,15 +69,17 @@ public:
     void    delAffineTrans (void) { freeAffineTrans(this->affineTrans);}
     Vector<double> execAffineTrans(void);
 
+    void    initGLTF(void);
+
     void    addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL);
     void    closeSolid(void) {}
 
     void    outputFile(const char* fn, const char* out_path, const char* tex_dirn);
-    void    output_fbx(FILE* fp);
+    void    output_gltf(FILE* fp);
 };
 
 
-inline void  freeFBXData(FBXData* fbx) { if(fbx!=NULL) { fbx->free(); delete fbx; fbx=NULL;} }
+inline void  freeGLTFData(GLTFData* gltf) { if(gltf!=NULL) { gltf->free(); delete gltf; gltf=NULL;} }
 
 
 }

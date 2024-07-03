@@ -29,6 +29,7 @@ void  OBJData::init(int n)
     this->forUnity    = true;
     this->forUE       = false;
 
+    this->engine      = JBXL_3D_ENGINE_UE;
     this->next        = NULL;
     this->geo_node    = NULL;
     this->mtl_node    = NULL;

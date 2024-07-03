@@ -921,19 +921,19 @@ void  json_copy_data(tJson* f_json, tJson* t_json)
 
 
 /**
-void  insert_json_nodes(tJson* parent, tJson* child)
+void  json_insert_node(tJson* parent, tJson* child)
 
 json ツリー parent に json ツリー child のノードを挿入する．
 
 parent が { の場合
    child の { は破棄されて，それ以下のノードが parent の子（姉妹）として結合される．
-   child は破壊される．
+   child の内容は破壊される．
 parent が [ の場合
    child はそのまま配列の要素として追加される．
 parent がそれ外の場合
    何の処理も行われない．
 */
-void  insert_json_nodes(tJson* parent, tJson* child)
+void  json_insert_node(tJson* parent, tJson* child)
 {
     if (parent==NULL) return;
     if (child ==NULL) return;
@@ -959,24 +959,99 @@ void  insert_json_nodes(tJson* parent, tJson* child)
 
 
 /**
+tJson*  json_append_node_key(tJson* json, char* key)
+
+json ツリー json に 属性名 key を持つノードを追加する．
+*/
+tJson*  json_append_node_key(tJson* json, char* key)
+{
+    if (key ==NULL) return NULL;
+    if (json==NULL) return NULL;
+    if (json->ldat.id==JSON_ANCHOR_NODE) json = json->next;
+    if (json==NULL) return NULL;
+    
+    Buffer buf = make_Buffer_str("{");
+    cat_s2Buffer(key, &buf);
+    cat_s2Buffer(":{}}", &buf);
+
+    tJson* jcld = json_parse((char*)buf.buf, 99);
+    if (jcld!=NULL && jcld->ldat.id==JSON_ANCHOR_NODE) jcld = jcld->next;
+
+    json_insert_node(json, jcld);
+/*
+    if (jcld!=NULL) {
+        jcld->ldat.id = JSON_TEMP_NODE;
+        join_json(json, &jcld);
+    }
+*/
+    free_Buffer(&buf);
+
+    return jcld;
+}
+
+
+/**
+tJson*  json_append_node_key(tJson* json, char* key)
+
+json ツリー json に 属性名 key を持つノードを追加する．
+tJson*  json_append_node_key(tJson* json, char* key)
+{
+    if (key ==NULL) return NULL;
+    if (json==NULL) return NULL;
+    if (json->ldat.id==JSON_ANCHOR_NODE) json = json->next;
+    if (json==NULL) return NULL;
+    
+    Buffer buf = make_Buffer_str("{");
+    cat_s2Buffer(key, &buf);
+    cat_s2Buffer("}", &buf);
+
+    tJson* jtmp = json_parse_prop(NULL, (char*)buf.buf, 99);
+    join_json(json, &jtmp);
+    
+    free_Buffer(&buf);
+
+    return jtmp;
+
+*/
+   /* 
+    if (parent->ldat.id==JSON_BRACKET_NODE) {
+        tJson* cp = child->next;
+        while (cp!=NULL) {
+            add_tTree(parent, cp);
+            cp = cp->ysis;
+        }
+        free_tList_data(&child->ldat);
+        free(child);
+    }
+
+    if (parent->ldat.id==JSON_ARRAY_NODE) {
+        add_tTree(parent, child);
+    }
+
+    return;
+}
+*/
+
+
+/**
 tJson*   join_json(tJson* parent, tJson** child)
 
 parent の子として child そのものを結合する．
-child が ANCHORノードの場合，ANCHORノードは削除され，*child は書き換えられる．
+child の　TOPが ANCHORノードまたは JSON_TEMP_NODE の場合，そのノードは削除され，*child は書き換えられる．
 
 @param       parent  結合対象の JSONノード
 @param[in]   child   結合するJSONノード
-@param[out]  child   child のTOPがANCHORの場合，ANCHORを削除したjsonツリーのTOP.
+@param[out]  child   child のTOPがANCHOR または JSON_TEMP_NODE の場合，そのノードを削除したjsonツリーのTOP.
 @return      結合結果の JSON Treeの TOP
 */
 tJson*   join_json(tJson* parent, tJson** child)
 {
     if (*child==NULL) return parent;
-    if (parent==NULL) return *child;            // この場合 ANCHOR はそのまま
+    if (parent==NULL) return *child;            // この場合 ANCHOR, TEMP_NODE はそのまま
 
     if ((*child)->ldat.id==JSON_ANCHOR_NODE || (*child)->ldat.id==JSON_TEMP_NODE) {  // 子として繋げる場合，ANCHOR, TEMP_NODE は削除
         tJson* jtmp = (*child)->next;
-        del_json_node(child);                       // ANCHOR, TEMP_NODE を削除してつめる．
+        del_json_node(child);                   // ANCHOR, TEMP_NODE を削除してつめる．
         *child = jtmp;
     }
 
