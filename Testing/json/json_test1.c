@@ -34,7 +34,7 @@ int main()
     print_json(stderr, xxxx, JSON_INDENT_FORMAT);
 	print_message("-------------------\n");
 
-    json_insert_node(json, xxxx); 
+    json_insert_nodes(json, xxxx); 
     print_json(stderr, json, JSON_INDENT_FORMAT);
 	print_message("-------------------\n");
 

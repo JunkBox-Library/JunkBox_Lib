@@ -5,7 +5,7 @@ rewrite configure.ac, doxygen.conf
 working now ..... v1.9.3alpha
 
 v1.9.3alpha
-	insert_json_nodes() -> json_insert_node()
+	insert_json_nodes() -> json_insert_nodes()
 	add GLTFDataTool
 	file_size() 戻り値(<0)変更．
 	change Lib/buffer.c

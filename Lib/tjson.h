@@ -187,8 +187,10 @@ void     json_set_str_val(tJson* json, char* str);                      ///< jso
 void     json_copy_val (tJson* f_json, tJson* t_json);                  ///< f_json から t_json へ属性値をコピーする．
 void     json_copy_data(tJson* f_json, tJson* t_json);                  ///< f_json から t_json へ属性名と属性値をコピーする．
 
-void     json_insert_node(tJson* parent, tJson* child);
-tJson*   json_append_node_key(tJson* json, char* key);
+void     json_insert_nodes(tJson* parent, tJson* child);
+
+tJson*   json_append_nodes_bystr(tJson* json, char* str);
+tJson*   json_append_obj_bykey(tJson* json, char* key);
 
 //
 tJson*   join_json(tJson* parent, tJson** child);                       ///< parent の子として child そのものを繋げる．
