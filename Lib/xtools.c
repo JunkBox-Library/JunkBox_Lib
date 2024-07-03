@@ -2007,7 +2007,8 @@ Buffer  relative_path_Buffer(Buffer src, Buffer dst)
         rlt = make_Buffer_str(STR_CRNT_DIR);
     }
     else {
-        for (int j=0; j<n; j++) {
+        int j;
+        for (j=0; j<n; j++) {
             cat_s2Buffer(STR_UPST_DIR, &rlt);
         }
         cat_s2Buffer(&path_b.buf[i], &rlt);

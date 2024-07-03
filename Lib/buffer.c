@@ -1301,7 +1301,8 @@ Buffer型変数 bufのバッファ部がテキストかどうか検査する．
 */
 int  isText_Buffer(Buffer buf)
 {
-    for (int i=0; i<buf.vldsz; i++) {
+    int i;
+    for (i=0; i<buf.vldsz; i++) {
         if (buf.buf[i]<0x20 && buf.buf[i]!=0x0a && buf.buf[i]!=0x0d 
                             && buf.buf[i]!=0x00 && buf.buf[i]!=0x09) return FALSE;
         if (buf.buf[i]==0x7f) return FALSE; // DEL
@@ -1632,7 +1633,8 @@ void  rewrite_Buffer_bychar(Buffer* buf, const char frm, const char toc)
 {
     if (buf==NULL) return;
 
-    for (int i=0; i<buf->vldsz; i++) {
+    int i;
+    for (i=0; i<buf->vldsz; i++) {
         if (buf->buf[i]==frm) buf->buf[i] = toc;
     }
     return;
