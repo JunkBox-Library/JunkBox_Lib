@@ -1,23 +1,28 @@
 #sorry. Japanese Text only.
 #
 
-rewrite configure.ac, doxygen.conf
-working now ..... v1.9.3alpha
+(*) indicates the main theme of that version.
 
-v1.9.3alpha
-	insert_json_nodes() -> json_insert_nodes()
-	add GLTFDataTool
+rewrite configure.ac, doxygen.conf
+working now ..... v1.10.0alpha
+
+v1.10.0alpha
+	for glTF and FBX data (*)
+	tjson
+		insert_json_nodes() -> json_insert_child()
 	file_size() 戻り値(<0)変更．
 	change Lib/buffer.c
 		read_Buffer_fp -> reade_Buffer_format_fp
 		read_Buffer2_fp -> reade_Buffer2_format_fp
 		save_Buffer_fp -> save_Buffer_format_fp
 		save2_Buffer_fp -> save_Buffer2_format_fp
-	fix xLib/llsd_tool.c (LLSD_MAKER_UUID)
+	fix xLib/llsd_tool.c (LLSD_MAKER_UUID)	ボケボケ ミス
 	Jpeg2000 allow partial
 	read_index_tList_fp() 値の中に区切り文字が存在しても大丈夫にした．ex.) パスの中の空白など．
 	fix ColladaTool.cpp
 	add_resource_list() に第5引数 mode を追加．mode==0 の場合，互換あり．
+
+
 
 v1.9.2 '24/05/20
 	C++Lib/MeshLib/ColladaTool.cpp
@@ -27,7 +32,7 @@ v1.9.2 '24/05/20
 			operator +=, -= fix
 		AffineTrans.h
 			isInvese 廃止
-	 		オペレータ * のヘッポコミス!
+	 		オペレータ * のヘッポコ ミス!
 	Lib/Buffer.c
 		add add_indent_Buffer() 
 	Lib/txml.c
@@ -57,6 +62,7 @@ v1.9.1 '24/02/27
 
 
 v1.9.0 '23/12/29
+	for Collada Joints and Wavefront OBJ file (*)
 	fix tjson.c ([ で始まる場合). 色々書き直し．
 	引数変更
 	    unsigned char*  decode_base64_filename(unsigned char* buf, int* sz)
@@ -64,6 +70,7 @@ v1.9.0 '23/12/29
 	    Buffer  encode_base64_filename_Buffer(Buffer buf) 
 	    Buffer  decode_base64_filename_Buffer(Buffer buf)
 	OpenSSL 3.0 で deprecated となっているDH関連の関数を xLib/dh_tool.c へ
+
 
 
 v1.8.2 '23/08/30
@@ -84,6 +91,7 @@ v1.8.1  '22/04/20
 
 
 v1.8.0  '21 8/14
+	for JSON (*)
 	add Lib/tjson.c, xLib/asn1_tool.c
 	int2DER() -> int2BIN()
 	_ipv4() -> _sockaddr_in()
@@ -99,6 +107,7 @@ v1.8.0  '21 8/14
 
 
 v1.7.0 '21 6/6
+	for Debug (*)
 	isnet を isnet_server と isnet_client に分解
 	ssl_tool, ldap_tool, isnet_client の大域変数を削除
 	回転系の関数名に Ext を挿入．　
@@ -106,6 +115,7 @@ v1.7.0 '21 6/6
 	
 
 v1.6.0 '20 11/23
+	for IPv6 (*)
 	PRINT_MESG を修正して再導入
 	default の 型を float -> double
 	JBXL State System
