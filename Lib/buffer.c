@@ -699,6 +699,48 @@ int  ins_i2Buffer(int src, Buffer* dst)
 
 
 /**
+int  copy_r2Buffer(float src, Buffer* dst)
+
+実数 srcを文字列に変換して，dstへ copyする．
+*/
+int  copy_r2Buffer(float src, Buffer* dst)
+{
+    char num[LEN_REAL];
+
+    snprintf(num, LEN_REAL-1, "%f", src);
+    return copy_b2Buffer((void*)num, dst, (int)strlen(num));
+}
+
+
+/**
+int  cat_r2Buffer(float src, Buffer* dst)
+
+実数 srcを文字列に変換して，dstへ catする．
+*/
+int  cat_r2Buffer(float src, Buffer* dst)
+{
+    char num[LEN_REAL];
+
+    snprintf(num, LEN_REAL-1, "%f", src);
+    return cat_b2Buffer((void*)num, dst, (int)strlen(num));
+}
+
+
+/**
+int  ins_r2Buffer(float src, Buffer* dst)
+
+実数 srcを文字列に変換して，dstの前に 挿入する．
+*/
+int  ins_r2Buffer(float src, Buffer* dst)
+{
+    char num[LEN_REAL];
+
+    snprintf(num, LEN_REAL-1, "%f", src);
+    return ins_b2Buffer((void*)num, dst, (int)strlen(num));
+}
+
+
+/**
 int  cmp_Buffer(Buffer src, Buffer dst, int n)
 
 バッファ部の比較．
@@ -827,6 +869,35 @@ Buffer  decode_base64_Buffer(Buffer str)
 
     free(bas);
     return dcd;
+}
+
+
+/**
+Buffer  encode_base64_Buffer_bin(unsigned char* bin, int sz, int nopad)
+
+sz バイトの バイナリデータ binを Base64にエンコード する．
+nopad = TRUE の場合，データ末の パッド(=)は削除する．
+*/
+Buffer  encode_base64_Buffer_bin(unsigned char* bin, int sz, int nopad)
+{
+    unsigned char* str;
+    Buffer enc = init_Buffer();
+
+    if (bin==NULL) return enc;
+    if (sz<=0) sz = strlen((char*)bin);
+
+    str = encode_base64(bin, sz);
+    if (str==NULL) return enc;
+
+    if (nopad) {
+        int len = strlen((char*)str);
+        if      (str[len-2]=='=') str[len-2] = '\0';
+        else if (str[len-1]=='=') str[len-1] = '\0';
+    }
+    enc = make_Buffer_bystr(str);
+    free(str);
+
+    return enc;
 }
 
 

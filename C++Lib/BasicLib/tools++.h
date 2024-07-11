@@ -183,6 +183,8 @@ public:
     unsigned char* decode(unsigned char* str, int* sz) { return decode_base64(str, sz);}
     Buffer         encode(Buffer buf) { return encode_base64_Buffer(buf);}
     Buffer         decode(Buffer buf) { return decode_base64_Buffer(buf);}
+
+    Buffer         encode_Buffer_bin(unsigned char* str, int  sz, int nopad=FALSE) { return encode_base64_Buffer_bin(str, sz, nopad);}
 };
 
 

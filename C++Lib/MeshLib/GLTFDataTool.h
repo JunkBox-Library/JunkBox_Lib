@@ -20,9 +20,14 @@
 namespace jbxl {
 
 
-#define  GLTF_STR_COPYRIGHT    "from OpenSimulator"
-#define  GLTF_STR_GENERATOR    "JBXL glTF Tool Library (C) 2024 v1.0 by Fumi.Iseki"
-#define  GLTF_STR_VERSION      "2.0"
+#define  JBXL_GLTF_COPYRIGHT    "from OpenSimulator"
+#define  JBXL_GLTF_GENERATOR    "JBXL glTF Tool Library (C) 2024 v1.0 by Fumi.Iseki"
+#define  JBXL_GLTF_VERSION      "2.0"
+
+
+
+#define  JBXL_GLTF_ELEMENT_ARRAY_BUFFER "{\"buffer\":%d, \"byteLength\":%d, \"byteOffset\":%d, \"target\": 34963}"
+#define  JBXL_GLTF_ARRAY_BUFFER         "{\"buffer\":%d, \"byteLength\":%d, \"byteOffset\":%d, \"byteStride\":%d, \"target\": 34962}"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +59,15 @@ public:
 
     GLTFData* next;
 
+    Buffer  index_buffer;
+    Buffer  vertex_buffer;
+    Buffer  normal_buffer;
+    Buffer  texcrd_buffer;
+
     tJson*  json_data;
+    tJson*  buffers;
+    tJson*  buffviews;
+    tJson*  accessors;
 
 public:
     void    init(int n); 

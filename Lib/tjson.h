@@ -155,13 +155,13 @@ typedef  tTree  tJson;
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Parser
 
-tJson*   json_parse(char* pp, int num);                         ///< 文字列のJSONデータを解釈して，tJsonのツリーを生成する．ANCHOR付き．
-tJson*   json_parse_prop(tJson* json, char* pp, int num);       ///< JSON Main Parser．ANCHOR付き．
-tJson*   json_parse_seq (tJson* json, char* pp, int num);       ///< 断片化した JSONデータを読み込んで処理する．
-tJson*   json_array_parse(tJson* json, char* pp, int num);      ///< JSONデータの 配列ノードの値（配列データ）を処理する．
+tJson*   json_parse(const char* str, int num);                      ///< 文字列のJSONデータを解釈して，tJsonのツリーを生成する．ANCHOR付き．
+tJson*   json_parse_prop (tJson* json, const char* str, int num);   ///< JSON Main Parser．ANCHOR付き．
+tJson*   json_parse_seq  (tJson* json, const char* str, int num);   ///< 断片化した JSONデータを読み込んで処理する．
+tJson*   json_array_parse(tJson* json, const char* str, int num);   ///< JSONデータの 配列ノードの値（配列データ）を処理する．
 
-tJson*   _json_array_parse(tJson* json, int num);                               ///< json_parse_prop() の補助関数．配列処理用．
-tJson*   _json_parse_term (tJson* json, char* st, char* ed, const char* com);   ///< json_parse_prop() の補助関数．断片的な入力データ用．
+tJson*   _json_array_parse(tJson* json, int num);                                           ///< json_parse_prop() の補助関数．配列処理用．
+tJson*   _json_parse_term (tJson* json, const char* st, const char* ed, const char* com);   ///< json_parse_prop() の補助関数．断片的な入力データ用．
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -183,14 +183,18 @@ void     _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* s
 
 tJson*   json_parse_file(const char* fn, int num);                      ///< JSONデータをファイルから読み込んで，パースする．
 
-void     json_set_str_val(tJson* json, char* str);                      ///< json ノードに文字列の属性値を設定する．
-void     json_copy_val (tJson* f_json, tJson* t_json);                  ///< f_json から t_json へ属性値をコピーする．
-void     json_copy_data(tJson* f_json, tJson* t_json);                  ///< f_json から t_json へ属性名と属性値をコピーする．
+void     json_set_str_val(tJson* json, const char* val);                ///< json ノードに文字列の属性値(value)を設定する．
+void     json_set_int_val(tJson* json, int val);                        ///< json ノードに整数の属性値(value)を設定する．
+void     json_set_real_value(tJson* json, float val);                   ///< json ノードに実数の属性値(value)を設定する．
+
+void     json_copy_val (tJson* f_json, tJson* t_json);                  ///< f_json から t_json へ属性値(value)をコピーする．
+void     json_copy_data(tJson* f_json, tJson* t_json);                  ///< f_json から t_json へ属性名(key)と属性値(value)をコピーする．
 
 void     json_insert_nodes(tJson* parent, tJson* child);
 
-tJson*   json_append_nodes_bystr(tJson* json, char* str);
-tJson*   json_append_obj_bykey(tJson* json, char* key);
+tJson*   json_append_nodes_bystr(tJson* json, const char* str);         ///< 文字列をパースして追加
+tJson*   json_append_obj_bykey(tJson* json, const char* key);           ///< 属性値(value)なしのリストデータ{} を追加
+tJson*   json_append_array_bykey(tJson* json, const char* key);         ///< 値(value)なしの配列 [] を追加
 
 //
 tJson*   join_json(tJson* parent, tJson** child);                       ///< parent の子として child そのものを繋げる．
@@ -200,38 +204,38 @@ tJson*   join_json(tJson* parent, tJson** child);                       ///< par
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Search
 
-#define  find_top_json(p, n)                search_top_bracket_json((p), (n))               ///< search_top_bracket_json()
-#define  find_sister_json(p, n)             search_sister_json((p), (n))                    ///< search_sister_json()
-#define  find_key_json(p, k)                search_key_json((p), (k), FALSE, 1)             ///< search_key_json()
-#define  find_key_child_json(p, k)          search_key_child_json( (p), (k), FALSE)         ///< search_key_child_json()
-#define  find_key_sister_json(p, k)         search_key_sister_json((p), (k), FALSE)         ///< search_key_sister_json()
-#define  find_key_json_obj(p, k)            search_key_json_obj((p), (k))                   ///< search_key_json_obj()
+#define  find_top_json(p, n)                search_top_bracket_json((p), (n))           ///< search_top_bracket_json()
+#define  find_sister_json(p, n)             search_sister_json((p), (n))                ///< search_sister_json()
+#define  find_key_json(p, k)                search_key_json((p), (k), FALSE, 1)         ///< search_key_json()
+#define  find_key_child_json(p, k)          search_key_child_json( (p), (k), FALSE)     ///< search_key_child_json()
+#define  find_key_sister_json(p, k)         search_key_sister_json((p), (k), FALSE)     ///< search_key_sister_json()
+#define  find_key_json_obj(p, k)            search_key_json_obj((p), (k))               ///< search_key_json_obj()
 #define  find_double_key_json(p, k1, k2)    search_double_key_json((p), (k1), (k2), FALSE)  ///< search_doublekey_json()
 
-tJson*   search_top_bracket_json(tJson* pp, int nn);                        ///< ツリーが複数のルート(TOP)を持つ場合（JBXL_JSON_MULTI_ROOT），指定されたTOPへのポインタを返す．
-tJson*   search_sister_json(tJson* pp, int nn);                             ///< nn個先の sister ノードを返す．正数の場合は younger sister. 負数の場合は elder sister．
+tJson*   search_top_bracket_json(tJson* pp, int nn);                                    ///< ツリーが複数のルート(TOP)を持つ場合（JBXL_JSON_MULTI_ROOT），指定されたTOPへのポインタを返す．
+tJson*   search_sister_json(tJson* pp, int nn);                                         ///< nn個先の sister ノードを返す．正数の場合は younger sister. 負数の場合は elder sister．
 
-tJson*   search_key_json(tJson* pp, char* key, int needval, int nn);        ///< 名前（属性名）が key である nn番目のノードへのポインタを返す
-tJson*   search_key_child_json(tJson* pp, char* key, int needval);          ///< 子の姉妹ノードで名前（属性名）が key である nn番目のノードへのポインタを返す．      
-tJson*   search_key_sister_json(tJson* pp, char* key, int needval);         ///< 姉妹ノードで名前（属性名）が key である nn番目のノードへのポインタを返す．      
-tJson*   search_key_json_obj(tJson* pp, char* key, int nn);                 ///< 名前（属性名）が key である nn番目のオブジェクトノード（属性値が SON_VALUE_OBJ）へのポインタを返す． ex.) "hoge": {
-tJson*   search_double_key_json(tJson* pp, char* key1, char* key2, int needval);  ///< 属性名が key1 -> key2 の親子関係を持つ，key2ノードのポインタを返す．
+tJson*   search_key_json(tJson* pp, const char* key, int needval, int nn);              ///< 名前（属性名）が key である nn番目のノードへのポインタを返す
+tJson*   search_key_child_json(tJson* pp, const char* key, int needval);                ///< 子の姉妹ノードで名前（属性名）が key である nn番目のノードへのポインタを返す．      
+tJson*   search_key_sister_json(tJson* pp, const char* key, int needval);               ///< 姉妹ノードで名前（属性名）が key である nn番目のノードへのポインタを返す．      
+tJson*   search_key_json_obj(tJson* pp, const char* key, int nn);                       ///< 名前（属性名）が key である nn番目のオブジェクトノード（属性値が SON_VALUE_OBJ）へのポインタを返す． ex.) "hoge": {
+tJson*   search_double_key_json(tJson* pp, const char* key1, const char* key2, int needval);  ///< 属性名が key1 -> key2 の親子関係を持つ，key2ノードのポインタを返す．
 
-tJson*   _search_key_json(tJson* pp, char* key, int need, int* nn);         ///< search_key_json() の補助関数
-tJson*   _search_key_json_obj(tJson* pp, char* key, int* nn);               ///< search_key_json_obj() の補助関数
-int      _json_check_node_bykey(tJson* pp, char* key, int needval, int nn); ///< search 系関数の補助関数
+tJson*   _search_key_json(tJson* pp, const char* key, int need, int* nn);               ///< search_key_json() の補助関数
+tJson*   _search_key_json_obj(tJson* pp, const char* key, int* nn);                     ///< search_key_json_obj() の補助関数
+int      _json_check_node_bykey(tJson* pp, const char* key, int needval, int nn);       ///< search 系関数の補助関数
 
 Buffer   get_json_val(tJson* json);
-Buffer   get_key_json_val(tJson* pp, char* key, int nn);                    ///< 名前（属性名）が key である nn番目のノードの属性値を返す．
-Buffer   get_key_sister_json_val(tJson* pp, char* key);                     ///< 姉妹ノードで名前（属性名）が key である nn番目のノードの属性値を返す．
-Buffer   get_double_key_json_val(tJson* pp, char* key1, char* key2);        ///< key1 -> key2 の親子関係を持つ，key2ノードの属性値を返す．
+Buffer   get_key_json_val(tJson* pp, const char* key, int nn);                          ///< 名前（属性名）が key である nn番目のノードの属性値を返す．
+Buffer   get_key_sister_json_val(tJson* pp, const char* key);                           ///< 姉妹ノードで名前（属性名）が key である nn番目のノードの属性値を返す．
+Buffer   get_double_key_json_val(tJson* pp, const char* key1, const char* key2);        ///< key1 -> key2 の親子関係を持つ，key2ノードの属性値を返す．
 
 Buffer   get_Buffer_from_json(tJson* json);
-char*    get_string_from_json(tJson* json);                                 ///< 要 free()
+char*    get_string_from_json(tJson* json);                                             ///< 要 free()
 
 //
-tList*   search_all_node_strval_json(tJson* json, char* name, char* val);   ///< 指定した条件に合う全てのノードへのポインタを，リストに格納して返す．
-tList*   _search_all_node_strval_json(tList* list, tJson* pp, char* name, char* val);   ///< search_all_node_strval_json() の補助関数   
+tList*   search_all_node_strval_json(tJson* json, const char* name, const char* val);   ///< 指定した条件に合う全てのノードへのポインタを，リストに格納して返す．
+tList*   _search_all_node_strval_json(tList* list, tJson* pp, const char* name, const char* val);   ///< search_all_node_strval_json() の補助関数   
 // ex.) search_all_node_strval_json(json, "ARRAY_VALUE", "jupyterhub-j20000xx");
 
 

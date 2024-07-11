@@ -28,7 +28,7 @@ namespace jbxl {
 data_index[i*3], data_index[i*3+1], data_index[i*3+2] が示す vertex_value, normal_value, texcrd_value で一つの面（3角ポリゴン）を形成する．
 例えば，vertex_value[data_index[i*3]], vertex_value[data_index[i*3+1]], vertex_value[data_index[i*3+2]] で3角ポリゴン座標を表す．
 
-MeshObjectNode -> MeshFacetNode
+旧バージョンから名前変更：MeshObjectNode -> MeshFacetNode
 */
 class  MeshFacetNode
 {

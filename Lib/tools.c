@@ -2792,7 +2792,7 @@ unsigned char*  encode_base64(unsigned char* buf, int sz)
     
     if (buf==NULL) return NULL;
     if (sz<0) len = (int)strlen((const char*)buf);
-    else        len = sz;
+    else      len = sz;
     if (len<=0) return NULL;
 
     sz  = ((len+2)/3)*4;

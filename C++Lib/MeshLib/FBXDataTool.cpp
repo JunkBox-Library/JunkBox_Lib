@@ -78,6 +78,8 @@ void  FBXData::delete_next(void)
 
 void  FBXData::outputFile(const char* fname, const char* out_path, const char* tex_dirn)
 {
+    PRINT_MESG("FBXData::outputFile: start\n");
+
     FILE* fp = NULL;
     char* packname = pack_head_tail_char(get_file_name(fname), ' ');
     Buffer file_name = make_Buffer_bystr(packname);
@@ -114,7 +116,36 @@ void  FBXData::outputFile(const char* fname, const char* out_path, const char* t
 
 void  FBXData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints)
 {
+    PRINT_MESG("FBXData::addObject: start\n");
+
     if (meshdata==NULL) return;
+
+    MeshFacetNode* facet = meshdata->facet;
+    while (facet!=NULL) {
+        if (facet->num_vertex != facet->num_texcrd) {
+            PRINT_MESG("FBXData::addObject: Error: missmatch vertex and uvmap number! (%d != %d)\n", facet->num_vertex, facet->num_texcrd);
+            facet = facet->next;
+            continue;
+        }
+
+        // UV Map and PLANAR Texture
+        if (facet->material_param.mapping == MATERIAL_MAPPING_PLANAR) {
+            Vector<double> scale(1.0, 1.0, 1.0);
+            if (meshdata->affineTrans!=NULL) scale = meshdata->affineTrans->scale;
+            facet->generatePlanarUVMap(scale, facet->texcrd_value);
+        }
+        facet->execAffineTransUVMap(facet->texcrd_value, facet->num_vertex);
+
+        //facet->num_index;
+        //facet->num_vertex;
+
+        int*            index = facet->data_index;
+        Vector<double>* vectr = facet->vertex_value;
+        Vector<double>* norml = facet->normal_value;
+        UVMap<double>*  uvmap = facet->texcrd_value;
+
+        facet = facet->next;
+    }
 
     if (collider) {
     }

@@ -62,15 +62,14 @@ int  BrepSolidList::addSolid(MeshObjectData* mesh)
     BREP_SHELL* shell = new BREP_SHELL(solid);
 
     MeshFacetNode* node = mesh->facet;
-
     while (node!=NULL) {
         //
         for (int num = 0; num < node->num_index - 2; num += 3) {
             BREP_FACET* facet = new BREP_FACET(shell);
             //
-            int idx0 = node->data_index[num];
-            int idx1 = node->data_index[num+1];
-            int idx2 = node->data_index[num+2];
+            int  idx0 = node->data_index[num];
+            int  idx1 = node->data_index[num+1];
+            int  idx2 = node->data_index[num+2];
 
             vertex[0] = node->vertex_value[idx0];
             vertex[1] = node->vertex_value[idx1];

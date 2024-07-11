@@ -30,7 +30,7 @@ public:
     int     num_node;                   ///< テクスチャー単位の面の数（Node の数）
     int     num_vcount;                 ///< 1ポリゴン あたりの頂点数．現在は 3のみサポート
 
-    MeshFacetNode* facet;               ///< FACETデータのリストへのポインタ
+    MeshFacetNode* facet;               ///< FACETデータ（１面のポリゴンデータ）のリストへのポインタ
     MeshFacetNode* facet_end;           ///< FACETデータのリストの最後のデータへのポインタ
 
     AffineTrans<double>* affineTrans;   ///< アフィン変換．ここで使用するのは，shift, rotate, scale(size) のみ

@@ -28,14 +28,14 @@
 //
 
 /**
-tJson*  json_parse(char* pp, int num)
+tJson*  json_parse(const char* str, int num)
 
 文字列のJSONデータを解釈して，tJsonのツリーを生成する．
 ツリーのトップは JSON_ANCHOR_NODE となる．
 シーケンス処理で書いたので，だらだら．
 あまり複雑なものはパースできない．たぶん．
 
-@param  pp   文字列の JSONデータへのポインタ．
+@param  str  文字列の JSONデータへのポインタ．
 @param  num  0 配列を処理しない．高速．@n
              1 配列を処するが，配列の中の JSONデータは処理しない．@n
              2 配列の中の { } を処理する．@n
@@ -48,9 +48,10 @@ tJson*  json_parse(char* pp, int num)
     tJson* json = json_parse("{\"A\": \"XYZ\"}");
 @endcode
 */
-tJson*  json_parse(char* pp, int num)
+tJson*  json_parse(const char* str, int num)
 {
     int state = JBXL_JSON_DEFAULT_STATE;
+    char* pp = (char*)str;
 
     while(*pp!='{' && *pp!='[' && *pp!='\0') pp++;
     if (*pp=='\0') return NULL;
@@ -88,22 +89,23 @@ tJson*  json_parse(char* pp, int num)
 
 
 /**
-tJson*  json_parse_prop(tJson* json, char* pp, int num)
+tJson*  json_parse_prop(tJson* json, const char* str, int num)
 
 JSON Main パーサ．@n
 先頭に姉妹ノードがない場合は json にNULLを指定しても可．@n
 処理に json->ctrl を使用（分割シーケンス処理用．プログラム中で書き換えられる）．@n
 
 @param  json JSONデータへのポインタ．NULLでない場合は，このデータの後に結果が付加される．@n
-@param  pp   パースする文字列．
+@param  str  パースする文字列．
 @param  num  0 配列を処理しない．高速．@n
              1 配列を処するが，配列の中の JSONデータは処理しない．@n
              2 配列の中の { } を処理する．@n
              N 配列処理 + 再帰処理 の段数．
 @return JSONデータを格納したポインタ．完全にパースできれば，トップを指している筈．
 */
-tJson*  json_parse_prop(tJson* json, char* pp, int num)
+tJson*  json_parse_prop(tJson* json, const char* str, int num)
 {
+    char*  pp   = (char*)str;
     char*  pt   = NULL;
     tJson* node = NULL;
     tJson* trgt = NULL;
@@ -310,7 +312,7 @@ tJson*  json_parse_prop(tJson* json, char* pp, int num)
                 //
                 if (*pp=='\"' || *pp=='\'') trgt->ldat.lv = JSON_VALUE_STR;
                 else {
-                    const char* val = (const char*)trgt->ldat.val.buf;
+                    char* val = (char*)trgt->ldat.val.buf;
                     if (!strcasecmp("true", val) || !strcasecmp("false", val)) trgt->ldat.lv = JSON_VALUE_BOOL;
                     else {
                         int num = is_number((unsigned char*)val);
@@ -381,7 +383,7 @@ tJson*  _json_array_parse(tJson* json, int num)
 
 
 /**
-tJson*  json_array_parse(tJson* json, char* pp, int num)
+tJson*  json_array_parse(tJson* json, const char* str, int num)
 
 JSONデータの 配列ノードの値（配列データ）を処理する．@n
 先頭に姉妹ノードがない場合は json にNULLを指定しても可．@n
@@ -391,12 +393,13 @@ JSONデータの 配列ノードの値（配列データ）を処理する．@n
 
 @param   json  JSON ノードデータ．NULLでない場合は，このデータの後に結果が付加される．@n
                NULLでも可．
-@param   pp    配列処理を行うデータ．
+@param   str   配列処理を行うデータ．
 @param   num   配列処理の残り段数．
 @return  処理された JSON ノードデータ．
 */
-tJson*  json_array_parse(tJson* json, char* pp, int num)
+tJson*  json_array_parse(tJson* json, const char* str, int num)
 {
+    char* pp = (char*)str;
     char* pt;
     if (*pp!='[') return json;
 
@@ -538,11 +541,11 @@ tJson*  json_array_parse(tJson* json, char* pp, int num)
 
 
 /**
-tJson*  _json_parse_term(tJson* json, char* st, char* ed, const char* com)
+tJson*  _json_parse_term(tJson* json, const char* st, const char* ed, const char* com)
 
 入力データが途中で終了した場合の処理
 */
-tJson*  _json_parse_term(tJson* json, char* st, char* ed, const char* com)
+tJson*  _json_parse_term(tJson* json, const char* st, const char* ed, const char* com)
 {
     if (json==NULL) return NULL;
 
@@ -551,7 +554,7 @@ tJson*  _json_parse_term(tJson* json, char* st, char* ed, const char* com)
         json->ldat.val = set_Buffer((void*)com, -1);
         if (st!=NULL && ed!=NULL) {
             int len = (int)(ed - st) + 1;
-            cat_b2Buffer(st, &(json->ldat.val), len);
+            cat_b2Buffer((char*)st, &(json->ldat.val), len);
             json->ldat.val.vldsz = (int)strlen((char*)json->ldat.val.buf);
         }
     }    
@@ -560,7 +563,7 @@ tJson*  _json_parse_term(tJson* json, char* st, char* ed, const char* com)
 
 
 /**
-tJson*  json_parse_seq(tJson* json, char* pp, int num)
+tJson*  json_parse_seq(tJson* json, const char* str, int num)
 
 断片化した JSONデータを読み込んで処理する．@n
 処理途中の戻り値は色々な場所を指すが，最期までパースできれば，戻り値はトップに戻る．
@@ -572,16 +575,16 @@ tJson*  json_parse_seq(tJson* json, char* pp, int num)
     json = json_parse_seq(next, pp3, 99);
 @endcode
 */
-tJson*  json_parse_seq(tJson* json, char* pp, int num)
+tJson*  json_parse_seq(tJson* json, const char* str, int num)
 {
     if (json==NULL) {
-        json = json_parse_prop(NULL, pp, num);
+        json = json_parse_prop(NULL, str, num);
         return json;
     }
 
     Buffer buf = dup_Buffer(json->ldat.val);
     free_Buffer(&(json->ldat.val));
-    cat_s2Buffer(pp, &buf);
+    cat_s2Buffer((char*)str, &buf);
 
     json->state = JBXL_JSON_DEFAULT_STATE;
     json = json_parse_prop(json, (char*)buf.buf, num);
@@ -871,16 +874,29 @@ tJson*  json_parse_file(const char* fn, int num)
 
 
 /**
-void  json_set_str_val(tJson* json, char* str)
+void  json_set_str_val(tJson* json, const char* val)
 
 json ノードに文字列の属性値を設定する．
 */
-void  json_set_str_val(tJson* json, char* str)
+void  json_set_str_val(tJson* json, const char* val)
 {
-    if (json==NULL || str==NULL) return;
+    if (json==NULL || val==NULL) return;
 
-    copy_s2Buffer(str, &(json->ldat.val));
+    Buffer buf = init_Buffer();
+    if (val[0]!='"') {
+        buf = make_Buffer_bystr("\"");
+        copy_s2Buffer(val, &buf);
+    }
+    else {
+        buf = make_Buffer_bystr(val);
+    }
+    if (buf.buf[buf.vldsz-1]!='"') {
+        copy_s2Buffer("\"", &buf);
+    }
+
+    copy_Buffer(&buf, &(json->ldat.val));
     json->ldat.lv = JSON_VALUE_STR;
+    free_Buffer(&buf);
 
     return;
 }
@@ -960,11 +976,11 @@ void  json_insert_nodes(tJson* parent, tJson* child)
 
 
 /**
-tJson*  json_append_nodes_bystr(tJson* json, char* str)
+tJson*  json_append_nodes_bystr(tJson* json, const char* str)
 
 json ツリー json に 属性名 key を持つオブジェクトノードを追加する．
 */
-tJson*  json_append_nodes_bystr(tJson* json, char* str)
+tJson*  json_append_nodes_bystr(tJson* json, const char* str)
 {
     if (str ==NULL) return NULL;
     if (json==NULL) return NULL;
@@ -984,11 +1000,11 @@ tJson*  json_append_nodes_bystr(tJson* json, char* str)
 }
 
 /**
-tJson*  json_append_obj_bykey(tJson* json, char* key)
+tJson*  json_append_obj_bykey(tJson* json, const char* key)
 
 json ツリー json に 属性名 key を持つオブジェクトノードを追加する．
 */
-tJson*  json_append_obj_bykey(tJson* json, char* key)
+tJson*  json_append_obj_bykey(tJson* json, const char* key)
 {
     if (key ==NULL) return NULL;
     if (json==NULL) return NULL;
@@ -998,6 +1014,37 @@ tJson*  json_append_obj_bykey(tJson* json, char* key)
     Buffer buf = make_Buffer_str("{");
     cat_s2Buffer(key, &buf);
     cat_s2Buffer(":{}}", &buf);
+
+    tJson* jcld = json_parse((char*)buf.buf, 1);
+    if (jcld!=NULL && jcld->ldat.id==JSON_ANCHOR_NODE) jcld = jcld->next;
+    if (jcld!=NULL) json_insert_nodes(json, jcld);
+/*
+    if (jcld!=NULL) {
+        jcld->ldat.id = JSON_TEMP_NODE;
+        join_json(json, &jcld);
+    }
+*/
+    free_Buffer(&buf);
+
+    return jcld;
+}
+
+
+/**
+tJson*  json_append_array_bykey(tJson* json, const char* key)
+
+json ツリー json に 属性名 key を持つオブジェクトノードを追加する．
+*/
+tJson*  json_append_array_bykey(tJson* json, const char* key)
+{
+    if (key ==NULL) return NULL;
+    if (json==NULL) return NULL;
+    if (json->ldat.id==JSON_ANCHOR_NODE) json = json->next;
+    if (json==NULL) return NULL;
+
+    Buffer buf = make_Buffer_str("{");
+    cat_s2Buffer(key, &buf);
+    cat_s2Buffer(":[]}", &buf);
 
     tJson* jcld = json_parse((char*)buf.buf, 1);
     if (jcld!=NULL && jcld->ldat.id==JSON_ANCHOR_NODE) jcld = jcld->next;
@@ -1082,7 +1129,7 @@ tJson*  search_top_bracket_json(tJson* pp, int nn)
 
 
 /**
-tJson*  search_key_json(tJson* pp, char* key, int needval, int nn)
+tJson*  search_key_json(tJson* pp, const char* key, int needval, int nn)
 
 pp が指すノード以下で，名前（属性名）が key である nn番目のノードへのポインタを返す．@n
 needval が TRUE の場合は，値（属性値）を持っている場合のみカウントする．
@@ -1094,7 +1141,7 @@ pp の姉妹ノードは探索しない．
 @param   nn   一致するノード内，何番目を返すか指定する．nn<=0 は nn==1 とみなす．
 @return  見つかったノードへのポインタ．見つからない場合は，NULL
 */
-tJson*  search_key_json(tJson* pp, char* key, int needval, int nn)
+tJson*  search_key_json(tJson* pp, const char* key, int needval, int nn)
 {
     if (pp==NULL || key==NULL) return NULL;
     if (nn<=0) nn = 1;
@@ -1147,7 +1194,7 @@ tJson*   search_sister_json(tJson* pp, int nn)
 
 
 /**
-tJson*  search_key_child_json(tJson* pp, char* key, int needval)
+tJson*  search_key_child_json(tJson* pp, const char* key, int needval)
 
 pp が指すノードの子（の姉妹）で，名前（属性名）が key であるノードへのポインタを返す．
 探索対象は探索を開始した子の姉妹ノードのみ．
@@ -1158,7 +1205,7 @@ needval が TRUE の場合は，値（属性値）を持っている場合のみ
 @param   needval  TRUE の場合，ノードが値（属性値）を持っていない場合は無視する．"", '' の場合も無視する．
 @return  見つかったノードへのポインタ．見つからない場合は NULL
 */
-tJson*  search_key_child_json(tJson* pp, char* key, int needval)
+tJson*  search_key_child_json(tJson* pp, const char* key, int needval)
 {
     if (pp!=NULL && pp->ldat.id==JSON_ANCHOR_NODE) pp = pp->next;
     if (pp==NULL || pp->next==NULL) return NULL;
@@ -1170,7 +1217,7 @@ tJson*  search_key_child_json(tJson* pp, char* key, int needval)
 
 
 /**
-tJson*  search_key_sister_json(tJson* pp, char* key, int needval)
+tJson*  search_key_sister_json(tJson* pp, const char* key, int needval)
 
 pp が指すノードの姉妹で，名前（属性名）が key であるノードへのポインタを返す．
 探索対象は探索を開始した姉妹ノードのみ．
@@ -1181,7 +1228,7 @@ needval が TRUE の場合は，値（属性値）を持っている場合のみ
 @param   needval  TRUE の場合，ノードが値（属性値）を持っていない場合は無視する．"", '' の場合も無視する．
 @return  見つかったノードへのポインタ．見つからない場合は，NULL
 */
-tJson*  search_key_sister_json(tJson* pp, char* key, int needval)
+tJson*  search_key_sister_json(tJson* pp, const char* key, int needval)
 {
     if (pp==NULL || key==NULL) return NULL;
     while(pp->esis!=NULL) pp = pp->esis;
@@ -1197,7 +1244,7 @@ tJson*  search_key_sister_json(tJson* pp, char* key, int needval)
 
 
 /**
-tJson*  search_key_json_obj(tJson* pp, char* key, int nn)
+tJson*  search_key_json_obj(tJson* pp, const char* key, int nn)
 
 pp が指すノード以下で，名前（属性名）が key である nn番目のオブジェクトノードへのポインタを返す．
 pp の姉妹ノードは探索しない．
@@ -1208,7 +1255,7 @@ search_key_json() よりは少し早い．たぶん．
 @param   nn   一致するノード内，何番目を返すか指定する．nn<=0 は nn==1 とみなす．
 @return  見つかったオブジェクトノードへのポインタ．見つからない場合は，NULL
 */
-tJson*  search_key_json_obj(tJson* pp, char* key, int nn)
+tJson*  search_key_json_obj(tJson* pp, const char* key, int nn)
 {
     if (pp==NULL || key==NULL) return NULL;
     if (nn<=0) nn = 1;
@@ -1230,7 +1277,7 @@ tJson*  search_key_json_obj(tJson* pp, char* key, int nn)
 
 
 /**
-tJson*  search_double_key_json(tJson* pp, char* key1, char* key2, int needval)
+tJson*  search_double_key_json(tJson* pp, const char* key1, const char* key2, int needval)
 
 key1 -> key2 の親子関係を持つ，key2ノードのポインタを返す．
 
@@ -1240,7 +1287,7 @@ key1 -> key2 の親子関係を持つ，key2ノードのポインタを返す．
 @param   needval  TRUEの時，ky2 ノードが値（属性値）を持っていない場合は無視する．"", '' の場合も無視する．
 @return  見つかったノードへのポインタ．見つからない場合は，NULL
 */
-tJson*  search_double_key_json(tJson* pp, char* key1, char* key2, int needval)
+tJson*  search_double_key_json(tJson* pp, const char* key1, const char* key2, int needval)
 {
     if (pp==NULL || key1==NULL || key2==NULL) return NULL;
 
@@ -1257,7 +1304,7 @@ tJson*  search_double_key_json(tJson* pp, char* key1, char* key2, int needval)
 
 
 /*
-tJson*  _search_key_json(tJson* pp, char* key, int needval, int* nn)
+tJson*  _search_key_json(tJson* pp, const char* key, int needval, int* nn)
 
 search_key_json() の補助関数
 pp が指すノード以下で，名前（属性名）が key である nn番目のノードへのポインタを返す．@n
@@ -1270,7 +1317,7 @@ search_key_json() との違いは pp の姉妹ノードも探索することで�
 @param   nn   一致するノード内，何番目を返すか指定する．nn<=0 は nn==1 とみなす．
 @return  見つかったノードへのポインタ．見つからない場合は，NULL
 */
-tJson*  _search_key_json(tJson* pp, char* key, int needval, int* nn)
+tJson*  _search_key_json(tJson* pp, const char* key, int needval, int* nn)
 {
     while(pp->esis!=NULL) pp = pp->esis;
     tJson* esis = pp;
@@ -1296,7 +1343,7 @@ tJson*  _search_key_json(tJson* pp, char* key, int needval, int* nn)
 
  
 /*
-tJson*  _search_key_json_obj(tJson* pp, char* key, int* nn)
+tJson*  _search_key_json_obj(tJson* pp, const char* key, int* nn)
 
 search_key_json_obj() の補助関数
 pp が指すノード以下で，名前（属性名）が key である nn番目のオブジェクトノードへのポインタを返す．
@@ -1309,7 +1356,7 @@ search_key_json_obj() との違いは pp の姉妹ノードも探索すること
 @param   nn   一致するノード内，何番目を返すか指定する．nn<=0 は nn==1 とみなす．
 @return  見つかったオブジェクトノードへのポインタ．見つからない場合は，NULL
 */
-tJson*  _search_key_json_obj(tJson* pp, char* key, int* nn)
+tJson*  _search_key_json_obj(tJson* pp, const char* key, int* nn)
 {
     if (pp==NULL) return NULL;
     while(pp->esis!=NULL) pp = pp->esis;
@@ -1338,12 +1385,12 @@ tJson*  _search_key_json_obj(tJson* pp, char* key, int* nn)
 
 
 /**
-int  _json_check_node_bykey(tJson* pp, char* key, int needval, int nn)
+int  _json_check_node_bykey(tJson* pp, const char* key, int needval, int nn)
 
 pp が指すノードの名前（属性名）が key である場合，nnを 1減算して返す．
 needval が TRUE の場合は，値（属性値）を持っている場合のみ減算する．
 */
-int  _json_check_node_bykey(tJson* pp, char* key, int needval, int nn)
+int  _json_check_node_bykey(tJson* pp, const char* key, int needval, int nn)
 {
     if (pp->ldat.key.buf!=NULL) {
         if (!strcmp(key, (char*)pp->ldat.key.buf)) {
@@ -1363,7 +1410,7 @@ int  _json_check_node_bykey(tJson* pp, char* key, int needval, int nn)
 
 
 /**
-tList*   search_all_node_strval_json(tJson* pp, char* name, char* val)
+tList*   search_all_node_strval_json(tJson* pp, const char* name, const char* val)
 
 指定した条件に会う全てのノードへのポインタを，リスト（list->altp）に格納して返す．@n
 検索条件は，属性名 name, 属性値 val ("name": "val") を持つノード．
@@ -1373,7 +1420,7 @@ tList*   search_all_node_strval_json(tJson* pp, char* name, char* val)
 @param   val  属性値
 @return  検索結果を altp に格納した リスト．ldat.id は通し番号で，0から始まる．altp==NULL ならそこで終わり．
 */
-tList*   search_all_node_strval_json(tJson* pp, char* name, char* val)
+tList*   search_all_node_strval_json(tJson* pp, const char* name, const char* val)
 {
     if (pp!=NULL && pp->ldat.id==JSON_ANCHOR_NODE) pp = pp->next;
     if (pp==NULL) return NULL;
@@ -1385,7 +1432,7 @@ tList*   search_all_node_strval_json(tJson* pp, char* name, char* val)
 }
 
 
-tList*   _search_all_node_strval_json(tList* list, tJson* pp, char* name, char* val)
+tList*   _search_all_node_strval_json(tList* list, tJson* pp, const char* name, const char* val)
 {
     while (pp->esis!=NULL) pp = pp->esis;
     do {
@@ -1439,7 +1486,7 @@ Buffer  get_json_val(tJson* json)
 
 
 /**
-Buffer  get_key_json_val(tJson* pp, char* key, int nn)
+Buffer  get_key_json_val(tJson* pp, const char* key, int nn)
 
 pp が指すノード以下で，名前（属性名）が key である nn番目のノードへの属性値を返す．@n
 属性値が文字列の場合，先頭と最後の " または ' は削除する．
@@ -1450,7 +1497,7 @@ pp の姉妹ノードは探索しない．
 @param   nn   一致するノード内，何番目を返すか指定する．nn<=0 は nn==1 とみなす．
 @return  見つかったノードの属性値を格納した Buffer 変数．
 */
-Buffer  get_key_json_val(tJson* pp, char* key, int nn)
+Buffer  get_key_json_val(tJson* pp, const char* key, int nn)
 {
     tJson* json = search_key_json(pp, key, TRUE, nn);
     Buffer val  = get_json_val(json);
@@ -1460,7 +1507,7 @@ Buffer  get_key_json_val(tJson* pp, char* key, int nn)
 
 
 /**
-Buffer  get_key_sister_json_val(tJson* pp, char* key)
+Buffer  get_key_sister_json_val(tJson* pp, const char* key)
 
 pp が指すノードの姉妹で，名前（属性名）が key である nn番目のノードの属性値を返す．
 探索対象は探索を開始した姉妹ノードのみ．
@@ -1471,7 +1518,7 @@ pp が指すノードの姉妹で，名前（属性名）が key である nn番
 @param   needval  ノードが値（属性値）を持っていない場合は無視する．"", '' の場合も無視する．
 @return  見つかったノードの属性値を格納した Buffer 変数．
 */
-Buffer  get_key_sister_json_val(tJson* pp, char* key)
+Buffer  get_key_sister_json_val(tJson* pp, const char* key)
 {
     tJson* json = search_key_sister_json(pp, key, TRUE);
     Buffer val  = get_json_val(json);
@@ -1481,7 +1528,7 @@ Buffer  get_key_sister_json_val(tJson* pp, char* key)
 
 
 /**
-Buffer  get_double_key_json_val(tJson* pp, char* key1, char* key2)
+Buffer  get_double_key_json_val(tJson* pp, const char* key1, const char* key2)
 
 key1 -> key2 の親子関係を持つ，key2ノードの属性値を返す．
 属性値が文字列の場合，先頭と最後の " または ' は削除する．
@@ -1491,7 +1538,7 @@ key1 -> key2 の親子関係を持つ，key2ノードの属性値を返す．
 @param   key2  探索するノード名．
 @return  見つかったノードの属性値を格納した Buffer 変数．
 */
-Buffer  get_double_key_json_val(tJson* pp, char* key1, char* key2)
+Buffer  get_double_key_json_val(tJson* pp, const char* key1, const char* key2)
 {
     tJson* json = search_double_key_json(pp, key1, key2, TRUE);
     Buffer val  = get_json_val(json);

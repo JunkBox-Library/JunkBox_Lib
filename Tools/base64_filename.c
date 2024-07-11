@@ -3,7 +3,8 @@
 
 int main()
 {
-    unsigned char enc[] = "f39-mQAAAAAACgAAAAAAAAAAAAAAAABP";
+    unsigned char enc[] = "AAAAAAAAAAAACwAAAAAAAAAAAAAAAABP";
+                                     //                                 "f39-mQAAAAAACgAAAAAAAAAAAAAAAABP";
     int sz = 0;
 
     unsigned char* buf = decode_base64_filename(enc, &sz, '-');

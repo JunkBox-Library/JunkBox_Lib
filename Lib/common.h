@@ -160,6 +160,7 @@
 #define  L_16           16
 #define  L_OCT           8
 
+#define  LEN_REAL       32        ///< 15*2 + '@\0' + 1(予備)
 #define  LEN_INT        22        ///< log 2^64 + '@\0' + 1(予備)
 #define  LEN_IPADDR     17        ///< strlen("AAA.BBB.CCC.DDD") + '@\0' + 1(予備)
 #define  LEN_IPADDR6    41        ///< strlen("1111:2222:333:4444:5555:6666:7777:8888") + '@\0' + 1(予備)

@@ -90,6 +90,9 @@ int     copy_i2Buffer(int src, Buffer* dst);                ///< 整数 srcを�
 int     cat_i2Buffer (int src, Buffer* dst);                ///< 整数 srcを文字列に変換して，dstへ catする．
 int     ins_i2Buffer (int src, Buffer* dst);                ///< 整数 srcを文字列に変換して，dstの前に 挿入する．
 
+int     copy_r2Buffer(float src, Buffer* dst);              ///< 実数 srcを文字列に変換して，dstへ copyする．
+int     cat_r2Buffer (float src, Buffer* dst);              ///< 実数 srcを文字列に変換して，dstへ catする．
+int     ins_r2Buffer (float src, Buffer* dst);              ///< 実数 srcを文字列に変換して，dstの前に 挿入する．
 
 /** @def copy_s2Buffer
 
@@ -124,6 +127,9 @@ char*変数 srcから Buffer型変数dstへ文字列を catする．@n
 void    kanji_convert_Buffer(Buffer* mesg);                             ///< 大域変数 @b KanjiCode (tools.h) に従って漢字コードを変換する．@n
 Buffer  encode_base64_Buffer(Buffer buf);                               ///< バイナリデータ buf.bufの buf.vldszバイトを Base64にエンコード する
 Buffer  decode_base64_Buffer(Buffer buf);                               ///< strのバッファを Base64からデコードする
+
+Buffer  encode_base64_Buffer_bin(unsigned char* bin, int sz, int nopad);   ///< sz バイトの バイナリデータ binを Base64にエンコード する．
+
 Buffer  encode_base64_filename_Buffer(Buffer buf, unsigned char cc);    ///< バイナリデータ bufを Base64で encodeしてファイル名を作る．ただし '/' は cc として扱う．
 Buffer  decode_base64_filename_Buffer(Buffer buf, unsigned char cc);    ///< bufを Base64で decodeしてバイナリデータを取り出す．ただし cc は '/' として扱う． 
 
