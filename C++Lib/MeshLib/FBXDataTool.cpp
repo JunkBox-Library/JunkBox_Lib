@@ -20,10 +20,9 @@ FBXData::~FBXData(void)
 }
 
 
-void  FBXData::init(int n)
+void  FBXData::init(void)
 {
     this->fbx_name    = init_Buffer();
-    this->num_fbx     = n;
     this->phantom_out = true;
     this->no_offset   = false;
 
@@ -31,7 +30,6 @@ void  FBXData::init(int n)
     this->forUE       = false;
 
     this->engine      = JBXL_3D_ENGINE_UE;
-    this->next        = NULL;
     this->affineTrans = NULL;
     this->skeleton.init();
 }
@@ -43,8 +41,6 @@ void  FBXData::free(void)
     this->skeleton.free();
     this->delAffineTrans();
     this->affineTrans = NULL;
-
-    this->delete_next();
 }
 
 
@@ -58,21 +54,6 @@ void  FBXData::setEngine(int e)
     else if (e==JBXL_3D_ENGINE_UE) this->setUE(true);
 
     return;
-}
-
-
-void  FBXData::delete_next(void)
-{
-    if (this->next==NULL) return;
-
-    FBXData* _next = this->next;
-    while (_next!=NULL) {
-        FBXData* _curr_node = _next;
-        _next = _next->next;
-        _curr_node->next = NULL;
-        delete(_curr_node);
-    }
-    this->next = NULL;
 }
 
 
@@ -139,10 +120,10 @@ void  FBXData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData*
         //facet->num_index;
         //facet->num_vertex;
 
-        int*            index = facet->data_index;
-        Vector<double>* vectr = facet->vertex_value;
-        Vector<double>* norml = facet->normal_value;
-        UVMap<double>*  uvmap = facet->texcrd_value;
+        //int*            index = facet->data_index;
+        //Vector<double>* vectr = facet->vertex_value;
+        //Vector<double>* norml = facet->normal_value;
+        //UVMap<double>*  uvmap = facet->texcrd_value;
 
         facet = facet->next;
     }
@@ -167,8 +148,7 @@ Vector<double>  FBXData::execAffineTrans(void)
 {
     Vector<double> center(0.0, 0.0, 0.0);
 
-    FBXData* fbx = this->next;  // Top はアンカー
-    if (fbx!=NULL && this->no_offset) center = fbx->affineTrans->shift;
+    if (this->no_offset) center = affineTrans->shift;
 
     return center;
 }

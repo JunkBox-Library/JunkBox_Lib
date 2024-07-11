@@ -20,12 +20,9 @@ GLTFData::~GLTFData(void)
 }
 
 
-void  GLTFData::init(int n)
+void  GLTFData::init(void)
 {
-    initGLTF();
-
     this->gltf_name   = init_Buffer();
-    this->num_gltf    = n;
     this->phantom_out = true;
     this->no_offset   = false;
 
@@ -33,7 +30,6 @@ void  GLTFData::init(int n)
     this->forUE       = false;
 
     this->engine      = JBXL_3D_ENGINE_UE;
-    this->next        = NULL;
     this->affineTrans = NULL;
     this->skeleton.init();
 
@@ -47,6 +43,8 @@ void  GLTFData::init(int n)
     this->buffers       = NULL;
     this->buffviews     = NULL;
     this->accessors     = NULL;
+
+    initGLTF();
 }
 
 
@@ -58,8 +56,6 @@ void  GLTFData::free(void)
 
     this->delAffineTrans();
     this->affineTrans = NULL;
-
-    this->delete_next();
 }
 
 
@@ -76,26 +72,11 @@ void  GLTFData::setEngine(int e)
 }
 
 
-void  GLTFData::delete_next(void)
-{
-    if (this->next==NULL) return;
-
-    GLTFData* _next = this->next;
-    while (_next!=NULL) {
-        GLTFData* _curr_node = _next;
-        _next = _next->next;
-        _curr_node->next = NULL;
-        delete(_curr_node);
-    }
-    this->next = NULL;
-}
-
-
 void  GLTFData::initGLTF(void)
 {
     PRINT_MESG("GLTFData::initGLTF: start\n");
 
-    char asset[] = "{asset:{\"copyright\": , \"generator\": , \"version\": }";
+    char asset[] = "{\"asset\": {\"copyright\", \"generator\", \"version\"}}";
     this->json_data = json_parse(asset, 99);
 
     tJson* temp;
@@ -116,9 +97,9 @@ void  GLTFData::initGLTF(void)
     //tJson* images    = json_append_array_bykey(this->json_data, "\"images\"");
     //tJson* samplers  = json_append_array_bykey(this->json_data, "\"samplers\"");
 
-    this->buffers   = json_append_array_bykey(this->json_data, "\"buffers\"");
-    this->buffviews = json_append_array_bykey(this->json_data, "\"bufferViews\"");
-    this->accessors = json_append_array_bykey(this->json_data, "\"accessors\"");
+    this->buffers   = json_append_array_key(this->json_data, "buffers");
+    this->buffviews = json_append_array_key(this->json_data, "bufferViews");
+    this->accessors = json_append_array_key(this->json_data, "accessors");
 }
 
 
@@ -168,7 +149,7 @@ void  GLTFData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData
     int data_len    = 0;
     int data_offset = 0;
 
-    Buffer vertex_base64 = init_Buffer();
+    //Buffer vertex_base64 = init_Buffer();
     MeshFacetNode* facet = meshdata->facet;
     while (facet!=NULL) {
         if (facet->num_vertex != facet->num_texcrd) {
@@ -189,30 +170,21 @@ void  GLTFData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData
         data_len = facet->num_index*(int)sizeof(int);
         memset(buf, 0, LBUF);
         snprintf(buf, LBUF-1, JBXL_GLTF_ELEMENT_ARRAY_BUFFER, 0, facet->num_index*(int)sizeof(int), data_offset);
-        json_append_nodes_bystr(this->buffviews, buf);
+        json_insert_parse(this->buffviews, buf);
         data_offset += data_len;
 
         //
         data_len = facet->num_vertex*(int)(sizeof(float)*8);    // 8 = 3 + 3 + 2 (vertex + normal + uvmap)
         memset(buf, 0, LBUF);
         snprintf(buf, LBUF-1, JBXL_GLTF_ARRAY_BUFFER, 0, data_len, data_offset, (int)sizeof(float)*8);
-        json_append_nodes_bystr(this->buffviews, buf);
+        json_insert_parse(this->buffviews, buf);
         data_offset += data_len;
         
-
-
-
-
-
-
-
-
-
-
 
         //facet->num_index;
         //facet->num_vertex;
 
+/*
         int*  data_index = (int*)malloc(sizeof(int)*facet->num_index);
         if (data_index!=NULL) {
             for (int i=0; i<facet->num_index; i++) {
@@ -243,6 +215,7 @@ void  GLTFData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData
             freeNull(data_index);
             return;
         }
+*/
 
         /*
         Buffer temp = encode_base64_Buffer_bin((unsigned char*)vertex, dlen*3, TRUE);
@@ -255,14 +228,16 @@ void  GLTFData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData
         //Vector<double>* norml = facet->normal_value;
         //UVMap<double>*  uvmap = facet->texcrd_value;
 
+/*
         freeNull(vertex);
         freeNull(normal);
         freeNull(texcrd);
         freeNull(data_index);
+*/
         facet = facet->next;
     }
 
-print_message("========>> %s\n", (char*)vertex_base64.buf);
+print_json(stderr, this->json_data, 2);
 
 
     if (meshdata==NULL) return;
@@ -287,8 +262,7 @@ Vector<double>  GLTFData::execAffineTrans(void)
 {
     Vector<double> center(0.0, 0.0, 0.0);
 
-    GLTFData* gltf = this->next;  // Top はアンカー
-    if (gltf!=NULL && this->no_offset) center = gltf->affineTrans->shift;
+    if (this->no_offset) center = affineTrans->shift;
 
     return center;
 }

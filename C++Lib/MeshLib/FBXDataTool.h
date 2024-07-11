@@ -29,13 +29,12 @@ namespace jbxl {
 class  FBXData
 {
 public:
-    FBXData(int n=0) { this->init(n);}  // n: FBXデータの総数．デフォルト（n=0）ではアンカーを作る
+    FBXData(void) { this->init();}
     virtual ~FBXData(void);
 
 public:
     Buffer  fbx_name;
     bool    phantom_out;
-    int     num_fbx;                    // nextに続くFBXデータの総数．
     bool    has_joints;
     bool    no_offset;
 
@@ -46,12 +45,9 @@ public:
     AffineTrans<double>* affineTrans;
     AffineTrans<double>  skeleton;
 
-    FBXData* next;
-
 public:
-    void    init(int n); 
+    void    init(void); 
     void    free(void); 
-    void    delete_next(void);
 
     void    setUnity(bool b) { this->forUnity = b; this->forUE = !b;}
     void    setUE(bool b)    { this->forUE = b; this->forUnity = !b;}

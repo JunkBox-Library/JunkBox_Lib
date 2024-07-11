@@ -156,7 +156,7 @@ typedef  tTree  tJson;
 // Parser
 
 tJson*   json_parse(const char* str, int num);                      ///< 文字列のJSONデータを解釈して，tJsonのツリーを生成する．ANCHOR付き．
-tJson*   json_parse_prop (tJson* json, const char* str, int num);   ///< JSON Main Parser．ANCHOR付き．
+tJson*   json_parse_prop (tJson* json, const char* str, int num);   ///< JSON Main Parser．json が NULL の場合は ANCHOR付き．
 tJson*   json_parse_seq  (tJson* json, const char* str, int num);   ///< 断片化した JSONデータを読み込んで処理する．
 tJson*   json_array_parse(tJson* json, const char* str, int num);   ///< JSONデータの 配列ノードの値（配列データ）を処理する．
 
@@ -185,17 +185,16 @@ tJson*   json_parse_file(const char* fn, int num);                      ///< JSO
 
 void     json_set_str_val(tJson* json, const char* val);                ///< json ノードに文字列の属性値(value)を設定する．
 void     json_set_int_val(tJson* json, int val);                        ///< json ノードに整数の属性値(value)を設定する．
-void     json_set_real_value(tJson* json, float val);                   ///< json ノードに実数の属性値(value)を設定する．
+void     json_set_real_val(tJson* json, float val);                     ///< json ノードに実数の属性値(value)を設定する．
 
 void     json_copy_val (tJson* f_json, tJson* t_json);                  ///< f_json から t_json へ属性値(value)をコピーする．
 void     json_copy_data(tJson* f_json, tJson* t_json);                  ///< f_json から t_json へ属性名(key)と属性値(value)をコピーする．
 
-void     json_insert_nodes(tJson* parent, tJson* child);
+tJson*   json_insert_child(tJson* parent, tJson* child);                ///< 
+tJson*   json_insert_parse(tJson* parent, const char* str);             ///< str をパースして繋げる．str は { または [ で始まる必要がある．
 
-tJson*   json_append_nodes_bystr(tJson* json, const char* str);         ///< 文字列をパースして追加
-tJson*   json_append_obj_bykey(tJson* json, const char* key);           ///< 属性値(value)なしのリストデータ{} を追加
-tJson*   json_append_array_bykey(tJson* json, const char* key);         ///< 値(value)なしの配列 [] を追加
-
+tJson*   json_append_obj_key(tJson* json, const char* key);             ///< 属性値(value)なしのリストデータ{} を追加
+tJson*   json_append_array_key(tJson* json, const char* key);           ///< 値(value)なしの配列 [] を追加
 //
 tJson*   join_json(tJson* parent, tJson** child);                       ///< parent の子として child そのものを繋げる．
 #define  dup_merge_json(p, c)               dup_merge_tTree((p), (c))   ///< p の子として c の複製を繋げる．

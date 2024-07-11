@@ -95,7 +95,8 @@ JSON Main パーサ．@n
 先頭に姉妹ノードがない場合は json にNULLを指定しても可．@n
 処理に json->ctrl を使用（分割シーケンス処理用．プログラム中で書き換えられる）．@n
 
-@param  json JSONデータへのポインタ．NULLでない場合は，このデータの後に結果が付加される．@n
+@param  json JSONデータへのポインタ．@n
+             NULLでない場合は，このデータの後に結果が付加される．NULLの場合はアンカー付き．@n
 @param  str  パースする文字列．
 @param  num  0 配列を処理しない．高速．@n
              1 配列を処するが，配列の中の JSONデータは処理しない．@n
@@ -876,7 +877,7 @@ tJson*  json_parse_file(const char* fn, int num)
 /**
 void  json_set_str_val(tJson* json, const char* val)
 
-json ノードに文字列の属性値を設定する．
+json ノードに文字列の属性値(value)を設定する．
 */
 void  json_set_str_val(tJson* json, const char* val)
 {
@@ -884,20 +885,51 @@ void  json_set_str_val(tJson* json, const char* val)
 
     Buffer buf = init_Buffer();
     if (val[0]!='"') {
-        buf = make_Buffer_bystr("\"");
-        copy_s2Buffer(val, &buf);
+        buf = make_Buffer(strlen(val) + 3); // " + " + \0
+        copy_s2Buffer("\"", &buf);
+        cat_s2Buffer(val, &buf);
     }
     else {
         buf = make_Buffer_bystr(val);
     }
     if (buf.buf[buf.vldsz-1]!='"') {
-        copy_s2Buffer("\"", &buf);
+        cat_s2Buffer("\"", &buf);
     }
 
     copy_Buffer(&buf, &(json->ldat.val));
     json->ldat.lv = JSON_VALUE_STR;
     free_Buffer(&buf);
 
+    return;
+}
+
+
+/**
+void  json_set_int_val(tJson* json, int val)
+
+json ノードに整数の属性値(value)を設定する．
+*/
+void  json_set_int_val(tJson* json, int val)
+{
+    if (json==NULL) return;
+
+    copy_i2Buffer(val, &(json->ldat.val));
+    json->ldat.lv = JSON_VALUE_INT;
+    return;
+}
+
+
+/**
+void  json_set_real_val(tJson* json, float val)
+
+json ノードに実数(float) の属性値(value)を設定する．
+*/
+void  json_set_real_val(tJson* json, float val)
+{
+    if (json==NULL) return;
+
+    copy_r2Buffer(val, &(json->ldat.val));
+    json->ldat.lv = JSON_VALUE_REAL;
     return;
 }
 
@@ -937,126 +969,136 @@ void  json_copy_data(tJson* f_json, tJson* t_json)
 
 
 /**
-void  json_insert_nodes(tJson* parent, tJson* child)
+void  json_insert_child(tJson* parent, tJson* child)
 
 json ツリー parent に json ツリー child のノードを挿入する．
 ANCHORノードは処理しない．ANCHORが有る場合は，これを呼び出す前に処理すること．
 
 parent が { の場合
    child の { は破棄されて，それ以下のノードが parent の子（姉妹）として結合される．
-   child の内容は破壊される．
+   child そのものは破棄される．
+
 parent が [ の場合
    child はそのまま配列の要素として追加される．
+
 parent がそれ外の場合
    何の処理も行われない．
 */
-void  json_insert_nodes(tJson* parent, tJson* child)
+tJson*  json_insert_child(tJson* parent, tJson* child)
 {
-    if (parent==NULL) return;
-    if (child ==NULL) return;
-    if (parent->ldat.id!=JSON_BRACKET_NODE && parent->ldat.id!=JSON_ARRAY_NODE) return;
-    if (child->ldat.id !=JSON_BRACKET_NODE) return;
+    if (parent==NULL || child ==NULL) return NULL;
+    if (parent->ldat.id!=JSON_BRACKET_NODE && parent->ldat.id!=JSON_ARRAY_NODE) return NULL;
+    if (child->ldat.id !=JSON_BRACKET_NODE) return NULL;
     
+    tJson* ret = NULL;
     if (parent->ldat.id==JSON_BRACKET_NODE) {
         tJson* cp = child->next;
         while (cp!=NULL) {
             add_tTree(parent, cp);
+            ret = cp;
             cp = cp->ysis;
         }
         free_tList_data(&child->ldat);
         free(child);
     }
-
-    if (parent->ldat.id==JSON_ARRAY_NODE) {
+    else if (parent->ldat.id==JSON_ARRAY_NODE) {
         add_tTree(parent, child);
+        ret = child;
     }
 
-    return;
+    return ret;
 }
 
 
 /**
-tJson*  json_append_nodes_bystr(tJson* json, const char* str)
+tJson*  json_insert_parse(tJson* json, const char* str)
 
-json ツリー json に 属性名 key を持つオブジェクトノードを追加する．
+str をパースして json に繋げる．str は { または [ で始まる必要がある．
 */
-tJson*  json_append_nodes_bystr(tJson* json, const char* str)
+tJson*  json_insert_parse(tJson* json, const char* str)
 {
-    if (str ==NULL) return NULL;
-    if (json==NULL) return NULL;
+    if (str==NULL || json==NULL) return NULL;
     if (json->ldat.id==JSON_ANCHOR_NODE) json = json->next;
     if (json==NULL) return NULL;
     
     tJson* jcld = json_parse(str, 99);
-    if (jcld!=NULL && jcld->ldat.id==JSON_ANCHOR_NODE) jcld = jcld->next;
-    if (jcld!=NULL) json_insert_nodes(json, jcld);
-/*
-    if (jcld!=NULL) {
-        jcld->ldat.id = JSON_TEMP_NODE;
-        join_json(json, &jcld);
+    if (jcld!=NULL && jcld->ldat.id==JSON_ANCHOR_NODE) {
+        jcld = del_json_anchor_node(jcld);
     }
-*/
+    if (jcld!=NULL) {
+        jcld = json_insert_child(json, jcld);
+    }
+
     return jcld;
 }
 
-/**
-tJson*  json_append_obj_bykey(tJson* json, const char* key)
 
-json ツリー json に 属性名 key を持つオブジェクトノードを追加する．
+/**
+tJson*  json_append_obj_key(tJson* json, const char* key)
+
+json ツリー json に 属性名 key を持つオブジェクトノード "key":{} を追加する．
+
+@return 追加したノードへのポインタ．失敗した場合は NULL
 */
-tJson*  json_append_obj_bykey(tJson* json, const char* key)
+tJson*  json_append_obj_key(tJson* json, const char* key)
 {
-    if (key ==NULL) return NULL;
-    if (json==NULL) return NULL;
+    if (key==NULL || json==NULL) return NULL;
     if (json->ldat.id==JSON_ANCHOR_NODE) json = json->next;
     if (json==NULL) return NULL;
     
     Buffer buf = make_Buffer_str("{");
+    if (key[0]!='"') cat_s2Buffer("\"", &buf);
     cat_s2Buffer(key, &buf);
+    if (key[strlen(key)-1]!='"') cat_s2Buffer("\"", &buf);
     cat_s2Buffer(":{}}", &buf);
 
     tJson* jcld = json_parse((char*)buf.buf, 1);
-    if (jcld!=NULL && jcld->ldat.id==JSON_ANCHOR_NODE) jcld = jcld->next;
-    if (jcld!=NULL) json_insert_nodes(json, jcld);
-/*
-    if (jcld!=NULL) {
-        jcld->ldat.id = JSON_TEMP_NODE;
-        join_json(json, &jcld);
+    if (jcld!=NULL && jcld->ldat.id==JSON_ANCHOR_NODE) {
+        jcld = del_json_anchor_node(jcld);
     }
-*/
     free_Buffer(&buf);
 
+    if (jcld!=NULL) {
+        jcld = json_insert_child(json, jcld);
+    }
+    else {
+        return NULL;
+    }
     return jcld;
 }
 
 
 /**
-tJson*  json_append_array_bykey(tJson* json, const char* key)
+tJson*  json_append_array_key(tJson* json, const char* key)
 
-json ツリー json に 属性名 key を持つオブジェクトノードを追加する．
+json ツリー json に 属性名 key を持つ配列ノード "key":[] を追加する．
+
+@return 追加したノードへのポインタ．失敗した場合は NULL
 */
-tJson*  json_append_array_bykey(tJson* json, const char* key)
+tJson*  json_append_array_key(tJson* json, const char* key)
 {
-    if (key ==NULL) return NULL;
-    if (json==NULL) return NULL;
+    if (key==NULL || json==NULL) return NULL;
     if (json->ldat.id==JSON_ANCHOR_NODE) json = json->next;
     if (json==NULL) return NULL;
 
     Buffer buf = make_Buffer_str("{");
+    if (key[0]!='"') cat_s2Buffer("\"", &buf);
     cat_s2Buffer(key, &buf);
+    if (key[strlen(key)-1]!='"') cat_s2Buffer("\"", &buf);
     cat_s2Buffer(":[]}", &buf);
 
     tJson* jcld = json_parse((char*)buf.buf, 1);
-    if (jcld!=NULL && jcld->ldat.id==JSON_ANCHOR_NODE) jcld = jcld->next;
-    if (jcld!=NULL) json_insert_nodes(json, jcld);
-/*
-    if (jcld!=NULL) {
-        jcld->ldat.id = JSON_TEMP_NODE;
-        join_json(json, &jcld);
+    if (jcld!=NULL && jcld->ldat.id==JSON_ANCHOR_NODE) {
+        jcld = del_json_anchor_node(jcld);
     }
-*/
     free_Buffer(&buf);
 
+    if (jcld!=NULL) {
+        jcld = json_insert_child(json, jcld);
+    }
+    else {
+        return NULL;
+    }
     return jcld;
 }
 
@@ -1064,8 +1106,8 @@ tJson*  json_append_array_bykey(tJson* json, const char* key)
 /**
 tJson*   join_json(tJson* parent, tJson** child)
 
-parent の子として child そのものを結合する．
-child の　TOPが ANCHORノードまたは JSON_TEMP_NODE の場合，そのノードは削除され，*child は書き換えられる．
+parent の子として child そのものを 直接結合する(add_tTreeを使用)．
+child の TOPが ANCHORノードまたは JSON_TEMP_NODE の場合，そのノードは削除され，*child は書き換えられる．
 
 @param       parent  結合対象の JSONノード
 @param[in]   child   結合するJSONノード

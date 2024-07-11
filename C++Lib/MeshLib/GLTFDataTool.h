@@ -24,6 +24,10 @@ namespace jbxl {
 #define  JBXL_GLTF_GENERATOR    "JBXL glTF Tool Library (C) 2024 v1.0 by Fumi.Iseki"
 #define  JBXL_GLTF_VERSION      "2.0"
 
+//#define  JBXL_GLTF_COPYRIGHT    "\"from OpenSimulator\""
+//#define  JBXL_GLTF_GENERATOR    "\"JBXL glTF Tool Library (C) 2024 v1.0 by Fumi.Iseki\""
+//#define  JBXL_GLTF_VERSION      "\"2.0\""
+
 
 
 #define  JBXL_GLTF_ELEMENT_ARRAY_BUFFER "{\"buffer\":%d, \"byteLength\":%d, \"byteOffset\":%d, \"target\": 34963}"
@@ -40,13 +44,12 @@ namespace jbxl {
 class  GLTFData
 {
 public:
-    GLTFData(int n=0) { this->init(n);}  // n: GLTFデータの総数．デフォルト（n=0）ではアンカーを作る
+    GLTFData(void) { this->init();}
     virtual ~GLTFData(void);
 
 public:
     Buffer  gltf_name;
     bool    phantom_out;
-    int     num_gltf;                    // nextに続くGLTFデータの総数．
     bool    has_joints;
     bool    no_offset;
 
@@ -56,8 +59,6 @@ public:
 
     AffineTrans<double>* affineTrans;
     AffineTrans<double>  skeleton;
-
-    GLTFData* next;
 
     Buffer  index_buffer;
     Buffer  vertex_buffer;
@@ -70,9 +71,8 @@ public:
     tJson*  accessors;
 
 public:
-    void    init(int n); 
+    void    init(void); 
     void    free(void); 
-    void    delete_next(void);
 
     void    setUnity(bool b) { this->forUnity = b; this->forUE = !b;}
     void    setUE(bool b)    { this->forUE = b; this->forUnity = !b;}
