@@ -233,6 +233,7 @@ void  OBJData::outputFile(const char* fname, const char* out_path, const char* t
     this->output_mtl((char*)mtl_path.buf, (char*)rel_tex.buf);  // mtl file
     this->output_obj((char*)obj_path.buf, (char*)rel_mtl.buf);  // obj file
     //
+    free_Buffer(&file_name);
     free_Buffer(&obj_path);
     free_Buffer(&mtl_path);
     free_Buffer(&rel_mtl);

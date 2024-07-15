@@ -23,8 +23,6 @@ namespace jbxl {
 //
 
 /**
-先頭のデータはアンカー．
-アンカーでない場合は num_fbx == -1
 */
 class  FBXData
 {
@@ -49,8 +47,8 @@ public:
     void    init(void); 
     void    free(void); 
 
-    void    setUnity(bool b) { this->forUnity = b; this->forUE = !b;}
-    void    setUE(bool b)    { this->forUE = b; this->forUnity = !b;}
+    void    setUnity(bool b) { this->forUnity = b;}
+    void    setUE(bool b)    { this->forUE    = b;}
     void    setEngine(int);
 
     void    setAffineTrans (AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}

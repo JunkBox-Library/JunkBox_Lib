@@ -1288,7 +1288,7 @@ tJson*  search_key_sister_json(tJson* pp, const char* key, int needval)
 /**
 tJson*  search_key_json_obj(tJson* pp, const char* key, int nn)
 
-pp が指すノード以下で，名前（属性名）が key である nn番目のオブジェクトノードへのポインタを返す．
+pp が指すノード以下で，名前（属性名）が key である nn番目のオブジェクトノード(JSON_VALUE_OBJ)へのポインタを返す．
 pp の姉妹ノードは探索しない．
 search_key_json() よりは少し早い．たぶん．
 

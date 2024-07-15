@@ -20,26 +20,39 @@
 namespace jbxl {
 
 
-#define  JBXL_GLTF_COPYRIGHT    "from OpenSimulator"
+#define  JBXL_GLTF_COPYRIGHT    "From OpenSimulator"
 #define  JBXL_GLTF_GENERATOR    "JBXL glTF Tool Library (C) 2024 v1.0 by Fumi.Iseki"
 #define  JBXL_GLTF_VERSION      "2.0"
 
-//#define  JBXL_GLTF_COPYRIGHT    "\"from OpenSimulator\""
-//#define  JBXL_GLTF_GENERATOR    "\"JBXL glTF Tool Library (C) 2024 v1.0 by Fumi.Iseki\""
-//#define  JBXL_GLTF_VERSION      "\"2.0\""
+#define  JBXL_GLTF_ELEMENT_ARRAY_BUFFER "{\"buffer\":%d, \"byteOffset\":%lu, \"byteLength\":%lu, \"target\": 34963}"
+#define  JBXL_GLTF_ARRAY_BUFFER         "{\"buffer\":%d, \"byteOffset\":%lu, \"byteLength\":%lu, \"byteStride\":%d, \"target\": 34962}"
+
+#define  JBXL_GLTF_ACCESSOR             "{\"bufferView\":%d, \"byteOffset\":%lu, \"componentType\":%d, \"count\":%d, \"type\":\"%s\"}"
+
+/*
+
+  "meshes" : [
+    {
+      "primitives" : [ { "attributes" : { "POSITION" : 1 }, "indices" : 0 } ]
+    }
+  ],
+*/
 
 
 
-#define  JBXL_GLTF_ELEMENT_ARRAY_BUFFER "{\"buffer\":%d, \"byteLength\":%d, \"byteOffset\":%d, \"target\": 34963}"
-#define  JBXL_GLTF_ARRAY_BUFFER         "{\"buffer\":%d, \"byteLength\":%d, \"byteOffset\":%d, \"byteStride\":%d, \"target\": 34962}"
+/*
+      "componentType" : 5123,  // gl.UNSIGNED_SHORT
+      "type" : "SCALAR",
 
+      "componentType" : 5126,  // gl.FLOAT
+      "count" : 3,
+      "type" : "VEC3",
+*/
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //
 
 /**
-先頭のデータはアンカー．
-アンカーでない場合は num_gltf == -1
 */
 class  GLTFData
 {
@@ -60,10 +73,7 @@ public:
     AffineTrans<double>* affineTrans;
     AffineTrans<double>  skeleton;
 
-    Buffer  index_buffer;
-    Buffer  vertex_buffer;
-    Buffer  normal_buffer;
-    Buffer  texcrd_buffer;
+    Buffer  bin_buffer;
 
     tJson*  json_data;
     tJson*  buffers;
@@ -74,8 +84,8 @@ public:
     void    init(void); 
     void    free(void); 
 
-    void    setUnity(bool b) { this->forUnity = b; this->forUE = !b;}
-    void    setUE(bool b)    { this->forUE = b; this->forUnity = !b;}
+    void    setUnity(bool b) { this->forUnity = b;}
+    void    setUE(bool b)    { this->forUE    = b;}
     void    setEngine(int);
 
     void    setAffineTrans (AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}
@@ -87,8 +97,10 @@ public:
     void    addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL);
     void    closeSolid(void) {}
 
-    void    outputFile(const char* fn, const char* out_path, const char* tex_dirn);
+    //void    outputFile(const char* fn, const char* out_path, const char* tex_dirn);
+    void    outputFile(const char* fn, const char* out_path);
     void    output_gltf(FILE* fp);
+    void    output_bin (FILE* fp) { fwrite((void*)(this->bin_buffer.buf), this->bin_buffer.vldsz, 1, fp);}
 };
 
 

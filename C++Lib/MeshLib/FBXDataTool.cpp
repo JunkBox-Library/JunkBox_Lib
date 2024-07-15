@@ -86,6 +86,7 @@ void  FBXData::outputFile(const char* fname, const char* out_path, const char* t
         fclose(fp);
     }
     //
+    free_Buffer(&file_name);
     free_Buffer(&fbx_path);
     free_Buffer(&rel_tex);
     //

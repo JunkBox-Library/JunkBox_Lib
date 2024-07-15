@@ -174,8 +174,8 @@ void     print_json_opt(FILE* fp, tJson* json, const char* crlf, const char* spa
 
 void     _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* space);  ///< tJsonデータを元の書式に戻して Bufferに格納する．補助関数． 
 
-#define  print_tJson(f, j)          print_tTree((f), (j))
-#define  print_tJson_tree(f, j, s)  print_tTree_tree((f), (j), (s))
+#define  print_tJson(f, j)          print_tTree((f), (j))                               ///< file, json
+#define  print_tJson_tree(f, j, s)  print_tTree_tree((f), (j), (s))                     ///< file, json, space
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,13 +190,13 @@ void     json_set_real_val(tJson* json, float val);                     ///< jso
 void     json_copy_val (tJson* f_json, tJson* t_json);                  ///< f_json から t_json へ属性値(value)をコピーする．
 void     json_copy_data(tJson* f_json, tJson* t_json);                  ///< f_json から t_json へ属性名(key)と属性値(value)をコピーする．
 
-tJson*   json_insert_child(tJson* parent, tJson* child);                ///< 
+tJson*   json_insert_child(tJson* parent, tJson* child);                ///< parent に dict または array の child を繋げる．
 tJson*   json_insert_parse(tJson* parent, const char* str);             ///< str をパースして繋げる．str は { または [ で始まる必要がある．
 
-tJson*   json_append_obj_key(tJson* json, const char* key);             ///< 属性値(value)なしのリストデータ{} を追加
-tJson*   json_append_array_key(tJson* json, const char* key);           ///< 値(value)なしの配列 [] を追加
+tJson*   json_append_obj_key(tJson* json, const char* key);             ///< 属性値(value)なしのリストデータ "key":{} を追加
+tJson*   json_append_array_key(tJson* json, const char* key);           ///< 値(value)なしの配列 "key":[] を追加
 //
-tJson*   join_json(tJson* parent, tJson** child);                       ///< parent の子として child そのものを繋げる．
+tJson*   join_json(tJson* parent, tJson** child);                       ///< parent の子として child そのものを 直接繋げる．
 #define  dup_merge_json(p, c)               dup_merge_tTree((p), (c))   ///< p の子として c の複製を繋げる．
 
 
@@ -217,7 +217,7 @@ tJson*   search_sister_json(tJson* pp, int nn);                                 
 tJson*   search_key_json(tJson* pp, const char* key, int needval, int nn);              ///< 名前（属性名）が key である nn番目のノードへのポインタを返す
 tJson*   search_key_child_json(tJson* pp, const char* key, int needval);                ///< 子の姉妹ノードで名前（属性名）が key である nn番目のノードへのポインタを返す．      
 tJson*   search_key_sister_json(tJson* pp, const char* key, int needval);               ///< 姉妹ノードで名前（属性名）が key である nn番目のノードへのポインタを返す．      
-tJson*   search_key_json_obj(tJson* pp, const char* key, int nn);                       ///< 名前（属性名）が key である nn番目のオブジェクトノード（属性値が SON_VALUE_OBJ）へのポインタを返す． ex.) "hoge": {
+tJson*   search_key_json_obj(tJson* pp, const char* key, int nn);                       ///< 名前（属性名）が key である nn番目のオブジェクトノード（種類がJSON_VALUE_OBJ）へのポインタを返す．ex.) "key":{
 tJson*   search_double_key_json(tJson* pp, const char* key1, const char* key2, int needval);  ///< 属性名が key1 -> key2 の親子関係を持つ，key2ノードのポインタを返す．
 
 tJson*   _search_key_json(tJson* pp, const char* key, int need, int* nn);               ///< search_key_json() の補助関数
