@@ -59,8 +59,6 @@ void  FBXData::setEngine(int e)
 
 void  FBXData::outputFile(const char* fname, const char* out_path, const char* tex_dirn)
 {
-    PRINT_MESG("FBXData::outputFile: start\n");
-
     FILE* fp = NULL;
     char* packname = pack_head_tail_char(get_file_name(fname), ' ');
     Buffer file_name = make_Buffer_bystr(packname);

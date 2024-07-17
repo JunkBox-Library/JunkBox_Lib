@@ -1064,6 +1064,8 @@ tJson*  json_append_obj_key(tJson* json, const char* key)
     else {
         return NULL;
     }
+    if (jcld->ldat.id==JSON_BRACKET_NODE) jcld = jcld->next;
+
     return jcld;
 }
 
@@ -1099,6 +1101,8 @@ tJson*  json_append_array_key(tJson* json, const char* key)
     else {
         return NULL;
     }
+    if (jcld->ldat.id==JSON_BRACKET_NODE) jcld = jcld->next;
+
     return jcld;
 }
 

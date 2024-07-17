@@ -34,8 +34,16 @@ void  GLTFData::init(void)
     this->skeleton.init();
 
     this->bin_buffer  = init_Buffer();
+    this->bin_offset  = 0;
+    this->view_num    = 0;
+    this->access_num  = 0;
 
     this->json_data   = NULL;
+
+    this->scenes      = NULL;
+    this->nodes       = NULL;
+    this->meshes      = NULL;
+    this->primitives  = NULL;
     this->buffers     = NULL;
     this->buffviews   = NULL;
     this->accessors   = NULL;
@@ -72,8 +80,6 @@ void  GLTFData::setEngine(int e)
 
 void  GLTFData::initGLTF(void)
 {
-    PRINT_MESG("GLTFData::initGLTF: start\n");
-
     char asset[] = "{\"asset\": {\"copyright\", \"generator\", \"version\"}}";
     this->json_data = json_parse(asset, 99);
 
@@ -87,26 +93,29 @@ void  GLTFData::initGLTF(void)
 
     //tJson* exused    = json_append_array_bykey(this->json_data, "\"extensionsUsed\"");
     //tJson* scene     = json_append_array_bykey(this->json_data, "\"scene\"");
-    //tJson* scenes    = json_append_array_bykey(this->json_data, "\"scenes\"");
-    //tJson* nodes     = json_append_array_bykey(this->json_data, "\"nodes\"");
     //tJson* materials = json_append_array_bykey(this->json_data, "\"materials\"");
-    //tJson* meshes    = json_append_array_bykey(this->json_data, "\"meshes\"");
     //tJson* textures  = json_append_array_bykey(this->json_data, "\"textures\"");
     //tJson* images    = json_append_array_bykey(this->json_data, "\"images\"");
     //tJson* samplers  = json_append_array_bykey(this->json_data, "\"samplers\"");
 
-    this->buffers   = json_append_array_key(this->json_data, "buffers");
-    this->buffviews = json_append_array_key(this->json_data, "bufferViews");
-    this->accessors = json_append_array_key(this->json_data, "accessors");
+    //this->scene      = json_append_array_key(this->json_data, "scene");
+    this->scenes     = json_append_array_key(this->json_data, "scenes");
+    json_insert_parse(this->scenes, "{\"nodes\":[0]}");
+    this->nodes      = json_append_array_key(this->json_data, "nodes");
+    json_insert_parse(this->nodes,  "{\"mesh\":0}");
+    this->meshes     = json_append_array_key(this->json_data, "meshes");
+    this->primitives = json_append_array_key(this->meshes, "primitives");
+
+    this->buffers    = json_append_array_key(this->json_data, "buffers");
+    json_insert_parse(this->buffers,"{\"uri\":, \"byteLength\":}");
+    this->buffviews  = json_append_array_key(this->json_data, "bufferViews");
+    this->accessors  = json_append_array_key(this->json_data, "accessors");
 }
 
 
 //void  GLTFData::outputFile(const char* fname, const char* out_path, const char* tex_dirn)
 void  GLTFData::outputFile(const char* fname, const char* out_path)
 {
-    PRINT_MESG("GLTFData::outputFile: start\n");
-
-    FILE* fp = NULL;
     char* packname = pack_head_tail_char(get_file_name(fname), ' ');
     Buffer file_name = make_Buffer_bystr(packname);
     ::free(packname);
@@ -122,65 +131,58 @@ void  GLTFData::outputFile(const char* fname, const char* out_path)
     //if (tex_dirn==NULL) rel_tex = make_Buffer_bystr("");
     //else                rel_tex = make_Buffer_bystr(tex_dirn);
 
-    // output json
+    // output json/binary
     cat_Buffer(&file_name, &gltf_path);
     change_file_extension_Buffer(&gltf_path, ".gltf");
-    fp = fopen((char*)gltf_path.buf, "w");
-    if (fp!=NULL) {
-        this->output_gltf(fp);
-        fclose(fp);
-    }
+    Buffer bin_path = dup_Buffer(gltf_path);
+    change_file_extension_Buffer(&bin_path, ".bin");
+    this->output_gltf((char*)gltf_path.buf, (char*)bin_path.buf);
 
-    // output binary
-    change_file_extension_Buffer(&gltf_path, ".bin");
-    fp = fopen((char*)gltf_path.buf, "wb");
-    if (fp!=NULL) {
-        this->output_bin(fp);
-        fclose(fp);
-    }
-    //
-    free_Buffer(&file_name);
     free_Buffer(&gltf_path);
+    free_Buffer(&bin_path);
+    free_Buffer(&file_name);
     //free_Buffer(&rel_tex);
     //
     return;
 }
 
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 void  GLTFData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints)
 {
-    PRINT_MESG("GLTFData::addObject: start.\n");
+    if (meshdata==NULL) return;
+
     int total_index  = 0;
     int total_vertex = 0;
 
+    // get working memory
     MeshFacetNode* facet = meshdata->facet;
     while (facet!=NULL) {
         total_index  += facet->num_index;
         total_vertex += facet->num_vertex;
         facet = facet->next;
     }
-    long unsigned int bin_len = (long unsigned int)total_index*sizeof(int) + (long unsigned int)total_vertex*sizeof(float)*8LU;
-    unsigned char* bin_dat = (unsigned char*)malloc(bin_len);
-    if (bin_dat==NULL) {
+    long unsigned int temp_len = (long unsigned int)total_index*sizeof(int) + (long unsigned int)total_vertex*sizeof(float)*8LU;
+    unsigned char* temp_data = (unsigned char*)malloc(temp_len);
+    if (temp_data==NULL) {
         PRINT_MESG("GLTFData::addObject: Error: No more memory.\n");
         return;
     }
     if (this->bin_buffer.buf==NULL) {
-        this->bin_buffer = make_Buffer(bin_len);
+        this->bin_buffer = make_Buffer(temp_len);
         if (this->bin_buffer.bufsz<=0) {
             PRINT_MESG("GLTFData::addObject: Error: No more memory.\n");
-            ::free(bin_dat);
+            ::free(temp_data);
             return;
         }
     }
 
     //
     char buf[LBUF];
-    int  view_num = 0;
-    long unsigned int data_len    = 0;
-    long unsigned int data_offset = 0;
+    long unsigned int length = 0;
+    long unsigned int offset = 0;
 
     facet = meshdata->facet;
     while (facet!=NULL) {
@@ -197,81 +199,88 @@ void  GLTFData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData
         }
         facet->execAffineTransUVMap(facet->texcrd_value, facet->num_vertex);
 
+        // meshes->primitives
+        memset(buf, 0, LBUF);
+        snprintf(buf, LBUF-1, JBXL_GLTF_MESH_PRIMITIVE, this->access_num, this->access_num+1, this->access_num+2, this->access_num+3);
+        json_insert_parse(this->primitives, buf);
+
         //
         // bufferview of indexies
+        length = (long unsigned int)facet->num_index*sizeof(int);
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ELEMENT_ARRAY_BUFFER, 0, data_offset, data_len);
+        snprintf(buf, LBUF-1, JBXL_GLTF_ELEMENT_BUFFER, 0, this->bin_offset, length);
         json_insert_parse(this->buffviews, buf);
 
         // accessor of indexies
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, view_num, 0LU, 5123, facet->num_index, "SCALSR");  // 5123: unsigned short
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_num, 0LU, 5125, facet->num_index, "SCALAR");  // 5125: unsigned int
         json_insert_parse(this->accessors, buf);
-        view_num++;
+        this->view_num++;
+        this->access_num++;
 
         // binary of indexies
-        data_len = (long unsigned int)facet->num_index*sizeof(int);
-        memcpy((void*)(bin_dat + data_offset), (void*)facet->data_index, data_len);
-        data_offset += data_len;
+        memcpy((void*)(temp_data + offset), (void*)facet->data_index, length);
+        offset += length;
+        this->bin_offset += length;
 
         //
         // bufferview of vertex/normal/uvmap
+        length = (long unsigned int)facet->num_vertex*sizeof(float)*8LU;
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ARRAY_BUFFER, 0, data_offset, data_len, (int)sizeof(float)*8);
+        snprintf(buf, LBUF-1, JBXL_GLTF_BUFFER, 0, this->bin_offset, length, (int)sizeof(float)*8);
         json_insert_parse(this->buffviews, buf);
+        this->bin_offset += length;
         
         // accessors of vertex/normal/uvmap
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, view_num,               0LU, 5126, facet->num_vertex, "VEC3");    // 5126: float
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_num,               0LU, 5126, facet->num_vertex, "VEC3");    // 5126: float
         json_insert_parse(this->accessors, buf);
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, view_num, sizeof(float)*3LU, 5126, facet->num_vertex, "VEC3");    // 5126: float
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_num, sizeof(float)*3LU, 5126, facet->num_vertex, "VEC3");    // 5126: float
         json_insert_parse(this->accessors, buf);
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, view_num, sizeof(float)*6LU, 5126, facet->num_vertex, "VEC2");    // 5126: float
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_num, sizeof(float)*6LU, 5126, facet->num_vertex, "VEC2");    // 5126: float
         json_insert_parse(this->accessors, buf);
-        view_num++;
+        this->view_num++;
+        this->access_num += 3;
 
         // binary of vertex/normal/uvmap
         float temp;
-        data_len = sizeof(float);
+        length = sizeof(float);
         for (int i=0; i<facet->num_vertex; i++) {
             temp = (float)facet->vertex_value[i].x;
-            memcpy((void*)(bin_dat + data_offset), (void*)&temp, data_len);
-            data_offset += data_len;
+            memcpy((void*)(temp_data + offset), (void*)&temp, length);
+            offset += length;
             temp = (float)facet->vertex_value[i].y;
-            memcpy((void*)(bin_dat + data_offset), (void*)&temp, data_len);
-            data_offset += data_len;
+            memcpy((void*)(temp_data + offset), (void*)&temp, length);
+            offset += length;
             temp = (float)facet->vertex_value[i].z;
-            memcpy((void*)(bin_dat + data_offset), (void*)&temp, data_len);
-            data_offset += data_len;
+            memcpy((void*)(temp_data + offset), (void*)&temp, length);
+            offset += length;
             temp = (float)facet->normal_value[i].x;
-            memcpy((void*)(bin_dat + data_offset), (void*)&temp, data_len);
-            data_offset += data_len;
+            memcpy((void*)(temp_data + offset), (void*)&temp, length);
+            offset += length;
             temp = (float)facet->normal_value[i].y;
-            memcpy((void*)(bin_dat + data_offset), (void*)&temp, data_len);
-            data_offset += data_len;
+            memcpy((void*)(temp_data + offset), (void*)&temp, length);
+            offset += length;
             temp = (float)facet->normal_value[i].z;
-            memcpy((void*)(bin_dat + data_offset), (void*)&temp, data_len);
-            data_offset += data_len;
+            memcpy((void*)(temp_data + offset), (void*)&temp, length);
+            offset += length;
             temp = (float)facet->texcrd_value[i].u;
-            memcpy((void*)(bin_dat + data_offset), (void*)&temp, data_len);
-            data_offset += data_len;
+            memcpy((void*)(temp_data + offset), (void*)&temp, length);
+            offset += length;
             temp = (float)facet->texcrd_value[i].v;
-            memcpy((void*)(bin_dat + data_offset), (void*)&temp, data_len);
-            data_offset += data_len;
+            memcpy((void*)(temp_data + offset), (void*)&temp, length);
+            offset += length;
         }
 
         facet = facet->next;
     }
 
-//print_json(stderr, this->json_data, 2);
+    cat_b2Buffer(temp_data, &(this->bin_buffer), temp_len);
+    ::free(temp_data);
 
-    cat_b2Buffer(bin_dat, &(this->bin_buffer), bin_len);
-print_message("===> %d  %d %d\n", data_offset, bin_len, bin_buffer.vldsz);
-    ::free(bin_dat);
-
-
+    //
     if (meshdata==NULL) return;
 
     if (collider) {
@@ -300,14 +309,26 @@ Vector<double>  GLTFData::execAffineTrans(void)
 }
 
 
-void  GLTFData::output_gltf(FILE* fp)
+void  GLTFData::output_gltf(char* json_file, char* bin_file)
 {
-    print_tTree(stderr, this->json_data);
-    print_json(stderr, this->json_data, JSON_INDENT_FORMAT);
 
+    char* bin_fname = get_file_name(bin_file);
+
+    tJson* uri = search_key_json(this->buffers, "uri", FALSE, 1);
+    if (uri!=NULL) json_set_str_val(uri, bin_fname);
+    tJson* len = search_key_json(this->buffers, "byteLength", FALSE, 1);
+    if (uri!=NULL) json_set_int_val(len, this->bin_buffer.vldsz);
+
+    FILE* fp = fopen(json_file, "w");
     if (fp==NULL) return;
+    print_json(fp, this->json_data, JSON_INDENT_FORMAT);
+    fclose(fp);
+
+    fp = fopen(bin_file, "wb");
+    if (fp==NULL) return;
+    fwrite((void*)(this->bin_buffer.buf), this->bin_buffer.vldsz, 1, fp);
+    fclose(fp);
 
     return;
 }
-
 
