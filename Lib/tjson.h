@@ -129,7 +129,11 @@ typedef  tTree  tJson;
     JSON_VALUE_ARRAY 
 @endcode
 
-5. 状態 (state)
+5. 配列
+  配列の要素ノードのノード種別（ldat.id）は JSON_ARRAY_VALUE_NODE, ldat.key.buf は "ARRAY_VALUE" となる．@n
+  属性値は 現在 JSON_VALUE_INT, JSON_VALUE_REAL, JSON_VALUE_STR, JSON_VALUE_NULL（ldat.lv）のみサポート．
+
+6. 状態 (state)
 @code
     JBXL_JSON_DEFAULT_STATE     ノードは，正常にパースされたかどうかの判定はまだ行われていない．
     JBXL_JSON_PARSED            アンカーノードにのみ設定される．このJSONツリーは正常にパースされたことを示す．
@@ -181,23 +185,31 @@ void     _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* s
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Tools
 
-tJson*   json_parse_file(const char* fn, int num);                      ///< JSONデータをファイルから読み込んで，パースする．
+tJson*   json_parse_file(const char* fn, int num);                                      ///< JSONデータをファイルから読み込んで，パースする．
 
-void     json_set_str_val(tJson* json, const char* val);                ///< json ノードに文字列の属性値(value)を設定する．
-void     json_set_int_val(tJson* json, int val);                        ///< json ノードに整数の属性値(value)を設定する．
-void     json_set_real_val(tJson* json, float val);                     ///< json ノードに実数の属性値(value)を設定する．
+void     json_set_str_val(tJson* json, const char* val);                                ///< json ノード "key":val に文字列の属性値(value)を設定する．
+void     json_set_int_val(tJson* json, int val);                                        ///< json ノード "key":val に整数の属性値(value)を設定する．
+void     json_set_real_val(tJson* json, float val);                                     ///< json ノード "key":val に実数の属性値(value)を設定する．
 
-void     json_copy_val (tJson* f_json, tJson* t_json);                  ///< f_json から t_json へ属性値(value)をコピーする．
-void     json_copy_data(tJson* f_json, tJson* t_json);                  ///< f_json から t_json へ属性名(key)と属性値(value)をコピーする．
+void     json_copy_val (tJson* f_json, tJson* t_json);                                  ///< f_json から t_json へ属性値(value)をコピーする．
+void     json_copy_data(tJson* f_json, tJson* t_json);                                  ///< f_json から t_json へ属性名(key)と属性値(value)をコピーする．
 
-tJson*   json_insert_child(tJson* parent, tJson* child);                ///< parent に dict または array の child を繋げる．
-tJson*   json_insert_parse(tJson* parent, const char* str);             ///< str をパースして繋げる．str は { または [ で始まる必要がある．
+tJson*   json_insert_child(tJson* parent, tJson* child);                                ///< parent に dict または array の child を繋げる．
+tJson*   json_insert_parse(tJson* parent, const char* str);                             ///< str をパースして繋げる．str は { または [ で始まる必要がある．
 
-tJson*   json_append_obj_key(tJson* json, const char* key);             ///< 属性値(value)なしのリストデータ "key":{} を追加
-tJson*   json_append_array_key(tJson* json, const char* key);           ///< 値(value)なしの配列 "key":[] を追加
+tJson*   json_append_obj_key(tJson* json, const char* key);                             ///< 属性値(value)なしのリストデータ "key":{} を追加する．
+tJson*   json_append_array_key(tJson* json, const char* key);                           ///< 値(value)なしの配列 "key":[] を追加する．
+
+void     json_append_obj_str_val (tJson* json, const char* key, const char* val);       ///< {} の要素として "key":val（val は文字列）を追加する．
+void     json_append_obj_int_val (tJson* json, const char* key, int val);               ///< {} の要素として "key":val（val は整数）を追加する．
+void     json_append_obj_real_val(tJson* json, const char* key, float val);             ///< {} の要素として "key":val（va lは実数）を追加する．
+
+void     json_append_array_str_val (tJson* json, const char* val);                      ///< 配列 [] の要素として 文字列 val を追加する．
+void     json_append_array_int_val (tJson* json, int val);                              ///< 配列 [] の要素として 整数 val を追加する．
+void     json_append_array_real_val(tJson* json, float val);                            ///< 配列 [] の要素として 実数 val を追加する．
 //
-tJson*   join_json(tJson* parent, tJson** child);                       ///< parent の子として child そのものを 直接繋げる．
-#define  dup_merge_json(p, c)               dup_merge_tTree((p), (c))   ///< p の子として c の複製を繋げる．
+tJson*   join_json(tJson* parent, tJson** child);                                       ///< parent の子として child そのものを 直接繋げる．
+#define  dup_merge_json(p, c)               dup_merge_tTree((p), (c))                   ///< p の子として c の複製を繋げる．
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////

@@ -487,6 +487,7 @@ tJson*  json_array_parse(tJson* json, const char* str, int num)
             int len = (int)(pt - pp) + 1 ;
             tJson* node = new_json_node();
             Buffer temp    = set_Buffer(pp, len);
+            node->ldat.key = make_Buffer_bystr("ARRAY_VALUE");
             node->ldat.val = pack_Buffer(temp, '\0');
             node->ldat.id  = JSON_ARRAY_VALUE_NODE;
             node->ldat.lv  = JSON_VALUE_OBJ;
@@ -516,6 +517,7 @@ tJson*  json_array_parse(tJson* json, const char* str, int num)
             int len = (int)(pt - pp);
             tJson* node = new_json_node();
             Buffer temp    = set_Buffer(pp, len);
+            node->ldat.key = make_Buffer_bystr("ARRAY_VALUE");
             node->ldat.val = pack_Buffer(temp, '\0');
             node->ldat.id  = JSON_ARRAY_VALUE_NODE;
 
@@ -1105,6 +1107,182 @@ tJson*  json_append_array_key(tJson* json, const char* key)
 
     return jcld;
 }
+
+
+/**
+void  json_append_obj_str_val(tJson* json, const char* key, const char* val)
+
+{} の要素として key:val（valは文字列）を追加する．
+*/
+void  json_append_obj_str_val(tJson* json, const char* key, const char* val)
+{
+    if (json==NULL) return;
+    if (json->ldat.id!=JSON_BRACKET_NODE) {
+        json = json->next;
+        if (json==NULL) return;
+        if (json->ldat.id!=JSON_BRACKET_NODE) return;
+    }
+
+    int len = (int)strlen(key);
+    Buffer key_buf = make_Buffer(len + 4);      // \" + \" + \0 + 予備
+    if (key[0]!='"') cat_s2Buffer("\"", &key_buf);
+    cat_s2Buffer(key, &key_buf);
+    if (key[len-1]!='"') cat_s2Buffer("\"", &key_buf);
+
+    if (val!=NULL) {
+        len = (int)strlen(val);
+        Buffer val_buf = make_Buffer(len + 4);  // \" + \" + \0 + 予備
+        if (val[0]!='"') cat_s2Buffer("\"", &val_buf);
+        cat_s2Buffer(val, &val_buf);
+        if (val[len-1]!='"') cat_s2Buffer("\"", &val_buf);
+        add_tTree_node_bystr(json, JSON_DATA_NODE, JSON_VALUE_STR, (char*)key_buf.buf, (char*)val_buf.buf, NULL, 0);
+        free_Buffer(&val_buf);
+    }
+    else {
+        add_tTree_node_bystr(json, JSON_DATA_NODE, JSON_VALUE_NULL, (char*)key_buf.buf, NULL, NULL, 0);
+    }
+
+    free_Buffer(&key_buf);
+    return;
+}
+
+
+
+/**
+void  json_append_obj_int_val(tJson* json, const char* key, int val)
+
+{} の要素として key:val（valは整数）を追加する．
+*/
+void  json_append_obj_int_val(tJson* json, const char* key, int val)
+{
+    if (json==NULL) return;
+    if (json->ldat.id!=JSON_BRACKET_NODE) {
+        json = json->next;
+        if (json==NULL) return;
+        if (json->ldat.id!=JSON_BRACKET_NODE) return;
+    }
+
+    int len = (int)strlen(key);
+    Buffer key_buf = make_Buffer(len + 4);      // \" + \" + \0 + 予備
+    if (key[0]!='"') cat_s2Buffer("\"", &key_buf);
+    cat_s2Buffer(key, &key_buf);
+    if (key[len-1]!='"') cat_s2Buffer("\"", &key_buf);
+
+    Buffer val_buf = make_Buffer(LEN_INT + 1);
+    copy_i2Buffer(val, &val_buf);
+
+    add_tTree_node_bystr(json, JSON_DATA_NODE, JSON_VALUE_INT, (char*)key_buf.buf, (char*)val_buf.buf, NULL, 0);
+
+    free_Buffer(&val_buf);
+    free_Buffer(&key_buf);
+    return;
+}
+
+/**
+void  json_append_obj_real_val(tJson* json, const char* key, float val)
+
+{} の要素として key:val（valは実数）を追加する．
+*/
+void  json_append_obj_real_val(tJson* json, const char* key, float val)
+{
+    if (json==NULL) return;
+    if (json->ldat.id!=JSON_BRACKET_NODE) {
+        json = json->next;
+        if (json==NULL) return;
+        if (json->ldat.id!=JSON_BRACKET_NODE) return;
+    }
+
+    int len = (int)strlen(key);
+    Buffer key_buf = make_Buffer(len + 4);      // \" + \" + \0 + 予備
+    if (key[0]!='"') cat_s2Buffer("\"", &key_buf);
+    cat_s2Buffer(key, &key_buf);
+    if (key[len-1]!='"') cat_s2Buffer("\"", &key_buf);
+
+    Buffer val_buf = make_Buffer(LEN_REAL + 1);
+    copy_r2Buffer(val, &val_buf);
+
+    add_tTree_node_bystr(json, JSON_DATA_NODE, JSON_VALUE_REAL, (char*)key_buf.buf, (char*)val_buf.buf, NULL, 0);
+
+    free_Buffer(&val_buf);
+    free_Buffer(&key_buf);
+    return;
+}
+
+/**
+void  json_append_array_str_val(tJson* json, const char* val)
+
+配列 [] の要素として 文字列 val を追加する．
+*/
+void  json_append_array_str_val(tJson* json, const char* val)
+{
+    if (json==NULL) return;
+    if (json->ldat.id==JSON_BRACKET_NODE) {
+        json = json->next;
+        if (json==NULL) return;
+    }
+    if (json->ldat.id!=JSON_ARRAY_NODE) return;
+
+    if (val!=NULL) {
+        int len = (int)strlen(val);
+        Buffer val_buf = make_Buffer(len + 4);  // \" + \" + \0 + 予備
+        if (val[0]!='"') cat_s2Buffer("\"", &val_buf);
+        cat_s2Buffer(val, &val_buf);
+        if (val[len-1]!='"') cat_s2Buffer("\"", &val_buf);
+        add_tTree_node_bystr(json, JSON_ARRAY_VALUE_NODE, JSON_VALUE_STR, "ARRAY_VALUE", (char*)val_buf.buf, NULL, 0);
+        free_Buffer(&val_buf);
+    }
+    else {
+        add_tTree_node_bystr(json, JSON_ARRAY_VALUE_NODE, JSON_VALUE_NULL, "ARRAY_VALUE", NULL, NULL, 0);
+    }
+    return;
+}
+
+
+/**
+void  json_append_array_int_val(tJson* json, int val)
+
+配列 [] の要素として 整数 val を追加する．
+*/
+void  json_append_array_int_val(tJson* json, int val)
+{
+    if (json==NULL) return;
+    if (json->ldat.id==JSON_BRACKET_NODE) {
+        json = json->next;
+        if (json==NULL) return;
+    }
+    if (json->ldat.id!=JSON_ARRAY_NODE) return;
+
+    Buffer val_buf = make_Buffer(LEN_INT + 1);
+    copy_i2Buffer(val, &val_buf);
+    add_tTree_node_bystr(json, JSON_ARRAY_VALUE_NODE, JSON_VALUE_INT, "ARRAY_VALUE", (char*)val_buf.buf, NULL, 0);
+
+    free_Buffer(&val_buf);
+    return;
+}
+
+
+/**
+void  json_append_array_real_val(tJson* json, float val)
+
+配列 [] の要素として 実数 val を追加する．
+*/
+void  json_append_array_real_val(tJson* json, float val)
+{
+    if (json==NULL) return;
+    if (json->ldat.id==JSON_BRACKET_NODE) {
+        json = json->next;
+        if (json==NULL) return;
+    }
+    if (json->ldat.id!=JSON_ARRAY_NODE) return;
+
+    Buffer val_buf = make_Buffer(LEN_REAL + 1);
+    copy_r2Buffer(val, &val_buf);
+    add_tTree_node_bystr(json, JSON_ARRAY_VALUE_NODE, JSON_VALUE_REAL, "ARRAY_VALUE", (char*)val_buf.buf, NULL, 0);
+
+    free_Buffer(&val_buf);
+    return;
+}
+
 
 
 /**

@@ -27,19 +27,19 @@ int main()
     if (temp!=NULL) json_set_str_val(temp, GLTF_STR_VERSION);
 
 
-    tJson* exused    = json_append_array_bykey(json, "\"extensionsUsed\"");
-    tJson* scene     = json_append_array_bykey(json, "\"scene\"");
-    tJson* scenes    = json_append_array_bykey(json, "\"scenes\"");
-    tJson* nodes     = json_append_array_bykey(json, "\"nodes\"");
-    tJson* materials = json_append_array_bykey(json, "\"materials\"");
-    tJson* meshes    = json_append_array_bykey(json, "\"meshes\"");
-    tJson* textures  = json_append_array_bykey(json, "\"textures\"");
-    tJson* images    = json_append_array_bykey(json, "\"images\"");
-    tJson* accessors = json_append_array_bykey(json, "\"accessors\"");
-    tJson* bufferv   = json_append_array_bykey(json, "\"bufferViews\"");
-    tJson* samplers  = json_append_array_bykey(json, "\"samplers\"");
-    tJson* buffers   = json_append_array_bykey(json, "\"buffers\"");
-    tJson* xxx = json_append_nodes_bystr(json, "{\"buffers\":{}}");
+    tJson* exused    = json_append_array_key(json, "\"extensionsUsed\"");
+    tJson* scene     = json_append_array_key(json, "\"scene\"");
+    tJson* scenes    = json_append_array_key(json, "\"scenes\"");
+    tJson* nodes     = json_append_array_key(json, "\"nodes\"");
+    tJson* materials = json_append_array_key(json, "\"materials\"");
+    tJson* meshes    = json_append_array_key(json, "\"meshes\"");
+    tJson* textures  = json_append_array_key(json, "\"textures\"");
+    tJson* images    = json_append_array_key(json, "\"images\"");
+    tJson* accessors = json_append_array_key(json, "\"accessors\"");
+    tJson* bufferv   = json_append_array_key(json, "\"bufferViews\"");
+    tJson* samplers  = json_append_array_key(json, "\"samplers\"");
+    tJson* buffers   = json_append_array_key(json, "\"buffers\"");
+    json_insert_parse(nodes, "{\"aaa\":[\"ssss\",1, 3.14]}");
 
 
 	print_tTree(stderr, json);

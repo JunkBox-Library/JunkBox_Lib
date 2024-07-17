@@ -27,6 +27,7 @@ namespace jbxl {
 #define  JBXL_GLTF_ELEMENT_BUFFER   "{\"buffer\":%d, \"byteOffset\":%lu, \"byteLength\":%lu, \"target\": 34963}"
 #define  JBXL_GLTF_BUFFER           "{\"buffer\":%d, \"byteOffset\":%lu, \"byteLength\":%lu, \"byteStride\":%d, \"target\": 34962}"
 #define  JBXL_GLTF_ACCESSOR         "{\"bufferView\":%d, \"byteOffset\":%lu, \"componentType\":%d, \"count\":%d, \"type\":\"%s\"}"
+#define  JBXL_GLTF_MESH             "{\"name\":\"%s\",\"mesh\":%d}" 
 #define  JBXL_GLTF_MESH_PRIMITIVE   "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d},\"mode\":4}" 
 
 /*
@@ -76,6 +77,7 @@ public:
     Buffer  bin_buffer;
     long unsigned int bin_offset;
 
+    int     node_num;
     int     view_num;
     int     access_num;
 
@@ -83,7 +85,7 @@ public:
     tJson*  scenes;
     tJson*  nodes;
     tJson*  meshes;
-    tJson*  primitives;
+    //tJson*  primitives;
     tJson*  buffers;
     tJson*  buffviews;
     tJson*  accessors;
