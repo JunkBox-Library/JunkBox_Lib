@@ -229,7 +229,7 @@ tJson*   search_sister_json(tJson* pp, int nn);                                 
 tJson*   search_key_json(tJson* pp, const char* key, int needval, int nn);              ///< 名前（属性名）が key である nn番目のノードへのポインタを返す
 tJson*   search_key_child_json(tJson* pp, const char* key, int needval);                ///< 子の姉妹ノードで名前（属性名）が key である nn番目のノードへのポインタを返す．      
 tJson*   search_key_sister_json(tJson* pp, const char* key, int needval);               ///< 姉妹ノードで名前（属性名）が key である nn番目のノードへのポインタを返す．      
-tJson*   search_key_json_obj(tJson* pp, const char* key, int nn);                       ///< 名前（属性名）が key である nn番目のオブジェクトノード（種類がJSON_VALUE_OBJ）へのポインタを返す．ex.) "key":{
+tJson*   search_key_json_obj(tJson* pp, const char* key, int nn);                       ///< 名前（属性名）が key である nn番目のオブジェクトノード（JSON_VALUE_OBJ）へのポインタを返す．ex.) "key":{}
 tJson*   search_double_key_json(tJson* pp, const char* key1, const char* key2, int needval);  ///< 属性名が key1 -> key2 の親子関係を持つ，key2ノードのポインタを返す．
 
 tJson*   _search_key_json(tJson* pp, const char* key, int need, int* nn);               ///< search_key_json() の補助関数

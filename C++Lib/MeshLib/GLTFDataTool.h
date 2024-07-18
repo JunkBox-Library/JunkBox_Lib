@@ -83,6 +83,8 @@ public:
 
     tJson*  json_data;
     tJson*  scenes;
+    tJson*  scenes_name;
+    tJson*  scenes_nodes;
     tJson*  nodes;
     tJson*  meshes;
     //tJson*  primitives;

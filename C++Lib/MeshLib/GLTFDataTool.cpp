@@ -22,32 +22,34 @@ GLTFData::~GLTFData(void)
 
 void  GLTFData::init(void)
 {
-    this->gltf_name   = init_Buffer();
-    this->phantom_out = true;
-    this->no_offset   = false;
+    this->gltf_name     = init_Buffer();
+    this->phantom_out   = true;
+    this->no_offset     = false;
 
-    this->forUnity    = true;
-    this->forUE       = false;
+    this->forUnity      = true;
+    this->forUE         = false;
 
-    this->engine      = JBXL_3D_ENGINE_UE;
-    this->affineTrans = NULL;
+    this->engine        = JBXL_3D_ENGINE_UE;
+    this->affineTrans   = NULL;
     this->skeleton.init();
 
-    this->bin_buffer  = init_Buffer();
-    this->bin_offset  = 0;
+    this->bin_buffer    = init_Buffer();
+    this->bin_offset    = 0;
 
-    this->node_num    = 0;
-    this->view_num    = 0;
-    this->access_num  = 0;
+    this->node_num      = 0;
+    this->view_num      = 0;
+    this->access_num    = 0;
 
-    this->json_data   = NULL;
+    this->json_data     = NULL;
 
-    this->scenes      = NULL;
-    this->nodes       = NULL;
-    this->meshes      = NULL;
-    this->buffers     = NULL;
-    this->buffviews   = NULL;
-    this->accessors   = NULL;
+    this->scenes        = NULL;
+    this->scenes_name   = NULL;
+    this->scenes_nodes  = NULL;
+    this->nodes         = NULL;
+    this->meshes        = NULL;
+    this->buffers       = NULL;
+    this->buffviews     = NULL;
+    this->accessors     = NULL;
 
     initGLTF();
 }
@@ -100,14 +102,16 @@ void  GLTFData::initGLTF(void)
     //tJson* samplers  = json_append_array_bykey(this->json_data, "\"samplers\"");
     //this->scene      = json_append_array_key(this->json_data, "scene");
 
-    this->scenes     = json_append_array_key(this->json_data, "scenes");
-    this->scenes     = json_append_array_key(this->scenes,    "nodes");     // scenes->nodes
-    this->nodes      = json_append_array_key(this->json_data, "nodes");
-    this->meshes     = json_append_array_key(this->json_data, "meshes");
-    this->buffers    = json_append_array_key(this->json_data, "buffers");
-    this->buffviews  = json_append_array_key(this->json_data, "bufferViews");
-    this->accessors  = json_append_array_key(this->json_data, "accessors");
-    json_insert_parse(this->buffers,"{\"uri\":, \"byteLength\":}");
+    json_insert_parse(this->json_data, "{\"scene\":0}");
+    this->scenes       = json_append_array_key(this->json_data, "scenes");
+    this->scenes_name  = json_insert_parse(this->scenes, "{\"name\":}");
+    this->scenes_nodes = json_append_array_key(this->scenes->next, "nodes");
+    this->nodes        = json_append_array_key(this->json_data, "nodes");
+    this->meshes       = json_append_array_key(this->json_data, "meshes");
+    this->buffers      = json_append_array_key(this->json_data, "buffers");
+    this->buffviews    = json_append_array_key(this->json_data, "bufferViews");
+    this->accessors    = json_append_array_key(this->json_data, "accessors");
+    json_insert_parse(this->buffers, "{\"uri\":, \"byteLength\":}");
 }
 
 
@@ -151,6 +155,7 @@ void  GLTFData::outputFile(const char* fname, const char* out_path)
 void  GLTFData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints)
 {
     if (meshdata==NULL) return;
+    if (this->node_num==0 && this->gltf_name.buf==NULL) gltf_name = dup_Buffer(meshdata->data_name);
 
     int total_index  = 0;
     int total_vertex = 0;
@@ -183,11 +188,12 @@ void  GLTFData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData
     long unsigned int offset = 0;
 
     // scenes
-    json_append_array_int_val(this->scenes, this->node_num);
+    if (this->node_num==0) json_set_str_val(this->scenes_name, (char*)this->gltf_name.buf);
+    json_append_array_int_val(this->scenes_nodes, this->node_num);
 
     // nodes
     memset(buf, 0, LBUF);
-    snprintf(buf, LBUF-1, JBXL_GLTF_MESH, (char*)meshdata->data_name.buf, this->node_num);
+    snprintf(buf, LBUF-1, JBXL_GLTF_MESH, (char*)meshdata->alt_name.buf, this->node_num);
     tJson* mesh = json_insert_parse(this->nodes, buf);
     tJson* matrix = json_append_array_key(mesh, "matrix");
 
@@ -203,6 +209,7 @@ void  GLTFData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData
     }
     this->node_num++;
 
+    // FACETS
     tJson* primitives = json_append_array_key(this->meshes, "primitives");
     facet = meshdata->facet;
     while (facet!=NULL) {
@@ -301,8 +308,6 @@ void  GLTFData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData
     ::free(temp_data);
 
     //
-    if (meshdata==NULL) return;
-
     if (collider) {
     }
 

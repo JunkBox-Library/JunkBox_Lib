@@ -884,6 +884,10 @@ json ノードに文字列の属性値(value)を設定する．
 void  json_set_str_val(tJson* json, const char* val)
 {
     if (json==NULL || val==NULL) return;
+    if (json->ldat.id==JSON_BRACKET_NODE) {
+        json = json->next;
+        if (json==NULL) return;
+    }
 
     Buffer buf = init_Buffer();
     if (val[0]!='"') {
@@ -914,6 +918,10 @@ json ノードに整数の属性値(value)を設定する．
 void  json_set_int_val(tJson* json, int val)
 {
     if (json==NULL) return;
+    if (json->ldat.id==JSON_BRACKET_NODE) {
+        json = json->next;
+        if (json==NULL) return;
+    }
 
     copy_i2Buffer(val, &(json->ldat.val));
     json->ldat.lv = JSON_VALUE_INT;
@@ -929,6 +937,10 @@ json ノードに実数(float) の属性値(value)を設定する．
 void  json_set_real_val(tJson* json, float val)
 {
     if (json==NULL) return;
+    if (json->ldat.id==JSON_BRACKET_NODE) {
+        json = json->next;
+        if (json==NULL) return;
+    }
 
     copy_r2Buffer(val, &(json->ldat.val));
     json->ldat.lv = JSON_VALUE_REAL;
@@ -944,6 +956,14 @@ JSON ノードの f_json から t_json へ属性値をコピーする．
 void  json_copy_val(tJson* f_json, tJson* t_json)
 {
     if (f_json==NULL || t_json==NULL) return;
+    if (f_json->ldat.id==JSON_BRACKET_NODE) {
+        f_json = f_json->next;
+        if (f_json==NULL) return;
+    }
+    if (t_json->ldat.id==JSON_BRACKET_NODE) {
+        t_json = t_json->next;
+        if (t_json==NULL) return;
+    }
 
     t_json->ldat.lv = f_json->ldat.lv;
     copy_Buffer(&(f_json->ldat.val), &(t_json->ldat.val));
@@ -960,6 +980,14 @@ JSON ノードの f_json から t_json へ属性名と属性値をコピーす�
 void  json_copy_data(tJson* f_json, tJson* t_json)
 {
     if (f_json==NULL || t_json==NULL) return;
+    if (f_json->ldat.id==JSON_BRACKET_NODE) {
+        f_json = f_json->next;
+        if (f_json==NULL) return;
+    }
+    if (t_json->ldat.id==JSON_BRACKET_NODE) {
+        t_json = t_json->next;
+        if (t_json==NULL) return;
+    }
 
     t_json->ldat.id = f_json->ldat.id;
     t_json->ldat.lv = f_json->ldat.lv;
@@ -1119,30 +1147,22 @@ void  json_append_obj_str_val(tJson* json, const char* key, const char* val)
     if (json==NULL) return;
     if (json->ldat.id!=JSON_BRACKET_NODE) {
         json = json->next;
-        if (json==NULL) return;
-        if (json->ldat.id!=JSON_BRACKET_NODE) return;
+        if (json==NULL || json->ldat.id!=JSON_BRACKET_NODE) return;
     }
 
-    int len = (int)strlen(key);
-    Buffer key_buf = make_Buffer(len + 4);      // \" + \" + \0 + 予備
-    if (key[0]!='"') cat_s2Buffer("\"", &key_buf);
-    cat_s2Buffer(key, &key_buf);
-    if (key[len-1]!='"') cat_s2Buffer("\"", &key_buf);
-
     if (val!=NULL) {
-        len = (int)strlen(val);
+        int len = (int)strlen(val);
         Buffer val_buf = make_Buffer(len + 4);  // \" + \" + \0 + 予備
         if (val[0]!='"') cat_s2Buffer("\"", &val_buf);
         cat_s2Buffer(val, &val_buf);
         if (val[len-1]!='"') cat_s2Buffer("\"", &val_buf);
-        add_tTree_node_bystr(json, JSON_DATA_NODE, JSON_VALUE_STR, (char*)key_buf.buf, (char*)val_buf.buf, NULL, 0);
+        //
+        add_tTree_node_bystr(json, JSON_DATA_NODE, JSON_VALUE_STR, key, (char*)val_buf.buf, NULL, 0);
         free_Buffer(&val_buf);
     }
     else {
-        add_tTree_node_bystr(json, JSON_DATA_NODE, JSON_VALUE_NULL, (char*)key_buf.buf, NULL, NULL, 0);
+        add_tTree_node_bystr(json, JSON_DATA_NODE, JSON_VALUE_NULL, key, NULL, NULL, 0);
     }
-
-    free_Buffer(&key_buf);
     return;
 }
 
@@ -1158,23 +1178,14 @@ void  json_append_obj_int_val(tJson* json, const char* key, int val)
     if (json==NULL) return;
     if (json->ldat.id!=JSON_BRACKET_NODE) {
         json = json->next;
-        if (json==NULL) return;
-        if (json->ldat.id!=JSON_BRACKET_NODE) return;
+        if (json==NULL || json->ldat.id!=JSON_BRACKET_NODE) return;
     }
-
-    int len = (int)strlen(key);
-    Buffer key_buf = make_Buffer(len + 4);      // \" + \" + \0 + 予備
-    if (key[0]!='"') cat_s2Buffer("\"", &key_buf);
-    cat_s2Buffer(key, &key_buf);
-    if (key[len-1]!='"') cat_s2Buffer("\"", &key_buf);
 
     Buffer val_buf = make_Buffer(LEN_INT + 1);
     copy_i2Buffer(val, &val_buf);
-
-    add_tTree_node_bystr(json, JSON_DATA_NODE, JSON_VALUE_INT, (char*)key_buf.buf, (char*)val_buf.buf, NULL, 0);
+    add_tTree_node_bystr(json, JSON_DATA_NODE, JSON_VALUE_INT, key, (char*)val_buf.buf, NULL, 0);
 
     free_Buffer(&val_buf);
-    free_Buffer(&key_buf);
     return;
 }
 
@@ -1188,23 +1199,14 @@ void  json_append_obj_real_val(tJson* json, const char* key, float val)
     if (json==NULL) return;
     if (json->ldat.id!=JSON_BRACKET_NODE) {
         json = json->next;
-        if (json==NULL) return;
-        if (json->ldat.id!=JSON_BRACKET_NODE) return;
+        if (json==NULL || json->ldat.id!=JSON_BRACKET_NODE) return;
     }
-
-    int len = (int)strlen(key);
-    Buffer key_buf = make_Buffer(len + 4);      // \" + \" + \0 + 予備
-    if (key[0]!='"') cat_s2Buffer("\"", &key_buf);
-    cat_s2Buffer(key, &key_buf);
-    if (key[len-1]!='"') cat_s2Buffer("\"", &key_buf);
 
     Buffer val_buf = make_Buffer(LEN_REAL + 1);
     copy_r2Buffer(val, &val_buf);
-
-    add_tTree_node_bystr(json, JSON_DATA_NODE, JSON_VALUE_REAL, (char*)key_buf.buf, (char*)val_buf.buf, NULL, 0);
+    add_tTree_node_bystr(json, JSON_DATA_NODE, JSON_VALUE_REAL, key, (char*)val_buf.buf, NULL, 0);
 
     free_Buffer(&val_buf);
-    free_Buffer(&key_buf);
     return;
 }
 
@@ -1282,7 +1284,6 @@ void  json_append_array_real_val(tJson* json, float val)
     free_Buffer(&val_buf);
     return;
 }
-
 
 
 /**
