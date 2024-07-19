@@ -13,7 +13,7 @@ this software is based in part on the work of the Independent JPEG Group. http:/
 #include "jbxl_state.h"
 
 
-#ifdef  ENABLE_JPEGLIB
+#ifdef  ENABLE_JPEG
 
 
 /**
@@ -95,7 +95,7 @@ jp の画像データを fnameに書き出す．
 
 @param  fname  ファイル名
 @param  jp     保存する JPEGデータ
-@param  qulty  保存のクオリティ 0〜100  100が最高画質
+@param  qulty  保存のクオリティ 0-100  100が最高画質
 
 @retval 0                   正常終了
 @retval JBXL_GRAPH_OPFILE_ERROR  ファイルオープンエラー
@@ -189,7 +189,6 @@ int  write_jpeg_mem(unsigned char** buf, unsigned long* len, JPEGImage jp, int q
     if (*buf==NULL) {
         return JBXL_GRAPH_MEMORY_ERROR;
     }
-    memset(*buf, 0, *len);
 
     jdat.err = jpeg_std_error(&jerr);
     jpeg_create_compress(&jdat);
@@ -369,7 +368,6 @@ JPEGImage  make_JPEGImage(int xs, int ys, int col)
         jp.state = JBXL_GRAPH_MEMORY_ERROR;
         return jp;
     }
-    memset(jp.img, 0, sizeof(JSAMPROW)*ys);
 
     jp.gp  = (JSAMPLE*)malloc(sizeof(JSAMPLE)*col*xs*ys);
     if (jp.gp==NULL) {
@@ -377,7 +375,6 @@ JPEGImage  make_JPEGImage(int xs, int ys, int col)
         jp.state = JBXL_GRAPH_MEMORY_ERROR;
         return jp;
     }
-    memset(jp.gp, 0, sizeof(JSAMPLE)*col*xs*ys);
     
     for (j=0; j<ys; j++) {
         jp.img[j] = (JSAMPROW)&jp.gp[j*col*xs];
@@ -427,8 +424,9 @@ METHODDEF(boolean)  mem_empty_output_buffer(j_compress_ptr cinfo)
 
     nextsize = dest->bufsize * 2;
     nextbuffer = (JOCTET*)malloc(nextsize);
+
     if (nextbuffer == NULL) return FALSE;
-    memset(nextbuffer, 0, nextsize);
+
     memcpy(nextbuffer, dest->buffer, dest->bufsize);
 
     if (dest->newbuffer != NULL) free(dest->newbuffer);
@@ -477,5 +475,5 @@ GLOBAL(void)  jpeg_mem_dest(j_compress_ptr cinfo, unsigned char** buf, unsigned 
 
 
 #endif  // JPEG_LIB_VERSION
-#endif  // DISABLE_JPEGLIB
+#endif  // DISABLE_JPEG
 

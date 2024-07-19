@@ -21,10 +21,11 @@
         --enable-mysql=DIR      enable MySQL client function. libdb-4.2.a is necessary. default is disable. default directory is /usr
 
         --enable-jpeg=DIR       specify the directory where libjpeg is installed. default is disable. default directory is /usr
-        --enable-openjpeg=OPTN  enable OpenJpeg function. OPTN is directory or OpenJpeg version (2.0or 2.1). Default durectory is /usr/local
-                                Default version is 2.0
+        --enable-png=DIR        specify the directory where libpng is installed. default is disable. default directory is /usr
+        --enable-openjpeg=OPTN  enable OpenJpeg function. OPTN is "directory:version". Default durectory is /usr/local. Default version is 2.0
 
-Ex.) ./configure --enable-jpeg --enable-ssl --enable-openjpeg=2.1 --enable-ldap --enable-mysql=/usr/local/mysql
+Ex.) ./configure --enable-jpeg --enable-ssl --enable-openjpeg=:2.1 --enable-ldap --enable-mysql=/usr/local/mysql
+Ex.) ./configure --enable-jpeg --enable-png --enable-openjpeg=/usr/local:2.5 --enable-ssl --enable-ldap
 Ex.) ./configure --enable-jpeg --enable-ssl --enable-ldap --enable-debug
 
 
@@ -54,9 +55,10 @@ Japanese
         --enable-db=DIR         Berkley DB (4.2)機能を使用する．デフォルトは使用しない．またデフォルトのディレクトリは /usr になる．
         --enable-mysql=DIR      MySQLのクライアント機能を使用する．デフォルトは使用しない．またデフォルトのディレクトリは /usr になる．
 
-        --enable-jpeg=DIR       libjpegの機能を使用する．デフォルトは使用しない．デフォルトのディレクトリは /usr になる．
-        --enable-openjpeg=OPTN  OpenJpeg の機能を使用する．デフォルトは使用しない．OPTNはディレクトリか，OpenJpegのバージョン（2.0, 2.1）．
-                                デフォルトのディレクトリは /usr/local デフォルトのバージョンは 2.0
+        --enable-jpeg=DIR       libjpeg の機能を使用する．デフォルトは使用しない．デフォルトのディレクトリは /usr になる．
+        --enable-png=DIR        libpng の機能を使用する．デフォルトは使用しない．デフォルトのディレクトリは /usr になる．
+        --enable-openjpeg=OPTN  OpenJpeg の機能を使用する．デフォルトは使用しない．OPTNは "ディレクトリ:バージョン"．
+                                デフォルトのディレクトリは /usr/local . デフォルトのバージョンは 2.0
 
-    例： ./configure --enable-jpeg --enable-ssl --enable-openjpeg=2.1 --enable-ldap --enable-mysql
+    例： ./configure --enable-jpeg --enable-png --enable-ssl --enable-openjpeg=/usr:2.1 --enable-ldap --enable-mysql
 

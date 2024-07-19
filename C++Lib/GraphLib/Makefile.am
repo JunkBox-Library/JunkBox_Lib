@@ -9,7 +9,7 @@ AM_CFLAGS += -Wno-class-memaccess
 
 
 SRC  = gheader.c Jpeg2KTool.cpp Jpeg2KTool2.cpp Gdata.cpp ExGdata.cpp Gio.cpp Gmt.cpp Graph.cpp Morph.cpp Thinning.cpp JpegTool.cpp
-SRC += TgaTool.cpp
+SRC += TgaTool.cpp PngTool.cpp
 
 
 CC  = g++

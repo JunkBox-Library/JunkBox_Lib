@@ -37,6 +37,7 @@ void  GLTFData::init(void)
     this->bin_offset    = 0;
 
     this->node_num      = 0;
+    this->facet_num     = 0;
     this->view_num      = 0;
     this->access_num    = 0;
 
@@ -50,6 +51,9 @@ void  GLTFData::init(void)
     this->buffers       = NULL;
     this->buffviews     = NULL;
     this->accessors     = NULL;
+    this->materials     = NULL;
+    this->textures      = NULL;
+    this->images        = NULL;
 
     initGLTF();
 }
@@ -96,7 +100,6 @@ void  GLTFData::initGLTF(void)
 
     //tJson* exused    = json_append_array_bykey(this->json_data, "\"extensionsUsed\"");
     //tJson* scene     = json_append_array_bykey(this->json_data, "\"scene\"");
-    //tJson* materials = json_append_array_bykey(this->json_data, "\"materials\"");
     //tJson* textures  = json_append_array_bykey(this->json_data, "\"textures\"");
     //tJson* images    = json_append_array_bykey(this->json_data, "\"images\"");
     //tJson* samplers  = json_append_array_bykey(this->json_data, "\"samplers\"");
@@ -108,6 +111,11 @@ void  GLTFData::initGLTF(void)
     this->scenes_nodes = json_append_array_key(this->scenes->next, "nodes");
     this->nodes        = json_append_array_key(this->json_data, "nodes");
     this->meshes       = json_append_array_key(this->json_data, "meshes");
+
+    this->materials    = json_append_array_key(this->json_data, "materials");
+    this->textures     = json_append_array_key(this->json_data, "textures");
+    this->images       = json_append_array_key(this->json_data, "images");
+
     this->buffers      = json_append_array_key(this->json_data, "buffers");
     this->buffviews    = json_append_array_key(this->json_data, "bufferViews");
     this->accessors    = json_append_array_key(this->json_data, "accessors");
@@ -213,6 +221,8 @@ void  GLTFData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData
     tJson* primitives = json_append_array_key(this->meshes, "primitives");
     facet = meshdata->facet;
     while (facet!=NULL) {
+//print_message("====> %s\n", (char*)facet->material_id.buf);
+//print_message("====> %s\n", (char*)facet->material_param.texture.getName());
         if (facet->num_vertex != facet->num_texcrd) {
             PRINT_MESG("GLTFData::addObject: Error: missmatch vertex and uvmap number! (%d != %d)\n", facet->num_vertex, facet->num_texcrd);
             facet = facet->next;
@@ -228,7 +238,7 @@ void  GLTFData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData
 
         // meshes->primitives
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_MESH_PRIMITIVE, this->access_num, this->access_num+1, this->access_num+2, this->access_num+3);
+        snprintf(buf, LBUF-1, JBXL_GLTF_MESH_PRIMITIVE, this->access_num, this->access_num+1, this->access_num+2, this->access_num+3, this->facet_num);
         json_insert_parse(primitives, buf);
 
         //
@@ -271,6 +281,24 @@ void  GLTFData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData
         this->view_num++;
         this->access_num += 3;
 
+        memset(buf, 0, LBUF);
+        snprintf(buf, LBUF-1, JBXL_GLTF_MATERIAL, (char*)facet->material_id.buf, 1.0, 1.0, 1.0, 1.0, this->facet_num);
+        json_insert_parse(this->materials, buf);
+
+        memset(buf, 0, LBUF);
+        //snprintf(buf, LBUF-1, JBXL_GLTF_TEXTURE, this->facet_num, 0);
+        snprintf(buf, LBUF-1, JBXL_GLTF_TEXTURE, this->facet_num);
+        json_insert_parse(this->textures, buf);
+
+//print_message("====> %s\n", (char*)facet->material_id.buf);
+        memset(buf, 0, LBUF);
+        //snprintf(buf, LBUF-1, JBXL_GLTF_IMAGE, (char*)facet->material_param.texture.getName());
+        snprintf(buf, LBUF-1, JBXL_GLTF_IMAGE, "Kiritan_003.png");
+        json_insert_parse(this->images, buf);
+
+
+
+
         // binary of vertex/normal/uvmap
         float temp;
         length = sizeof(float);
@@ -301,6 +329,7 @@ void  GLTFData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData
             offset += length;
         }
 
+        this->facet_num++;
         facet = facet->next;
     }
 

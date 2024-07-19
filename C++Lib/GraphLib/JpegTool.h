@@ -15,19 +15,23 @@ this software is based in part on the work of the Independent JPEG Group. http:/
 #include "Gdata.h"
 #include "xtools.h"
 
-
 #ifndef HAVE_JPEGLIB_H
-#ifndef DISABLE_JPEGLIB
-#define DISABLE_JPEGLIB
+#ifndef DISABLE_JPEG
+#define DISABLE_JPEG
 #endif
 #endif
 
-#ifdef DISABLE_JPEGLIB
-#undef ENABLE_JPEGLIB
+#if  defined(DISABLE_JPEG) || defined(DISABLE_JPEGLIB)
+#undef  ENABLE_JPEGLIB      // for old version
+#undef  ENABLE_JPEG
 #endif
-
 
 #ifdef ENABLE_JPEGLIB
+#define ENABLE_JPEG
+#endif
+
+
+#ifdef ENABLE_JPEG
 
 #undef HAVE_STDLIB_H
 #include <jpeglib.h>
@@ -163,7 +167,7 @@ template <typename T>  JPEGImage  MSGraph2JPEGImage(MSGraph<T> vp)
 }       // namespace
 
 
-#endif  // ENABLE_JPEGLIB
+#endif  // ENABLE_JPEG
 
 #endif  // __JBXL_CPP_JPEG_TOOl_H_
 

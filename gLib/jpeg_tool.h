@@ -4,17 +4,28 @@
 #include "xtools.h"
 
 #ifndef HAVE_JPEGLIB_H
-#ifndef DISABLE_JPEGLIB
-#define DISABLE_JPEGLIB
+#ifndef DISABLE_JPEG
+#define DISABLE_JPEG
 #endif
 #endif
 
-#ifdef  DISABLE_JPEGLIB
-#undef  ENABLE_JPEGLIB
+#if  defined(DISABLE_JPEG) || defined(DISABLE_JPEGLIB)
+#undef  ENABLE_JPEGLIB      // for old version
+#undef  ENABLE_JPEG
+#endif
+
+#ifndef HAVE_JPEGLIB_H
+#ifndef DISABLE_JPEG
+#define DISABLE_JPEG
+#endif
+#endif
+
+#ifdef ENABLE_JPEGLIB
+#define ENABLE_JPEG
 #endif
 
 
-#ifdef  ENABLE_JPEGLIB
+#ifdef  ENABLE_JPEG
 
 /**
 @brief    JPEG TOOL HEADER
@@ -87,7 +98,7 @@ GLOBAL(void)        jpeg_mem_dest(j_compress_ptr cinfo, unsigned char** buf, uns
 #endif
 
 
-#endif      // DISABLE_JPEGLIB
+#endif      // DISABLE_JPEG
 #endif      // __JBXL_JPEG_TOOL_H_
 
 

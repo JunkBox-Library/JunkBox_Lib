@@ -15,14 +15,20 @@ else
 endif
 
 
-if ENABLE_JPEGFNC
+if ENABLE_JPEG_FNC
     SRC += jpeg_tool.c
 else
     AM_CFLAGS += -DDISABLE_JPEG
 endif
 
+if ENABLE_PNG_FNC
+    SRC += png_tool.c
+else
+    AM_CFLAGS += -DDISABLE_PNG
+endif
 
-if ENABLE_OPENJPEGFNC
+
+if ENABLE_OPENJPEG_FNC
     SRC += jp2k_tool.c jp2k_tool2.c
 else
     AM_CFLAGS += -DDISABLE_OPENJPEG

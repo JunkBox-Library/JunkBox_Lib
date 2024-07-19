@@ -11,7 +11,7 @@ this software is based in part on the work of the Independent JPEG Group. http:/
 
 #include "JpegTool.h"
 
-#ifdef ENABLE_JPEGLIB
+#ifdef ENABLE_JPEG
 
 
 using namespace jbxl;

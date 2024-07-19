@@ -28,7 +28,11 @@ namespace jbxl {
 #define  JBXL_GLTF_BUFFER           "{\"buffer\":%d, \"byteOffset\":%lu, \"byteLength\":%lu, \"byteStride\":%d, \"target\": 34962}"
 #define  JBXL_GLTF_ACCESSOR         "{\"bufferView\":%d, \"byteOffset\":%lu, \"componentType\":%d, \"count\":%d, \"type\":\"%s\"}"
 #define  JBXL_GLTF_MESH             "{\"name\":\"%s\",\"mesh\":%d}" 
-#define  JBXL_GLTF_MESH_PRIMITIVE   "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d},\"mode\":4}" 
+#define  JBXL_GLTF_MESH_PRIMITIVE   "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d},\"material\":%d,\"mode\":4}" 
+#define  JBXL_GLTF_MATERIAL         "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorFactor\":[%f,%f,%f,%f],\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}" 
+//#define  JBXL_GLTF_TEXTURE          "{\"source\":%d, \"sampler\":%d}" 
+#define  JBXL_GLTF_TEXTURE          "{\"source\":%d}" 
+#define  JBXL_GLTF_IMAGE            "{\"uri\": \"%s\"}" 
 
 /*
 
@@ -78,6 +82,7 @@ public:
     long unsigned int bin_offset;
 
     int     node_num;
+    int     facet_num;
     int     view_num;
     int     access_num;
 
@@ -91,6 +96,9 @@ public:
     tJson*  buffers;
     tJson*  buffviews;
     tJson*  accessors;
+    tJson*  materials;
+    tJson*  textures;
+    tJson*  images;
 
 public:
     void    init(void); 

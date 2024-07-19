@@ -12,35 +12,35 @@ SRC = asn1_tool.c asn1_node.c llsd_tool.c bvh_tool.c sip_tool.c http_tool.c ipad
 
 
 
-if ENABLE_LDAPFNC
+if ENABLE_LDAP_FNC
     SRC += ldap_tool.c
 else
     AM_CFLAGS += -DDISABLE_LDAP
 endif
 
 
-if ENABLE_SSLFNC
+if ENABLE_SSL_FNC
     SRC += dh_tool.c ssl_tool.c https_tool.c isnet.c
 else
     AM_CFLAGS += -DDISABLE_SSL
 endif
 
 
-if ENABLE_ZLIBFNC
+if ENABLE_ZLIB_FNC
     SRC += gz_tool.c
 else
     AM_CFLAGS += -DDISABLE_ZLIB
 endif
 
 
-if ENABLE_DBFNC
+if ENABLE_DB_FNC
     SRC += bdb_tool.c
 else
     AM_CFLAGS += -DDISABLE_BERKELEYDB
 endif
 
 
-if ENABLE_MYSQLFNC
+if ENABLE_MYSQL_FNC
     SRC += mysql_tool.c
 else
     AM_CFLAGS += -DDISABLE_MYSQL
