@@ -4,7 +4,7 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT([junkbox_lib], [1.10.0alpha], [fiseki@star-dust.jp], [JunkBox_Lib])
+AC_INIT([JunkBox_Lib], [1.10.0alpha], [fumi.hax@gmail.com], [JunkBox_Lib])
 AC_CONFIG_SRCDIR([Lib/tools.c])
 AC_CONFIG_HEADER([config.h])
 
@@ -271,7 +271,7 @@ AM_CONDITIONAL(ENABLE_PNG_FNC, test "$ENABLE_PNG_FNC" = "yes")
 
 # for openjpeg
 # gLib/jp2k_tool.c を含むソースをコンパイルするか？
-AC_ARG_ENABLE(openjpeg, AS_HELP_STRING([--enable-openjpeg=OPTION(DIR)], [enable openjpeg function in gLib]), [
+AC_ARG_ENABLE(openjpeg, AS_HELP_STRING([--enable-openjpeg=DIR:VERSION], [enable openjpeg function in gLib]), [
 echo -n "checking enable openjpeg function in gLib... "
 ENABLE_OPENJPEG_FNC="$enableval"
 if test "$enableval" = "no" ; then

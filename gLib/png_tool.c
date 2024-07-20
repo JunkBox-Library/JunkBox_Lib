@@ -21,73 +21,151 @@ PNGImage  read_png_file(const char* fname)
 PNGファイルを読み込んで，PNGImage構造体へデータを格納する．
 
 @param  fname  読み込むファイル名
+@return PNGImage データ．state に情報が入る．
 
-@return PNGImage データ．gp==NULL の場合，@b state に情報が入る．
+@retval JBXL_NORMAL             @b state: 正常終了
+@retval JBXL_ERROR              @b state: 初期化エラー
 @retval JBXL_GRAPH_OPFILE_ERROR @b state: ファイルオープンエラー
 @retval JBXL_GRAPH_HEADER_ERROR @b state: 不正ファイル（PNGファイルでない？）
+@retval JBXL_GRAPH_IVDARG_ERROR @b state: サポート外のチャンネル数
 @retval JBXL_GRAPH_MEMORY_ERROR @b state: メモリエラー
 */
 PNGImage  read_png_file(const char* fname)
 {
-    UNUSED(fname);
     PNGImage png;
     memset(&png, 0, sizeof(PNGImage));
 
-    print_message("read_png_file: not implement yet!\n");
+    FILE* fp = fopen(fname, "rb");
+    if (fp==NULL) {
+        png.state = JBXL_GRAPH_OPFILE_ERROR;
+        return png;
+    }
+
+    // ヘッダチェック
+    unsigned char png_sig[PNG_SIGNATURE_SIZE];
+    int sz = fread(png_sig, 1, PNG_SIGNATURE_SIZE, fp);
+    if (sz!=PNG_SIGNATURE_SIZE || png_sig_cmp(png_sig, 0, PNG_SIGNATURE_SIZE)) {
+        png.state = JBXL_GRAPH_HEADER_ERROR;
+        return png;
+    }
+
+    png_structp strct = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if (strct==NULL) {
+        png.state = JBXL_ERROR;
+        return png;
+    }
+    png_infop info = png_create_info_struct(strct);
+    if (info==NULL) {
+        png_destroy_read_struct(&strct, NULL, NULL);
+        strct = NULL;
+        png.state = JBXL_ERROR;
+        return png;
+    }
+
+    png_init_io(strct, fp);
+    png_set_sig_bytes(strct, PNG_SIGNATURE_SIZE);
+    png_read_png(strct, info, PNG_TRANSFORM_PACKING | PNG_TRANSFORM_STRIP_16, NULL);
+
+    png.xs   = png_get_image_width(strct, info);
+    png.ys   = png_get_image_height(strct, info);
+    png.type = png_get_color_type(strct, info);
+
+    if      (png.type == PNG_COLOR_TYPE_GRAY) png.col = 1;
+    else if (png.type == PNG_COLOR_TYPE_GA)   png.col = 2;
+    else if (png.type == PNG_COLOR_TYPE_RGB)  png.col = 3;
+    else if (png.type == PNG_COLOR_TYPE_RGBA) png.col = 4;
+    else {
+        png_destroy_read_struct(&strct, &info, NULL);
+        png.state = JBXL_GRAPH_IVDARG_ERROR;
+        return png;
+    }
+    int length = png.xs*png.ys*png.col;
+
+    png.gp = (uByte*)malloc(length);
+    if (png.gp==NULL) {
+        png_destroy_read_struct(&strct, &info, NULL);
+        png.state = JBXL_GRAPH_MEMORY_ERROR;
+        return png;
+    }
+
+    uByte** datap = png_get_rows(strct, info);
+    int len = png.xs*png.col;
+    for (int j=0; j<png.ys; j++) {
+        memcpy(png.gp + j*len, datap[j], len);
+    }
+
+    png_destroy_read_struct(&strct, &info, NULL);
+    png.state = JBXL_NORMAL;
+
     return png;
 }
 
 
 /**
-int  write_png_file(const char* fname, PNGImage png, int qulty)
+int  write_png_file(const char* fname, PNGImage png)
 
 png の画像データを fnameに書き出す．
 
 @param  fname  ファイル名
 @param  png    保存する PNGデータ
-@param  qulty  保存のクオリティ 0-100  100が最高画質
 
-@retval 0                   正常終了
+@retval 0                        正常終了
 @retval JBXL_GRAPH_OPFILE_ERROR  ファイルオープンエラー
 @retval JBXL_GRAPH_HEADER_ERROR  不正ファイル（PNGファイルでない？）
 @retval JBXL_GRAPH_MEMORY_ERROR  メモリエラー
 @retval JBXL_GRAPH_NODATA_ERROR  png にデータが無い
 @retval JBXL_GRAPH_IVDARH_ERROR  ファイル名が NULL, or サポート外のチャンネル数（現在の所チャンネル数は 1か 3のみをサポート）
 */
-int  write_png_file(const char* fname, PNGImage png, int qulty)
+int  write_png_file(const char* fname, PNGImage png)
 {
-    UNUSED(fname);
-    UNUSED(png);
-    UNUSED(qulty);
+    FILE* fp = fopen(fname, "wb");
+    if (fp==NULL) return JBXL_GRAPH_OPFILE_ERROR;
+    if (png.state!=JBXL_NORMAL || png.gp==NULL) return JBXL_GRAPH_NODATA_ERROR;
+    //
+    png_structp strct = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if (strct==NULL) return JBXL_ERROR;
 
-    print_message("write_png_file: not implement yet!\n");
-    return 0;
-}
+    png_infop info = png_create_info_struct(strct);
+    if (info==NULL) {
+        png_destroy_write_struct(&strct, NULL);
+        return JBXL_ERROR;
+    }
 
+    if      (png.col==1) png.type = PNG_COLOR_TYPE_GRAY;
+    else if (png.col==2) png.type = PNG_COLOR_TYPE_GA;
+    else if (png.col==3) png.type = PNG_COLOR_TYPE_RGB;
+    else if (png.col==4) png.type = PNG_COLOR_TYPE_RGBA;
+    else {
+        png_destroy_write_struct(&strct, &info);
+        return JBXL_GRAPH_IVDARG_ERROR;
+    }
 
-/**
-int  write_png_mem(unsigned char** buf, unsigned long* len, PNGImage png, int qulty)
+    png_init_io(strct, fp);
+    png_set_IHDR(strct, info, png.xs, png.ys, 8, png.type, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+    uByte** datap = (uByte**)png_malloc(strct, sizeof(uByte*) * png.ys);
+    if (datap==NULL) {
+        png_destroy_write_struct(&strct, &info);
+        return JBXL_GRAPH_MEMORY_ERROR;
+    }
+    png_set_rows(strct, info, datap);
 
-png の画像データを *bufに書き出す．*bufは要 free
+    int len = png.xs*png.col;
+    for (int j=0; j<png.ys; j++) {
+        datap[j] = (uByte*)malloc(len);
+        if (datap[j]==NULL) {
+            for (int i=0; i<j; i++) png_free(strct, datap[i]);
+            png_free(strct, datap);
+            png_destroy_write_struct(&strct, &info);
+            return JBXL_GRAPH_MEMORY_ERROR;
+        }
+        memcpy(datap[j], png.gp + j*len, len);
+    }
+    //
+    png_write_png(strct, info, PNG_TRANSFORM_IDENTITY, NULL);
 
-@param[out]  buf    画像データが格納される．要 free
-@param[out]  len    buf の長さ（Byte）が格納される．
-@param       png     保存する PNGデータ
-@param       qulty  保存のクオリティ 0〜100  100が最高画質
-
-@retval JBXL_GRAPH_OPFILE_ERROR  ファイルオープンエラー
-@retval JBXL_GRAPH_HEADER_ERROR  不正ファイル（PNGファイルでない？）
-@retval JBXL_GRAPH_MEMORY_ERROR  メモリエラー
-@retval JBXL_GRAPH_NODATA_ERROR  png にデータが無い
-@retval JBXL_GRAPH_IVDARG_ERROR  buf が NULL, or サポート外のチャンネル数（現在の所チャンネル数は 1か 3のみをサポート）
-*/
-int  write_png_mem(unsigned char** buf, unsigned long* len, PNGImage png, int qulty)
-{
-    UNUSED(buf);
-    UNUSED(len);
-    UNUSED(png);
-    UNUSED(qulty);
-
+    for (int j=0; j<png.ys; j++) png_free(strct, datap[j]);
+    png_free(strct, datap);
+    png_destroy_write_struct(&strct, &info);
     return 0;
 }
 
@@ -145,25 +223,14 @@ PNGImage  BSGraph2PNGImage(BSGraph vp)
 
 
 /**
-PNGImage  make_PNGImage(int xs, int ys, int col)
-*/
-PNGImage  make_PNGImage(int xs, int ys, int col)
-{
-    UNUSED(xs);
-    UNUSED(ys);
-    UNUSED(col);
-    PNGImage png;
-    memset(&png, 0, sizeof(PNGImage));
-    return png;
-}
-
-
-/**
 void  free_PNGImage(PNGImage* png)
 */
 void  free_PNGImage(PNGImage* png)
 {
     if (png==NULL) return;
+    if (png->gp!=NULL) free(png->gp);
+    memset(png, 0, sizeof(PNGImage));
+
     return;
 }
 

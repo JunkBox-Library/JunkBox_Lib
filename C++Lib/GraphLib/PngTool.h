@@ -14,7 +14,7 @@
 #include "Gdata.h"
 #include "xtools.h"
 
-#ifndef HAVE_PNGLIB_H
+#ifndef HAVE_PNG_H
 #ifndef DISABLE_PNG
 #define DISABLE_PNG
 #endif
@@ -30,13 +30,26 @@
 #include <png.h>
 
 #ifdef WIN32
-#pragma  comment(lib, "libpng.lib")
+#pragma  comment(lib, "libpng16.lib")
 #endif
 
 
-#define  PNG_HEADER_SIZE  18
-#define  PNG_FOOTER_SIZE  26
-#define  PNG_FOOTER_STR   "TRUEVISION-XFILE."
+/*
+type
+#define PNG_COLOR_TYPE_GRAY 0
+#define PNG_COLOR_TYPE_PALETTE    (PNG_COLOR_MASK_COLOR | PNG_COLOR_MASK_PALETTE)
+#define PNG_COLOR_TYPE_RGB        (PNG_COLOR_MASK_COLOR)
+#define PNG_COLOR_TYPE_RGB_ALPHA  (PNG_COLOR_MASK_COLOR | PNG_COLOR_MASK_ALPHA)
+#define PNG_COLOR_TYPE_GRAY_ALPHA (PNG_COLOR_MASK_ALPHA)
+// aliases 
+#define PNG_COLOR_TYPE_RGBA  PNG_COLOR_TYPE_RGB_ALPHA
+#define PNG_COLOR_TYPE_GA    PNG_COLOR_TYPE_GRAY_ALPHA
+*/
+
+
+#ifndef PNG_SIGNATURE_SIZE
+#define  PNG_SIGNATURE_SIZE  8
+#endif
 
 
 //
@@ -54,23 +67,29 @@ public:
     int     length;
     int     state;
 
-    uByte   hd[PNG_HEADER_SIZE];
-    uByte   ft[PNG_FOOTER_SIZE];
-    uByte*  gp;                 // BGRA, BGR, MONO, MA
+    uByte   type;
+    uByte*  gp;         // Bitmap
+
+private:
+    png_structp strct;
+    png_infop   info;
 
 public:
     PNGImage(void)  { init();}
-    virtual ~PNGImage(void) {}
+    virtual ~PNGImage(void) { free();}
 
-    void    init(void);                                     ///< グラフィックデータは解放しない
-    bool    isNull(void);                                   ///< グラフィックデータを持っていないか？
-    void    clear(void);                                    ///< 全空間を画素値 0 にする
-    void    fill(uByte v=(uByte)0);                         ///< 全空間を画素値 v にする
-    void    free(void);                                     ///< グラフィックデータを開放する
+    void    init(void);                 ///< グラフィックデータは解放しない
+    bool    isNull(void);               ///< グラフィックデータを持っていないか？
+    void    clear(void);                ///< 全空間を画素値 0 にする
+    void    fill(uByte v=(uByte)0);     ///< 全空間を画素値 v にする
+    void    free(void);                 ///< グラフィックデータを開放する
 
-    uByte&  point(int x, int y, int c) { return gp[col*(y*xs + x) + c];}
+    uByte&  point(int x, int y, int c)   { return gp[col*(y*xs + x) + c];}
+    void    setzero(int x, int y, int c) { gp[col*(y*xs + x) + c] = 0;}
     void    getm(int x, int y, int c);
-    void    setzero(int x, int y, int c);
+
+    void    readData(FILE* fp);
+    int     writeData(FILE* fp);
 };
 
 
@@ -79,95 +98,97 @@ public:
 
 PNGImage    readPNGFile (const char* fname);
 PNGImage    readPNGData (FILE* fp);
-int         writePNGFile(const char* fname, PNGImage tga);
-int         writePNGData(FILE* fp, PNGImage tga);
+int         writePNGFile(const char* fname, PNGImage png);
+int         writePNGData(FILE* fp, PNGImage png);
 
-int         setupPNGData(PNGImage* tga, bool rle);
+int         setupPNGData(PNGImage* png, bool rle);
 
 //int        isPNGHeader(Buffer buf);
 
-// template <typename T>  MSGraph<T> PNGImage2MSGraph<T>(PNGImage  tga)
+// template <typename T>  MSGraph<T> PNGImage2MSGraph<T>(PNGImage  png)
 // template <typename T>  PNGImage  MSGraph2PNGImage(MSGraph<T> vp)
 
 
 /**
-template <typename T>  MSGraph<T> PNGImage2MSGraph(PNGImage tga)
+template <typename T>  MSGraph<T> PNGImage2MSGraph(PNGImage png)
 
 PNGイメージデータを MSGraph型イメージデータに変換する
 
-@param  tga  PNGイメージデータ
+@param  png  PNGイメージデータ
 @return MSGraphイメージデータ
 @retval JBXL_GRAPH_NODATA_ERROR @b state データ無し
 @retval JBXL_GRAPH_MEMORY_ERROR @b state メモリ確保エラー 
 */
-template <typename T>  MSGraph<T> PNGImage2MSGraph(PNGImage tga)
+template <typename T>  MSGraph<T> PNGImage2MSGraph(PNGImage png)
 {
     MSGraph<T> vp;
 
-    if (tga.isNull()) {
+    if (png.isNull()) {
         vp.state = JBXL_GRAPH_NODATA_ERROR;
         return vp;
     }
 
-    vp.set(tga.xs, tga.ys, tga.col);
+    vp.set(png.xs, png.ys, png.col);
     if (vp.isNull()) return vp;
     //
-    if      (tga.col==4) vp.color = GRAPH_COLOR_BGRA;
-    else if (tga.col==3) vp.color = GRAPH_COLOR_BGR;
-    else if (tga.col==2) vp.color = GRAPH_COLOR_MA;
-    else if (tga.col==1) vp.color = GRAPH_COLOR_GRAY;
+    if      (png.col==4) vp.color = GRAPH_COLOR_BGRA;
+    else if (png.col==3) vp.color = GRAPH_COLOR_BGR;
+    else if (png.col==2) vp.color = GRAPH_COLOR_MA;
+    else if (png.col==1) vp.color = GRAPH_COLOR_GRAY;
     else {
         vp.state = JBXL_GRAPH_IVDARG_ERROR;
         return vp;
     }
 
-    uByte dirx = tga.hd[17] & 0x10;         // X方向 0: Left -> Right
-    uByte diry = tga.hd[17] & 0x20;         // Y方向 0: Down -> Top
+/*
+    uByte dirx = png.hd[17] & 0x10;         // X方向 0: Left -> Right
+    uByte diry = png.hd[17] & 0x20;         // Y方向 0: Down -> Top
 
     if (dirx==0x00 && diry==0x00) {         // Left->Right, Down->Top
-        for (int k=0; k<tga.col; k++) {
-            int zp = k*tga.xs*tga.ys;
-            for (int j=0; j<tga.ys; j++) {
-                int yp = zp + j*tga.xs;
-                for (int i=0; i<tga.xs; i++) {
-                    vp.gp[yp + i] = (T)tga.point(i, tga.ys-1-j, k);
+        for (int k=0; k<png.col; k++) {
+            int zp = k*png.xs*png.ys;
+            for (int j=0; j<png.ys; j++) {
+                int yp = zp + j*png.xs;
+                for (int i=0; i<png.xs; i++) {
+                    vp.gp[yp + i] = (T)png.point(i, png.ys-1-j, k);
                 }
             }
         }
     }
     else if (dirx==0x00 && diry==0x20) {    // Left->Right, Top->Down
-        for (int k=0; k<tga.col; k++) {
-            int zp = k*tga.xs*tga.ys;
-            for (int j=0; j<tga.ys; j++) {
-                int yp = zp + j*tga.xs;
-                for (int i=0; i<tga.xs; i++) {
-                    vp.gp[yp + i] = (T)tga.point(i, j, k);
+        for (int k=0; k<png.col; k++) {
+            int zp = k*png.xs*png.ys;
+            for (int j=0; j<png.ys; j++) {
+                int yp = zp + j*png.xs;
+                for (int i=0; i<png.xs; i++) {
+                    vp.gp[yp + i] = (T)png.point(i, j, k);
                 }
             }
         }
     }
     else if (dirx==0x10 && diry==0x00) {    // Right->Left, Down->Top
-        for (int k=0; k<tga.col; k++) {
-            int zp = k*tga.xs*tga.ys;
-            for (int j=0; j<tga.ys; j++) {
-                int yp = zp + j*tga.xs;
-                for (int i=0; i<tga.xs; i++) {
-                    vp.gp[yp + i] = (T)tga.point(tga.xs-1-i, tga.ys-1-j, k);
+        for (int k=0; k<png.col; k++) {
+            int zp = k*png.xs*png.ys;
+            for (int j=0; j<png.ys; j++) {
+                int yp = zp + j*png.xs;
+                for (int i=0; i<png.xs; i++) {
+                    vp.gp[yp + i] = (T)png.point(png.xs-1-i, png.ys-1-j, k);
                 }
             }
         }
     }
     else {
-        for (int k=0; k<tga.col; k++) {     // Right->Left, Top->Down
-            int zp = k*tga.xs*tga.ys;
-            for (int j=0; j<tga.ys; j++) {
-                int yp = zp + j*tga.xs;
-                for (int i=0; i<tga.xs; i++) {
-                    vp.gp[yp + i] = (T)tga.point(tga.xs-1-i, j, k);
+        for (int k=0; k<png.col; k++) {     // Right->Left, Top->Down
+            int zp = k*png.xs*png.ys;
+            for (int j=0; j<png.ys; j++) {
+                int yp = zp + j*png.xs;
+                for (int i=0; i<png.xs; i++) {
+                    vp.gp[yp + i] = (T)png.point(png.xs-1-i, j, k);
                 }
             }
         }
     }
+*/
     return vp;
 }
 
@@ -187,17 +208,17 @@ MSGraph型イメージデータを PNGイメージデータに変換する
 */
 template <typename T>  PNGImage  MSGraph2PNGImage(MSGraph<T> vp, bool rle)
 {
-    PNGImage tga;
-    tga.init();
+    PNGImage png;
+    png.init();
 
     if (vp.isNull()) {
-        tga.state = JBXL_GRAPH_NODATA_ERROR;
-        return tga;
+        png.state = JBXL_GRAPH_NODATA_ERROR;
+        return png;
     }
 
-    tga.setzero(vp.xs, vp.ys, vp.zs);
-    tga.length = tga.xs*tga.ys*tga.col;
-    if (tga.isNull()) return tga;
+    png.setzero(vp.xs, vp.ys, vp.zs);
+    png.length = png.xs*png.ys*png.col;
+    if (png.isNull()) return png;
 
     if (vp.color==GRAPH_COLOR_UNKNOWN) {
         if      (vp.zs==1) vp.color = GRAPH_COLOR_GRAY;
@@ -208,12 +229,12 @@ template <typename T>  PNGImage  MSGraph2PNGImage(MSGraph<T> vp, bool rle)
 
     //
     if (vp.color==GRAPH_COLOR_BGRA || vp.color==GRAPH_COLOR_BGR || vp.color==GRAPH_COLOR_GRAY || vp.color==GRAPH_COLOR_MA) { 
-        for (int k=0; k<tga.col; k++) {
-            int zp = k*tga.xs*tga.ys;
-            for (int j=0; j<tga.ys; j++) {
-                int yp = zp + j*tga.xs;
-                for (int i=0; i<tga.xs; i++) {
-                    tga.point(i, j, k) = (uByte)vp.gp[yp + i];
+        for (int k=0; k<png.col; k++) {
+            int zp = k*png.xs*png.ys;
+            for (int j=0; j<png.ys; j++) {
+                int yp = zp + j*png.xs;
+                for (int i=0; i<png.xs; i++) {
+                    png.point(i, j, k) = (uByte)vp.gp[yp + i];
                 }
             }
         }
@@ -221,68 +242,68 @@ template <typename T>  PNGImage  MSGraph2PNGImage(MSGraph<T> vp, bool rle)
     //
     else if (vp.color==GRAPH_COLOR_RGB || vp.color==GRAPH_COLOR_RGBA) { 
         for (int k=0; k<3; k++) {
-            int zp = (2-k)*tga.xs*tga.ys;
-            for (int j=0; j<tga.ys; j++) {
-                int yp = zp + j*tga.xs;
-                for (int i=0; i<tga.xs; i++) {
-                    tga.point(i, j, k) = (uByte)vp.gp[yp + i];
+            int zp = (2-k)*png.xs*png.ys;
+            for (int j=0; j<png.ys; j++) {
+                int yp = zp + j*png.xs;
+                for (int i=0; i<png.xs; i++) {
+                    png.point(i, j, k) = (uByte)vp.gp[yp + i];
                 }
             }
         }
         if (vp.color==GRAPH_COLOR_RGBA) {   // αチャンネル
-            int zp = 3*tga.xs*tga.ys;
-            for (int j=0; j<tga.ys; j++) {
-                int yp = zp + j*tga.xs;
-                for (int i=0; i<tga.xs; i++) {
-                    tga.point(i, j, 3) = (uByte)vp.gp[yp + i];
+            int zp = 3*png.xs*png.ys;
+            for (int j=0; j<png.ys; j++) {
+                int yp = zp + j*png.xs;
+                for (int i=0; i<png.xs; i++) {
+                    png.point(i, j, 3) = (uByte)vp.gp[yp + i];
                 }
             }
         }
     }
     //
     else if (vp.color==GRAPH_COLOR_ABGR) { 
-        for (int j=0; j<tga.ys; j++) {      // αチャンネル
-            int yp = j*tga.xs;
-            for (int i=0; i<tga.xs; i++) {
-                tga.point(i, j, 3) = (uByte)vp.gp[yp + i];
+        for (int j=0; j<png.ys; j++) {      // αチャンネル
+            int yp = j*png.xs;
+            for (int i=0; i<png.xs; i++) {
+                png.point(i, j, 3) = (uByte)vp.gp[yp + i];
             }
         }
         for (int k=1; k<4; k++) {
-            int zp = k*tga.xs*tga.ys;
-            for (int j=0; j<tga.ys; j++) {
-                int yp = zp + j*tga.xs;
-                for (int i=0; i<tga.xs; i++) {
-                    tga.point(i, j, k-1) = (uByte)vp.gp[yp + i];
+            int zp = k*png.xs*png.ys;
+            for (int j=0; j<png.ys; j++) {
+                int yp = zp + j*png.xs;
+                for (int i=0; i<png.xs; i++) {
+                    png.point(i, j, k-1) = (uByte)vp.gp[yp + i];
                 }
             }
         }
     }
     //
     else if (vp.color==GRAPH_COLOR_ARGB) { 
-        for (int j=0; j<tga.ys; j++) {      // αチャンネル
-            int yp = j*tga.xs;
-            for (int i=0; i<tga.xs; i++) {
-                tga.point(i, j, 3) = (uByte)vp.gp[yp + i];
+        for (int j=0; j<png.ys; j++) {      // αチャンネル
+            int yp = j*png.xs;
+            for (int i=0; i<png.xs; i++) {
+                png.point(i, j, 3) = (uByte)vp.gp[yp + i];
             }
         }
         for (int k=1; k<4; k++) {
-            int zp = (4-k)*tga.xs*tga.ys;
-            for (int j=0; j<tga.ys; j++) {
-                int yp = zp + j*tga.xs;
-                for (int i=0; i<tga.xs; i++) {
-                    tga.point(i, j, k-1) = (uByte)vp.gp[yp + i];
+            int zp = (4-k)*png.xs*png.ys;
+            for (int j=0; j<png.ys; j++) {
+                int yp = zp + j*png.xs;
+                for (int i=0; i<png.xs; i++) {
+                    png.point(i, j, k-1) = (uByte)vp.gp[yp + i];
                 }
             }
         }
     }
     else {
-        tga.state = JBXL_GRAPH_IVDARG_ERROR;
-        tga.free();
+        png.state = JBXL_GRAPH_IVDARG_ERROR;
+        png.free();
     }
 
-    if (tga.state==0) setupPNGData(&tga, rle);
+    if (png.state==0) setupPNGData(&png, rle);
 
-    return tga;
+    return png;
 }
 
 

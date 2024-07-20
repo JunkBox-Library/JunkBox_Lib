@@ -31,14 +31,19 @@
 #include <png.h>
 
 
+#ifndef PNG_SIGNATURE_SIZE
+#define  PNG_SIGNATURE_SIZE  8
+#endif
+
+
 typedef struct
 {
     int      xs;
     int      ys;
     int      col;
     int      state;
-    void*    gp;
-    void*    img;
+    uByte    type;
+    uByte*   gp;
     //
 } PNGImage;
 
@@ -47,16 +52,14 @@ typedef struct
 //////////////////////////////////////////////////////////////////////////////////////////
 
 PNGImage   read_png_file (const char* fname);
-int        write_png_file(const char* fname, PNGImage jp, int qulty);
-int        write_png_mem(unsigned char** buf, unsigned long* len, PNGImage jp, int qulty);
+int        write_png_file(const char* fname, PNGImage png);
 
-WSGraph    PNGImage2WSGraph(PNGImage jp);
-BSGraph    PNGImage2BSGraph(PNGImage jp);
+WSGraph    PNGImage2WSGraph(PNGImage png);
+BSGraph    PNGImage2BSGraph(PNGImage png);
 PNGImage   WSGraph2PNGImage(WSGraph vp);
 PNGImage   BSGraph2PNGImage(BSGraph vp);
 
-PNGImage   make_PNGImage(int xs, int ys, int col);
-void       free_PNGImage(PNGImage* jp);
+void       free_PNGImage(PNGImage* png);
 
 
 #endif      // DISABLE_PNG

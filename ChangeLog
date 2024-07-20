@@ -7,6 +7,7 @@ rewrite configure.ac, doxygen.conf
 working now ..... v1.10.0alpha
 
 v1.10.0alpha
+	add PNG Tool (C/C++)
 	for glTF and FBX data (*)
 	tjson
 		insert_json_nodes() -> json_insert_child()
@@ -17,7 +18,7 @@ v1.10.0alpha
 		save_Buffer_fp -> save_Buffer_format_fp
 		save2_Buffer_fp -> save_Buffer2_format_fp
 	fix xLib/llsd_tool.c (LLSD_MAKER_UUID)	ボケボケ ミス
-	Jpeg2000 allow partial
+	support Jpeg2000 allow partial mode
 	read_index_tList_fp() 値の中に区切り文字が存在しても大丈夫にした．ex.) パスの中の空白など．
 	fix ColladaTool.cpp
 	add_resource_list() に第5引数 mode を追加．mode==0 の場合，互換あり．

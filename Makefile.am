@@ -59,7 +59,7 @@ DIST_DIR = ../Dist
 DIST_WRK = ../.temp_Dist
 DIST_EXT = tar.gz
 
-EXTRA_DIST = Exam Lib xLib gLib Tools README.utf8
+EXTRA_DIST = Exam Lib xLib gLib Tools README
 
 PKG_NAME = $(PACKAGE_NAME)-$(PACKAGE_VERSION)
 
@@ -82,7 +82,7 @@ dist-pkg release:
 	mkdir -p $(DIST_DIR)
 	mkdir -p $(DIST_WRK)
 	(cd $(DIST_WRK) && cp -Rpd ../JunkBox_Lib $(PKG_NAME))
-	(cd $(DIST_WRK) && find . -name ".svn" | xargs rm -rf)
+	(cd $(DIST_WRK) && find . -name ".git" | xargs rm -rf)
 	(cd $(DIST_WRK) && cd $(PKG_NAME) && make pkg)
 	(cd $(DIST_WRK) && rm -rf $(PKG_NAME))
 	(cd $(DIST_WRK) && zcat $(PKG_NAME).$(DIST_EXT) | tar xfp -)
