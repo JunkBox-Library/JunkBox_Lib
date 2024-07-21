@@ -30,7 +30,6 @@
 #include "gdata.h"
 #include <png.h>
 
-
 #ifndef PNG_SIGNATURE_SIZE
 #define  PNG_SIGNATURE_SIZE  8
 #endif

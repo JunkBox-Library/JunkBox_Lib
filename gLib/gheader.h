@@ -111,7 +111,7 @@ typedef struct _CmnHead_Entry {
     int kind;                   ///< Kind of Graphics Format
     int xsize;                  ///< Width of Graphics
     int ysize;                  ///< Height of Graphics
-    int zsize;                  ///< For 3D Data
+    int zsize;                  ///< For 3D Data (or Color)
     int depth;                  ///< Color Depth of Graphics       (bit  unit)  
     unsigned int bsize;         ///< Fllowing buf size or Any Data (byte unit) 
     unsigned int lsize;         ///< Size of Graphics Data         (byte unit) 
@@ -127,7 +127,7 @@ typedef struct _CmnHead {
             int kind;           ///< Kind of Graphics Format
             int xsize;          ///< Width of Graphics
             int ysize;          ///< Height of Graphics
-            int zsize;          ///< For 3D Data
+            int zsize;          ///< For 3D Data (or Color)
             int depth;          ///< Color Depth of Graphics       (bit  unit)  
             unsigned int bsize; ///< Fllowing buf size or Any Data (byte unit) 
             unsigned int lsize; ///< Size of Graphics Data         (byte unit) 
@@ -143,7 +143,7 @@ typedef struct _CmnHead {
     int kind;                   ///< Kind of Graphics Format
     int xsize;                  ///< Width of Graphics
     int ysize;                  ///< Height of Graphics
-    int zsize;                  ///< For 3D Data
+    int zsize;                  ///< For 3D Data (or Color)
     int depth;                  ///< Color Depth of Graphics       (bit  unit)  
     unsigned int bsize;         ///< Fllowing buf size or Any Data (byte unit) 
     unsigned int lsize;         ///< Size of Graphics Data         (byte unit) 
@@ -232,32 +232,36 @@ typedef struct _RGB24Data
 
 #define  STATE_GRAPH_NOERR      0
 
+
 /**
 カラータイプ
    ピクセルデータ毎にカラーの情報が入っているか，
-   カラー毎に PLANEを持っているか（PLANEモード）は zsize(col) の値で判断する．
+   基本的に PLANEモード（カラー毎に PLANEを持っている）．
 */
-
-#define  GRAPH_COLOR_MONO       0       ///< 0x0000   no PLANEモード only
+#define  GRAPH_COLOR_MONO       0       ///< 0x0000
 #define  GRAPH_COLOR_MONO8      0
 #define  GRAPH_COLOR_GRAY       0
+#define  GRAPH_COLOR_GRAY8      0
 
-#define  GRAPH_COLOR_MONO16     16      ///< 0x0010   no PLANEモード only
+#define  GRAPH_COLOR_MONO16     16      ///< 0x0010
 #define  GRAPH_COLOR_GRAY16     16
 
-#define  GRAPH_COLOR_R5G6B5     17      ///< 0x0011   no PLANEモード only
+#define  GRAPH_COLOR_R5G6B5     17      ///< 0x0011   no PLANEモード only. depth = 16, zsize = 1
 #define  GRAPH_COLOR_RGB16      17
 
-#define  GRAPH_COLOR_R4G4B4A4   18      ///< 0x0012   no PLANEモード only
+#define  GRAPH_COLOR_R4G4B4A4   18      ///< 0x0012   no PLANEモード only. depth = 16, zsize = 1
 #define  GRAPH_COLOR_RGBA16     18
 
-#define  GRAPH_COLOR_A4R4G4B4   19      ///< 0x0013   no PLANEモード only
+#define  GRAPH_COLOR_A4R4G4B4   19      ///< 0x0013   no PLANEモード only. depth = 16, zsize = 1
 #define  GRAPH_COLOR_ARGB16     19
  
 // 2 PLANE or 16bit Pixcel
 #define  GRAPH_COLOR_MA         20      ///< 0x0014
 #define  GRAPH_COLOR_M8A8       20
 #define  GRAPH_COLOR_MA16       20
+#define  GRAPH_COLOR_GA         20
+#define  GRAPH_COLOR_G8A8       20
+#define  GRAPH_COLOR_GA16       20
 
 // 3 PLNAE or 24bit Pixcel
 #define  GRAPH_COLOR_R8G8B8     32      ///< 0x0020

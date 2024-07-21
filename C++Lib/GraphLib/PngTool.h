@@ -78,15 +78,15 @@ public:
     PNGImage(void)  { init();}
     virtual ~PNGImage(void) { free();}
 
-    void    init(void);                 ///< グラフィックデータは解放しない
+    void    init(void);                 ///< 初期化．グラフィックデータは解放しない
     bool    isNull(void);               ///< グラフィックデータを持っていないか？
     void    clear(void);                ///< 全空間を画素値 0 にする
     void    fill(uByte v=(uByte)0);     ///< 全空間を画素値 v にする
     void    free(void);                 ///< グラフィックデータを開放する
 
     uByte&  point(int x, int y, int c)   { return gp[col*(y*xs + x) + c];}
-    void    setzero(int x, int y, int c) { gp[col*(y*xs + x) + c] = 0;}
     void    getm(int x, int y, int c);
+    void    setzero(int x, int y, int c) { getm(x, y, c); clear();}
 
     void    readData(FILE* fp);
     int     writeData(FILE* fp);
@@ -116,8 +116,9 @@ PNGイメージデータを MSGraph型イメージデータに変換する
 
 @param  png  PNGイメージデータ
 @return MSGraphイメージデータ
-@retval JBXL_GRAPH_NODATA_ERROR @b state データ無し
-@retval JBXL_GRAPH_MEMORY_ERROR @b state メモリ確保エラー 
+@retval JBXL_GRAPH_NODATA_ERROR   @b state データ無し
+@retval JBXL_GRAPH_MEMORY_ERROR   @b state メモリ確保エラー 
+@retval JBXL_GRAPH_IVDCOLOR_ERROR @b state 無効なカラー指定
 */
 template <typename T>  MSGraph<T> PNGImage2MSGraph(PNGImage png)
 {
@@ -129,72 +130,38 @@ template <typename T>  MSGraph<T> PNGImage2MSGraph(PNGImage png)
     }
 
     vp.set(png.xs, png.ys, png.col);
-    if (vp.isNull()) return vp;
+    if (vp.isNull()) {
+        vp.state = JBXL_GRAPH_MEMORY_ERROR;
+        return vp;
+    }
     //
     if      (png.col==4) vp.color = GRAPH_COLOR_BGRA;
     else if (png.col==3) vp.color = GRAPH_COLOR_BGR;
-    else if (png.col==2) vp.color = GRAPH_COLOR_MA;
+    else if (png.col==2) vp.color = GRAPH_COLOR_GA;
     else if (png.col==1) vp.color = GRAPH_COLOR_GRAY;
     else {
-        vp.state = JBXL_GRAPH_IVDARG_ERROR;
+        vp.free();
+        vp.init();
+        vp.state = JBXL_GRAPH_IVDCOLOR_ERROR;
         return vp;
     }
 
-/*
-    uByte dirx = png.hd[17] & 0x10;         // X方向 0: Left -> Right
-    uByte diry = png.hd[17] & 0x20;         // Y方向 0: Down -> Top
+    for (int k=0; k<png.col; k++) {
+        int zp = k*png.xs*png.ys;
+        for (int j=0; j<png.ys; j++) {
+            int yp = zp + j*png.xs;
+            for (int i=0; i<png.xs; i++) {
+                vp.gp[yp + i] = (T)png.point(i, png.ys-1-j, k);
+            }
+        }
+    }
 
-    if (dirx==0x00 && diry==0x00) {         // Left->Right, Down->Top
-        for (int k=0; k<png.col; k++) {
-            int zp = k*png.xs*png.ys;
-            for (int j=0; j<png.ys; j++) {
-                int yp = zp + j*png.xs;
-                for (int i=0; i<png.xs; i++) {
-                    vp.gp[yp + i] = (T)png.point(i, png.ys-1-j, k);
-                }
-            }
-        }
-    }
-    else if (dirx==0x00 && diry==0x20) {    // Left->Right, Top->Down
-        for (int k=0; k<png.col; k++) {
-            int zp = k*png.xs*png.ys;
-            for (int j=0; j<png.ys; j++) {
-                int yp = zp + j*png.xs;
-                for (int i=0; i<png.xs; i++) {
-                    vp.gp[yp + i] = (T)png.point(i, j, k);
-                }
-            }
-        }
-    }
-    else if (dirx==0x10 && diry==0x00) {    // Right->Left, Down->Top
-        for (int k=0; k<png.col; k++) {
-            int zp = k*png.xs*png.ys;
-            for (int j=0; j<png.ys; j++) {
-                int yp = zp + j*png.xs;
-                for (int i=0; i<png.xs; i++) {
-                    vp.gp[yp + i] = (T)png.point(png.xs-1-i, png.ys-1-j, k);
-                }
-            }
-        }
-    }
-    else {
-        for (int k=0; k<png.col; k++) {     // Right->Left, Top->Down
-            int zp = k*png.xs*png.ys;
-            for (int j=0; j<png.ys; j++) {
-                int yp = zp + j*png.xs;
-                for (int i=0; i<png.xs; i++) {
-                    vp.gp[yp + i] = (T)png.point(png.xs-1-i, j, k);
-                }
-            }
-        }
-    }
-*/
     return vp;
 }
 
 
 /**
-template <typename T>  PNGImage  MSGraph2PNGImage(MSGraph<T> vp, bool rle)
+template <typename T>  PNGImage  MSGraph2PNGImage(MSGraph<T> vp)
 
 MSGraph型イメージデータを PNGイメージデータに変換する
 ヘッダ情報は変換しない（別途変換する）．
@@ -203,10 +170,11 @@ MSGraph型イメージデータを PNGイメージデータに変換する
 @param  rle  RLE（連長圧縮）を行うかどうか
 
 @return PNGイメージデータ
-@retval JBXL_GRAPH_NODATA_ERROR @b state データ無し
-@retval JBXL_GRAPH_MEMORY_ERROR @b state メモリ確保エラー 
+@retval JBXL_GRAPH_NODATA_ERROR   @b state データ無し
+@retval JBXL_GRAPH_MEMORY_ERROR   @b state メモリ確保エラー 
+@retval JBXL_GRAPH_IVDCOLOR_ERROR @b state 無効なカラー指定
 */
-template <typename T>  PNGImage  MSGraph2PNGImage(MSGraph<T> vp, bool rle)
+template <typename T>  PNGImage  MSGraph2PNGImage(MSGraph<T> vp)
 {
     PNGImage png;
     png.init();
@@ -217,92 +185,40 @@ template <typename T>  PNGImage  MSGraph2PNGImage(MSGraph<T> vp, bool rle)
     }
 
     png.setzero(vp.xs, vp.ys, vp.zs);
-    png.length = png.xs*png.ys*png.col;
-    if (png.isNull()) return png;
+    if (png.isNull()) {
+        png.init();
+        png.state = JBXL_GRAPH_MEMORY_ERROR;
+        return png;
+    }
 
     if (vp.color==GRAPH_COLOR_UNKNOWN) {
         if      (vp.zs==1) vp.color = GRAPH_COLOR_GRAY;
-        else if (vp.zs==2) vp.color = GRAPH_COLOR_MA;
+        else if (vp.zs==2) vp.color = GRAPH_COLOR_GA;
         else if (vp.zs==3) vp.color = GRAPH_COLOR_RGB;
         else if (vp.zs==4) vp.color = GRAPH_COLOR_RGBA;
     }
-
-    //
-    if (vp.color==GRAPH_COLOR_BGRA || vp.color==GRAPH_COLOR_BGR || vp.color==GRAPH_COLOR_GRAY || vp.color==GRAPH_COLOR_MA) { 
-        for (int k=0; k<png.col; k++) {
-            int zp = k*png.xs*png.ys;
-            for (int j=0; j<png.ys; j++) {
-                int yp = zp + j*png.xs;
-                for (int i=0; i<png.xs; i++) {
-                    png.point(i, j, k) = (uByte)vp.gp[yp + i];
-                }
-            }
-        }
-    }
-    //
-    else if (vp.color==GRAPH_COLOR_RGB || vp.color==GRAPH_COLOR_RGBA) { 
-        for (int k=0; k<3; k++) {
-            int zp = (2-k)*png.xs*png.ys;
-            for (int j=0; j<png.ys; j++) {
-                int yp = zp + j*png.xs;
-                for (int i=0; i<png.xs; i++) {
-                    png.point(i, j, k) = (uByte)vp.gp[yp + i];
-                }
-            }
-        }
-        if (vp.color==GRAPH_COLOR_RGBA) {   // αチャンネル
-            int zp = 3*png.xs*png.ys;
-            for (int j=0; j<png.ys; j++) {
-                int yp = zp + j*png.xs;
-                for (int i=0; i<png.xs; i++) {
-                    png.point(i, j, 3) = (uByte)vp.gp[yp + i];
-                }
-            }
-        }
-    }
-    //
-    else if (vp.color==GRAPH_COLOR_ABGR) { 
-        for (int j=0; j<png.ys; j++) {      // αチャンネル
-            int yp = j*png.xs;
-            for (int i=0; i<png.xs; i++) {
-                png.point(i, j, 3) = (uByte)vp.gp[yp + i];
-            }
-        }
-        for (int k=1; k<4; k++) {
-            int zp = k*png.xs*png.ys;
-            for (int j=0; j<png.ys; j++) {
-                int yp = zp + j*png.xs;
-                for (int i=0; i<png.xs; i++) {
-                    png.point(i, j, k-1) = (uByte)vp.gp[yp + i];
-                }
-            }
-        }
-    }
-    //
-    else if (vp.color==GRAPH_COLOR_ARGB) { 
-        for (int j=0; j<png.ys; j++) {      // αチャンネル
-            int yp = j*png.xs;
-            for (int i=0; i<png.xs; i++) {
-                png.point(i, j, 3) = (uByte)vp.gp[yp + i];
-            }
-        }
-        for (int k=1; k<4; k++) {
-            int zp = (4-k)*png.xs*png.ys;
-            for (int j=0; j<png.ys; j++) {
-                int yp = zp + j*png.xs;
-                for (int i=0; i<png.xs; i++) {
-                    png.point(i, j, k-1) = (uByte)vp.gp[yp + i];
-                }
-            }
-        }
-    }
+    if      (vp.color==GRAPH_COLOR_GRAY) png.type = PNG_COLOR_TYPE_GRAY;
+    else if (vp.color==GRAPH_COLOR_GA)   png.type = PNG_COLOR_TYPE_GA;
+    else if (vp.color==GRAPH_COLOR_RGB)  png.type = PNG_COLOR_TYPE_RGB;
+    else if (vp.color==GRAPH_COLOR_RGBA) png.type = PNG_COLOR_TYPE_RGBA;
     else {
-        png.state = JBXL_GRAPH_IVDARG_ERROR;
         png.free();
+        png.init();
+        png.state = JBXL_GRAPH_IVDCOLOR_ERROR;
+        return png;
     }
 
-    if (png.state==0) setupPNGData(&png, rle);
+    for (int k=0; k<png.col; k++) {
+       int zp = k*png.xs*png.ys;
+        for (int j=0; j<png.ys; j++) {
+            int yp = zp + j*png.xs;
+            for (int i=0; i<png.xs; i++) {
+                png.point(i, j, k) = (uByte)vp.gp[yp + i];
+            }
+        }
+    }
 
+    png.state = JBXL_NORMAL;
     return png;
 }
 

@@ -23,12 +23,12 @@ PNGファイルを読み込んで，PNGImage構造体へデータを格納する
 @param  fname  読み込むファイル名
 @return PNGImage データ．state に情報が入る．
 
-@retval JBXL_NORMAL             @b state: 正常終了
-@retval JBXL_ERROR              @b state: 初期化エラー
-@retval JBXL_GRAPH_OPFILE_ERROR @b state: ファイルオープンエラー
-@retval JBXL_GRAPH_HEADER_ERROR @b state: 不正ファイル（PNGファイルでない？）
-@retval JBXL_GRAPH_IVDARG_ERROR @b state: サポート外のチャンネル数
-@retval JBXL_GRAPH_MEMORY_ERROR @b state: メモリエラー
+@retval JBXL_NORMAL               @b state: 正常終了
+@retval JBXL_ERROR                @b state: 初期化エラー
+@retval JBXL_GRAPH_OPFILE_ERROR   @b state: ファイルオープンエラー
+@retval JBXL_GRAPH_HEADER_ERROR   @b state: 不正ファイル（PNGファイルでない？）
+@retval JBXL_GRAPH_IVDCOLOR_ERROR @b state: サポート外のチャンネル（カラー）数
+@retval JBXL_GRAPH_MEMORY_ERROR   @b state: メモリエラー
 */
 PNGImage  read_png_file(const char* fname)
 {
@@ -76,7 +76,7 @@ PNGImage  read_png_file(const char* fname)
     else if (png.type == PNG_COLOR_TYPE_RGBA) png.col = 4;
     else {
         png_destroy_read_struct(&strct, &info, NULL);
-        png.state = JBXL_GRAPH_IVDARG_ERROR;
+        png.state = JBXL_GRAPH_IVDCOLOR_ERROR;
         return png;
     }
     int length = png.xs*png.ys*png.col;
@@ -109,15 +109,18 @@ png の画像データを fnameに書き出す．
 @param  fname  ファイル名
 @param  png    保存する PNGデータ
 
-@retval 0                        正常終了
-@retval JBXL_GRAPH_OPFILE_ERROR  ファイルオープンエラー
-@retval JBXL_GRAPH_HEADER_ERROR  不正ファイル（PNGファイルでない？）
-@retval JBXL_GRAPH_MEMORY_ERROR  メモリエラー
-@retval JBXL_GRAPH_NODATA_ERROR  png にデータが無い
-@retval JBXL_GRAPH_IVDARH_ERROR  ファイル名が NULL, or サポート外のチャンネル数（現在の所チャンネル数は 1か 3のみをサポート）
+@retval 0                          正常終了
+@retval JBXL_GRAPH_OPFILE_ERROR    ファイルオープンエラー
+@retval JBXL_GRAPH_HEADER_ERROR    不正ファイル（PNGファイルでない？）
+@retval JBXL_GRAPH_MEMORY_ERROR    メモリエラー
+@retval JBXL_GRAPH_NODATA_ERROR    png にデータが無い
+@retval JBXL_GRAPH_IVDARG_ERROR    ファイル名が NULL
+@retval JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル（カラー）数
 */
 int  write_png_file(const char* fname, PNGImage png)
 {
+    if (fname==NULL) return JBXL_GRAPH_IVDARG_ERROR;
+
     FILE* fp = fopen(fname, "wb");
     if (fp==NULL) return JBXL_GRAPH_OPFILE_ERROR;
     if (png.state!=JBXL_NORMAL || png.gp==NULL) return JBXL_GRAPH_NODATA_ERROR;
@@ -137,7 +140,7 @@ int  write_png_file(const char* fname, PNGImage png)
     else if (png.col==4) png.type = PNG_COLOR_TYPE_RGBA;
     else {
         png_destroy_write_struct(&strct, &info);
-        return JBXL_GRAPH_IVDARG_ERROR;
+        return JBXL_GRAPH_IVDCOLOR_ERROR;
     }
 
     png_init_io(strct, fp);
@@ -177,9 +180,22 @@ PNGデータをチャンネル分解して，WSGraphに格納する．
 */
 WSGraph  PNGImage2WSGraph(PNGImage png)
 {
-    UNUSED(png);
-    WSGraph vp;
-    memset(&vp, 0, sizeof(WSGraph));
+    WSGraph vp = make_WSGraph(png.xs, png.ys, png.col);
+    if (vp.state!=JBXL_NORMAL || vp.gp==NULL) return vp;
+
+    int i, j, k;
+    for (k=0; k<png.col; k++) {
+        int kp = k*png.xs*png.ys;
+        for (j=0; j<png.ys;  j++) {
+            int jp = j*png.xs;
+            int ip = jp + kp;
+            int cp = jp*png.col + k;
+            for (i=0; i<png.xs;  i++) {
+                //vp.gp[k*png.xs*png.ys + j*png.xs + i] = png.gp[png.col(j*png.xs + i) + k];
+                vp.gp[ip + i] = (sWord)png.gp[cp + png.col*i];
+            }
+        }
+    }
     return vp;
 }
 
@@ -191,9 +207,21 @@ PNGデータをチャンネル分解して，BSGraphに格納する．
 */
 BSGraph  PNGImage2BSGraph(PNGImage png)
 {
-    UNUSED(png);
-    BSGraph vp;
-    memset(&vp, 0, sizeof(BSGraph));
+    BSGraph vp = make_BSGraph(png.xs, png.ys, png.col);
+    if (vp.state!=JBXL_NORMAL || vp.gp==NULL) return vp;
+
+    int i, j, k;
+    for (k=0; k<png.col; k++) {
+        int kp = k*png.xs*png.ys;
+        for (j=0; j<png.ys;  j++) {
+            int jp = j*png.xs;
+            int ip = jp + kp;
+            int cp = jp*png.col + k;
+            for (i=0; i<png.xs;  i++) {
+                vp.gp[ip + i] = (uByte)png.gp[cp + png.col*i];
+            }
+        }
+    }
     return vp;
 }
 
@@ -203,9 +231,43 @@ PNGImage  WSGraph2PNGImage(WSGraph vp)
 */
 PNGImage  WSGraph2PNGImage(WSGraph vp)
 {
-    UNUSED(vp);
     PNGImage png;
     memset(&png, 0, sizeof(PNGImage));
+
+    png.xs  = vp.xs;
+    png.ys  = vp.ys;
+    png.col = vp.zs;
+    int length = png.xs*png.ys*png.col;
+    
+    if      (vp.zs==1) png.type = PNG_COLOR_TYPE_GRAY;
+    else if (vp.zs==2) png.type = PNG_COLOR_TYPE_GA;
+    else if (vp.zs==3) png.type = PNG_COLOR_TYPE_RGB;
+    else if (vp.zs==4) png.type = PNG_COLOR_TYPE_RGBA;
+    else {
+        memset(&png, 0, sizeof(PNGImage));
+        png.state = JBXL_GRAPH_IVDCOLOR_ERROR;
+        return png;
+    }
+    png.gp = (uByte*)malloc(sizeof(uByte)*length);
+    if (png.gp==NULL) {
+        memset(&png, 0, sizeof(PNGImage));
+        png.state = JBXL_GRAPH_MEMORY_ERROR;
+        return png;
+    }
+        
+    int i, j, k;
+    for (k=0; k<png.col; k++) {
+        int kp = k*png.xs*png.ys;
+        for (j=0; j<png.ys;  j++) {
+            int jp = j*png.xs;
+            int ip = jp + kp;
+            int cp = jp*png.col + k;
+            for (i=0; i<png.xs;  i++) {
+                png.gp[cp + png.col*i] = (uByte)vp.gp[ip + i];
+            }
+        }
+    }
+    png.state = JBXL_NORMAL;
     return png;
 }
 
@@ -215,9 +277,44 @@ PNGImage  BSGraph2PNGImage(BSGraph vp)
 */
 PNGImage  BSGraph2PNGImage(BSGraph vp)
 {
-    UNUSED(vp);
     PNGImage png;
     memset(&png, 0, sizeof(PNGImage));
+
+    png.xs  = vp.xs;
+    png.ys  = vp.ys;
+    png.col = vp.zs;
+    int length = png.xs*png.ys*png.col;
+    
+    if      (vp.zs==1) png.type = PNG_COLOR_TYPE_GRAY;
+    else if (vp.zs==2) png.type = PNG_COLOR_TYPE_GA;
+    else if (vp.zs==3) png.type = PNG_COLOR_TYPE_RGB;
+    else if (vp.zs==4) png.type = PNG_COLOR_TYPE_RGBA;
+    else {
+        memset(&png, 0, sizeof(PNGImage));
+        png.state = JBXL_GRAPH_IVDCOLOR_ERROR;
+        return png;
+    }
+
+    png.gp = (uByte*)malloc(sizeof(uByte)*length);
+    if (png.gp==NULL) {
+        memset(&png, 0, sizeof(PNGImage));
+        png.state = JBXL_GRAPH_MEMORY_ERROR;
+        return png;
+    }
+        
+    int i, j, k;
+    for (k=0; k<png.col; k++) {
+        int kp = k*png.xs*png.ys;
+        for (j=0; j<png.ys;  j++) {
+            int jp = j*png.xs;
+            int ip = jp + kp;
+            int cp = jp*png.col + k;
+            for (i=0; i<png.xs;  i++) {
+                png.gp[cp + png.col*i] = vp.gp[ip + i];
+            }
+        }
+    }
+    png.state = JBXL_NORMAL;
     return png;
 }
 

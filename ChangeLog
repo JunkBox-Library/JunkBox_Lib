@@ -7,8 +7,8 @@ rewrite configure.ac, doxygen.conf
 working now ..... v1.10.0alpha
 
 v1.10.0alpha
-	add PNG Tool (C/C++)
 	for glTF and FBX data (*)
+	add PNG Tool (C/C++)
 	tjson
 		insert_json_nodes() -> json_insert_child()
 	file_size() 戻り値(<0)変更．
@@ -26,7 +26,7 @@ v1.10.0alpha
 
 
 v1.9.2 '24/05/20
-	C++Lib/MeshLib/ColladaTool.cpp
+	C++Lib/MeshLib/ColladaTool.cpp (*)
 		Joints support
 	C++Lib/Math/
 		Vector.h

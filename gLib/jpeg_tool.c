@@ -97,12 +97,13 @@ jp の画像データを fnameに書き出す．
 @param  jp     保存する JPEGデータ
 @param  qulty  保存のクオリティ 0-100  100が最高画質
 
-@retval 0                   正常終了
-@retval JBXL_GRAPH_OPFILE_ERROR  ファイルオープンエラー
-@retval JBXL_GRAPH_HEADER_ERROR  不正ファイル（JPEGファイルでない？）
-@retval JBXL_GRAPH_MEMORY_ERROR  メモリエラー
-@retval JBXL_GRAPH_NODATA_ERROR  jp にデータが無い
-@retval JBXL_GRAPH_IVDARH_ERROR  ファイル名が NULL, or サポート外のチャンネル数（現在の所チャンネル数は 1か 3のみをサポート）
+@retval 0                          正常終了
+@retval JBXL_GRAPH_OPFILE_ERROR    ファイルオープンエラー
+@retval JBXL_GRAPH_HEADER_ERROR    不正ファイル（JPEGファイルでない？）
+@retval JBXL_GRAPH_MEMORY_ERROR    メモリエラー
+@retval JBXL_GRAPH_NODATA_ERROR    jp にデータが無い
+@retval JBXL_GRAPH_IVDARH_ERROR    ファイル名が NULL
+@retval JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル数（現在の所チャンネル数は 1か 3のみをサポート）
 */
 int  write_jpeg_file(const char* fname, JPEGImage jp, int qulty)
 {
@@ -112,7 +113,7 @@ int  write_jpeg_file(const char* fname, JPEGImage jp, int qulty)
 
 
     if (fname==NULL) return JBXL_GRAPH_IVDARG_ERROR;
-    if (jp.col!=1 && jp.col!=3) return JBXL_GRAPH_IVDARG_ERROR;
+    if (jp.col!=1 && jp.col!=3) return JBXL_GRAPH_IVDCOLOR_ERROR;
     if (jp.gp==NULL || jp.img==NULL) return JBXL_GRAPH_NODATA_ERROR;
 
     if (qulty>100)  qulty = 100;
@@ -164,11 +165,12 @@ jp の画像データを *bufに書き出す．*bufは要 free
 @param       jp     保存する JPEGデータ
 @param       qulty  保存のクオリティ 0〜100  100が最高画質
 
-@retval JBXL_GRAPH_OPFILE_ERROR  ファイルオープンエラー
-@retval JBXL_GRAPH_HEADER_ERROR  不正ファイル（JPEGファイルでない？）
-@retval JBXL_GRAPH_MEMORY_ERROR  メモリエラー
-@retval JBXL_GRAPH_NODATA_ERROR  jp にデータが無い
-@retval JBXL_GRAPH_IVDARG_ERROR  buf が NULL, or サポート外のチャンネル数（現在の所チャンネル数は 1か 3のみをサポート）
+@retval JBXL_GRAPH_OPFILE_ERROR    ファイルオープンエラー
+@retval JBXL_GRAPH_HEADER_ERROR    不正ファイル（JPEGファイルでない？）
+@retval JBXL_GRAPH_MEMORY_ERROR    メモリエラー
+@retval JBXL_GRAPH_NODATA_ERROR    jp にデータが無い
+@retval JBXL_GRAPH_IVDARG_ERROR    buf が NULL
+@retval JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル数（現在の所チャンネル数は 1か 3のみをサポート）
 */
 int  write_jpeg_mem(unsigned char** buf, unsigned long* len, JPEGImage jp, int qulty)
 {
@@ -176,7 +178,7 @@ int  write_jpeg_mem(unsigned char** buf, unsigned long* len, JPEGImage jp, int q
     struct jpeg_error_mgr       jerr;
 
     if (buf==NULL || len==NULL) return JBXL_GRAPH_IVDARG_ERROR;
-    if (jp.col!=1 && jp.col!=3) return JBXL_GRAPH_IVDARG_ERROR;
+    if (jp.col!=1 && jp.col!=3) return JBXL_GRAPH_IVDCOLOR_ERROR;
     if (jp.gp==NULL || jp.img==NULL) return JBXL_GRAPH_NODATA_ERROR;
 
     *len = jp.xs*jp.ys*jp.col;

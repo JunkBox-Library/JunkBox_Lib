@@ -51,7 +51,8 @@ void  JPEGImage::clear(void)
 */
 void  JPEGImage::clear(void) 
 {
-    memset(gp, 0, sizeof(JSAMPLE)*xs*ys*col);
+    if (gp!=NULL) memset(gp, 0, sizeof(JSAMPLE)*xs*ys*col);
+
     return;
 }
 
@@ -61,8 +62,8 @@ void  JPEGImage::fill(JSAMPLE v)
 */
 void  JPEGImage::fill(JSAMPLE v) 
 {
-    int i;
-    for (i=0; i<xs*ys*col; i++) gp[i] = v;
+    if (gp==NULL) return;
+    for (int i=0; i<xs*ys*col; i++) gp[i] = v;
 
     return;
 }
@@ -232,12 +233,13 @@ jp の画像データを fnameに書き出す．
 @param  jp     保存する JPEGデータ
 @param  qulty  保存のクオリティ 0〜100  100が最高画質
 
-@retval 0                   正常終了
-@retval JBXL_GRAPH_OPFILE_ERROR  ファイルオープンエラー
-@retval JBXL_GRAPH_HEADER_ERROR  不正ファイル（JPEGファイルでない？）
-@retval JBXL_GRAPH_MEMORY_ERROR  メモリエラー
-@retval JBXL_GRAPH_NODATA_ERROR  jp にデータが無い
-@retval JBXL_GRAPH_IVDARG_ERROR  ファイル名が NULL, or サポート外のチャンネル数（現在の所チャンネル数は 1か 3のみをサポート）
+@retval 0                          正常終了
+@retval JBXL_GRAPH_OPFILE_ERROR    ファイルオープンエラー
+@retval JBXL_GRAPH_HEADER_ERROR    不正ファイル（JPEGファイルでない？）
+@retval JBXL_GRAPH_MEMORY_ERROR    メモリエラー
+@retval JBXL_GRAPH_NODATA_ERROR    jp にデータが無い
+@retval JBXL_GRAPH_IVDARG_ERROR    ファイル名が NULL
+@retval JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル数（現在の所チャンネル数は 1か 3のみをサポート）
 */
 int  jbxl::writeJPEGFile(const char* fname, JPEGImage jp, int qulty)
 {
@@ -245,7 +247,7 @@ int  jbxl::writeJPEGFile(const char* fname, JPEGImage jp, int qulty)
     int    ret;
 
     if (fname==NULL) return JBXL_GRAPH_IVDARG_ERROR;
-    if (jp.col!=1 && jp.col!=3) return JBXL_GRAPH_IVDARG_ERROR;
+    if (jp.col!=1 && jp.col!=3) return JBXL_GRAPH_IVDCOLOR_ERROR;
     if (jp.gp==NULL || jp.image==NULL) return JBXL_GRAPH_NODATA_ERROR;
 
     fp = fopen(fname, "wb");
@@ -269,12 +271,12 @@ jp の画像データを fpに書き出す．
 @param  jp     保存する JPEGデータ
 @param  qulty  保存のクオリティ 0〜100  100が最高画質
 
-@retval 0                   正常終了
-@retval JBXL_GRAPH_OPFILE_ERROR  ファイルオープンエラー
-@retval JBXL_GRAPH_HEADER_ERROR  不正ファイル（JPEGファイルでない？）
-@retval JBXL_GRAPH_MEMORY_ERROR  メモリエラー
-@retval JBXL_GRAPH_NODATA_ERROR  jp にデータが無い
-@retval JBXL_GRAPH_IVDARG_ERROR  サポート外のチャンネル数（現在の所チャンネル数は 1か 3のみをサポート）
+@retval 0                          正常終了
+@retval JBXL_GRAPH_OPFILE_ERROR    ファイルオープンエラー
+@retval JBXL_GRAPH_HEADER_ERROR    不正ファイル（JPEGファイルでない？）
+@retval JBXL_GRAPH_MEMORY_ERROR    メモリエラー
+@retval JBXL_GRAPH_NODATA_ERROR    jp にデータが無い
+@retval JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル数（現在の所チャンネル数は 1か 3のみをサポート）
 */
 int  jbxl::writeJPEGData(FILE* fp, JPEGImage jp, int qulty)
 {
@@ -282,7 +284,7 @@ int  jbxl::writeJPEGData(FILE* fp, JPEGImage jp, int qulty)
     struct jpeg_error_mgr       jerr;
 
     if (fp==NULL) return JBXL_GRAPH_OPFILE_ERROR;
-    if (jp.col!=1 && jp.col!=3) return JBXL_GRAPH_IVDARG_ERROR;
+    if (jp.col!=1 && jp.col!=3) return JBXL_GRAPH_IVDCOLOR_ERROR;
     if (jp.gp==NULL || jp.image==NULL) return JBXL_GRAPH_NODATA_ERROR;
 
     if (qulty>100)    qulty = 100;
@@ -354,7 +356,7 @@ CmnHead  jbxl::JPEGImage2CmnHead(JPEGImage jp)
     }
     else {
         hd.kind  = HEADER_NONE;
-        hd.xsize = JBXL_GRAPH_IVDARG_ERROR;
+        hd.xsize = JBXL_GRAPH_IVDCOLOR_ERROR;
         return hd;
     }
 

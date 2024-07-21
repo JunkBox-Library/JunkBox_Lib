@@ -2,7 +2,7 @@
 @brief    PNGグラフィックデータ ツール for C++ 
 @file     JpegTool.cpp
 @version  0.9
-@date     2009 3/8
+@date     2024 07/21
 @author   Fumi.Iseki (C)
 
 @attention
@@ -53,7 +53,7 @@ void  PNGImage::clear(void)
 */
 void  PNGImage::clear(void) 
 {
-    memset(gp, 0, length);
+    if (gp!=NULL) memset(gp, 0, length);
     return;
 }
 
@@ -63,7 +63,7 @@ void  PNGImage::fill(uByte v)
 */
 void  PNGImage::fill(uByte v) 
 {
-    memset(gp, v, length);
+    if (gp!=NULL) memset(gp, v, length);
     return;
 }
 
@@ -114,12 +114,12 @@ PNGファイルを読み込んで，PNGImage Class へデータを格納する�
 
 @return なし．終了時に @b state に情報が入る．
 
-state: JBXL_NORMAL              正常終了 @n
-state: JBXL_ERROR               初期化エラー @n
-state: JBXL_GRAPH_OPFILE_ERROR  ファイルディスクリプタ― が NULL @n
-state: JBXL_GRAPH_HEADER_ERROR  不正ファイル（PNGファイルでない？）@n
-state: JBXL_GRAPH_MEMORY_ERROR  メモリエラー @n
-state: JBXL_GRAPH_IVDARG_ERROR  サポート外のチャンネル数 @n
+state: JBXL_NORMAL                正常終了 @n
+state: JBXL_ERROR                 初期化エラー @n
+state: JBXL_GRAPH_OPFILE_ERROR    ファイルディスクリプタ― が NULL @n
+state: JBXL_GRAPH_HEADER_ERROR    不正ファイル（PNGファイルでない？）@n
+state: JBXL_GRAPH_MEMORY_ERROR    メモリエラー @n
+state: JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル（カラー）数 @n
 */
 void  PNGImage::readData(FILE* fp)
 {
@@ -166,7 +166,7 @@ void  PNGImage::readData(FILE* fp)
         png_destroy_read_struct(&strct, &info, NULL);
         strct = NULL;
         info  = NULL;
-        state = JBXL_GRAPH_IVDARG_ERROR;
+        state = JBXL_GRAPH_IVDCOLOR_ERROR;
         return;
     }
     length = xs*ys*col;
@@ -202,12 +202,12 @@ png の画像データを fpに書き出す．
 
 @param  fp     ファイル記述子
 
-@retval JBXL_NORMAL              正常終了
-@retval JBXL_ERROR               初期化エラー
-@retval JBXL_GRAPH_OPFILE_ERROR  ファイルディスクリプタ― が NULL
-@retval JBXL_GRAPH_MEMORY_ERROR  メモリエラー
-@retval JBXL_GRAPH_NODATA_ERROR  png にデータが無い
-@retval JBXL_GRAPH_IVDARG_ERROR  サポート外のチャンネル数
+@retval JBXL_NORMAL                正常終了
+@retval JBXL_ERROR                 初期化エラー
+@retval JBXL_GRAPH_OPFILE_ERROR    ファイルディスクリプタ― が NULL
+@retval JBXL_GRAPH_MEMORY_ERROR    メモリエラー
+@retval JBXL_GRAPH_NODATA_ERROR    png にデータが無い
+@retval JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル（カラー）数
 */
 int  PNGImage::writeData(FILE* fp)
 {
@@ -241,7 +241,7 @@ int  PNGImage::writeData(FILE* fp)
         png_destroy_write_struct(&strct, &info);
         strct = NULL;
         info  = NULL;
-        state = JBXL_GRAPH_IVDARG_ERROR;
+        state = JBXL_GRAPH_IVDCOLOR_ERROR;
         return state;
     }
 
@@ -296,17 +296,23 @@ PNGファイルを読み込んで，PNGImage Class へデータを格納する�
 
 @return PNGImage データ．state に情報が入る．
 
-@retval JBXL_NORMAL             @b state: 正常終了
-@retval JBXL_ERROR              @b state: 初期化エラー
-@retval JBXL_GRAPH_OPFILE_ERROR @b state: ファイルオープンエラー
-@retval JBXL_GRAPH_HEADER_ERROR @b state: 不正ファイル（PNGファイルでない？）
-@retval JBXL_GRAPH_IVDARG_ERROR @b state: サポート外のチャンネル数
-@retval JBXL_GRAPH_MEMORY_ERROR @b state: メモリエラー
+@retval JBXL_NORMAL                @b state: 正常終了
+@retval JBXL_ERROR                 @b state: 初期化エラー
+@retval JBXL_GRAPH_OPFILE_ERROR    @b state: ファイルオープンエラー
+@retval JBXL_GRAPH_HEADER_ERROR    @b state: 不正ファイル（PNGファイルでない？）
+@retval JBXL_GRAPH_IVDARG_ERROR    @b state: ファイル名が NULL
+@retval JBXL_GRAPH_IVDCOLOR_ERROR  @b state: サポート外のチャンネル（カラー）数
+@retval JBXL_GRAPH_MEMORY_ERROR    @b state: メモリエラー
 */
 PNGImage  jbxl::readPNGFile(const char* fname)
 {
     PNGImage png;
 
+    if (fname==NULL) {
+        png.state = JBXL_GRAPH_IVDARG_ERROR;
+        return png;
+    }
+    //
     FILE* fp = fopen(fname, "rb");
     if (fp==NULL) {
         png.state = JBXL_GRAPH_OPFILE_ERROR;
@@ -329,12 +335,12 @@ PNGファイルを読み込んで，PNGImage Class へデータを格納する�
 
 @return PNGImage データ．state に情報が入る．
 
-@retval JBXL_NORMAL             @b state: 正常終了
-@retval JBXL_ERROR              @b state: 初期化エラー
-@retval JBXL_GRAPH_OPFILE_ERROR @b state: ファイルディスクリプタ― が NULL
-@retval JBXL_GRAPH_HEADER_ERROR @b state: 不正ファイル（PNGファイルでない？）
-@retval JBXL_GRAPH_IVDARG_ERROR @b state: サポート外のチャンネル数
-@retval JBXL_GRAPH_MEMORY_ERROR @b state: メモリエラー
+@retval JBXL_NORMAL                @b state: 正常終了
+@retval JBXL_ERROR                 @b state: 初期化エラー
+@retval JBXL_GRAPH_OPFILE_ERROR    @b state: ファイルディスクリプタ― が NULL
+@retval JBXL_GRAPH_HEADER_ERROR    @b state: 不正ファイル（PNGファイルでない？）
+@retval JBXL_GRAPH_IVDCOLOR_ERROR  @b state: サポート外のチャンネル（カラー）数
+@retval JBXL_GRAPH_MEMORY_ERROR    @b state: メモリエラー
 */
 PNGImage  jbxl::readPNGData(FILE* fp)
 {
@@ -359,12 +365,13 @@ png の画像データを fnameに書き出す．
 @param  fname  ファイル名
 @param  png    保存する PNGデータ
 
-@retval 0                        正常終了
-@retval JBXL_ERROR               初期化エラー
-@retval JBXL_GRAPH_OPFILE_ERROR  ファイルオープンエラー
-@retval JBXL_GRAPH_MEMORY_ERROR  メモリエラー
-@retval JBXL_GRAPH_NODATA_ERROR  png にデータが無い
-@retval JBXL_GRAPH_IVDARG_ERROR  ファイル名が NULL, or サポート外のチャンネル数
+@retval 0                          正常終了
+@retval JBXL_ERROR                 初期化エラー
+@retval JBXL_GRAPH_OPFILE_ERROR    ファイルオープンエラー
+@retval JBXL_GRAPH_MEMORY_ERROR    メモリエラー
+@retval JBXL_GRAPH_NODATA_ERROR    png にデータが無い
+@retval JBXL_GRAPH_IVDARG_ERROR    ファイル名が NULL
+@retval JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル（カラー）数
 */
 int  jbxl::writePNGFile(const char* fname, PNGImage png)
 {
@@ -391,12 +398,12 @@ png の画像データを fpに書き出す．
 @param  fp     ファイル記述子
 @param  png    保存する PNGデータ
 
-@retval 0                        正常終了
-@retval JBXL_ERROR               初期化エラー
-@retval JBXL_GRAPH_OPFILE_ERROR  ファイルディスクリプタ が NULL
-@retval JBXL_GRAPH_MEMORY_ERROR  メモリエラー
-@retval JBXL_GRAPH_NODATA_ERROR  png にデータが無い
-@retval JBXL_GRAPH_IVDARG_ERROR  サポート外のチャンネル数
+@retval 0                          正常終了
+@retval JBXL_ERROR                 初期化エラー
+@retval JBXL_GRAPH_OPFILE_ERROR    ファイルディスクリプタ が NULL
+@retval JBXL_GRAPH_MEMORY_ERROR    メモリエラー
+@retval JBXL_GRAPH_NODATA_ERROR    png にデータが無い
+@retval JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル（カラー）数
 */
 int  jbxl::writePNGData(FILE* fp, PNGImage png)
 {
@@ -412,3 +419,4 @@ int  jbxl::writePNGData(FILE* fp, PNGImage png)
 
 
 #endif      // ENABLE_PNG
+
