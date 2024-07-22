@@ -75,9 +75,9 @@ void  OBJData::delete_next(void)
 }
 
 
-void  OBJData::addShell(MeshObjectData* meshdata, bool collider)
+void  OBJData::addShell(MeshObjectData* shelldata, bool collider)
 {
-    if (meshdata==NULL) return;
+    if (shelldata==NULL) return;
 
     OBJData* ptr_obj = this;
     while (ptr_obj->next!=NULL) ptr_obj = ptr_obj->next;
@@ -85,12 +85,12 @@ void  OBJData::addShell(MeshObjectData* meshdata, bool collider)
     ptr_obj->next = new OBJData(-1);
     this->num_obj++;
 
-    if (meshdata->affineTrans!=NULL) { // Grass の場合は NULL
-        ptr_obj->next->setAffineTrans(*meshdata->affineTrans);
+    if (shelldata->affineTrans!=NULL) { // Grass の場合は NULL
+        ptr_obj->next->setAffineTrans(*shelldata->affineTrans);
     }
-    ptr_obj->next->obj_name = dup_Buffer(meshdata->data_name);
+    ptr_obj->next->obj_name = dup_Buffer(shelldata->data_name);
 
-    MeshFacetNode* facet = meshdata->facet;
+    MeshFacetNode* facet = shelldata->facet;
     OBJFacetGeoNode** _geo_node = &(ptr_obj->next->geo_node);
     OBJFacetMtlNode** _mtl_node = &(ptr_obj->next->mtl_node);
     while (facet!=NULL) {
@@ -103,7 +103,7 @@ void  OBJData::addShell(MeshObjectData* meshdata, bool collider)
         // UV Map and PLANAR Texture
         if (facet->material_param.mapping==MATERIAL_MAPPING_PLANAR) {
             Vector<double> scale(1.0, 1.0, 1.0);
-            if (meshdata->affineTrans!=NULL) scale = meshdata->affineTrans->scale;
+            if (shelldata->affineTrans!=NULL) scale = shelldata->affineTrans->scale;
             facet->generatePlanarUVMap(scale, facet->texcrd_value);
         }
         facet->execAffineTransUVMap(facet->texcrd_value, facet->num_vertex);

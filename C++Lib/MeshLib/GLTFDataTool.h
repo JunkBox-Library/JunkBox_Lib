@@ -33,27 +33,7 @@ namespace jbxl {
 //#define  JBXL_GLTF_TEXTURE          "{\"source\":%d, \"sampler\":%d}" 
 #define  JBXL_GLTF_TEXTURE          "{\"source\":%d}" 
 #define  JBXL_GLTF_IMAGE            "{\"uri\": \"%s\"}" 
-#define  JBXL_GLTF_SAMPLER          "{\"samplers\":[{\"magFilter\": 9729,\"minFilter\":9987,\"wrapS\":33648,\"wrapT\":33648}]}"
 
-/*
-
-  "meshes" : [
-    {
-      "primitives" : [ { "attributes" : { "POSITION" : 1 }, "indices" : 0 } ]
-    }
-  ],
-*/
-
-
-
-/*
-      "componentType" : 5123,  // gl.UNSIGNED_SHORT
-      "type" : "SCALAR",
-
-      "componentType" : 5126,  // gl.FLOAT
-      "count" : 3,
-      "type" : "VEC3",
-*/
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

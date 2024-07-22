@@ -148,9 +148,9 @@ void  ColladaXML::initCollada(double meter, int axis, const char* ver)
 }
 
 
-void  ColladaXML::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template)
+void  ColladaXML::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tXML* joints_template)
 {
-    if (meshdata==NULL) return;
+    if (shelldata==NULL) return;
 
     if (joints!=NULL && joints_template!=NULL) {
         if (joints_template_tag==NULL) {
@@ -162,9 +162,9 @@ void  ColladaXML::addShell(MeshObjectData* meshdata, bool collider, SkinJointDat
         }
     }
     //
-    char* geom_id = addGeometry(meshdata);                          // 幾何情報を配置
-    char* ctrl_id = addController(geom_id, meshdata, joints);       // Joints 情報を配置
-    addScene(geom_id, ctrl_id, meshdata, collider, joints);         // Scene への配置（位置，サイズ，回転，コライダー, Joints）
+    char* geom_id = addGeometry(shelldata);                          // 幾何情報を配置
+    char* ctrl_id = addController(geom_id, shelldata, joints);       // Joints 情報を配置
+    addScene(geom_id, ctrl_id, shelldata, collider, joints);         // Scene への配置（位置，サイズ，回転，コライダー, Joints）
     
     if (geom_id!=NULL) ::free(geom_id);
     if (ctrl_id!=NULL) ::free(ctrl_id);
@@ -188,12 +188,12 @@ void  ColladaXML::closeSolid(void)
 }
 
 
-char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshdata, SkinJointData* joints)
+char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* shelldata, SkinJointData* joints)
 {
-    if (geometry_id==NULL || meshdata==NULL || joints==NULL) return NULL;
+    if (geometry_id==NULL || shelldata==NULL || joints==NULL) return NULL;
 
-    //Buffer geometry_name = dup_Buffer(meshdata->data_name);
-    Buffer geometry_name = dup_Buffer(meshdata->alt_name);
+    //Buffer geometry_name = dup_Buffer(shelldata->data_name);
+    Buffer geometry_name = dup_Buffer(shelldata->alt_name);
     if (geometry_name.buf==NULL) geometry_name = make_Buffer_str(geometry_id+1);
     Buffer randomstr = make_Buffer_randomstr(8);
 
@@ -258,11 +258,11 @@ char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshda
     addSimpleTechniqueAccessor(invbind_tag, _tochar(invbind_float_id.buf), joints_num, 16, "TRANSFORM", "float4x4");
 
     // source WEIGHT
-    int vec_len = sizeof(Vector<int>)*meshdata->ttl_vertex*joints_num;
+    int vec_len = sizeof(Vector<int>)*shelldata->ttl_vertex*joints_num;
     Vector<int>* weight_index = (Vector<int>*)malloc(vec_len);
     if (weight_index==NULL) return NULL;
     memset(weight_index, 0, vec_len);
-    char* weight_id = addWeightSource(skin_tag, meshdata, weight_index, joints_num);
+    char* weight_id = addWeightSource(skin_tag, shelldata, weight_index, joints_num);
 
     // joints
     tXML* joints_tag = add_xml_node(skin_tag, "joints");
@@ -294,7 +294,7 @@ char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshda
     int vnum = 0;
     int prev_vertex = -1;
     //
-    for (int i=0; i<meshdata->ttl_vertex*joints_num; i++) {
+    for (int i=0; i<shelldata->ttl_vertex*joints_num; i++) {
         if (weight_index[i].z==TRUE) {
             if (prev_vertex==-1) prev_vertex = weight_index[i].x;               // vertex number
             append_xml_content_node(vindex_tag, itostr(weight_index[i].y));     // joint number
@@ -313,8 +313,8 @@ char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshda
     append_xml_content_node(vcount_tag, itostr(vnum));
     snum++;
     
-    if (snum!=meshdata->ttl_vertex) {
-        PRINT_MESG("WARNING: ColladaXML::addController: Vcount and Vertex number missmatched (%d != %d), Valid data num = %d\n", snum, meshdata->ttl_vertex, wnum);
+    if (snum!=shelldata->ttl_vertex) {
+        PRINT_MESG("WARNING: ColladaXML::addController: Vcount and Vertex number missmatched (%d != %d), Valid data num = %d\n", snum, shelldata->ttl_vertex, wnum);
     }
     add_xml_attr_str(vertex_weights_tag, "count", itostr(snum));
 
@@ -330,17 +330,17 @@ char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* meshda
 }
 
 
-char*  ColladaXML::addGeometry(MeshObjectData* meshdata)
+char*  ColladaXML::addGeometry(MeshObjectData* shelldata)
 {
-    if (meshdata==NULL) return NULL;
+    if (shelldata==NULL) return NULL;
 
     // ID String
     Buffer randomstr = make_Buffer_randomstr(8);
     Buffer geometry_id = make_Buffer_str("#GEOMETRY_");
     cat_Buffer(&randomstr, &geometry_id);
 
-    //Buffer geometry_name = dup_Buffer(meshdata->data_name);
-    Buffer geometry_name = dup_Buffer(meshdata->alt_name);
+    //Buffer geometry_name = dup_Buffer(shelldata->data_name);
+    Buffer geometry_name = dup_Buffer(shelldata->alt_name);
     if (geometry_name.buf!=NULL) {
         cat_s2Buffer("_", &geometry_name);
         cat_Buffer(&randomstr, &geometry_name);
@@ -348,7 +348,7 @@ char*  ColladaXML::addGeometry(MeshObjectData* meshdata)
     else {
         geometry_name = make_Buffer_str(geometry_id.buf + 1);
     }
-    copy_Buffer(&geometry_name, &meshdata->alt_name);
+    copy_Buffer(&geometry_name, &shelldata->alt_name);
 
     // library_geometries
     tXML* geomrtry_tag = add_xml_node(library_geometries_tag, "geometry");
@@ -357,13 +357,13 @@ char*  ColladaXML::addGeometry(MeshObjectData* meshdata)
     tXML* mesh_tag = add_xml_node(geomrtry_tag, "mesh");
 
     // Source & Vertices
-    char* psitin_id = addVertexSource(mesh_tag, meshdata);
-    char* normal_id = addNormalSource(mesh_tag, meshdata);
-    char* texcrd_id = addTexcrdSource(mesh_tag, meshdata);
+    char* psitin_id = addVertexSource(mesh_tag, shelldata);
+    char* normal_id = addNormalSource(mesh_tag, shelldata);
+    char* texcrd_id = addTexcrdSource(mesh_tag, shelldata);
     char* vertex_id = addVerticesPos (mesh_tag, psitin_id);
 
     // Polylist
-    addPolylists(mesh_tag, meshdata, vertex_id, normal_id, texcrd_id);
+    addPolylists(mesh_tag, shelldata, vertex_id, normal_id, texcrd_id);
 
     freeNull(psitin_id);
     freeNull(normal_id);
@@ -377,9 +377,9 @@ char*  ColladaXML::addGeometry(MeshObjectData* meshdata)
 }
 
 
-char*  ColladaXML::addVertexSource(tXML* tag, MeshObjectData* meshdata)
+char*  ColladaXML::addVertexSource(tXML* tag, MeshObjectData* shelldata)
 {
-    if (tag==NULL || meshdata==NULL) return NULL;
+    if (tag==NULL || shelldata==NULL) return NULL;
 
     Buffer randomstr = make_Buffer_randomstr(8);
     Buffer source_id = make_Buffer_str("#SOURCE_POS_");
@@ -387,15 +387,15 @@ char*  ColladaXML::addVertexSource(tXML* tag, MeshObjectData* meshdata)
     cat_Buffer(&randomstr, &source_id);
     cat_Buffer(&randomstr, &source_array_id);
 
-    int vnum = meshdata->ttl_vertex;
+    int vnum = shelldata->ttl_vertex;
     tXML* source_tag = add_xml_node(tag, "source");
     add_xml_attr_str(source_tag, "id", _tochar(source_id.buf + 1));
     tXML* source_array_tag = add_xml_node(source_tag, "float_array");
     add_xml_attr_str(source_array_tag, "id", _tochar(source_array_id.buf + 1));
     add_xml_attr_int(source_array_tag, "count", vnum*3);                            // 3 -> X, Y, Z の次元数
     //
-    if (add_xml_content_area(source_array_tag, meshdata->ttl_vertex*10)) {
-        MeshFacetNode* facet = meshdata->facet;
+    if (add_xml_content_area(source_array_tag, shelldata->ttl_vertex*10)) {
+        MeshFacetNode* facet = shelldata->facet;
         while (facet!=NULL) {
             Vector<double>* vect = facet->vertex_value;
             for (int i=0; i<facet->num_vertex; i++) {
@@ -415,9 +415,9 @@ char*  ColladaXML::addVertexSource(tXML* tag, MeshObjectData* meshdata)
 }
 
 
-char*  ColladaXML::addNormalSource(tXML* tag, MeshObjectData* meshdata)
+char*  ColladaXML::addNormalSource(tXML* tag, MeshObjectData* shelldata)
 {
-    if (tag==NULL || meshdata==NULL) return NULL;
+    if (tag==NULL || shelldata==NULL) return NULL;
 
     Buffer randomstr = make_Buffer_randomstr(8);
     Buffer source_id = make_Buffer_str("#SOURCE_NORMAL_");
@@ -425,15 +425,15 @@ char*  ColladaXML::addNormalSource(tXML* tag, MeshObjectData* meshdata)
     cat_Buffer(&randomstr, &source_id);
     cat_Buffer(&randomstr, &source_array_id);
 
-    int vnum = meshdata->ttl_vertex;
+    int vnum = shelldata->ttl_vertex;
     tXML* source_tag = add_xml_node(tag, "source");
     add_xml_attr_str(source_tag, "id", _tochar(source_id.buf + 1));
     tXML* source_array_tag = add_xml_node(source_tag, "float_array");
     add_xml_attr_str(source_array_tag, "id", _tochar(source_array_id.buf + 1));
     add_xml_attr_int(source_array_tag, "count", vnum*3);                            // 3 -> X, Y, Z の次元数
     //
-    if (add_xml_content_area(source_array_tag, meshdata->ttl_vertex*10)) {
-        MeshFacetNode* facet = meshdata->facet;
+    if (add_xml_content_area(source_array_tag, shelldata->ttl_vertex*10)) {
+        MeshFacetNode* facet = shelldata->facet;
         while (facet!=NULL) {
             Vector<double>* vect = facet->normal_value;
             for (int i=0; i<facet->num_vertex; i++) {
@@ -454,9 +454,9 @@ char*  ColladaXML::addNormalSource(tXML* tag, MeshObjectData* meshdata)
 
 
 // UVマップの出力
-char*  ColladaXML::addTexcrdSource(tXML* tag, MeshObjectData* meshdata)
+char*  ColladaXML::addTexcrdSource(tXML* tag, MeshObjectData* shelldata)
 {
-    if (tag==NULL || meshdata==NULL) return NULL;
+    if (tag==NULL || shelldata==NULL) return NULL;
 
     Buffer randomstr = make_Buffer_randomstr(8);
     Buffer source_id = make_Buffer_str("#SOURCE_MAP_");
@@ -464,15 +464,15 @@ char*  ColladaXML::addTexcrdSource(tXML* tag, MeshObjectData* meshdata)
     cat_Buffer(&randomstr, &source_id);
     cat_Buffer(&randomstr, &source_array_id);
 
-    int vnum = meshdata->ttl_vertex;
+    int vnum = shelldata->ttl_vertex;
     tXML* source_tag = add_xml_node(tag, "source");
     add_xml_attr_str(source_tag, "id", _tochar(source_id.buf + 1));
     tXML* source_array_tag = add_xml_node(source_tag, "float_array");
     add_xml_attr_str(source_array_tag, "id", _tochar(source_array_id.buf + 1));
     add_xml_attr_int(source_array_tag, "count", vnum*2);                            // 2 -> S,T (U, V) の次元数
     //
-    if (add_xml_content_area(source_array_tag, meshdata->ttl_texcrd*10)) {
-        MeshFacetNode* facet = meshdata->facet;
+    if (add_xml_content_area(source_array_tag, shelldata->ttl_texcrd*10)) {
+        MeshFacetNode* facet = shelldata->facet;
         while (facet!=NULL) {
             size_t len = facet->num_texcrd*sizeof(UVMap<double>);
             UVMap<double>* uvmap = (UVMap<double>*)malloc(len);
@@ -481,7 +481,7 @@ char*  ColladaXML::addTexcrdSource(tXML* tag, MeshObjectData* meshdata)
                 // PLANAR Texture
                 if (facet->material_param.mapping==MATERIAL_MAPPING_PLANAR) {
                     Vector<double> scale(1.0, 1.0, 1.0);
-                    if (meshdata->affineTrans!=NULL) scale = meshdata->affineTrans->scale;
+                    if (shelldata->affineTrans!=NULL) scale = shelldata->affineTrans->scale;
                     facet->generatePlanarUVMap(scale, uvmap);
                 }
                 facet->execAffineTransUVMap(uvmap, facet->num_texcrd);
@@ -505,16 +505,16 @@ char*  ColladaXML::addTexcrdSource(tXML* tag, MeshObjectData* meshdata)
 
 
 /**
-char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* meshdata, Vector<int>* weight_index, int joints_num)
+char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* shelldata, Vector<int>* weight_index, int joints_num)
 
 @retval  weight_index[].x: vertex No.
 @retval  weight_index[].y: joint No.
 @retval  weight_index[].z: FALSE->データなし, TRUE->データあり
 @return  source_id
 */
-char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* meshdata, Vector<int>* weight_index, int joints_num)
+char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* shelldata, Vector<int>* weight_index, int joints_num)
 {
-    if (tag==NULL || meshdata==NULL || weight_index==NULL) return NULL;
+    if (tag==NULL || shelldata==NULL || weight_index==NULL) return NULL;
 
     Buffer randomstr = make_Buffer_randomstr(8);
     Buffer source_id = make_Buffer_str("#SOURCE_WEIGHT_");
@@ -529,8 +529,8 @@ char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* meshdata, Vector<i
     //
     int count = 0;
     int vnum  = 0;
-    if (add_xml_content_area(source_array_tag, meshdata->ttl_vertex*10)) {          // 1データ 10桁の領域．予め確保した方が早い．
-        MeshFacetNode* facet = meshdata->facet;
+    if (add_xml_content_area(source_array_tag, shelldata->ttl_vertex*10)) {          // 1データ 10桁の領域．予め確保した方が早い．
+        MeshFacetNode* facet = shelldata->facet;
         while (facet!=NULL) {
             ArrayParam<int>* weight = facet->weight_value;
             for (int i=0; i<facet->num_vertex; i++) {
@@ -571,8 +571,8 @@ char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* meshdata, Vector<i
     }
     add_xml_attr_int(source_array_tag, "count", count);
 
-    if (vnum!=meshdata->ttl_vertex) {
-        PRINT_MESG("WARNING: ColladaXML::addWeightSource: no match vertex num (%d != %d)\n", vnum, meshdata->ttl_vertex);
+    if (vnum!=shelldata->ttl_vertex) {
+        PRINT_MESG("WARNING: ColladaXML::addWeightSource: no match vertex num (%d != %d)\n", vnum, shelldata->ttl_vertex);
     }
     addSimpleTechniqueAccessor(source_tag, _tochar(source_array_id.buf), count, 1, "WEIGHT", "float");
 
@@ -666,12 +666,12 @@ void   ColladaXML::addMapTechniqueAccessor(tXML* source_tag, const char* source_
 
 
 // Polylists
-void   ColladaXML::addPolylists(tXML* mesh_tag, MeshObjectData* meshdata, const char* vertex_id, const char* normal_id, const char* texcrd_id)
+void   ColladaXML::addPolylists(tXML* mesh_tag, MeshObjectData* shelldata, const char* vertex_id, const char* normal_id, const char* texcrd_id)
 {
-    if (mesh_tag==NULL || vertex_id==NULL || meshdata==NULL) return;
+    if (mesh_tag==NULL || vertex_id==NULL || shelldata==NULL) return;
 
     int pnum = 0;
-    MeshFacetNode* facet = meshdata->facet;
+    MeshFacetNode* facet = shelldata->facet;
 
     while (facet!=NULL) {
         //
@@ -724,15 +724,15 @@ void   ColladaXML::addPolylists(tXML* mesh_tag, MeshObjectData* meshdata, const 
         tXML* vcount_tag = add_xml_node(polylist_tag, "vcount");
         if (add_xml_content_area(vcount_tag, facet->num_polygon*10)) {          // 1データ 10桁の領域．予め確保した方が早い．
             for (int i=0; i<facet->num_polygon; i++) {
-                append_xml_content_node(vcount_tag, itostr(meshdata->num_vcount));
+                append_xml_content_node(vcount_tag, itostr(shelldata->num_vcount));
             }
         }
 
         tXML* p_data_tag = add_xml_node(polylist_tag, "p");
-        if (add_xml_content_area(p_data_tag, meshdata->num_vcount*10)) {        // 1データ 10桁の領域．予め確保した方が早い．
+        if (add_xml_content_area(p_data_tag, shelldata->num_vcount*10)) {        // 1データ 10桁の領域．予め確保した方が早い．
             for (int i=0; i<facet->num_polygon; i++) {
-                int n = i*meshdata->num_vcount;
-                for (int j=0; j<meshdata->num_vcount; j++) {
+                int n = i*shelldata->num_vcount;
+                for (int j=0; j<shelldata->num_vcount; j++) {
                     append_xml_content_node(p_data_tag, itostr(facet->data_index[n+j] + pnum));
                 }
                 append_xml_content_node(p_data_tag, "");
@@ -954,16 +954,16 @@ void  ColladaXML::addExtraBumpmap(tXML* profile_tag, const char* bump_id)
 /**
  Scene への配置（位置，サイズ，回転，コライダー, Joints）
 */
-void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObjectData* meshdata, bool collider, SkinJointData* joints)
+void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObjectData* shelldata, bool collider, SkinJointData* joints)
 {
-    if ((geometry_id==NULL && controller_id==NULL) || meshdata==NULL) return;
+    if ((geometry_id==NULL && controller_id==NULL) || shelldata==NULL) return;
 
     bool local_affine = true;
     AffineTrans<double> affine;
-    if (meshdata->affineTrans!=NULL) {
+    if (shelldata->affineTrans!=NULL) {
         local_affine = false;
         affine.free();
-        affine = *(meshdata->affineTrans);
+        affine = *(shelldata->affineTrans);
         //
         if (affineTrans==NULL) {
             affineTrans = new AffineTrans<double>();
@@ -1033,8 +1033,8 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
         }
     }
 
-    //Buffer geometry_name = dup_Buffer(meshdata->data_name);
-    Buffer geometry_name = dup_Buffer(meshdata->alt_name);
+    //Buffer geometry_name = dup_Buffer(shelldata->data_name);
+    Buffer geometry_name = dup_Buffer(shelldata->alt_name);
     if (geometry_name.buf==NULL) geometry_name = make_Buffer_str(geometry_id + 1);
     //
     Buffer randomstr = make_Buffer_randomstr(8);
@@ -1089,7 +1089,7 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
     tXML* technique_common_tag = add_xml_node(bind_material_tag, "technique_common");
     
     tXML* instance_material_tag;
-    MeshFacetNode* facet = meshdata->facet;
+    MeshFacetNode* facet = shelldata->facet;
     while(facet!=NULL) {
         if (!facet->same_material) {
             instance_material_tag = add_xml_node(technique_common_tag, "instance_material");

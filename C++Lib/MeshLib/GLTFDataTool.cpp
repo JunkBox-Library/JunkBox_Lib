@@ -130,19 +130,27 @@ void  GLTFData::initGLTF(void)
     this->buffviews    = json_append_array_key(this->json_data, "bufferViews");
     this->accessors    = json_append_array_key(this->json_data, "accessors");
     json_insert_parse(this->buffers, "{\"uri\":, \"byteLength\":}");
-    json_insert_parse(this->json_data, JBXL_GLTF_SAMPLER);
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void  GLTFData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints)
-{
-    if (meshdata==NULL) return;
-    if (this->node_num==0 && this->gltf_name.buf==NULL) this->gltf_name = dup_Buffer(meshdata->data_name);
-    this->alt_name = dup_Buffer(meshdata->alt_name);
+/**
+void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints)
 
-    MeshFacetNode* facet = meshdata->facet;
+この関数は SOLID毎に複数回呼ばれ，SOLIDに SHELLを追加していく．
+
+@param  shelldata  SHELLデータ．複数の FACETを含む．
+@param  collider   コライダーのサポート
+@param  joints     ジョイントデータ．デフォルトは NULL
+*/
+void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints)
+{
+    if (shelldata==NULL) return;
+    if (this->node_num==0 && this->gltf_name.buf==NULL) this->gltf_name = dup_Buffer(shelldata->data_name);
+    this->alt_name = dup_Buffer(shelldata->alt_name);
+
+    MeshFacetNode* facet = shelldata->facet;
     int shell_indexes  = 0;
     int shell_vertexes = 0;
     while (facet!=NULL) {
@@ -151,8 +159,8 @@ void  GLTFData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData*
         facet = facet->next;
     }
 
-    facet = meshdata->facet;
-    AffineTrans<double>* affine = meshdata->affineTrans;
+    facet = shelldata->facet;
+    AffineTrans<double>* affine = shelldata->affineTrans;
 
     addScenesNodes(facet, affine);
     addMeshes(facet);
@@ -161,7 +169,6 @@ void  GLTFData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData*
 
     //addBufferViewsAoS(facet);
     //addAccessorsAoS(facet);
-
     addBufferViewsSoA(facet);
     addAccessorsSoA(facet);
 

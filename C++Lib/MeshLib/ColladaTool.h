@@ -53,16 +53,16 @@ public:
 public:
     void    initCollada(double meter, int axis, const char* ver);
     void    initCollada(float  meter, int axis, const char* ver) { initCollada((double)meter, axis, ver); }
-    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tXML* joints_template=NULL);
+    void    addShell(MeshObjectData* shelldata, bool collider, SkinJointData* skin_joint=NULL, tXML* joints_template=NULL);
 
-    char*   addGeometry(MeshObjectData* meshdata);
-    char*   addController(const char* geometry_id, MeshObjectData* meshdata, SkinJointData* skin_joint);
-    void    addScene(const char* geometry_id, char* controll_id, MeshObjectData* meshdata, bool collider, SkinJointData* skin_join);
+    char*   addGeometry(MeshObjectData* shelldata);
+    char*   addController(const char* geometry_id, MeshObjectData* shelldata, SkinJointData* skin_joint);
+    void    addScene(const char* geometry_id, char* controll_id, MeshObjectData* shelldata, bool collider, SkinJointData* skin_join);
 
-    char*   addVertexSource(tXML* tag, MeshObjectData* meshdata);
-    char*   addNormalSource(tXML* tag, MeshObjectData* meshdata);
-    char*   addTexcrdSource(tXML* tag, MeshObjectData* meshdata);
-    char*   addWeightSource(tXML* tag, MeshObjectData* meshdata, Vector<int>* weight_index, int joints_num);
+    char*   addVertexSource(tXML* tag, MeshObjectData* shelldata);
+    char*   addNormalSource(tXML* tag, MeshObjectData* shelldata);
+    char*   addTexcrdSource(tXML* tag, MeshObjectData* shelldata);
+    char*   addWeightSource(tXML* tag, MeshObjectData* shelldata, Vector<int>* weight_index, int joints_num);
 
     char*   addVerticesPos (tXML* mesh_tag, const char* position_id);
 
@@ -70,7 +70,7 @@ public:
     void    addPosTechniqueAccessor(tXML* source_tag, const char* source_array_id, int count);
     void    addMapTechniqueAccessor(tXML* source_tag, const char* source_array_id, int count);
 
-    void    addPolylists(tXML* mesh_tag, MeshObjectData* meshdata, const char* vertex_id, const char* normal_id=NULL, const char* texcrd_id=NULL);
+    void    addPolylists(tXML* mesh_tag, MeshObjectData* shelldata, const char* vertex_id, const char* normal_id=NULL, const char* texcrd_id=NULL);
     char*   addImage(const char* filename);
     char*   addMaterial(const char* material);
     tXML*   addEffect(const char* material_url, const char* file_id, MaterialParam param);

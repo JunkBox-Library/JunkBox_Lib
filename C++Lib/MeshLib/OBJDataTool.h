@@ -78,7 +78,7 @@ public:
     Vector<double> execDegeneracy(void);
 
 public:
-    void    addShell(MeshObjectData* meshdata, bool collider);
+    void    addShell(MeshObjectData* shelldata, bool collider);
     void    closeSolid(void) {}
 
     void    outputFile(const char* fn, const char* out_path, const char* tex_dirn, const char* mtl_dirn);
