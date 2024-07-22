@@ -44,6 +44,5 @@ CmnHead  read_ct_data  (FILE* fp);                              ///< readCTData(
 int      dicom_header(FILE* fp, int fsize, int* dsize, int* xsize, int* ysize, int* depth, double* rzxy);
 WSGraph  read_dicom_file(const char* fn);
 
-
 #endif
 

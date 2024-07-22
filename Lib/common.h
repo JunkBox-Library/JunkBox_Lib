@@ -281,18 +281,34 @@
 
 
 // for 3D
-#define  JBXL_3D_FORMAT_NONE       0
-#define  JBXL_3D_FORMAT_DAE        1
-#define  JBXL_3D_FORMAT_OBJ        2
-#define  JBXL_3D_FORMAT_FBX        3
-#define  JBXL_3D_FORMAT_GLTF       4
-#define  JBXL_3D_FORMAT_STL        8
-#define  JBXL_3D_FORMAT_STL_A      8   // ASCII
-#define  JBXL_3D_FORMAT_STL_B      9   // Binary
+#define  JBXL_3D_FORMAT_NONE        0
+#define  JBXL_3D_FORMAT_DAE         1
+#define  JBXL_3D_FORMAT_OBJ         2
+#define  JBXL_3D_FORMAT_FBX         3
+#define  JBXL_3D_FORMAT_GLTF        4
+#define  JBXL_3D_FORMAT_STL         8
+#define  JBXL_3D_FORMAT_STL_A       8   ///< ASCII
+#define  JBXL_3D_FORMAT_STL_B       9   ///< Binary
 
-#define  JBXL_3D_ENGINE_NONE       0
-#define  JBXL_3D_ENGINE_UNITY      1
-#define  JBXL_3D_ENGINE_UE         2
+#define  JBXL_3D_ENGINE_NONE        0
+#define  JBXL_3D_ENGINE_UNITY       1
+#define  JBXL_3D_ENGINE_UE          2
+ 
+// Texture  
+// see gLib/gheader.h
+#define  JBXL_TEXTURE_UN_KNOWN      0
+#define  JBXL_TEXTURE_MOON          3
+#define  JBXL_TEXTURE_DICOM         4
+#define  JBXL_TEXTURE_USERSET       5
+
+#define  JBXL_TEXTURE_CT           16   ///< 0x0010 CT (Moon)
+#define  JBXL_TEXTURE_JPEG         32   ///< 0x0020
+#define  JBXL_TEXTURE_JPG          32
+#define  JBXL_TEXTURE_TIFF         48   ///< 0x0030
+#define  JBXL_TEXTURE_PNG          64   ///< 0x0040
+#define  JBXL_TEXTURE_TGA          80   ///< 0x0050
+#define  JBXL_TEXTURE_JP2K         96   ///< 0x0060
+#define  JBXL_TEXTURE_RAS         112   ///< 0x0070 SUN RASTER 8bit
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -311,6 +311,9 @@ void    fdump(FILE* fp, unsigned char* mesg, int n);                    ///< 16�
 void    print_16x(FILE* fp, unsigned char* mesg, int n);                ///< 16進ダンプを吐き出す（１行）
 #define print_hex(o, m, n)  fdump((o), (m), (n))
 
+// グラフィック
+char*   get_graphic_extension(uWord tex);
+
 // 漢字コード
 void    kanji_convert(unsigned char* mesg);                             ///< 大域変数 KnjiCodeに従って漢字コードを変換する．
 void    kanji_convert_euc2sjis(unsigned char* mesg);                    ///< EUCをSJISに変換する．
@@ -423,6 +426,8 @@ void    trap_segmentation_falt(int signal);             ///< セグメンテー�
 
 #define  ntoh_data(p, s, c) {if(!isBigEndian) swap_byte((void*)(p),(s),(c));}        ///< network形式からhost形式へ.  cバイトづつ変換する．
 #define  hton_data(p, s, c) {if(!isBigEndian) swap_byte((void*)(p),(s),(c));}        ///< host形式から network形式へ. cバイトづつ変換する．
+
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////

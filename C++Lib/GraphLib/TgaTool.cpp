@@ -279,7 +279,7 @@ TGAImage  jbxl::readTGAData(FILE* fp)
 
 
 /**
-int  jbxl::writeTGAFile(const char* fname, TGAImage tga)
+int  jbxl::writeTGAFile(const char* fname, TGAImage* tga)
 
 tga の画像データを fnameに書き出す．
 
@@ -294,14 +294,14 @@ tga の画像データを fnameに書き出す．
 @retval JBXL_GRAPH_IVDARG_ERROR    ファイル名が NULL
 @retval JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル数
 */
-int  jbxl::writeTGAFile(const char* fname, TGAImage tga)
+int  jbxl::writeTGAFile(const char* fname, TGAImage* tga)
 {
     FILE*  fp;
     int    ret;
 
     if (fname==NULL) return JBXL_GRAPH_IVDARG_ERROR;
-    if (tga.col<=0 || tga.col>4) return JBXL_GRAPH_IVDCOLOR_ERROR;
-    if (tga.gp==NULL) return JBXL_GRAPH_NODATA_ERROR;
+    if (tga->col<=0 || tga->col>4) return JBXL_GRAPH_IVDCOLOR_ERROR;
+    if (tga->gp==NULL) return JBXL_GRAPH_NODATA_ERROR;
 
     fp = fopen(fname, "wb");
     if (fp==NULL) {
@@ -316,7 +316,7 @@ int  jbxl::writeTGAFile(const char* fname, TGAImage tga)
 
 
 /**
-int  jbxl::writeTGAData(FILE* fp, TGAImage tga, bool rle)
+int  jbxl::writeTGAData(FILE* fp, TGAImage* tga)
 
 tga の画像データを fpに書き出す．
 
@@ -331,15 +331,16 @@ tga の画像データを fpに書き出す．
 @retval JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル数
 @retval JBXL_GRAPH_IVDFMT_ERROR    サポート外のデータ形式
 */
-int  jbxl::writeTGAData(FILE* fp, TGAImage tga)
+int  jbxl::writeTGAData(FILE* fp, TGAImage* tga)
 {
     if (fp==NULL) return JBXL_GRAPH_OPFILE_ERROR;
-    if (tga.col<=0 || tga.col>4) return JBXL_GRAPH_IVDCOLOR_ERROR;
-    if (tga.gp==NULL) return JBXL_GRAPH_NODATA_ERROR;
+    if (tga->col<=0 || tga->col>4) return JBXL_GRAPH_IVDCOLOR_ERROR;
+    if (tga->gp==NULL) return JBXL_GRAPH_NODATA_ERROR;
 
-    fwrite(tga.hd, TGA_HEADER_SIZE, 1, fp);
-    fwrite(tga.gp, tga.length, 1, fp);
-    fwrite(tga.ft, TGA_FOOTER_SIZE, 1, fp);
+    fwrite(tga->hd, TGA_HEADER_SIZE, 1, fp);
+    fwrite(tga->gp, tga->length, 1, fp);
+    fwrite(tga->ft, TGA_FOOTER_SIZE, 1, fp);
+
     return 0;
 }
 

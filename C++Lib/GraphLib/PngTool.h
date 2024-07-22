@@ -76,7 +76,7 @@ private:
 
 public:
     PNGImage(void)  { init();}
-    virtual ~PNGImage(void) { free();}
+    virtual ~PNGImage(void) {}
 
     void    init(void);                 ///< 初期化．グラフィックデータは解放しない
     bool    isNull(void);               ///< グラフィックデータを持っていないか？
@@ -98,10 +98,8 @@ public:
 
 PNGImage    readPNGFile (const char* fname);
 PNGImage    readPNGData (FILE* fp);
-int         writePNGFile(const char* fname, PNGImage png);
-int         writePNGData(FILE* fp, PNGImage png);
-
-int         setupPNGData(PNGImage* png, bool rle);
+int         writePNGFile(const char* fname, PNGImage* png);
+int         writePNGData(FILE* fp, PNGImage* png);
 
 //int        isPNGHeader(Buffer buf);
 

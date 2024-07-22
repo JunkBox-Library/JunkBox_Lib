@@ -104,8 +104,8 @@ JP2KImage read_jp2k_data(const char* fname, int format);
 JP2KImage read_jp2k_data(FILE* fp, int format);
 #endif
 
-//int     write_jp2k_file(const char* fname, JP2KImage jp, int qulty);
-//int     write_jp2k_mem(unsigned char** buf, unsigned long* len, JP2KImage jp, int qulty);
+//int     write_jp2k_file(const char* fname, JP2KImage* jp, int qulty);
+//int     write_jp2k_mem(unsigned char** buf, unsigned long* len, JP2KImage* jp, int qulty);
 
 BSGraph   jp2k_toBSGraph(JP2KImage jp);
 //JP2KImage  BSGraph2_jp2k(BSGraph vp);

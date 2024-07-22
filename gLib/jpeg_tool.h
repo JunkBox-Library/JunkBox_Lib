@@ -76,8 +76,8 @@ typedef my_mem_destination_mgr * my_mem_dest_ptr;
 //////////////////////////////////////////////////////////////////////////////////////////
 
 JPEGImage  read_jpeg_file (const char* fname);
-int        write_jpeg_file(const char* fname, JPEGImage jp, int qulty);
-int        write_jpeg_mem(unsigned char** buf, unsigned long* len, JPEGImage jp, int qulty);
+int        write_jpeg_file(const char* fname, JPEGImage* jp, int qulty);
+int        write_jpeg_mem(unsigned char** buf, unsigned long* len, JPEGImage* jp, int qulty);
 
 WSGraph    JPEGImage2WSGraph(JPEGImage jp);
 BSGraph    JPEGImage2BSGraph(JPEGImage jp);

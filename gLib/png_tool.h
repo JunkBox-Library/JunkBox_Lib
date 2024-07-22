@@ -51,7 +51,7 @@ typedef struct
 //////////////////////////////////////////////////////////////////////////////////////////
 
 PNGImage   read_png_file (const char* fname);
-int        write_png_file(const char* fname, PNGImage png);
+int        write_png_file(const char* fname, PNGImage* png);
 
 WSGraph    PNGImage2WSGraph(PNGImage png);
 BSGraph    PNGImage2BSGraph(PNGImage png);

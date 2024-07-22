@@ -58,8 +58,8 @@ public:
 
 TGAImage    readTGAFile (const char* fname);
 TGAImage    readTGAData (FILE* fp);
-int         writeTGAFile(const char* fname, TGAImage tga);
-int         writeTGAData(FILE* fp, TGAImage tga);
+int         writeTGAFile(const char* fname, TGAImage* tga);
+int         writeTGAData(FILE* fp, TGAImage* tga);
 
 int         setupTGAData(TGAImage* tga, bool rle);
 

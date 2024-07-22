@@ -102,12 +102,12 @@ PNGImage  read_png_file(const char* fname)
 
 
 /**
-int  write_png_file(const char* fname, PNGImage png)
+int  write_png_file(const char* fname, PNGImage* png)
 
 png の画像データを fnameに書き出す．
 
 @param  fname  ファイル名
-@param  png    保存する PNGデータ
+@param  png    保存する PNGデータへのポインタ  
 
 @retval 0                          正常終了
 @retval JBXL_GRAPH_OPFILE_ERROR    ファイルオープンエラー
@@ -117,13 +117,13 @@ png の画像データを fnameに書き出す．
 @retval JBXL_GRAPH_IVDARG_ERROR    ファイル名が NULL
 @retval JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル（カラー）数
 */
-int  write_png_file(const char* fname, PNGImage png)
+int  write_png_file(const char* fname, PNGImage* png)
 {
     if (fname==NULL) return JBXL_GRAPH_IVDARG_ERROR;
 
     FILE* fp = fopen(fname, "wb");
     if (fp==NULL) return JBXL_GRAPH_OPFILE_ERROR;
-    if (png.state!=JBXL_NORMAL || png.gp==NULL) return JBXL_GRAPH_NODATA_ERROR;
+    if (png->state!=JBXL_NORMAL || png->gp==NULL) return JBXL_GRAPH_NODATA_ERROR;
     //
     png_structp strct = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (strct==NULL) return JBXL_ERROR;
@@ -134,26 +134,26 @@ int  write_png_file(const char* fname, PNGImage png)
         return JBXL_ERROR;
     }
 
-    if      (png.col==1) png.type = PNG_COLOR_TYPE_GRAY;
-    else if (png.col==2) png.type = PNG_COLOR_TYPE_GA;
-    else if (png.col==3) png.type = PNG_COLOR_TYPE_RGB;
-    else if (png.col==4) png.type = PNG_COLOR_TYPE_RGBA;
+    if      (png->col==1) png->type = PNG_COLOR_TYPE_GRAY;
+    else if (png->col==2) png->type = PNG_COLOR_TYPE_GA;
+    else if (png->col==3) png->type = PNG_COLOR_TYPE_RGB;
+    else if (png->col==4) png->type = PNG_COLOR_TYPE_RGBA;
     else {
         png_destroy_write_struct(&strct, &info);
         return JBXL_GRAPH_IVDCOLOR_ERROR;
     }
 
     png_init_io(strct, fp);
-    png_set_IHDR(strct, info, png.xs, png.ys, 8, png.type, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-    uByte** datap = (uByte**)png_malloc(strct, sizeof(uByte*) * png.ys);
+    png_set_IHDR(strct, info, png->xs, png->ys, 8, png->type, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+    uByte** datap = (uByte**)png_malloc(strct, sizeof(uByte*) * png->ys);
     if (datap==NULL) {
         png_destroy_write_struct(&strct, &info);
         return JBXL_GRAPH_MEMORY_ERROR;
     }
     png_set_rows(strct, info, datap);
 
-    int len = png.xs*png.col;
-    for (int j=0; j<png.ys; j++) {
+    int len = png->xs*png->col;
+    for (int j=0; j<png->ys; j++) {
         datap[j] = (uByte*)malloc(len);
         if (datap[j]==NULL) {
             for (int i=0; i<j; i++) png_free(strct, datap[i]);
@@ -161,12 +161,12 @@ int  write_png_file(const char* fname, PNGImage png)
             png_destroy_write_struct(&strct, &info);
             return JBXL_GRAPH_MEMORY_ERROR;
         }
-        memcpy(datap[j], png.gp + j*len, len);
+        memcpy(datap[j], png->gp + j*len, len);
     }
     //
     png_write_png(strct, info, PNG_TRANSFORM_IDENTITY, NULL);
 
-    for (int j=0; j<png.ys; j++) png_free(strct, datap[j]);
+    for (int j=0; j<png->ys; j++) png_free(strct, datap[j]);
     png_free(strct, datap);
     png_destroy_write_struct(&strct, &info);
     return 0;

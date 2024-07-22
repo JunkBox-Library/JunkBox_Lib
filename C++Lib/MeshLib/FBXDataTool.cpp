@@ -94,16 +94,16 @@ void  FBXData::outputFile(const char* fname, const char* out_path, const char* t
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-void  FBXData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints)
+void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints)
 {
-    PRINT_MESG("FBXData::addObject: start\n");
+    PRINT_MESG("FBXData::addShell: start\n");
 
     if (meshdata==NULL) return;
 
     MeshFacetNode* facet = meshdata->facet;
     while (facet!=NULL) {
         if (facet->num_vertex != facet->num_texcrd) {
-            PRINT_MESG("FBXData::addObject: Error: missmatch vertex and uvmap number! (%d != %d)\n", facet->num_vertex, facet->num_texcrd);
+            PRINT_MESG("FBXData::addShell: Error: missmatch vertex and uvmap number! (%d != %d)\n", facet->num_vertex, facet->num_texcrd);
             facet = facet->next;
             continue;
         }
@@ -138,12 +138,12 @@ void  FBXData::addObject(MeshObjectData* meshdata, bool collider, SkinJointData*
 
 
 /**
-Vector<double>  FBXData::execAffineTrans(void)
+Vector<double>  FBXData::execDegeneracy(void)
 
-FBXデータの Affine変換を行う．
+FBXデータの 原点縮退変換を行う．
 no_offset が trueの場合，データの中心を原点に戻し，実際の位置をオフセットで返す．
 */
-Vector<double>  FBXData::execAffineTrans(void)
+Vector<double>  FBXData::execDegeneracy(void)
 {
     Vector<double> center(0.0, 0.0, 0.0);
 

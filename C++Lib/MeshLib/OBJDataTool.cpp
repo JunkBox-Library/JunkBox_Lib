@@ -13,12 +13,6 @@ using namespace jbxl;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //
 
-OBJData::~OBJData(void)
-{
-    this->free();
-}
-
-
 void  OBJData::init(int n)
 {
     this->obj_name    = init_Buffer();
@@ -81,7 +75,7 @@ void  OBJData::delete_next(void)
 }
 
 
-void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
+void  OBJData::addShell(MeshObjectData* meshdata, bool collider)
 {
     if (meshdata==NULL) return;
 
@@ -101,13 +95,13 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
     OBJFacetMtlNode** _mtl_node = &(ptr_obj->next->mtl_node);
     while (facet!=NULL) {
         if (facet->num_vertex != facet->num_texcrd) {
-            PRINT_MESG("OBJData::addObject: Error: missmatch vertex and uvmap number! (%d != %d)\n", facet->num_vertex, facet->num_texcrd);
+            PRINT_MESG("OBJData::addShell: Error: missmatch vertex and uvmap number! (%d != %d)\n", facet->num_vertex, facet->num_texcrd);
             facet = facet->next;
             continue;
         }
 
         // UV Map and PLANAR Texture
-        if (facet->material_param.mapping == MATERIAL_MAPPING_PLANAR) {
+        if (facet->material_param.mapping==MATERIAL_MAPPING_PLANAR) {
             Vector<double> scale(1.0, 1.0, 1.0);
             if (meshdata->affineTrans!=NULL) scale = meshdata->affineTrans->scale;
             facet->generatePlanarUVMap(scale, facet->texcrd_value);
@@ -165,14 +159,14 @@ void  OBJData::addObject(MeshObjectData* meshdata, bool collider)
 
 
 /**
-Vector<double>  OBJData::execAffineTrans(void)
+Vector<double>  OBJData::execDegeneracy(void)
 
-OBJデータの Affine変換を行う．
+OBJデータの 原点縮退変換を行う．
 no_offset が trueの場合，データの中心を原点に戻し，実際の位置をオフセットで返す．
 
 @retval データのオフセット．
 */
-Vector<double>  OBJData::execAffineTrans(void)
+Vector<double>  OBJData::execDegeneracy(void)
 {
     Vector<double> center(0.0, 0.0, 0.0);
 
@@ -385,11 +379,6 @@ void  OBJData::output_obj(const char* obj_path, const char* mtl_path)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //
-OBJFacetGeoNode::~OBJFacetGeoNode(void)
-{
-    this->free();
-}
-
 
 void  OBJFacetGeoNode::init(void)
 {
@@ -406,7 +395,7 @@ void  OBJFacetGeoNode::init(void)
 }
 
 
-void OBJFacetGeoNode::free(void)
+void  OBJFacetGeoNode::free(void)
 {
     free_Buffer(&(this->material));
     this->num_index  = 0;
@@ -447,11 +436,6 @@ void  OBJFacetGeoNode::delete_next(void)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //
-OBJFacetMtlNode::~OBJFacetMtlNode(void)
-{
-    this->free();
-}
-
 
 void  OBJFacetMtlNode::init(void)
 {

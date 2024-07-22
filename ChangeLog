@@ -7,6 +7,7 @@ rewrite configure.ac, doxygen.conf
 working now ..... v1.10.0alpha
 
 v1.10.0alpha
+	JPEG, TGA, PNG の書き込み時のデータをポンタ渡しに変更．
 	for glTF and FBX data (*)
 	add PNG Tool (C/C++)
 	tjson

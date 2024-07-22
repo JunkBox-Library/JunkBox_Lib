@@ -53,9 +53,9 @@ public:
 
     void    setAffineTrans (AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}
     void    delAffineTrans (void) { freeAffineTrans(this->affineTrans);}
-    Vector<double> execAffineTrans(void);
+    Vector<double> execDegeneracy(void);
 
-    void    addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL);
+    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL);
     void    closeSolid(void) {}
 
     void    outputFile(const char* fn, const char* out_path, const char* tex_dirn);

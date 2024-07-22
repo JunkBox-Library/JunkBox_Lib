@@ -45,7 +45,7 @@ class  OBJData
 {
 public:
     OBJData(int n=0) { this->init(n);}  // n: OBJデータの総数．デフォルト（n=0）ではアンカーを作る
-    virtual ~OBJData(void);
+    virtual ~OBJData(void) { this->free();}
 
 public:
     Buffer  obj_name;
@@ -74,10 +74,11 @@ public:
 
     void    setAffineTrans (AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}
     void    delAffineTrans (void) { freeAffineTrans(this->affineTrans);}
-    Vector<double> execAffineTrans(void);
+
+    Vector<double> execDegeneracy(void);
 
 public:
-    void    addObject(MeshObjectData* meshdata, bool collider);
+    void    addShell(MeshObjectData* meshdata, bool collider);
     void    closeSolid(void) {}
 
     void    outputFile(const char* fn, const char* out_path, const char* tex_dirn, const char* mtl_dirn);
@@ -96,7 +97,7 @@ class  OBJFacetGeoNode
 {
 public:
     OBJFacetGeoNode() { this->init();}
-    virtual ~OBJFacetGeoNode(void);
+    virtual ~OBJFacetGeoNode(void) { this->free();}
 
 public:
     Buffer  material;
@@ -126,7 +127,7 @@ class  OBJFacetMtlNode
 {
 public:
     OBJFacetMtlNode() { this->init();}
-    virtual ~OBJFacetMtlNode(void);
+    virtual ~OBJFacetMtlNode(void) { this->free();}
 
 public:
     Buffer  material;

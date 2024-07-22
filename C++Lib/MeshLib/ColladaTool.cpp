@@ -148,7 +148,7 @@ void  ColladaXML::initCollada(double meter, int axis, const char* ver)
 }
 
 
-void  ColladaXML::addObject(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template)
+void  ColladaXML::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template)
 {
     if (meshdata==NULL) return;
 

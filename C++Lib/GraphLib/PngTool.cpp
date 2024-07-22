@@ -358,12 +358,12 @@ PNGImage  jbxl::readPNGData(FILE* fp)
 
 
 /**
-int  jbxl::writePNGFile(const char* fname, PNGImage png)
+int  jbxl::writePNGFile(const char* fname, PNGImage* png)
 
 png の画像データを fnameに書き出す．
 
 @param  fname  ファイル名
-@param  png    保存する PNGデータ
+@param  png    保存する PNGデータへのポインタ
 
 @retval 0                          正常終了
 @retval JBXL_ERROR                 初期化エラー
@@ -373,16 +373,15 @@ png の画像データを fnameに書き出す．
 @retval JBXL_GRAPH_IVDARG_ERROR    ファイル名が NULL
 @retval JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル（カラー）数
 */
-int  jbxl::writePNGFile(const char* fname, PNGImage png)
+int  jbxl::writePNGFile(const char* fname, PNGImage* png)
 {
     if (fname==NULL) return JBXL_GRAPH_IVDARG_ERROR;
-    if (png.state!=JBXL_NORMAL || png.gp==NULL) return JBXL_GRAPH_NODATA_ERROR;
+    if (png->state!=JBXL_NORMAL || png->gp==NULL) return JBXL_GRAPH_NODATA_ERROR;
 
     FILE* fp = fopen(fname, "wb");
     if (fp==NULL) {
         return JBXL_GRAPH_OPFILE_ERROR;
     }
-
     int ret = writePNGData(fp, png);
     fclose(fp); 
 
@@ -391,12 +390,12 @@ int  jbxl::writePNGFile(const char* fname, PNGImage png)
 
 
 /**
-int  jbxl::writePNGData(FILE* fp, PNGImage png)
+int  jbxl::writePNGData(FILE* fp, PNGImage* png)
 
 png の画像データを fpに書き出す．
 
 @param  fp     ファイル記述子
-@param  png    保存する PNGデータ
+@param  png    保存する PNGデータへのポインタ
 
 @retval 0                          正常終了
 @retval JBXL_ERROR                 初期化エラー
@@ -405,12 +404,12 @@ png の画像データを fpに書き出す．
 @retval JBXL_GRAPH_NODATA_ERROR    png にデータが無い
 @retval JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル（カラー）数
 */
-int  jbxl::writePNGData(FILE* fp, PNGImage png)
+int  jbxl::writePNGData(FILE* fp, PNGImage* png)
 {
     if (fp==NULL) return JBXL_GRAPH_OPFILE_ERROR;
-    if (png.state!=JBXL_NORMAL || png.gp==NULL) return JBXL_GRAPH_NODATA_ERROR;
+    if (png->state!=JBXL_NORMAL || png->gp==NULL) return JBXL_GRAPH_NODATA_ERROR;
     //
-    int ret = png.writeData(fp);
+    int ret = png->writeData(fp);
     //
     if (ret==JBXL_NORMAL) ret = 0;
     else if (ret==0) ret = JBXL_ERROR;            // 情報なし？

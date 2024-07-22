@@ -89,7 +89,7 @@ JPEGImage  read_jpeg_file(const char* fname)
 
 
 /**
-int  write_jpeg_file(const char* fname, JPEGImage jp, int qulty)
+int  write_jpeg_file(const char* fname, JPEGImage* jp, int qulty)
 
 jp の画像データを fnameに書き出す．
 
@@ -105,7 +105,7 @@ jp の画像データを fnameに書き出す．
 @retval JBXL_GRAPH_IVDARH_ERROR    ファイル名が NULL
 @retval JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル数（現在の所チャンネル数は 1か 3のみをサポート）
 */
-int  write_jpeg_file(const char* fname, JPEGImage jp, int qulty)
+int  write_jpeg_file(const char* fname, JPEGImage* jp, int qulty)
 {
     FILE*  fp;
     struct jpeg_compress_struct jdat;
@@ -113,8 +113,8 @@ int  write_jpeg_file(const char* fname, JPEGImage jp, int qulty)
 
 
     if (fname==NULL) return JBXL_GRAPH_IVDARG_ERROR;
-    if (jp.col!=1 && jp.col!=3) return JBXL_GRAPH_IVDCOLOR_ERROR;
-    if (jp.gp==NULL || jp.img==NULL) return JBXL_GRAPH_NODATA_ERROR;
+    if (jp->col!=1 && jp->col!=3) return JBXL_GRAPH_IVDCOLOR_ERROR;
+    if (jp->gp==NULL || jp->img==NULL) return JBXL_GRAPH_NODATA_ERROR;
 
     if (qulty>100)  qulty = 100;
     else if (qulty<0) qulty = 0;
@@ -135,17 +135,17 @@ int  write_jpeg_file(const char* fname, JPEGImage jp, int qulty)
 */
     jpeg_stdio_dest(&jdat, fp);
 
-    jdat.image_width      = jp.xs;
-    jdat.image_height     = jp.ys;
-    jdat.input_components = jp.col;
-    if (jp.col==1) jdat.in_color_space = JCS_GRAYSCALE;
-    else           jdat.in_color_space = JCS_RGB;
+    jdat.image_width      = jp->xs;
+    jdat.image_height     = jp->ys;
+    jdat.input_components = jp->col;
+    if (jp->col==1) jdat.in_color_space = JCS_GRAYSCALE;
+    else            jdat.in_color_space = JCS_RGB;
 
     jpeg_set_quality (&jdat, qulty, TRUE);
     jpeg_set_defaults(&jdat);
 
     jpeg_start_compress (&jdat, TRUE);
-    jpeg_write_scanlines(&jdat, jp.img, jp.ys);
+    jpeg_write_scanlines(&jdat, jp->img, jp->ys);
     jpeg_finish_compress(&jdat);
 
     jpeg_destroy_compress(&jdat);
@@ -156,7 +156,7 @@ int  write_jpeg_file(const char* fname, JPEGImage jp, int qulty)
 
 
 /**
-int  write_jpeg_mem(unsigned char** buf, unsigned long* len, JPEGImage jp, int qulty)
+int  write_jpeg_mem(unsigned char** buf, unsigned long* len, JPEGImage* jp, int qulty)
 
 jp の画像データを *bufに書き出す．*bufは要 free
 
@@ -172,16 +172,16 @@ jp の画像データを *bufに書き出す．*bufは要 free
 @retval JBXL_GRAPH_IVDARG_ERROR    buf が NULL
 @retval JBXL_GRAPH_IVDCOLOR_ERROR  サポート外のチャンネル数（現在の所チャンネル数は 1か 3のみをサポート）
 */
-int  write_jpeg_mem(unsigned char** buf, unsigned long* len, JPEGImage jp, int qulty)
+int  write_jpeg_mem(unsigned char** buf, unsigned long* len, JPEGImage* jp, int qulty)
 {
     struct jpeg_compress_struct jdat;
     struct jpeg_error_mgr       jerr;
 
     if (buf==NULL || len==NULL) return JBXL_GRAPH_IVDARG_ERROR;
-    if (jp.col!=1 && jp.col!=3) return JBXL_GRAPH_IVDCOLOR_ERROR;
-    if (jp.gp==NULL || jp.img==NULL) return JBXL_GRAPH_NODATA_ERROR;
+    if (jp->col!=1 && jp->col!=3) return JBXL_GRAPH_IVDCOLOR_ERROR;
+    if (jp->gp==NULL || jp->img==NULL) return JBXL_GRAPH_NODATA_ERROR;
 
-    *len = jp.xs*jp.ys*jp.col;
+    *len = jp->xs*jp->ys*jp->col;
     if (*len<=0) return JBXL_GRAPH_IVDARG_ERROR;
 
     if (qulty>100)  qulty = 100;
@@ -197,17 +197,17 @@ int  write_jpeg_mem(unsigned char** buf, unsigned long* len, JPEGImage jp, int q
 
     jpeg_mem_dest(&jdat, buf, len);
 
-    jdat.image_width      = jp.xs;
-    jdat.image_height     = jp.ys;
-    jdat.input_components = jp.col;
-    if (jp.col==1) jdat.in_color_space = JCS_GRAYSCALE;
-    else           jdat.in_color_space = JCS_RGB;
+    jdat.image_width      = jp->xs;
+    jdat.image_height     = jp->ys;
+    jdat.input_components = jp->col;
+    if (jp->col==1) jdat.in_color_space = JCS_GRAYSCALE;
+    else            jdat.in_color_space = JCS_RGB;
 
     jpeg_set_quality (&jdat, qulty, TRUE);
     jpeg_set_defaults(&jdat);
 
     jpeg_start_compress (&jdat, TRUE);
-    jpeg_write_scanlines(&jdat, jp.img, jp.ys);
+    jpeg_write_scanlines(&jdat, jp->img, jp->ys);
     jpeg_finish_compress(&jdat);
     jpeg_destroy_compress(&jdat);
 

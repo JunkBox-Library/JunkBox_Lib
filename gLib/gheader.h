@@ -173,11 +173,6 @@ typedef struct _RGB24Data
 #define  DICOM_DATA             4       ///< 0x0004 // DICOM Header
 #define  USERSET_DATA           5       ///< 0x0005 // ユーザ指定のデータ形式（ヘッダ形式指定の場合，使用する）
 
-#define  RAS_DATA               8       ///< 0x0008 // SUN RASTER 8bit
-#define  RAS8_DATA              8       ///< 0x0008 // SUN RASTER 8bit
-#define  RAS16_DATA             9       ///< 0x0009 // SUN RASTER 16bit
-#define  RAS24_DATA             9       ///< 0x0001 // SUN RASTER 24bit
-
 // for CT Data
 #define  CT_DATA                16      ///< 0x0010 // CT DATA (Moon形式) 
 #define  CT_3DM                 18      ///< 0x0012 // 3D CT DATA（マルチスライス）
@@ -196,8 +191,14 @@ typedef struct _RGB24Data
 
 #define  TIFF_DATA              48      ///< 0x0030 // TIFF
 #define  PNG_DATA               64      ///< 0x0040 // PNG
-
 #define  TGA_DATA               80      ///< 0x0050 // TGA
+#define  JP2K_DATA              96      ///< 0x0060 // JPEG2K
+
+// Sun Raster
+#define  RAS_DATA               112     ///< 0x0070 // SUN RASTER 8bit
+#define  RAS8_DATA              113     ///< 0x0071 // SUN RASTER 8bit
+#define  RAS16_DATA             114     ///< 0x0072 // SUN RASTER 16bit
+#define  RAS24_DATA             115     ///< 0x0073 // SUN RASTER 24bit
 
 // 0x0100 - 0x4000 パラメータ 
 #define  HAS_DUMMY1             256     ///< 0x0100

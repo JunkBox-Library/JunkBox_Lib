@@ -77,8 +77,8 @@ public:
 
 JPEGImage   readJPEGFile (const char* fname);
 JPEGImage   readJPEGData (FILE* fp);
-int         writeJPEGFile(const char* fname, JPEGImage jp, int qulty);
-int         writeJPEGData(FILE* fp, JPEGImage jp, int qulty);
+int         writeJPEGFile(const char* fname, JPEGImage* jp, int qulty);
+int         writeJPEGData(FILE* fp, JPEGImage* jp, int qulty);
 
 int         isJPEGHeader(Buffer buf);
 
