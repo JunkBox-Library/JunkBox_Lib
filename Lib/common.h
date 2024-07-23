@@ -286,6 +286,7 @@
 #define  JBXL_3D_FORMAT_OBJ         2
 #define  JBXL_3D_FORMAT_FBX         3
 #define  JBXL_3D_FORMAT_GLTF        4
+#define  JBXL_3D_FORMAT_GLB         5
 #define  JBXL_3D_FORMAT_STL         8
 #define  JBXL_3D_FORMAT_STL_A       8   ///< ASCII
 #define  JBXL_3D_FORMAT_STL_B       9   ///< Binary
@@ -313,12 +314,12 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-typedef  unsigned char  uByte;
-typedef  char           sByte;
-typedef  unsigned short uWord;
-typedef  short          sWord;
-typedef  unsigned int   uDWord;
-typedef  int            sDWord;
+typedef  unsigned char  uByte;          ///< 1Byte
+typedef  char           sByte;          ///< 1Byte
+typedef  unsigned short uWord;          ///< 2Byte
+typedef  short          sWord;          ///< 2Byte
+typedef  unsigned int   uDWord;         ///< 4Byte
+typedef  int            sDWord;         ///< 4Byte
 
 
 /** Parameter

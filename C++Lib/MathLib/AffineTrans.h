@@ -77,6 +77,11 @@ public:
     Matrix<T>        getRotMatrix(void);
     AffineTrans<T>   getInvAffine(void);
 
+    // operator * は コンポーネントが計算されていることが条件．
+    // 下記関数は コンポ―テントが計算されていなくても良い．
+    void   affineMatrixFllow(AffineTrans<T> a);  // *this = (*this) * a を Matrix のままで計算する．
+    void   affineMatrixPrev (AffineTrans<T> a);  // *this = a * (*this) を Matrix のままで計算する．
+
     bool   isSetComponents(void) { if(isSetShift() || isSetScale() || isSetRotate()) return true; else return false;}
     bool   isSetShift(void)  { return (shift !=Vector<T>());}
     bool   isSetScale(void)  { return (scale !=Vector<T>((T)1.0, (T)1.0, (T)1.0));}
@@ -121,7 +126,7 @@ template <typename T> inline AffineTrans<T>*  newAffineTrans(AffineTrans<T> p)
 /**
 変換の合成：A*B => Bの変換 -> Aの変換
 
-a, b ともにコンポーネントが計算されている事が条件．
+a, b ともに computeComponents() でコンポーネントが計算されている事が条件．
 */
 template <typename T> inline AffineTrans<T> operator * (AffineTrans<T> a, AffineTrans<T> b)
 { 
@@ -222,6 +227,64 @@ template <typename T> AffineTrans<T>  AffineTrans<T>::getInvAffine(void)
     rst.free();
 
     return affine;
+}
+
+
+/**
+template <typename T> void  AffineTrans<T>::affineMatrixFllow(AffineTrans<T> a)
+
+*this = (*this) * a を Matrix のままで計算する．
+
+operator * は コンポーネントが計算されていることが条件．
+この関数は コンポ―テントが計算されていなくても良い．
+*/
+template <typename T> void  AffineTrans<T>::affineMatrixFllow(AffineTrans<T> a)
+{
+    AffineTrans<T> affine;
+    for (int i=1; i<=4; i++) {
+        for (int j=1; j<=4; j++) {
+            affine.matrix.element(i,j) = (T)0.0;
+            for (int k=1; k<=4; k++) {
+                affine.matrix.element(i,j) += matrix.element(i,k) * a.matrix.element(k,j);
+            }
+        }
+    }
+    for (int i=1; i<=4; i++) {
+        for (int j=1; j<=4; j++) {
+            matrix.element(i,j) = affine.matrix.element(i,j);
+        }
+    }
+    computeComponents();
+    return;
+}
+
+
+/**
+template <typename T> void  AffineTrans<T>::affineMatrixPrev(AffineTrans<T> a)
+
+*this = a * (*this) を Matrix のままで計算する．
+
+operator * は コンポーネントが計算されていることが条件．
+この関数は コンポ―テントが計算されていなくても良い．
+*/
+template <typename T> void  AffineTrans<T>::affineMatrixPrev(AffineTrans<T> a)
+{
+    AffineTrans<T> affine;
+    for (int i=1; i<=4; i++) {
+        for (int j=1; j<=4; j++) {
+            affine.matrix.element(i,j) = (T)0.0;
+            for (int k=1; k<=4; k++) {
+                affine.matrix.element(i,j) += a.matrix.element(i,k) * matrix.element(k,j);
+            }
+        }
+    }
+    for (int i=1; i<=4; i++) {
+        for (int j=1; j<=4; j++) {
+            matrix.element(i,j) = affine.matrix.element(i,j);
+        }
+    }
+    computeComponents();
+    return;
 }
 
 

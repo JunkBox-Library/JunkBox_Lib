@@ -201,11 +201,7 @@ void  OBJData::outputFile(const char* fname, const char* out_path, const char* t
     if (file_name.buf[0]=='.') file_name.buf[0] = '_';
     //
     Buffer obj_path;
-#ifdef WIN32
-    if (out_path==NULL) obj_path = make_Buffer_bystr(".\\");
-#else
     if (out_path==NULL) obj_path = make_Buffer_bystr("./");
-#endif
     else                obj_path = make_Buffer_bystr(out_path);
     //
     Buffer rel_tex;    //  相対パス
@@ -220,7 +216,6 @@ void  OBJData::outputFile(const char* fname, const char* out_path, const char* t
 
     Buffer mtl_path = dup_Buffer(obj_path);
     cat_Buffer(&rel_mtl, &mtl_path);
-
     cat_Buffer(&file_name, &obj_path);
     change_file_extension_Buffer(&obj_path, ".obj");
 
@@ -336,11 +331,14 @@ void  OBJData::output_obj(const char* obj_path, const char* mtl_path)
 
             for (int i=0; i<facet->num_vertex; i++) {
                 Vector<float> vv = Vector<float>((float)facet->vv[i].x, (float)facet->vv[i].y, (float)facet->vv[i].z);
-                if (this->engine == JBXL_3D_ENGINE_UE) {
+                if (this->engine == JBXL_3D_ENGINE_UNITY) {
+                    fprintf(fp, "v %f %f %f\n", vv.x, vv.z, -vv.y);                     // for Unity
+                }
+                else if (this->engine == JBXL_3D_ENGINE_UE) {
                     fprintf(fp, "v %f %f %f\n", vv.x*100.f, vv.y*100.f, vv.z*100.f);    // for UE
                 }
                 else {
-                    fprintf(fp, "v %f %f %f\n", vv.x, vv.z, -vv.y);                     // for Unity
+                    fprintf(fp, "v %f %f %f\n", vv.x, vv.y, vv.z);
                 }
             }
             for (int i=0; i<facet->num_vertex; i++) {
@@ -349,11 +347,11 @@ void  OBJData::output_obj(const char* obj_path, const char* mtl_path)
             }
             for (int i=0; i<facet->num_vertex; i++) {
                 Vector<float> vn = Vector<float>((float)facet->vn[i].x, (float)facet->vn[i].y, (float)facet->vn[i].z);
-                if (this->engine == JBXL_3D_ENGINE_UE) {
-                    fprintf(fp, "vn %f %f %f\n", vn.x, vn.y, vn.z);                     // for UE
+                if (this->engine == JBXL_3D_ENGINE_UNITY) {
+                    fprintf(fp, "vn %f %f %f\n", vn.x, vn.z, -vn.y);                    // for Unity
                 }
                 else {
-                    fprintf(fp, "vn %f %f %f\n", vn.x, vn.z, -vn.y);                    // for Unity
+                    fprintf(fp, "vn %f %f %f\n", vn.x, vn.y, vn.z);                     // for UE or others
                 }
             }
             //

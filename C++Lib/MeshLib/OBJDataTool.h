@@ -36,7 +36,7 @@ class  OBJFacetMtlNode;
 //
 
 /**
-先頭のデータはアンカー．
+先頭のデータは SHELLデータへのアンカー．
 
 num_obj はアンカーのみ有効な値を持つ．アンカーでない場合は num_obj == -1
 
@@ -44,13 +44,13 @@ num_obj はアンカーのみ有効な値を持つ．アンカーでない場合
 class  OBJData
 {
 public:
-    OBJData(int n=0) { this->init(n);}  // n: OBJデータの総数．デフォルト（n=0）ではアンカーを作る
+    OBJData(int n=0) { this->init(n);}  // n: OBJデータ（SHELLデータ）の総数．デフォルト（n=0）ではアンカーを作る
     virtual ~OBJData(void) { this->free();}
 
 public:
     Buffer  obj_name;
     bool    phantom_out;
-    int     num_obj;                    // nextに続くOBJデータの総数．        
+    int     num_obj;                    // nextに続くOBJ（SHELL）データの総数．        
 
     bool    no_offset;
     bool    forUnity;

@@ -144,7 +144,6 @@ public:
 inline void  freeColladaXML(ColladaXML*& dae) { if(dae!=NULL) { dae->free(); delete dae; dae=NULL;} }
 
 
-
 }       // namespace
 
 #endif
