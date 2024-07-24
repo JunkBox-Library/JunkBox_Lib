@@ -31,13 +31,38 @@ namespace jbxl {
 //#define  JBXL_GLTF_BUFFER       "{\"uri\":%s,\"byteLength\":%lu}"
 #define  JBXL_GLTF_ELEMENT_VIEW "{\"buffer\":%d,\"byteOffset\":%lu,\"byteLength\":%lu,\"target\":34963}"
 #define  JBXL_GLTF_VIEW         "{\"buffer\":%d,\"byteOffset\":%lu,\"byteLength\":%lu,\"byteStride\":%d,\"target\":34962}"
-#define  JBXL_GLTF_ACCESSOR     "{\"bufferView\":%d, \"byteOffset\":%lu,\"componentType\":%d,\"count\":%d,\"type\":\"%s\"}"
-#define  JBXL_GLTF_MESH         "{\"name\":\"%s\",\"mesh\":%d}" 
-#define  JBXL_GLTF_MESH_PRIM    "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d},\"material\":%d,\"mode\":4}" 
-#define  JBXL_GLTF_MATERIAL     "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorFactor\":[%f,%f,%f,%f],\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}" 
-//#define  JBXL_GLTF_TEXTURE      "{\"source\":%d, \"sampler\":%d}" 
-#define  JBXL_GLTF_TEXTURE      "{\"source\":%d}" 
-#define  JBXL_GLTF_IMAGE        "{\"uri\":\"%s\"}" 
+#define  JBXL_GLTF_ACCESSOR_S   "{\"bufferView\":%d,\"byteOffset\":%lu,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%d],\"min\":[%d]}"
+#define  JBXL_GLTF_ACCESSOR_V2  "{\"bufferView\":%d,\"byteOffset\":%lu,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f],\"min\":[%f,%f]}"
+#define  JBXL_GLTF_ACCESSOR_V3  "{\"bufferView\":%d,\"byteOffset\":%lu,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f,%f],\"min\":[%f,%f,%f]}"
+#define  JBXL_GLTF_MESH         "{\"name\":\"%s\",\"mesh\":%d}"
+#define  JBXL_GLTF_MESH_PRIM    "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d},\"material\":%d,\"mode\":4}"
+#define  JBXL_GLTF_MATERIAL     "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorFactor\":[%f,%f,%f,%f],\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}"
+#define  JBXL_GLTF_TEXTURE      "{\"source\":%d}"
+//#define  JBXL_GLTF_TEXTURE      "{\"source\":%d, \"sampler\":%d}"
+#define  JBXL_GLTF_IMAGE        "{\"uri\":\"%s\"}"
+
+
+
+typedef struct _gltf_facet_min_max {
+    int    index_max;
+    int    index_min;
+    float  vertex_x_max;
+    float  vertex_x_min;
+    float  vertex_y_max;
+    float  vertex_y_min;
+    float  vertex_z_max;
+    float  vertex_z_min;
+    float  normal_x_max;
+    float  normal_x_min;
+    float  normal_y_max;
+    float  normal_y_min;
+    float  normal_z_max;
+    float  normal_z_min;
+    float  texcrd_u_max;
+    float  texcrd_u_min;
+    float  texcrd_v_max;
+    float  texcrd_v_min;
+} gltfFacetMinMax;
 
 
 
@@ -115,6 +140,7 @@ public:
     long unsigned int bin_offset;
 
     // counter
+    int     shell_no;
     int     node_no;
     int     image_no;
     int     material_no;
@@ -149,6 +175,7 @@ public:
 
     AffineTrans<double> getAffineTrans4Engine(AffineTrans<double> affine);
     Vector<double> execDegeneracy(void);
+    gltfFacetMinMax getFacetMinMax(MeshFacetNode* facet);
 
     void    initGLTF(void);
 
@@ -165,11 +192,13 @@ public:
     void    addBufferViewsAoS(MeshFacetNode* facet);
     void    addAccessorsAoS(MeshFacetNode* facet);
     void    createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int shell_vertexes);
+
     // SoA
     void    addBufferViewsSoA(MeshFacetNode* facet);
     void    addAccessorsSoA(MeshFacetNode* facet);
     void    createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int shell_vertexes);
 
+    // create bin data at onece
     void    createShellGeoData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes);
     void    createBinDataAoS(void);
     void    createBinDataSoA(void);

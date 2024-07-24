@@ -90,7 +90,7 @@ GLTFData::~GLTFData(void)
 void  GLTFData::init(void)
 {
     this->bin_mode      = JBXL_GLTF_BIN_AOS;
-    this->bin_seq       = true;
+    this->bin_seq       = false;
 
     this->gltf_name     = init_Buffer();
     this->alt_name      = init_Buffer();
@@ -110,6 +110,7 @@ void  GLTFData::init(void)
     this->bin_buffer    = init_Buffer();
     this->bin_offset    = 0;
 
+    this->shell_no      = 0;
     this->node_no       = 0;
     this->image_no      = 0;
     this->material_no   = 0;
@@ -223,8 +224,13 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
 void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints)
 {
     if (shelldata==NULL) return;
-    if (this->node_no==0 && this->gltf_name.buf==NULL) this->gltf_name = dup_Buffer(shelldata->data_name);
-    this->alt_name = dup_Buffer(shelldata->alt_name);
+    if (this->shell_no==0 && this->gltf_name.buf==NULL) {
+        if (shelldata->data_name.buf!=NULL) this->gltf_name = dup_Buffer(shelldata->data_name);
+        else                                this->gltf_name = make_Buffer_bystr("Object");
+    }
+    if (shelldata->alt_name.buf!=NULL) {
+        this->alt_name = dup_Buffer(shelldata->alt_name);
+    }
 
     MeshFacetNode* facet = shelldata->facet;
     int shell_indexes  = 0;
@@ -238,11 +244,13 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
     facet = shelldata->facet;
     AffineTrans<double>* affine = shelldata->affineTrans;
 
+    //
     this->addScenesNodes(facet, affine);
     this->addTextures(facet);
     this->addMaterials(facet);
     this->addMeshes(facet);
 
+    // for bin data
     if (this->bin_mode==JBXL_GLTF_BIN_AOS) {
         this->addBufferViewsAoS(facet);
         this->addAccessorsAoS(facet);
@@ -265,12 +273,19 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         this->createShellGeoData(facet, shell_indexes, shell_vertexes);
     }
 
+    //
+    this->phantom_out = true;
     if (collider) {
+        this->phantom_out = false;
     }
 
+    //
     if (joints!=NULL) {
     }
 
+    //
+    free_Buffer(&this->alt_name);
+    this->shell_no++;
     return;
 }
 
@@ -278,6 +293,7 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
 void  GLTFData::addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine)
 {
     if (facet==NULL) return;
+    char buf[LBUF];
 
     // scenes
     if (this->node_no==0) {
@@ -285,15 +301,22 @@ void  GLTFData::addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine
     }
     json_append_array_int_val(this->scenes_nodes, this->node_no);
 
-    char buf[LBUF];
-
     // nodes
     memset(buf, 0, LBUF);
-    snprintf(buf, LBUF-1, JBXL_GLTF_MESH, (char*)this->alt_name.buf, this->node_no);
+    Buffer node_name = init_Buffer();
+    if (this->alt_name.buf!=NULL) {
+        node_name = dup_Buffer(this->alt_name);
+    }
+    else {
+        node_name = make_Buffer_bystr("Node_#");
+        cat_i2Buffer(this->node_no, &node_name);
+    }
+    snprintf(buf, LBUF-1, JBXL_GLTF_MESH, (char*)node_name.buf, this->node_no);
     tJson* mesh = json_insert_parse(this->nodes, buf);
-    tJson* matrix = json_append_array_key(mesh, "matrix");
+    free_Buffer(&node_name);
 
     // affine translarion
+    tJson* matrix = json_append_array_key(mesh, "matrix");
     if (affine!=NULL) {
         AffineTrans<double> trans = this->getAffineTrans4Engine(*affine);
         for (int j=1; j<=4; j++) {
@@ -489,21 +512,26 @@ void  GLTFData::addAccessorsAoS(MeshFacetNode* facet)
     char buf[LBUF];
 
     while (facet!=NULL) {
+        gltfFacetMinMax mm = getFacetMinMax(facet);
+
         // accessor of indexies
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no, 0LU, 5125, facet->num_index, "SCALAR");   // 5125: unsigned int
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_S, this->view_no, 0LU, 5125, facet->num_index, "SCALAR", mm.index_max, mm.index_min);   // 5125: unsigned int
         json_insert_parse(this->accessors, buf);
         this->view_no++;
 
         // accessors of vertex/normal/uvmap
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no,               0LU, 5126, facet->num_vertex, "VEC3");    // 5126: float
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no,               0LU, 5126, facet->num_vertex, "VEC3", 
+                                                     mm.vertex_x_max, mm.vertex_y_max, mm.vertex_z_max, mm.vertex_x_min, mm.vertex_y_min, mm.vertex_z_min);
         json_insert_parse(this->accessors, buf);
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no, sizeof(float)*3LU, 5126, facet->num_vertex, "VEC3");    // 5126: float
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no, sizeof(float)*3LU, 5126, facet->num_vertex, "VEC3",
+                                                     mm.normal_x_max, mm.normal_y_max, mm.normal_z_max, mm.normal_x_min, mm.normal_y_min, mm.normal_z_min);
         json_insert_parse(this->accessors, buf);
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no, sizeof(float)*6LU, 5126, facet->num_vertex, "VEC2");    // 5126: float
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V2, this->view_no, sizeof(float)*6LU, 5126, facet->num_vertex, "VEC2",
+                                                     mm.texcrd_u_max, mm.texcrd_u_max, mm.texcrd_v_min, mm.texcrd_v_min);
         json_insert_parse(this->accessors, buf);
         this->view_no++;
 
@@ -516,29 +544,31 @@ void  GLTFData::addAccessorsAoS(MeshFacetNode* facet)
 void  GLTFData::addAccessorsSoA(MeshFacetNode* facet)
 {
     if (facet==NULL) return;
-
     char buf[LBUF];
 
     while (facet!=NULL) {
+        gltfFacetMinMax mm = getFacetMinMax(facet);
+
         // accessor of indexies
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no, 0LU, 5125, facet->num_index, "SCALAR");   // 5125: unsigned int
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_S, this->view_no, 0LU, 5125, facet->num_index, "SCALAR", mm.index_max, mm.index_min);   // 5125: unsigned int
         json_insert_parse(this->accessors, buf);
         this->view_no++;
 
         // accessors of vertex/normal/uvmap
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no, 0LU, 5126, facet->num_vertex, "VEC3");    // 5126: float
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no, 0LU, 5126, facet->num_vertex, "VEC3",
+                                                     mm.vertex_x_max, mm.vertex_y_max, mm.vertex_z_max, mm.vertex_x_min, mm.vertex_y_min, mm.vertex_z_min);
         json_insert_parse(this->accessors, buf);
         this->view_no++;
-
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no, 0LU, 5126, facet->num_vertex, "VEC3");    // 5126: float
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no, 0LU, 5126, facet->num_vertex, "VEC3",
+                                                     mm.normal_x_max, mm.normal_y_max, mm.normal_z_max, mm.normal_x_min, mm.normal_y_min, mm.normal_z_min);
         json_insert_parse(this->accessors, buf);
         this->view_no++;
-
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no, 0LU, 5126, facet->num_vertex, "VEC2");    // 5126: float
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V2, this->view_no, 0LU, 5126, facet->num_vertex, "VEC2",
+                                                     mm.texcrd_u_max, mm.texcrd_u_max, mm.texcrd_v_min, mm.texcrd_v_min);
         json_insert_parse(this->accessors, buf);
         this->view_no++;
 
@@ -636,13 +666,13 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
     long unsigned int temp_len = (long unsigned int)shell_indexes*sizeof(int) + (long unsigned int)shell_vertexes*sizeof(float)*8LU;
     unsigned char* temp_buffer = (unsigned char*)malloc(temp_len);
     if (temp_buffer==NULL) {
-        PRINT_MESG("GLTFData::makeBinDataSoA: ERROR: No more memory.\n");
+        PRINT_MESG("GLTFData::createBinDataSeqSoA: ERROR: No more memory.\n");
         return;
     }
     if (this->bin_buffer.buf==NULL) {
         this->bin_buffer = make_Buffer(temp_len);
         if (this->bin_buffer.bufsz<=0) {
-            PRINT_MESG("GLTFData::makeBinDataSoA: ERROR: No more memory.\n");
+            PRINT_MESG("GLTFData::createBinDataSeqSoA: ERROR: No more memory.\n");
             ::free(temp_buffer);
             return;
         }
@@ -1105,5 +1135,68 @@ AffineTrans<double>  GLTFData::getAffineTrans4Engine(AffineTrans<double> affine)
     trans.affineMatrixFllow(affine);     // engineTrans = engineTrans * (*affine)
 
     return trans;
+}
+
+
+gltfFacetMinMax  GLTFData::getFacetMinMax(MeshFacetNode* facet)
+{
+    gltfFacetMinMax min_max;
+
+    min_max.index_max = facet->data_index[0];
+    min_max.index_min = facet->data_index[0];
+    min_max.vertex_x_max = (float)facet->vertex_value[0].x;
+    min_max.vertex_x_min = (float)facet->vertex_value[0].x;
+    min_max.vertex_y_max = (float)facet->vertex_value[0].y;
+    min_max.vertex_y_min = (float)facet->vertex_value[0].y;
+    min_max.vertex_z_max = (float)facet->vertex_value[0].z;
+    min_max.vertex_z_min = (float)facet->vertex_value[0].z;
+    min_max.normal_x_max = (float)facet->normal_value[0].x;
+    min_max.normal_x_min = (float)facet->normal_value[0].x;
+    min_max.normal_y_max = (float)facet->normal_value[0].y;
+    min_max.normal_y_min = (float)facet->normal_value[0].y;
+    min_max.normal_z_max = (float)facet->normal_value[0].z;
+    min_max.normal_z_min = (float)facet->normal_value[0].z;
+    min_max.texcrd_u_max = (float)facet->texcrd_value[0].u;
+    min_max.texcrd_u_min = (float)facet->texcrd_value[0].u;
+    min_max.texcrd_v_max = 1.0f - (float)facet->texcrd_value[0].v;
+    min_max.texcrd_v_min = 1.0f - (float)facet->texcrd_value[0].v;
+
+    int   i_temp;
+    float f_temp;
+
+    for (int i=1; i<facet->num_index; i++) {
+        i_temp = facet->data_index[i];
+        if (min_max.index_max < i_temp) min_max.index_max = i_temp;
+        if (min_max.index_min > i_temp) min_max.index_min = i_temp;
+    }
+    for (int i=1; i<facet->num_vertex; i++) {
+        f_temp = (float)facet->vertex_value[i].x;
+        if (min_max.vertex_x_max < f_temp) min_max.vertex_x_max = f_temp;
+        if (min_max.vertex_x_min > f_temp) min_max.vertex_x_min = f_temp;
+        f_temp = (float)facet->vertex_value[i].y;
+        if (min_max.vertex_y_max < f_temp) min_max.vertex_y_max = f_temp;
+        if (min_max.vertex_y_min > f_temp) min_max.vertex_y_min = f_temp;
+        f_temp = (float)facet->vertex_value[i].z;
+        if (min_max.vertex_z_max < f_temp) min_max.vertex_z_max = f_temp;
+        if (min_max.vertex_z_min > f_temp) min_max.vertex_z_min = f_temp;
+
+        f_temp = (float)facet->normal_value[i].x;
+        if (min_max.normal_x_max < f_temp) min_max.normal_x_max = f_temp;
+        if (min_max.normal_x_min > f_temp) min_max.normal_x_min = f_temp;
+        f_temp = (float)facet->normal_value[i].y;
+        if (min_max.normal_y_max < f_temp) min_max.normal_y_max = f_temp;
+        if (min_max.normal_y_min > f_temp) min_max.normal_y_min = f_temp;
+        f_temp = (float)facet->normal_value[i].z;
+        if (min_max.normal_z_max < f_temp) min_max.normal_z_max = f_temp;
+        if (min_max.normal_z_min > f_temp) min_max.normal_z_min = f_temp;
+
+        f_temp = (float)facet->texcrd_value[i].u;
+        if (min_max.texcrd_u_max < f_temp) min_max.texcrd_u_max = f_temp;
+        if (min_max.texcrd_u_min > f_temp) min_max.texcrd_u_min = f_temp;
+        f_temp = 1.0f - (float)facet->texcrd_value[i].v;
+        if (min_max.texcrd_v_max < f_temp) min_max.texcrd_v_max = f_temp;
+        if (min_max.texcrd_v_min > f_temp) min_max.texcrd_v_min = f_temp;
+    }
+    return min_max;
 }
 

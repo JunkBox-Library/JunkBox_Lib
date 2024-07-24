@@ -37,13 +37,13 @@ public:
     AffineTrans(void) { init();}
     virtual ~AffineTrans(void) {}
 
-    void   init(void) { initComponents(); matrix = Matrix<T>(2, 4, 4);}
+    void   init(void) { initComponents(); matrix = Matrix<T>(2, 4, 4); computeMatrix();}
     void   setup(void){ init();}
     void   initComponents(void) { initScale(); initRotate(); initShift();}
 
-    void   set(Vector<T> s, Quaternion<T> q, Vector<T> t) { scale=s; shift=t, rotate=q; computeMatrix(true);}
+    void   set(Vector<T> s, Quaternion<T> q, Vector<T> t) { scale=s; shift=t, rotate=q; computeMatrix();}
     void   free(void) { initComponents(); matrix.free();}
-    void   clear(void){ initComponents(); matrix.clear();}
+    void   clear(void){ initComponents(); matrix.clear(); computeMatrix();}
     void   dup(AffineTrans a);
     AffineTrans<T>  dup(void);
 

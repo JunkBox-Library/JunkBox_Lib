@@ -127,9 +127,13 @@ void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* 
         facet = facet->next;
     }
 
+    //
+    this->phantom_out = true;
     if (collider) {
+        this->phantom_out = false;
     }
 
+    //
     if (joints!=NULL) {
     }
 
