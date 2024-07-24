@@ -41,7 +41,7 @@ void  GLTFShellNode::free(void)
 {
     if (this->facet_index !=NULL) ::free(this->facet_index);
     if (this->facet_vertex!=NULL) ::free(this->facet_vertex);
-    this->facet_index   =NULL;
+    this->facet_index  =NULL;
     this->facet_vertex =NULL;
 
     if (this->data_index!=NULL) ::free(this->data_index);
@@ -89,6 +89,9 @@ GLTFData::~GLTFData(void)
 
 void  GLTFData::init(void)
 {
+    this->bin_mode      = JBXL_GLTF_BIN_AOS;
+    this->bin_seq       = true;
+
     this->gltf_name     = init_Buffer();
     this->alt_name      = init_Buffer();
     this->phantom_out   = true;
@@ -96,7 +99,7 @@ void  GLTFData::init(void)
 
     this->forUnity      = true;
     this->forUE         = false;
-    this->engine        = JBXL_3D_ENGINE_UE;
+    this->engine        = JBXL_3D_ENGINE_UNITY;
 
     this->image_list    = new_tList_anchor_node();
     this->material_list = new_tList_anchor_node();
@@ -235,19 +238,32 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
     facet = shelldata->facet;
     AffineTrans<double>* affine = shelldata->affineTrans;
 
-    addScenesNodes(facet, affine);
+    this->addScenesNodes(facet, affine);
+    this->addTextures(facet);
+    this->addMaterials(facet);
+    this->addMeshes(facet);
 
-    addTextures(facet);
-    addMaterials(facet);
-    addMeshes(facet);
+    if (this->bin_mode==JBXL_GLTF_BIN_AOS) {
+        this->addBufferViewsAoS(facet);
+        this->addAccessorsAoS(facet);
+    }
+    else {
+        this->addBufferViewsSoA(facet);
+        this->addAccessorsSoA(facet);
+    }
+    this->execAffineUVMap(facet, affine);
 
-    addBufferViewsAoS(facet);
-    addAccessorsAoS(facet);
-
-    //addBufferViewsSoA(facet);
-    //addAccessorsSoA(facet);
-
-    createShellGeometory(facet, shell_indexes, shell_vertexes, affine);
+    if (this->bin_seq) {
+        if (this->bin_mode==JBXL_GLTF_BIN_AOS) {
+            this->createBinDataSeqAoS(facet, shell_indexes, shell_vertexes);
+        }
+        else {
+            this->createBinDataSeqSoA(facet, shell_indexes, shell_vertexes);
+        }
+    }
+    else {
+        this->createShellGeoData(facet, shell_indexes, shell_vertexes);
+    }
 
     if (collider) {
     }
@@ -533,7 +549,197 @@ void  GLTFData::addAccessorsSoA(MeshFacetNode* facet)
 
 
 /**
-void  GLTFData::createShellGeometory(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, AffineTrans<double> affine)
+void  GLTFData::createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int shell_vertexes)
+
+GLTFの Geometoryデータを AoS形式で 逐次作成し，this->bin_bufferに追加していく．
+最終的に作成された this->bin_buffer はそのまま出力できる． 
+this->shellNode は使用しない．
+*/
+void  GLTFData::createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int shell_vertexes)
+{
+    if (facet==NULL) return;
+
+    long unsigned int temp_len = (long unsigned int)shell_indexes*sizeof(int) + (long unsigned int)shell_vertexes*sizeof(float)*8LU;
+    unsigned char* temp_buffer = (unsigned char*)malloc(temp_len);
+    if (temp_buffer==NULL) {
+        PRINT_MESG("GLTFData::createBinDataSeqAoS: ERROR: No more memory.\n");
+        return;
+    }
+    if (this->bin_buffer.buf==NULL) {
+        this->bin_buffer = make_Buffer(temp_len);
+        if (this->bin_buffer.bufsz<=0) {
+            PRINT_MESG("GLTFData::createBinDataSeqAoS: ERROR: No more memory.\n");
+            ::free(temp_buffer);
+            return;
+        }
+    }
+    //
+    long unsigned int length = 0;
+    long unsigned int offset = 0;
+
+    while (facet!=NULL) {
+        // binary of indexies
+        length = (long unsigned int)facet->num_index*sizeof(int);
+        memcpy((void*)(temp_buffer + offset), (void*)facet->data_index, length);
+        offset += length;
+
+        // binary of vertex/normal/uvmap
+        float temp;
+        length = sizeof(float);
+
+        for (int i=0; i<facet->num_vertex; i++) {
+            temp = (float)facet->vertex_value[i].x;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+            temp = (float)facet->vertex_value[i].y;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+            temp = (float)facet->vertex_value[i].z;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+            temp = (float)facet->normal_value[i].x;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+            temp = (float)facet->normal_value[i].y;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+            temp = (float)facet->normal_value[i].z;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+            temp = (float)facet->texcrd_value[i].u;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+            temp = 1.0f - (float)facet->texcrd_value[i].v;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+        }
+        facet = facet->next;
+    }
+    cat_b2Buffer(temp_buffer, &(this->bin_buffer), temp_len);
+    ::free(temp_buffer);
+
+    return;
+}
+
+
+/**
+void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int shell_vertexes)
+
+GLTFの Geometoryデータを SoA形式で 逐次作成し，this->bin_bufferに追加していく．
+最終的に作成された this->bin_buffer はそのまま出力できる． 
+this->shellNode は使用しない．
+*/
+void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int shell_vertexes)
+{
+    if (facet==NULL) return;
+
+    long unsigned int temp_len = (long unsigned int)shell_indexes*sizeof(int) + (long unsigned int)shell_vertexes*sizeof(float)*8LU;
+    unsigned char* temp_buffer = (unsigned char*)malloc(temp_len);
+    if (temp_buffer==NULL) {
+        PRINT_MESG("GLTFData::makeBinDataSoA: ERROR: No more memory.\n");
+        return;
+    }
+    if (this->bin_buffer.buf==NULL) {
+        this->bin_buffer = make_Buffer(temp_len);
+        if (this->bin_buffer.bufsz<=0) {
+            PRINT_MESG("GLTFData::makeBinDataSoA: ERROR: No more memory.\n");
+            ::free(temp_buffer);
+            return;
+        }
+    }
+    //
+    long unsigned int length = 0;
+    long unsigned int offset = 0;
+
+    while (facet!=NULL) {
+        // binary of indexies
+        length = (long unsigned int)facet->num_index*sizeof(int);
+        memcpy((void*)(temp_buffer + offset), (void*)facet->data_index, length);
+        offset += length;
+
+        // binary of vertex/normal/uvmap
+        float temp;
+        length = sizeof(float);
+
+        for (int i=0; i<facet->num_vertex; i++) {
+            temp = (float)facet->vertex_value[i].x;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+            temp = (float)facet->vertex_value[i].y;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+            temp = (float)facet->vertex_value[i].z;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+        }
+
+        for (int i=0; i<facet->num_vertex; i++) {
+            temp = (float)facet->normal_value[i].x;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+            temp = (float)facet->normal_value[i].y;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+            temp = (float)facet->normal_value[i].z;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+        }
+
+        for (int i=0; i<facet->num_texcrd; i++) {
+            temp = (float)facet->texcrd_value[i].u;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+            temp = 1.0f - (float)facet->texcrd_value[i].v;
+            memcpy((void*)(temp_buffer + offset), (void*)&temp, length);
+            offset += length;
+        }
+
+        facet = facet->next;
+    }
+    cat_b2Buffer(temp_buffer, &(this->bin_buffer), temp_len);
+    ::free(temp_buffer);
+
+    return;
+}
+
+
+void  GLTFData::execAffineUVMap(MeshFacetNode* facet, AffineTrans<double>* affine)
+{
+    while (facet!=NULL) {
+        // UV Map and PLANAR Texture
+        /*
+        size_t len = facet->num_texcrd*sizeof(UVMap<double>);
+        UVMap<double>* uvmap = (UVMap<double>*)malloc(len);
+        if (uvmap!=NULL) {
+            memcpy(uvmap, facet->texcrd_value, len);
+            //
+            if (facet->material_param.mapping==MATERIAL_MAPPING_PLANAR) {
+                Vector<double> scale(1.0, 1.0, 1.0);
+                if (affine!=NULL) scale = affine->scale;
+                facet->generatePlanarUVMap(scale, uvmap);
+            }
+            facet->execAffineTransUVMap(uvmap, facet->num_texcrd);
+        }
+        */
+
+        if (facet->material_param.mapping==MATERIAL_MAPPING_PLANAR) {
+           Vector<double> scale(1.0, 1.0, 1.0);
+            if (affine!=NULL) scale = affine->scale;
+            facet->generatePlanarUVMap(scale, facet->texcrd_value);
+        }
+        facet->execAffineTransUVMap(facet->texcrd_value, facet->num_texcrd);
+
+        facet = facet->next;
+    }
+    return;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+// Create all bin data at once
+
+/**
+void  GLTFData::createShellGeoData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes)
 
 SHELL毎に呼び出され，SHELL中の全FACETのジオメトリ情報を this->shellNode に格納する．
 
@@ -542,7 +748,7 @@ SHELL毎に呼び出され，SHELL中の全FACETのジオメトリ情報を this
 @param  shell_vetexes   SHELL中の vertexデータの総数．
 @param  affine          SHELLの Affine変換へのポインタ．
 */
-void  GLTFData::createShellGeometory(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, AffineTrans<double>* affine)
+void  GLTFData::createShellGeoData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes)
 {
     if (facet==NULL) return;
 
@@ -572,29 +778,6 @@ void  GLTFData::createShellGeometory(MeshFacetNode* facet, int shell_indexes, in
     long unsigned int facet_no      = 0;
 
     while (facet!=NULL) {
-        // UV Map and PLANAR Texture
-        /*
-        size_t len = facet->num_texcrd*sizeof(UVMap<double>);
-        UVMap<double>* uvmap = (UVMap<double>*)malloc(len);
-        if (uvmap!=NULL) {
-            memcpy(uvmap, facet->texcrd_value, len);
-            //
-            if (facet->material_param.mapping==MATERIAL_MAPPING_PLANAR) {
-                Vector<double> scale(1.0, 1.0, 1.0);
-                if (affine!=NULL) scale = affine->scale;
-                facet->generatePlanarUVMap(scale, uvmap);
-            }
-            facet->execAffineTransUVMap(uvmap, facet->num_texcrd);
-        }
-        */
-        if (facet->material_param.mapping==MATERIAL_MAPPING_PLANAR) {
-           Vector<double> scale(1.0, 1.0, 1.0);
-            if (affine!=NULL) scale = affine->scale;
-            facet->generatePlanarUVMap(scale, facet->texcrd_value);
-            //facet->generatePlanarUVMap(scale, uvmap);
-        }
-        facet->execAffineTransUVMap(facet->texcrd_value, facet->num_texcrd);
-
         // save index and vertex number
         _shell_node->facet_index [facet_no] = facet->num_index;
         _shell_node->facet_vertex[facet_no] = facet->num_vertex;
@@ -631,146 +814,154 @@ void  GLTFData::createShellGeometory(MeshFacetNode* facet, int shell_indexes, in
 }
 
 
+/**
+void  GLTFData::createBinDataAoS(void)
+
+GLTFの this->shell_node に格納された Geometoryデータを AoS形式で this->bin_bufferに格納する．
+this->shell_node 中の Geometory データは，予め createShellGeoData() で計算しておく必要がある．
+this->bin_buffer はそのまま出力できる． 
+*/
+void  GLTFData::createBinDataAoS(void)
+{
+    if (this->shellNode==NULL) return;
+
+    long unsigned int solid_indexes  = 0;
+    long unsigned int solid_vertexes = 0;
+
+    GLTFShellNode*  _shell_node = this->shellNode;
+    while (_shell_node!=NULL) {
+        solid_indexes  += _shell_node->shell_indexes;
+        solid_vertexes += _shell_node->shell_vertexes;
+        _shell_node = _shell_node->next;
+    }
+
+    long unsigned int buffer_len = solid_indexes*sizeof(int) + solid_vertexes*sizeof(float)*8LU;
+    this->bin_buffer = make_Buffer(buffer_len);
+    if (this->bin_buffer.buf==NULL) {
+        PRINT_MESG("GLTFData::createBinDataAoS: ERROR: No more memory.\n");
+        return;
+    }
+
+    long unsigned int i_length = 0;
+    long unsigned int v_length = sizeof(float);
+    float temp = 0.0f;
+
+    _shell_node = this->shellNode;
+    while (_shell_node!=NULL) {             // 全SHELL
+        long unsigned int i_offset = 0;
+        long unsigned int v_offset = 0;
+        for (int f=0; f<_shell_node->num_facet; f++) {      // SHELL中の FACET
+            // binary of indexies
+            i_length = _shell_node->facet_index[f] * sizeof(int);
+            cat_b2Buffer(_shell_node->data_index + i_offset, &(this->bin_buffer), i_length);
+            i_offset += _shell_node->facet_index[f];
+
+            for (int i=0; i<_shell_node->facet_vertex[f]; i++) {
+                temp = (float)_shell_node->vv[v_offset + i].x;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                temp = (float)_shell_node->vv[v_offset + i].y;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                temp = (float)_shell_node->vv[v_offset + i].z;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                //
+                temp = (float)_shell_node->vn[v_offset + i].x;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                temp = (float)_shell_node->vn[v_offset + i].y;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                temp = (float)_shell_node->vn[v_offset + i].z;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                //
+                temp = (float)_shell_node->vt[v_offset + i].u;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                temp = 1.0f - (float)_shell_node->vt[v_offset + i].v;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+            }
+            v_offset += _shell_node->facet_vertex[f];
+        }
+        _shell_node = _shell_node->next;
+    }
+    return;
+}
+
+
+/**
+void  GLTFData::createBinDataSoA(void)
+
+GLTFの this->shell_node に格納された Geometoryデータを SoA形式で this->bin_bufferに格納する．
+this->shell_node 中の Geometory データは，予め createShellGeoData() で計算しておく必要がある．
+this->bin_buffer はそのまま出力できる． 
+*/
+void  GLTFData::createBinDataSoA(void)
+{
+    if (this->shellNode==NULL) return;
+
+    long unsigned int solid_indexes  = 0;
+    long unsigned int solid_vertexes = 0;
+
+    GLTFShellNode*  _shell_node = this->shellNode;
+    while (_shell_node!=NULL) {
+        solid_indexes  += _shell_node->shell_indexes;
+        solid_vertexes += _shell_node->shell_vertexes;
+        _shell_node = _shell_node->next;
+    }
+
+    long unsigned int buffer_len = solid_indexes*sizeof(int) + solid_vertexes*sizeof(float)*8LU;
+    this->bin_buffer = make_Buffer(buffer_len);
+    if (this->bin_buffer.buf==NULL) {
+        PRINT_MESG("GLTFData::createBinDataSoA: ERROR: No more memory.\n");
+        return;
+    }
+
+    long unsigned int i_length = 0;
+    long unsigned int v_length = sizeof(float);
+    float temp = 0.0f;
+
+    _shell_node = this->shellNode;
+    while (_shell_node!=NULL) {             // 全SHELL
+        long unsigned int i_offset = 0;
+        long unsigned int v_offset = 0;
+        for (int f=0; f<_shell_node->num_facet; f++) {      // SHELL中の FACET
+            // binary of indexies
+            i_length = _shell_node->facet_index[f] * sizeof(int);
+            cat_b2Buffer(_shell_node->data_index + i_offset, &(this->bin_buffer), i_length);
+            i_offset += _shell_node->facet_index[f];
+
+            for (int i=0; i<_shell_node->facet_vertex[f]; i++) {
+                temp = (float)_shell_node->vv[v_offset + i].x;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                temp = (float)_shell_node->vv[v_offset + i].y;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                temp = (float)_shell_node->vv[v_offset + i].z;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+            }
+            //
+            for (int i=0; i<_shell_node->facet_vertex[f]; i++) {
+                temp = (float)_shell_node->vn[v_offset + i].x;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                temp = (float)_shell_node->vn[v_offset + i].y;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                temp = (float)_shell_node->vn[v_offset + i].z;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+            }
+            //
+            for (int i=0; i<_shell_node->facet_vertex[f]; i++) {
+                temp = (float)_shell_node->vt[v_offset + i].u;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                temp = 1.0f - (float)_shell_node->vt[v_offset + i].v;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+            }
+            v_offset += _shell_node->facet_vertex[f];
+        }
+        _shell_node = _shell_node->next;
+    }
+    return;
+}
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Output
 //
-
-/**
-void  GLTFData::createBinDataAoS(void)
-
-SLTFの binデータを AoS形式でthis->bin_bufferに格納する．
-this->bin_buffer はそのまま出力できる． 
-*/
-void  GLTFData::createBinDataAoS(void)
-{
-    if (this->shellNode==NULL) return;
-
-    long unsigned int solid_indexes  = 0;
-    long unsigned int solid_vertexes = 0;
-
-    GLTFShellNode*  _shell_node = this->shellNode;
-    while (_shell_node!=NULL) {
-        solid_indexes  += _shell_node->shell_indexes;
-        solid_vertexes += _shell_node->shell_vertexes;
-        _shell_node = _shell_node->next;
-    }
-
-    long unsigned int buffer_len = solid_indexes*sizeof(int) + solid_vertexes*sizeof(float)*8LU;
-    this->bin_buffer = make_Buffer(buffer_len);
-    if (this->bin_buffer.buf==NULL) return;
-
-    long unsigned int i_length = 0;
-    long unsigned int v_length = sizeof(float);
-    float temp = 0.0f;
-
-    _shell_node = this->shellNode;
-    while (_shell_node!=NULL) {             // 全SHELL
-        long unsigned int i_offset = 0;
-        long unsigned int v_offset = 0;
-        for (int f=0; f<_shell_node->num_facet; f++) {      // SHELL中の FACET
-            // binary of indexies
-            i_length = _shell_node->facet_index[f] * sizeof(int);
-            cat_b2Buffer(_shell_node->data_index + i_offset, &(this->bin_buffer), i_length);
-            i_offset += _shell_node->facet_index[f];
-
-            for (int i=0; i<_shell_node->facet_vertex[f]; i++) {
-                temp = (float)_shell_node->vv[v_offset + i].x;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vv[v_offset + i].y;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vv[v_offset + i].z;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                //
-                temp = (float)_shell_node->vn[v_offset + i].x;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vn[v_offset + i].y;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vn[v_offset + i].z;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                //
-                temp = (float)_shell_node->vt[v_offset + i].u;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = 1.0f - (float)_shell_node->vt[v_offset + i].v;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-            }
-            v_offset += _shell_node->facet_vertex[f];
-        }
-        _shell_node = _shell_node->next;
-    }
-    return;
-}
-
-
-/**
-void  GLTFData::createBinDataSoA(void)
-
-SLTFの binデータを SoA形式でthis->bin_bufferに格納する．
-this->bin_buffer はそのまま出力できる． 
-*/
-void  GLTFData::createBinDataSoA(void)
-{
-    if (this->shellNode==NULL) return;
-
-    long unsigned int solid_indexes  = 0;
-    long unsigned int solid_vertexes = 0;
-
-    GLTFShellNode*  _shell_node = this->shellNode;
-    while (_shell_node!=NULL) {
-        solid_indexes  += _shell_node->shell_indexes;
-        solid_vertexes += _shell_node->shell_vertexes;
-        _shell_node = _shell_node->next;
-    }
-
-    long unsigned int buffer_len = solid_indexes*sizeof(int) + solid_vertexes*sizeof(float)*8LU;
-    this->bin_buffer = make_Buffer(buffer_len);
-    if (this->bin_buffer.buf==NULL) return;
-
-    long unsigned int i_length = 0;
-    long unsigned int v_length = sizeof(float);
-    float temp = 0.0f;
-
-    _shell_node = this->shellNode;
-    while (_shell_node!=NULL) {             // 全SHELL
-        long unsigned int i_offset = 0;
-        long unsigned int v_offset = 0;
-        for (int f=0; f<_shell_node->num_facet; f++) {      // SHELL中の FACET
-            // binary of indexies
-            i_length = _shell_node->facet_index[f] * sizeof(int);
-            cat_b2Buffer(_shell_node->data_index + i_offset, &(this->bin_buffer), i_length);
-            i_offset += _shell_node->facet_index[f];
-
-            for (int i=0; i<_shell_node->facet_vertex[f]; i++) {
-                temp = (float)_shell_node->vv[v_offset + i].x;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vv[v_offset + i].y;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vv[v_offset + i].z;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-            }
-            //
-            for (int i=0; i<_shell_node->facet_vertex[f]; i++) {
-                temp = (float)_shell_node->vn[v_offset + i].x;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vn[v_offset + i].y;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vn[v_offset + i].z;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-            }
-            //
-            for (int i=0; i<_shell_node->facet_vertex[f]; i++) {
-                temp = (float)_shell_node->vt[v_offset + i].u;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = 1.0f - (float)_shell_node->vt[v_offset + i].v;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-            }
-            v_offset += _shell_node->facet_vertex[f];
-        }
-        _shell_node = _shell_node->next;
-    }
-    return;
-}
-
 
 void  GLTFData::outputFile(const char* fname, const char* out_path, const char* tex_dirn, const char* bin_dirn)
 {
@@ -781,7 +972,7 @@ void  GLTFData::outputFile(const char* fname, const char* out_path, const char* 
     canonical_filename_Buffer(&file_name);
     if (file_name.buf[0]=='.') file_name.buf[0] = '_';
     //
-    Buffer gltf_path;    // 出力パス
+    Buffer gltf_path;   // 出力パス
     if (out_path==NULL) gltf_path = make_Buffer_bystr("./");
     else                gltf_path = make_Buffer_bystr(out_path);
     Buffer bin_path = make_Buffer_bystr(out_path);
@@ -792,8 +983,10 @@ void  GLTFData::outputFile(const char* fname, const char* out_path, const char* 
 
     changeTexturePath((char*)tex_dirn);
     //
-    createBinDataAoS();
-    //createBinDataSoA();
+    if (this->bin_buffer.buf==NULL && !this->bin_seq) {
+        if (this->bin_mode==JBXL_GLTF_BIN_AOS) createBinDataAoS();
+        else                                   createBinDataSoA();
+    }
 
     // output json/binary
     cat_Buffer(&file_name, &gltf_path);
@@ -816,15 +1009,10 @@ void  GLTFData::outputFile(const char* fname, const char* out_path, const char* 
 
 void  GLTFData::output_gltf(char* json_file, char* bin_file)
 {
-    int len = Min(strlen(json_file), strlen(bin_file));
-    int pos = 0;
-    for (int i=0; i<len; i++) {
-        if (json_file[i]!=bin_file[i]) {
-            pos = i;
-            break;
-        }
-    }
+    char* out_path = get_file_path(json_file);
+    int pos = strlen(out_path);
     char* bin_fname = &bin_file[pos];
+    ::free(out_path);
 
     tJson* uri = search_key_json(this->buffers, "uri", FALSE, 1);
     if (uri!=NULL) json_set_str_val(uri, bin_fname);
@@ -846,6 +1034,8 @@ void  GLTFData::output_gltf(char* json_file, char* bin_file)
     return;
 }
 
+
+// "xyz.png"  ->  "(tex_dirn)xyz.png"
 void  GLTFData::changeTexturePath(char* tex_dirn)
 {
     if (tex_dirn==NULL) return;
@@ -859,8 +1049,9 @@ void  GLTFData::changeTexturePath(char* tex_dirn)
     while (jsn!=NULL) {     // here is {
         tJson* uri = search_key_json(jsn, "uri", FALSE, 1);
         if (uri!=NULL) {
-            Buffer* tex = new_Buffer(strlen(tex_dirn) + uri->ldat.val.vldsz + 2);   // + \0 + 1(予備)
+            Buffer* tex = new_Buffer(strlen(tex_dirn) + uri->ldat.val.vldsz + 5);   // ../ + \0 + 1(予備)
             cat_s2Buffer("\"", tex); 
+            if (this->phantom_out) cat_s2Buffer("../", tex); 
             cat_s2Buffer(tex_dirn, tex);
             cat_s2Buffer(&(uri->ldat.val.buf[1]), tex); 
             free_Buffer(&uri->ldat.val);

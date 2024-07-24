@@ -20,6 +20,10 @@
 namespace jbxl {
 
 
+#define  JBXL_GLTF_BIN_AOS      1
+#define  JBXL_GLTF_BIN_SOA      2
+
+
 #define  JBXL_GLTF_COPYRIGHT    "From OpenSimulator"
 #define  JBXL_GLTF_GENERATOR    "JBXL glTF Tool Library (C) 2024 v1.0 by Fumi.Iseki"
 #define  JBXL_GLTF_VERSION      "2.0"
@@ -94,6 +98,9 @@ public:
     bool    has_joints;
     bool    no_offset;
 
+    int     bin_mode;       // JBXL_GLTF_BIN_AOS or JBXL_GLTF_BIN_SOA
+    bool    bin_seq;        // binデータを逐次的に作成
+
     bool    forUnity;
     bool    forUE;
     int     engine;
@@ -152,16 +159,19 @@ public:
     void    addMeshes(MeshFacetNode* facet);
     void    addMaterials(MeshFacetNode* facet);
 
-    void    createShellGeometory(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, AffineTrans<double>* affine);
+    void    execAffineUVMap(MeshFacetNode* facet, AffineTrans<double>* affine);
 
     // AoS
     void    addBufferViewsAoS(MeshFacetNode* facet);
     void    addAccessorsAoS(MeshFacetNode* facet);
-    void    createBinDataAoS(void);
-
+    void    createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int shell_vertexes);
     // SoA
     void    addBufferViewsSoA(MeshFacetNode* facet);
     void    addAccessorsSoA(MeshFacetNode* facet);
+    void    createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int shell_vertexes);
+
+    void    createShellGeoData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes);
+    void    createBinDataAoS(void);
     void    createBinDataSoA(void);
 
     void    outputFile(const char* fn, const char* out_path, const char* tex_dirn, const char* bin_dirn);

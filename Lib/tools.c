@@ -2171,14 +2171,11 @@ char* get_file_path(const char* str)
     char* path = (char*)malloc(len + 1);
     memcpy(path, str, len + 1);
 
-#ifdef WIN32
-    char  cc = '\\';
-#else
-    char  cc = '/';
-#endif
+    char  cc1 = '\\';
+    char  cc2 = '/';
 
     int sz = len - 1;
-    while (sz>=0 && path[sz]!=cc) sz--;
+    while (sz>=0 && path[sz]!=cc1 && path[sz]!=cc2) sz--;
 
     if (sz<0) {
         free(path);
@@ -2207,17 +2204,13 @@ char* get_file_extension(const char* str)
 
     if (str==NULL) return NULL;
 
-    char  pd = '.';
-
-#ifdef WIN32
-    char  cc = '\\';
-#else
-    char  cc = '/';
-#endif
+    char  pd  = '.';
+    char  cc1 = '\\';
+    char  cc2 = '/';
 
     len = (int)strlen(str);
     sz  = 0;
-    while (sz<len && str[len-1-sz]!=cc && str[len-1-sz]!=pd) sz++;
+    while (sz<len && str[len-1-sz]!=cc1 && str[len-1-sz]!=cc2 && str[len-1-sz]!=pd) sz++;
 
     if (str[len-1-sz]!=pd) return NULL;
     ext = (char*)str + len - sz; 
