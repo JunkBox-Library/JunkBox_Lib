@@ -249,6 +249,7 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
     this->addTextures(facet);
     this->addMaterials(facet);
     this->addMeshes(facet);
+    this->execAffineUVMap(facet, affine);
 
     // for bin data
     if (this->bin_mode==JBXL_GLTF_BIN_AOS) {
@@ -259,7 +260,6 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         this->addBufferViewsSoA(facet);
         this->addAccessorsSoA(facet);
     }
-    this->execAffineUVMap(facet, affine);
 
     if (this->bin_seq) {
         if (this->bin_mode==JBXL_GLTF_BIN_AOS) {
@@ -516,20 +516,24 @@ void  GLTFData::addAccessorsAoS(MeshFacetNode* facet)
 
         // accessor of indexies
         memset(buf, 0, LBUF);
+        //snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no, 0LU, 5125, facet->num_index, "SCALAR");   // 5125: unsigned int
         snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_S, this->view_no, 0LU, 5125, facet->num_index, "SCALAR", mm.index_max, mm.index_min);   // 5125: unsigned int
         json_insert_parse(this->accessors, buf);
         this->view_no++;
 
         // accessors of vertex/normal/uvmap
         memset(buf, 0, LBUF);
+        //snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no,               0LU, 5126, facet->num_vertex, "VEC3"); 
         snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no,               0LU, 5126, facet->num_vertex, "VEC3", 
                                                      mm.vertex_x_max, mm.vertex_y_max, mm.vertex_z_max, mm.vertex_x_min, mm.vertex_y_min, mm.vertex_z_min);
         json_insert_parse(this->accessors, buf);
         memset(buf, 0, LBUF);
+        //snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no, sizeof(float)*3LU, 5126, facet->num_vertex, "VEC3");
         snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no, sizeof(float)*3LU, 5126, facet->num_vertex, "VEC3",
                                                      mm.normal_x_max, mm.normal_y_max, mm.normal_z_max, mm.normal_x_min, mm.normal_y_min, mm.normal_z_min);
         json_insert_parse(this->accessors, buf);
         memset(buf, 0, LBUF);
+        //snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no, sizeof(float)*6LU, 5126, facet->num_vertex, "VEC2");
         snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V2, this->view_no, sizeof(float)*6LU, 5126, facet->num_vertex, "VEC2",
                                                      mm.texcrd_u_max, mm.texcrd_u_max, mm.texcrd_v_min, mm.texcrd_v_min);
         json_insert_parse(this->accessors, buf);
@@ -551,22 +555,26 @@ void  GLTFData::addAccessorsSoA(MeshFacetNode* facet)
 
         // accessor of indexies
         memset(buf, 0, LBUF);
+        //snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no, 0LU, 5125, facet->num_index, "SCALAR");   // 5125: unsigned int
         snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_S, this->view_no, 0LU, 5125, facet->num_index, "SCALAR", mm.index_max, mm.index_min);   // 5125: unsigned int
         json_insert_parse(this->accessors, buf);
         this->view_no++;
 
         // accessors of vertex/normal/uvmap
         memset(buf, 0, LBUF);
+        //snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no, 0LU, 5126, facet->num_vertex, "VEC3");
         snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no, 0LU, 5126, facet->num_vertex, "VEC3",
                                                      mm.vertex_x_max, mm.vertex_y_max, mm.vertex_z_max, mm.vertex_x_min, mm.vertex_y_min, mm.vertex_z_min);
         json_insert_parse(this->accessors, buf);
         this->view_no++;
         memset(buf, 0, LBUF);
+        //snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no, 0LU, 5126, facet->num_vertex, "VEC3");
         snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no, 0LU, 5126, facet->num_vertex, "VEC3",
                                                      mm.normal_x_max, mm.normal_y_max, mm.normal_z_max, mm.normal_x_min, mm.normal_y_min, mm.normal_z_min);
         json_insert_parse(this->accessors, buf);
         this->view_no++;
         memset(buf, 0, LBUF);
+        //snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR, this->view_no, 0LU, 5126, facet->num_vertex, "VEC2");
         snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V2, this->view_no, 0LU, 5126, facet->num_vertex, "VEC2",
                                                      mm.texcrd_u_max, mm.texcrd_u_max, mm.texcrd_v_min, mm.texcrd_v_min);
         json_insert_parse(this->accessors, buf);
@@ -733,6 +741,9 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
 }
 
 
+//
+// UV Map を処理する
+//
 void  GLTFData::execAffineUVMap(MeshFacetNode* facet, AffineTrans<double>* affine)
 {
     while (facet!=NULL) {
@@ -751,6 +762,14 @@ void  GLTFData::execAffineUVMap(MeshFacetNode* facet, AffineTrans<double>* affin
             facet->execAffineTransUVMap(uvmap, facet->num_texcrd);
         }
         */
+
+        float temp;
+        for (int i=0; i<facet->num_texcrd; i++) {
+            temp = (float)facet->texcrd_value[i].u;
+            if (isnan(temp)) facet->texcrd_value[i].u = 0.0f;
+            temp = (float)facet->texcrd_value[i].v;
+            if (isnan(temp)) facet->texcrd_value[i].v = 0.0f;
+        }
 
         if (facet->material_param.mapping==MATERIAL_MAPPING_PLANAR) {
            Vector<double> scale(1.0, 1.0, 1.0);

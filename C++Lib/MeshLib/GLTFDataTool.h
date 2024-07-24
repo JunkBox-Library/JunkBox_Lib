@@ -31,6 +31,7 @@ namespace jbxl {
 //#define  JBXL_GLTF_BUFFER       "{\"uri\":%s,\"byteLength\":%lu}"
 #define  JBXL_GLTF_ELEMENT_VIEW "{\"buffer\":%d,\"byteOffset\":%lu,\"byteLength\":%lu,\"target\":34963}"
 #define  JBXL_GLTF_VIEW         "{\"buffer\":%d,\"byteOffset\":%lu,\"byteLength\":%lu,\"byteStride\":%d,\"target\":34962}"
+#define  JBXL_GLTF_ACCESSOR     "{\"bufferView\":%d,\"byteOffset\":%lu,\"componentType\":%d,\"count\":%d,\"type\":\"%s\"}"
 #define  JBXL_GLTF_ACCESSOR_S   "{\"bufferView\":%d,\"byteOffset\":%lu,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%d],\"min\":[%d]}"
 #define  JBXL_GLTF_ACCESSOR_V2  "{\"bufferView\":%d,\"byteOffset\":%lu,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f],\"min\":[%f,%f]}"
 #define  JBXL_GLTF_ACCESSOR_V3  "{\"bufferView\":%d,\"byteOffset\":%lu,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f,%f],\"min\":[%f,%f,%f]}"
