@@ -175,8 +175,9 @@ public:
     void    delAffineTrans(void) { freeAffineTrans(this->affineTrans);}
 
     AffineTrans<double> getAffineTrans4Engine(AffineTrans<double> affine);
-    Vector<double> execDegeneracy(void);
     gltfFacetMinMax getFacetMinMax(MeshFacetNode* facet);
+
+    Vector<double> execAffineTrans(void);
 
     void    initGLTF(void);
 

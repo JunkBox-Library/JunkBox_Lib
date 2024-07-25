@@ -75,7 +75,7 @@ public:
     void    setAffineTrans (AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}
     void    delAffineTrans (void) { freeAffineTrans(this->affineTrans);}
 
-    Vector<double> execDegeneracy(void);
+    Vector<double> execAffineTrans(void);
 
 public:
     void    addShell(MeshObjectData* shelldata, bool collider);

@@ -142,12 +142,12 @@ void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* 
 
 
 /**
-Vector<double>  FBXData::execDegeneracy(void)
+Vector<double>  FBXData::execAffineTrans(void)
 
 FBXデータの 原点縮退変換を行う．
 no_offset が trueの場合，データの中心を原点に戻し，実際の位置をオフセットで返す．
 */
-Vector<double>  FBXData::execDegeneracy(void)
+Vector<double>  FBXData::execAffineTrans(void)
 {
     Vector<double> center(0.0, 0.0, 0.0);
 

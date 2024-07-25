@@ -1116,12 +1116,13 @@ void  GLTFData::changeTexturePath(char* tex_dirn)
 //////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-Vector<double>  GLTFData::execDegeneracy(void)
+Vector<double>  GLTFData::execAffineTrans(void)
 
-GLTFデータの 原点縮退変換を行う．
+アフィン変換を行う．
+
 no_offset が trueの場合，データの中心を原点に戻し，実際の位置をオフセットで返す．
 */
-Vector<double>  GLTFData::execDegeneracy(void)
+Vector<double>  GLTFData::execAffineTrans(void)
 {
     Vector<double> center(0.0, 0.0, 0.0);
 

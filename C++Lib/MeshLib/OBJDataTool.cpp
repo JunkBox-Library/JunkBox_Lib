@@ -85,8 +85,8 @@ void  OBJData::addShell(MeshObjectData* shelldata, bool collider)
     ptr_obj->next = new OBJData(-1);
     this->num_obj++;
 
-    if (shelldata->affineTrans!=NULL) { // Grass の場合は NULL
-        ptr_obj->next->setAffineTrans(*shelldata->affineTrans);
+    if (shelldata->affineTrans!=NULL) {
+        ptr_obj->next->setAffineTrans(*(shelldata->affineTrans));
     }
     ptr_obj->next->obj_name = dup_Buffer(shelldata->data_name);
 
@@ -159,14 +159,15 @@ void  OBJData::addShell(MeshObjectData* shelldata, bool collider)
 
 
 /**
-Vector<double>  OBJData::execDegeneracy(void)
+Vector<double>  OBJData::execAffineTrans(void)
 
-OBJデータの 原点縮退変換を行う．
+アフィン変換を行う．
+
 no_offset が trueの場合，データの中心を原点に戻し，実際の位置をオフセットで返す．
 
 @retval データのオフセット．
 */
-Vector<double>  OBJData::execDegeneracy(void)
+Vector<double>  OBJData::execAffineTrans(void)
 {
     Vector<double> center(0.0, 0.0, 0.0);
 

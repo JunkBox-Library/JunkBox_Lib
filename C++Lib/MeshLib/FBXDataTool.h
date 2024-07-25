@@ -53,7 +53,7 @@ public:
 
     void    setAffineTrans (AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}
     void    delAffineTrans (void) { freeAffineTrans(this->affineTrans);}
-    Vector<double> execDegeneracy(void);
+    Vector<double> execAffineTrans(void);
 
     void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL);
     void    closeSolid(void) {}
