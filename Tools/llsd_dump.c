@@ -61,10 +61,10 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-/**
+
     fprintf(stdout, "\n=== LOD =========\n");
     print_tTree_tree(stdout, lod, "  ");
-**/
+
     int n = 0;
 
     // INDEX
@@ -137,9 +137,9 @@ int main(int argc, char** argv)
             }
             free_Buffer(&wgt);
             freeNull(weight);
+            weght = weght->next;
         }
         postn = postn->next;
-        weght = weght->next;
         n++;
     }
     del_tList(&lppostn);
