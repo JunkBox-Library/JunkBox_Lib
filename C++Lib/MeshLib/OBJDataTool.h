@@ -49,13 +49,14 @@ public:
 
 public:
     Buffer  obj_name;
-    bool    phantom_out;
     int     num_obj;                    // nextに続くOBJ（SHELL）データの総数．        
 
+    bool    phantom_out;
     bool    no_offset;
+    int     engine;
+
     bool    forUnity;
     bool    forUE;
-    int     engine;
 
     AffineTrans<double>* affineTrans;
 

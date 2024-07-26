@@ -970,6 +970,7 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
             affineTrans->setShift(affine.shift);
         }
     }
+    else affine.init();
 
     Vector<double> pelvis = Vector<double>(0.0, 0.0, 1.067);
     // joints

@@ -86,6 +86,10 @@ void  OBJData::addShell(MeshObjectData* shelldata, bool collider)
     this->num_obj++;
 
     if (shelldata->affineTrans!=NULL) {
+        if (this->affineTrans==NULL) {
+            this->affineTrans = new AffineTrans<double>();
+            this->setAffineTrans(*(shelldata->affineTrans));
+        }
         ptr_obj->next->setAffineTrans(*(shelldata->affineTrans));
     }
     ptr_obj->next->obj_name = dup_Buffer(shelldata->data_name);
@@ -172,7 +176,9 @@ Vector<double>  OBJData::execAffineTrans(void)
     Vector<double> center(0.0, 0.0, 0.0);
 
     OBJData* obj = this->next;  // Top はアンカー
-    if (obj!=NULL && no_offset) center = obj->affineTrans->shift;
+    if (obj!=NULL && no_offset) {
+        if (obj->affineTrans!=NULL) center = obj->affineTrans->shift;
+    }
 
     while (obj!=NULL) {
         if (obj->affineTrans!=NULL) {
