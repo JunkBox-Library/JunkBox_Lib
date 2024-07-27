@@ -96,6 +96,7 @@ void  GLTFData::init(void)
     this->alt_name      = init_Buffer();
     this->phantom_out   = true;
     this->no_offset     = false;
+    this->center        = Vector<double>(0.0, 0.0, 0.0);
 
     this->forUnity      = true;
     this->forUE         = false;
@@ -241,10 +242,16 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         facet = facet->next;
     }
 
-    facet = shelldata->facet;
     AffineTrans<double>* affine = shelldata->affineTrans;
+    if (no_offset && affine!=NULL) {
+        if (this->shell_no==0) {
+            this->center = affine->shift;
+        }
+        affine->shift = affine->shift - this->center;
+        affine->computeMatrix();
+    }
 
-    //
+    facet = shelldata->facet;
     this->addScenesNodes(facet, affine);
     this->addTextures(facet);
     this->addMaterials(facet);
@@ -755,16 +762,6 @@ void  GLTFData::execAffineUVMap(MeshFacetNode* facet, AffineTrans<double>* affin
         }
         */
 
-/*
-        float temp;
-        for (int i=0; i<facet->num_texcrd; i++) {
-            temp = (float)facet->texcrd_value[i].u;
-            if (isnan(temp)) facet->texcrd_value[i].u = 0.0f;
-            temp = (float)facet->texcrd_value[i].v;
-            if (isnan(temp)) facet->texcrd_value[i].v = 0.0f;
-        }
-*/
-
         if (facet->material_param.mapping==MATERIAL_MAPPING_PLANAR) {
            Vector<double> scale(1.0, 1.0, 1.0);
             if (affine!=NULL) scale = affine->scale;
@@ -1110,23 +1107,6 @@ void  GLTFData::changeTexturePath(char* tex_dirn)
 //////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-Vector<double>  GLTFData::execAffineTrans(void)
-
-アフィン変換を行う．
-
-no_offset が trueの場合，データの中心を原点に戻し，実際の位置をオフセットで返す．
-*/
-Vector<double>  GLTFData::execAffineTrans(void)
-{
-    Vector<double> center(0.0, 0.0, 0.0);
-
-    if (this->no_offset) center = affineTrans->shift;
-
-    return center;
-}
-
-
-/**
 AffineTrans<double>  GLTFData::getAffineTrans4Engine(AffineTrans<double> affine)
 
 使用するエンジンに合わせて，FACET毎の Affine変換のパラメータを変更する．
@@ -1136,18 +1116,17 @@ AffineTrans<double>  GLTFData::getAffineTrans4Engine(AffineTrans<double> affine)
     AffineTrans<double> trans;
     for (int i=1; i<=4; i++) trans.matrix.element(i, i) = 1.0;
     //
-    if (this->engine==JBXL_3D_ENGINE_UNITY) {
+    if (this->engine==JBXL_3D_ENGINE_UE) {
+        for (int i=1; i<=4; i++) trans.matrix.element(i, i) = 100.0;
+    }
+    else {
         trans.matrix.element(2, 2) =  0.0;
         trans.matrix.element(3, 3) =  0.0;
         trans.matrix.element(3, 2) = -1.0;    // y -> -z
         trans.matrix.element(2, 3) =  1.0;    // z -> y
     }
-    else if (this->engine==JBXL_3D_ENGINE_UE) {
-        for (int i=1; i<=4; i++) trans.matrix.element(i, i) = 100.0;
-    }
     //
     trans.affineMatrixFllow(affine);     // engineTrans = engineTrans * (*affine)
-
     return trans;
 }
 

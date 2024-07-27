@@ -88,7 +88,7 @@ public:
     int*   facet_index;         // 各 FACET での data_index の数を格納した配列
     int*   facet_vertex;        // 各 FACET での vv (vn, vt) の数を格納した配列
 
-    int*   data_index;
+    int*            data_index;
     Vector<double>* vv;
     Vector<double>* vn;
     UVMap<double>*  vt;
@@ -134,6 +134,7 @@ public:
     tList*  image_list;
     tList*  material_list;
 
+    Vector<double>       center;
     AffineTrans<double>* affineTrans;   // SOLID のアフィン変換
     AffineTrans<double>  skeleton;
 
@@ -176,8 +177,6 @@ public:
 
     AffineTrans<double> getAffineTrans4Engine(AffineTrans<double> affine);
     gltfFacetMinMax getFacetMinMax(MeshFacetNode* facet);
-
-    Vector<double> execAffineTrans(void);
 
     void    initGLTF(void);
 
