@@ -1007,6 +1007,8 @@ void  GLTFData::createBinDataSoA(void)
 
 void  GLTFData::outputFile(const char* fname, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn)
 {
+    //PRINT_MESG("GLTFData::outputFile: start\n");
+
     char* packname = pack_head_tail_char(get_file_name(fname), ' ');
     Buffer file_name = make_Buffer_bystr(packname);
     ::free(packname);
@@ -1097,12 +1099,14 @@ void  GLTFData::output_glb(char* fn, char* out_dirn, char* ptm_dirn, char* tex_d
 
     glbTextureInfo* texture_info = getGLBTextureInfo((char*)tex_path.buf);
     uDWord tex_size = convertJson_gltf2glb(texture_info);
-    /*
-    glbTextureInfo* info = texture_info;
-    while (info!=NULL) {
-        print_message("======> %s %d %d\n",  (char*)info->fname->buf, info->length, info->pad);
-        info = info->next;
-    }*/
+    /**/
+    DEBUG_MODE {
+        glbTextureInfo* info = texture_info;
+        while (info!=NULL) {
+            PRINT_MESG("GLTFData::output_glb: Texture File = %s, Length = %d, Pad = %d\n",  (char*)info->fname->buf, info->length, info->pad);
+            info = info->next;
+        }
+    }/**/
 
     // JSON Data
     glbDataChunk json_chunk;
