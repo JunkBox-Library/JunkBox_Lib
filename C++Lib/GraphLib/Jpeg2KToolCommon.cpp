@@ -1,4 +1,14 @@
-﻿
+﻿/**
+Jpeg2KToolCommon.cpp
+
+Jpeg20000 の v1, v2 の共通ライブラリ
+
+注意：
+このファイルは Jpeg2KTool.cpp および Jpeg2KTool2.cpp　から include される．
+従って，このファイルを単体でコンパイルする必要は無い．
+*/
+
+
 /**
 JPEG 2000のヘッダからファイルの種類を返す．@n
 ただし，ヘッダから JP2K_FMT_JPTであることは判別できないので，注意する．

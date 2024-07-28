@@ -1182,7 +1182,7 @@ void  GLTFData::convertJson_TexturePath(char* tex_dirn)
     while (json!=NULL) {     // here is {
         tJson* uri = search_key_json(json, "uri", FALSE, 1);
         if (uri!=NULL) {
-            Buffer* tex = new_Buffer(strlen(tex_dirn) + uri->ldat.val.vldsz + 5);   // ../ + \0 + 1(予備)
+            Buffer* tex = new_Buffer((int)strlen(tex_dirn) + uri->ldat.val.vldsz + 5);   // ../ + \0 + 1(予備)
             cat_s2Buffer("\"", tex); 
             if (this->phantom_out) cat_s2Buffer("../", tex); 
             cat_s2Buffer(tex_dirn, tex);
@@ -1323,7 +1323,7 @@ gltfFacetMinMax  GLTFData::getFacetMinMax(MeshFacetNode* facet)
         f_temp = (float)facet->texcrd_value[i].u;
         if (min_max.texcrd_u_max < f_temp) min_max.texcrd_u_max = f_temp;
         if (min_max.texcrd_u_min > f_temp) min_max.texcrd_u_min = f_temp;
-        f_temp = (float)1.0f - facet->texcrd_value[i].v;
+        f_temp = 1.0f - (float)facet->texcrd_value[i].v;
         if (min_max.texcrd_v_max < f_temp) min_max.texcrd_v_max = f_temp;
         if (min_max.texcrd_v_min > f_temp) min_max.texcrd_v_min = f_temp;
     }
@@ -1353,7 +1353,7 @@ glbTextureInfo*  GLTFData::getGLBTextureInfo(const char* tex_dirn)
             *n_info = (glbTextureInfo*)malloc(sizeof(glbTextureInfo));
             (*n_info)->length = 0;
             (*n_info)->pad    = 0;
-            (*n_info)->fname  = new_Buffer(strlen(tex_dirn) + texture_uri->ldat.val.vldsz + 2);     // \0 + 1(予備)
+            (*n_info)->fname  = new_Buffer((int)strlen(tex_dirn) + texture_uri->ldat.val.vldsz + 2);     // \0 + 1(予備)
             (*n_info)->json   = texture_uri;
             (*n_info)->next   = NULL;
             //

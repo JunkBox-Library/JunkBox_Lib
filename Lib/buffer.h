@@ -128,7 +128,7 @@ void    kanji_convert_Buffer(Buffer* mesg);                             ///< 大
 Buffer  encode_base64_Buffer(Buffer buf);                               ///< バイナリデータ buf.bufの buf.vldszバイトを Base64にエンコード する
 Buffer  decode_base64_Buffer(Buffer buf);                               ///< strのバッファを Base64からデコードする
 
-Buffer  encode_base64_Buffer_bin(unsigned char* bin, int sz, int nopad);   ///< sz バイトの バイナリデータ binを Base64にエンコード する．
+Buffer  encode_base64_Buffer_bin(unsigned char* bin, unsigned int sz, int nopad);   ///< sz バイトの バイナリデータ binを Base64にエンコード する．
 
 Buffer  encode_base64_filename_Buffer(Buffer buf, unsigned char cc);    ///< バイナリデータ bufを Base64で encodeしてファイル名を作る．ただし '/' は cc として扱う．
 Buffer  decode_base64_filename_Buffer(Buffer buf, unsigned char cc);    ///< bufを Base64で decodeしてバイナリデータを取り出す．ただし cc は '/' として扱う． 

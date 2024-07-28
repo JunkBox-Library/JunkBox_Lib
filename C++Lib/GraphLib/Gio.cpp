@@ -1564,10 +1564,15 @@ int  jbxl::writeCmnHeadData(FILE* fp, CmnHead* hd, bool cnt)
     if (kind==JPEG_RGB_DATA   || kind==JPEG_MONO_DATA   || kind==JPEG_ARGB_DATA || kind==JPEG_RGBA_DATA ||
         kind==JPEG16_RGB_DATA || kind==JPEG16_ARGB_DATA || kind==JPEG16_RGBA_DATA) {
         JPEGImage jpg = CmnHead2JPEGImage(*hd);
-        csize = writeJPEGData(fp, jpg, 100);
+        csize = writeJPEGData(fp, &jpg, 100);
         jpg.free();
         return csize;
     }
+#endif
+
+// Not Implement yet
+#ifdef  ENABLE_PGN
+    // PNG
 #endif
 
     // TIFF
@@ -1575,6 +1580,9 @@ int  jbxl::writeCmnHeadData(FILE* fp, CmnHead* hd, bool cnt)
         csize = 
         return csize;
     }*/
+
+    // TGA
+
 
     ////////////////////////////////////////////////////////////////////////
     // CT : ヘッダの準備

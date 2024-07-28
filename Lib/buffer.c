@@ -873,24 +873,24 @@ Buffer  decode_base64_Buffer(Buffer str)
 
 
 /**
-Buffer  encode_base64_Buffer_bin(unsigned char* bin, int sz, int nopad)
+Buffer  encode_base64_Buffer_bin(unsigned char* bin, unsigned int sz, int nopad)
 
 sz バイトの バイナリデータ binを Base64にエンコード する．
 nopad = TRUE の場合，データ末の パッド(=)は削除する．
 */
-Buffer  encode_base64_Buffer_bin(unsigned char* bin, int sz, int nopad)
+Buffer  encode_base64_Buffer_bin(unsigned char* bin, unsigned int sz, int nopad)
 {
     unsigned char* str;
     Buffer enc = init_Buffer();
 
     if (bin==NULL) return enc;
-    if (sz<=0) sz = strlen((char*)bin);
+    if (sz<=0) sz = (unsigned)strlen((char*)bin);
 
     str = encode_base64(bin, sz);
     if (str==NULL) return enc;
 
     if (nopad) {
-        int len = strlen((char*)str);
+        unsigned int len = (unsigned int)strlen((char*)str);
         if      (str[len-2]=='=') str[len-2] = '\0';
         else if (str[len-1]=='=') str[len-1] = '\0';
     }
