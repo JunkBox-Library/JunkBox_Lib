@@ -717,7 +717,8 @@ void  _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* spac
                 cat_s2Buffer("\"", buf);
                 //
                 if (pp->ldat.lv==JSON_VALUE_OBJ) {
-                    cat_s2Buffer(": {", buf);
+                    if (space[0]!='\0') cat_s2Buffer(": {", buf);
+                    else                cat_s2Buffer(":{",  buf);
                     if (pp->next!=NULL) {
                         if (crlf[0]!='\0') cat_s2Buffer(crlf, buf);
                         _json_to_Buffer(pp->next, buf, crlf, space);
@@ -728,10 +729,12 @@ void  _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* spac
                 }
                 else {
                     if (pp->ldat.lv==JSON_VALUE_NULL) {
-                        cat_s2Buffer(": null", buf);
+                        if (space[0]!='\0') cat_s2Buffer(": null", buf);
+                        else                cat_s2Buffer(":null",  buf);
                     }
                     else  {
-                        cat_s2Buffer(": ", buf);
+                        if (space[0]!='\0') cat_s2Buffer(": ", buf);
+                        else                cat_s2Buffer(":",  buf);   
                         cat_s2Buffer(pp->ldat.val.buf, buf);
                     }
                 }
@@ -743,7 +746,8 @@ void  _json_to_Buffer(tJson* pp, Buffer* buf, const char* crlf, const char* spac
                 if (pp->ldat.key.buf!=NULL) {
                     cat_s2Buffer("\"", buf);
                     cat_s2Buffer(pp->ldat.key.buf, buf);
-                    cat_s2Buffer("\": ", buf);
+                    if (space[0]!='\0') cat_s2Buffer("\": ", buf);
+                    else                cat_s2Buffer("\":",  buf);   
                 }
                 if (pp->ldat.val.buf!=NULL) {
                     cat_s2Buffer(pp->ldat.val.buf, buf); 

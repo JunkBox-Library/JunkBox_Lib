@@ -96,6 +96,7 @@ void  GLTFData::init(void)
     this->alt_name      = init_Buffer();
     this->phantom_out   = true;
     this->no_offset     = false;
+    this->glb_out       = false;
     this->center        = Vector<double>(0.0, 0.0, 0.0);
 
     this->forUnity      = true;
@@ -447,18 +448,18 @@ void  GLTFData::addBufferViewsAoS(MeshFacetNode* facet)
     if (facet==NULL) return;
 
     char buf[LBUF];
-    long unsigned int length = 0;
+    unsigned int length = 0;
 
     while (facet!=NULL) {
         // bufferview of indexies
-        length = (long unsigned int)facet->num_index*sizeof(int);
+        length = (unsigned int)facet->num_index*sizeof(int);
         memset(buf, 0, LBUF);
         snprintf(buf, LBUF-1, JBXL_GLTF_ELEMENT_VIEW, 0, this->bin_offset, length);
         json_insert_parse(this->buffviews, buf);
         this->bin_offset += length;
 
         // bufferview of vertex/normal/uvmap
-        length = (long unsigned int)facet->num_vertex*sizeof(float)*8LU;
+        length = (unsigned int)facet->num_vertex*sizeof(float)*8U;
         memset(buf, 0, LBUF);
         snprintf(buf, LBUF-1, JBXL_GLTF_VIEW, 0, this->bin_offset, length, (int)sizeof(float)*8);
         json_insert_parse(this->buffviews, buf);
@@ -475,32 +476,32 @@ void  GLTFData::addBufferViewsSoA(MeshFacetNode* facet)
     if (facet==NULL) return;
 
     char buf[LBUF];
-    long unsigned int length = 0;
+    unsigned int length = 0;
 
     while (facet!=NULL) {
         // bufferview of indexies
-        length = (long unsigned int)facet->num_index*sizeof(int);
+        length = (unsigned int)facet->num_index*sizeof(int);
         memset(buf, 0, LBUF);
         snprintf(buf, LBUF-1, JBXL_GLTF_ELEMENT_VIEW, 0, this->bin_offset, length);
         json_insert_parse(this->buffviews, buf);
         this->bin_offset += length;
 
         // bufferview of vertex
-        length = (long unsigned int)facet->num_vertex*sizeof(float)*3LU;
+        length = (unsigned int)facet->num_vertex*sizeof(float)*3U;
         memset(buf, 0, LBUF);
         snprintf(buf, LBUF-1, JBXL_GLTF_VIEW, 0, this->bin_offset, length, (int)sizeof(float)*3);
         json_insert_parse(this->buffviews, buf);
         this->bin_offset += length;
 
         // bufferview of normal
-        length = (long unsigned int)facet->num_vertex*sizeof(float)*3LU;
+        length = (unsigned int)facet->num_vertex*sizeof(float)*3U;
         memset(buf, 0, LBUF);
         snprintf(buf, LBUF-1, JBXL_GLTF_VIEW, 0, this->bin_offset, length, (int)sizeof(float)*3);
         json_insert_parse(this->buffviews, buf);
         this->bin_offset += length;
 
         // bufferview of uvmap
-        length = (long unsigned int)facet->num_vertex*sizeof(float)*2LU;
+        length = (unsigned int)facet->num_vertex*sizeof(float)*2U;
         memset(buf, 0, LBUF);
         snprintf(buf, LBUF-1, JBXL_GLTF_VIEW, 0, this->bin_offset, length, (int)sizeof(float)*2);
         json_insert_parse(this->buffviews, buf);
@@ -523,21 +524,22 @@ void  GLTFData::addAccessorsAoS(MeshFacetNode* facet)
 
         // accessor of indexies
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_S, this->view_no, 0LU, 5125, facet->num_index, "SCALAR", mm.index_max, mm.index_min);   // 5125: unsigned int
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_S, this->view_no, 0U, 5125, facet->num_index, "SCALAR", mm.index_max, mm.index_min);   // 5125: unsigned int
         json_insert_parse(this->accessors, buf);
         this->view_no++;
 
         // accessors of vertex/normal/uvmap
+        unsigned int float_size = (unsigned int)sizeof(float);
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no,               0LU, 5126, facet->num_vertex, "VEC3", 
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no,           0U, 5126, facet->num_vertex, "VEC3",
                                                      mm.vertex_x_max, mm.vertex_y_max, mm.vertex_z_max, mm.vertex_x_min, mm.vertex_y_min, mm.vertex_z_min);
         json_insert_parse(this->accessors, buf);
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no, sizeof(float)*3LU, 5126, facet->num_vertex, "VEC3",
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no, float_size*3U, 5126, facet->num_vertex, "VEC3",
                                                      mm.normal_x_max, mm.normal_y_max, mm.normal_z_max, mm.normal_x_min, mm.normal_y_min, mm.normal_z_min);
         json_insert_parse(this->accessors, buf);
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V2, this->view_no, sizeof(float)*6LU, 5126, facet->num_vertex, "VEC2",
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V2, this->view_no, float_size*6U, 5126, facet->num_vertex, "VEC2",
                                                      mm.texcrd_u_max, mm.texcrd_v_max, mm.texcrd_u_min, mm.texcrd_v_min);
         json_insert_parse(this->accessors, buf);
         this->view_no++;
@@ -558,23 +560,23 @@ void  GLTFData::addAccessorsSoA(MeshFacetNode* facet)
 
         // accessor of indexies
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_S, this->view_no, 0LU, 5125, facet->num_index, "SCALAR", mm.index_max, mm.index_min);   // 5125: unsigned int
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_S, this->view_no, 0U, 5125, facet->num_index, "SCALAR", mm.index_max, mm.index_min);   // 5125: unsigned int
         json_insert_parse(this->accessors, buf);
         this->view_no++;
 
         // accessors of vertex/normal/uvmap
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no, 0LU, 5126, facet->num_vertex, "VEC3",
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no, 0U, 5126, facet->num_vertex, "VEC3",
                                                      mm.vertex_x_max, mm.vertex_y_max, mm.vertex_z_max, mm.vertex_x_min, mm.vertex_y_min, mm.vertex_z_min);
         json_insert_parse(this->accessors, buf);
         this->view_no++;
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no, 0LU, 5126, facet->num_vertex, "VEC3",
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V3, this->view_no, 0U, 5126, facet->num_vertex, "VEC3",
                                                      mm.normal_x_max, mm.normal_y_max, mm.normal_z_max, mm.normal_x_min, mm.normal_y_min, mm.normal_z_min);
         json_insert_parse(this->accessors, buf);
         this->view_no++;
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V2, this->view_no, 0LU, 5126, facet->num_vertex, "VEC2",
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSOR_V2, this->view_no, 0U, 5126, facet->num_vertex, "VEC2",
                                                      mm.texcrd_u_max, mm.texcrd_v_max, mm.texcrd_u_min, mm.texcrd_v_min);
         json_insert_parse(this->accessors, buf);
         this->view_no++;
@@ -596,7 +598,7 @@ void  GLTFData::createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int
 {
     if (facet==NULL) return;
 
-    long unsigned int temp_len = (long unsigned int)shell_indexes*sizeof(int) + (long unsigned int)shell_vertexes*sizeof(float)*8LU;
+    unsigned int temp_len = (unsigned int)shell_indexes*sizeof(int) + (unsigned int)shell_vertexes*sizeof(float)*8U;
     unsigned char* temp_buffer = (unsigned char*)malloc(temp_len);
     if (temp_buffer==NULL) {
         PRINT_MESG("GLTFData::createBinDataSeqAoS: ERROR: No more memory.\n");
@@ -611,12 +613,12 @@ void  GLTFData::createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int
         }
     }
     //
-    long unsigned int length = 0;
-    long unsigned int offset = 0;
+    unsigned int length = 0;
+    unsigned int offset = 0;
 
     while (facet!=NULL) {
         // binary of indexies
-        length = (long unsigned int)facet->num_index*sizeof(int);
+        length = (unsigned int)facet->num_index*sizeof(int);
         memcpy((void*)(temp_buffer + offset), (void*)facet->data_index, length);
         offset += length;
 
@@ -670,7 +672,7 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
 {
     if (facet==NULL) return;
 
-    long unsigned int temp_len = (long unsigned int)shell_indexes*sizeof(int) + (long unsigned int)shell_vertexes*sizeof(float)*8LU;
+    unsigned int temp_len = (unsigned int)shell_indexes*sizeof(int) + (unsigned int)shell_vertexes*sizeof(float)*8U;
     unsigned char* temp_buffer = (unsigned char*)malloc(temp_len);
     if (temp_buffer==NULL) {
         PRINT_MESG("GLTFData::createBinDataSeqSoA: ERROR: No more memory.\n");
@@ -685,12 +687,12 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
         }
     }
     //
-    long unsigned int length = 0;
-    long unsigned int offset = 0;
+    unsigned int length = 0;
+    unsigned int offset = 0;
 
     while (facet!=NULL) {
         // binary of indexies
-        length = (long unsigned int)facet->num_index*sizeof(int);
+        length = (unsigned int)facet->num_index*sizeof(int);
         memcpy((void*)(temp_buffer + offset), (void*)facet->data_index, length);
         offset += length;
 
@@ -813,9 +815,9 @@ void  GLTFData::createShellGeoData(MeshFacetNode* facet, int shell_indexes, int 
     _shell_node->facet_index  = (int*)malloc(_shell_node->num_facet*sizeof(int));
     _shell_node->facet_vertex = (int*)malloc(_shell_node->num_facet*sizeof(int));
 
-    long unsigned int index_offset  = 0;
-    long unsigned int vertex_offset = 0;
-    long unsigned int facet_no      = 0;
+    unsigned int index_offset  = 0;
+    unsigned int vertex_offset = 0;
+    unsigned int facet_no      = 0;
 
     while (facet!=NULL) {
         // save index and vertex number
@@ -865,8 +867,8 @@ void  GLTFData::createBinDataAoS(void)
 {
     if (this->shellNode==NULL) return;
 
-    long unsigned int solid_indexes  = 0;
-    long unsigned int solid_vertexes = 0;
+    unsigned int solid_indexes  = 0;
+    unsigned int solid_vertexes = 0;
 
     GLTFShellNode*  _shell_node = this->shellNode;
     while (_shell_node!=NULL) {
@@ -875,21 +877,21 @@ void  GLTFData::createBinDataAoS(void)
         _shell_node = _shell_node->next;
     }
 
-    long unsigned int buffer_len = solid_indexes*sizeof(int) + solid_vertexes*sizeof(float)*8LU;
+    unsigned int buffer_len = solid_indexes*sizeof(int) + solid_vertexes*sizeof(float)*8U;
     this->bin_buffer = make_Buffer(buffer_len);
     if (this->bin_buffer.buf==NULL) {
         PRINT_MESG("GLTFData::createBinDataAoS: ERROR: No more memory.\n");
         return;
     }
 
-    long unsigned int i_length = 0;
-    long unsigned int v_length = sizeof(float);
+    unsigned int i_length = 0;
+    unsigned int v_length = sizeof(float);
     float temp = 0.0f;
 
     _shell_node = this->shellNode;
     while (_shell_node!=NULL) {             // 全SHELL
-        long unsigned int i_offset = 0;
-        long unsigned int v_offset = 0;
+        unsigned int i_offset = 0;
+        unsigned int v_offset = 0;
         for (int f=0; f<_shell_node->num_facet; f++) {      // SHELL中の FACET
             // binary of indexies
             i_length = _shell_node->facet_index[f] * sizeof(int);
@@ -935,8 +937,8 @@ void  GLTFData::createBinDataSoA(void)
 {
     if (this->shellNode==NULL) return;
 
-    long unsigned int solid_indexes  = 0;
-    long unsigned int solid_vertexes = 0;
+    unsigned int solid_indexes  = 0;
+    unsigned int solid_vertexes = 0;
 
     GLTFShellNode*  _shell_node = this->shellNode;
     while (_shell_node!=NULL) {
@@ -945,21 +947,21 @@ void  GLTFData::createBinDataSoA(void)
         _shell_node = _shell_node->next;
     }
 
-    long unsigned int buffer_len = solid_indexes*sizeof(int) + solid_vertexes*sizeof(float)*8LU;
+    unsigned int buffer_len = solid_indexes*sizeof(int) + solid_vertexes*sizeof(float)*8U;
     this->bin_buffer = make_Buffer(buffer_len);
     if (this->bin_buffer.buf==NULL) {
         PRINT_MESG("GLTFData::createBinDataSoA: ERROR: No more memory.\n");
         return;
     }
 
-    long unsigned int i_length = 0;
-    long unsigned int v_length = sizeof(float);
+    unsigned int i_length = 0;
+    unsigned int v_length = sizeof(float);
     float temp = 0.0f;
 
     _shell_node = this->shellNode;
     while (_shell_node!=NULL) {             // 全SHELL
-        long unsigned int i_offset = 0;
-        long unsigned int v_offset = 0;
+        unsigned int i_offset = 0;
+        unsigned int v_offset = 0;
         for (int f=0; f<_shell_node->num_facet; f++) {      // SHELL中の FACET
             // binary of indexies
             i_length = _shell_node->facet_index[f] * sizeof(int);
@@ -1003,91 +1005,178 @@ void  GLTFData::createBinDataSoA(void)
 // Output
 //
 
-void  GLTFData::outputFile(const char* fname, const char* out_path, const char* tex_dirn, const char* bin_dirn)
+void  GLTFData::outputFile(const char* fname, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn)
 {
     char* packname = pack_head_tail_char(get_file_name(fname), ' ');
     Buffer file_name = make_Buffer_bystr(packname);
     ::free(packname);
-
+    //
     canonical_filename_Buffer(&file_name);
     if (file_name.buf[0]=='.') file_name.buf[0] = '_';
-    //
-    Buffer gltf_path;   // 出力パス
-    if (out_path==NULL) gltf_path = make_Buffer_bystr("./");
-    else                gltf_path = make_Buffer_bystr(out_path);
-    Buffer bin_path = make_Buffer_bystr(out_path);
-
-    Buffer rel_bin;     // bin 相対パス
-    if (bin_dirn==NULL) rel_bin = make_Buffer_bystr("");
-    else                rel_bin = make_Buffer_bystr(bin_dirn);
-
-    changeTexturePath((char*)tex_dirn);
+    
     //
     if (this->bin_buffer.buf==NULL && !this->bin_seq) {
         if (this->bin_mode==JBXL_GLTF_BIN_AOS) createBinDataAoS();
         else                                   createBinDataSoA();
     }
-
-    // output json/binary
-    cat_Buffer(&file_name, &gltf_path);
-    change_file_extension_Buffer(&gltf_path, ".gltf");
-
-    cat_Buffer(&rel_bin, &bin_path);
-    cat_Buffer(&file_name, &bin_path);
-    change_file_extension_Buffer(&bin_path, ".bin");
-
-    this->output_gltf((char*)gltf_path.buf, (char*)bin_path.buf);
-
-    free_Buffer(&gltf_path);
-    free_Buffer(&bin_path);
-    free_Buffer(&file_name);
-    free_Buffer(&rel_bin);
     //
+    if (this->glb_out) {
+        this->output_glb ((char*)file_name.buf, (char*)out_dirn, (char*)ptm_dirn, (char*)tex_dirn, (char*)bin_dirn);
+    }
+    else {
+        this->output_gltf((char*)file_name.buf, (char*)out_dirn, (char*)ptm_dirn, (char*)tex_dirn, (char*)bin_dirn);
+    }
+
+    free_Buffer(&file_name);
     return;
 }
 
 
-void  GLTFData::output_gltf(char* json_file, char* bin_file)
+void  GLTFData::output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn)
 {
-    char* out_path = get_file_path(json_file);
-    int pos = strlen(out_path);
-    char* bin_fname = &bin_file[pos];
-    ::free(out_path);
+    Buffer out_path = make_Buffer_bystr(out_dirn);
+    if (this->phantom_out) cat_s2Buffer(ptm_dirn, &out_path);
+    cat_s2Buffer(fn, &out_path);
+    change_file_extension_Buffer(&out_path, ".gltf");
 
+    Buffer bin_path = make_Buffer_bystr(out_dirn);
+    if (this->phantom_out) cat_s2Buffer(ptm_dirn, &bin_path);
+    cat_s2Buffer(bin_dirn, &bin_path);
+    cat_s2Buffer(fn, &bin_path);
+    change_file_extension_Buffer(&bin_path, ".bin");
+
+    Buffer rel_path = make_Buffer_bystr(bin_dirn);
+    cat_s2Buffer(fn, &rel_path);
+    change_file_extension_Buffer(&rel_path, ".bin");
+
+    convertJson_TexturePath((char*)tex_dirn);
+
+    // update buffers
     tJson* uri = search_key_json(this->buffers, "uri", FALSE, 1);
-    if (uri!=NULL) json_set_str_val(uri, bin_fname);
+    if (uri!=NULL) json_set_str_val(uri, (char*)rel_path.buf);
     tJson* blen = search_key_json(this->buffers, "byteLength", FALSE, 1);
     if (uri!=NULL) json_set_int_val(blen, this->bin_buffer.vldsz);
 
-    // json
-    FILE* fp = fopen(json_file, "w");
-    if (fp==NULL) return;
-    print_json(fp, this->json_data, JSON_INDENT_FORMAT);
+    // output json data
+    FILE* fp = fopen((char*)out_path.buf, "w");
+    if (fp!=NULL) {
+        print_json(fp, this->json_data, JSON_INDENT_FORMAT);
+        fclose(fp);
+    }
+
+    // output binary data
+    fp = fopen((char*)bin_path.buf, "wb");
+    if (fp!=NULL) {
+        fwrite((void*)(this->bin_buffer.buf), this->bin_buffer.vldsz, 1, fp);
+        fclose(fp);
+    }
+
+    free_Buffer(&rel_path);
+    free_Buffer(&out_path);
+    free_Buffer(&bin_path);
+    return;
+}
+
+
+void  GLTFData::output_glb(char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn)
+{
+    UNUSED(bin_dirn);
+
+    Buffer out_path = make_Buffer_bystr(out_dirn);
+    if (this->phantom_out) cat_s2Buffer(ptm_dirn, &out_path);
+    cat_s2Buffer(fn, &out_path);
+    change_file_extension_Buffer(&out_path, ".glb");
+
+    Buffer tex_path = make_Buffer_bystr(out_dirn);
+    cat_s2Buffer(tex_dirn, &tex_path);
+
+    glbFileHeader header;
+    memcpy((void*)&(header.magic), (void*)JBXL_GLB_HEADER, 4);
+    header.version = 2;
+    header.length  = 0;
+
+    glbTextureInfo* texture_info = getGLBTextureInfo((char*)tex_path.buf);
+    uDWord tex_size = convertJson_gltf2glb(texture_info);
+    /*
+    glbTextureInfo* info = texture_info;
+    while (info!=NULL) {
+        print_message("======> %s %d %d\n",  (char*)info->fname->buf, info->length, info->pad);
+        info = info->next;
+    }*/
+
+    // JSON Data
+    glbDataChunk json_chunk;
+    Buffer json_out   = json_inverse_parse(this->json_data, JSON_ONELINE_FORMAT);
+    uDWord len        = json_out.vldsz;         // + sizeof(uDWord)*2;
+    uDWord pad        = (4 - len%4)%4;          // len -> pad: 0->0, 1->3, 2->2, 3->1
+    json_chunk.length = len + pad;
+    json_chunk.pad    = pad;
+    json_chunk.data   = (uByte*)json_out.buf;
+    memcpy((void*)&(json_chunk.type), (void*)JBXL_GLB_TYPE_JSON, 4);
+
+    // BIN Data
+    glbDataChunk bin_chunk;
+    len = this->bin_buffer.vldsz + tex_size;    // + sizeof(uDWord)*2;
+    pad = (4 - len%4)%4;
+    bin_chunk.length = len + pad;
+    bin_chunk.pad    = pad;
+    bin_chunk.data   = (uByte*)bin_buffer.buf;
+    memcpy((void*)&(bin_chunk.type), (void*)JBXL_GLB_TYPE_BIN, 4);
+    // 
+    header.length  = sizeof(glbFileHeader) + json_chunk.length + bin_chunk.length + sizeof(uDWord)*4;
+
+    // output
+    FILE* fp = fopen((char*)out_path.buf, "wb");
+    if (fp!=NULL) {
+        fwrite((void*)(&header), sizeof(glbFileHeader), 1, fp);
+        // Json
+        fwrite((void*)(&json_chunk), sizeof(uDWord)*2, 1, fp);
+        fwrite((void*)(json_chunk.data), json_out.vldsz, 1, fp);
+        for (uDWord i=0; i<json_chunk.pad; i++) fwrite((void*)" ", 1, 1, fp);
+        // Bin
+        fwrite((void*)(&bin_chunk), sizeof(uDWord)*2, 1, fp);
+        fwrite((void*)(bin_chunk.data), bin_buffer.vldsz, 1, fp);
+        for (uDWord i=0; i<bin_chunk.pad; i++) fwrite((void*)"\0", 1, 1, fp);
+        // Texrure
+        glbTextureInfo* tex_info = texture_info;
+        while (tex_info!=NULL) {
+            FILE* tp = fopen((char*)tex_info->fname->buf, "r");
+            if (tp!=NULL) {
+                uByte* tex_buf = (uByte*)malloc(tex_info->length);
+                if (tex_buf!=NULL) {
+                    fread(tex_buf, 1, tex_info->length, tp);
+                    fwrite((void*)tex_buf, tex_info->length, 1, fp);
+                    for (uDWord i=0; i<tex_info->pad; i++) fwrite((void*)"\0", 1, 1, fp);
+                    ::free(tex_buf);
+                }
+                fclose(tp);
+            }
+            tex_info = tex_info->next;
+        }
+    }
     fclose(fp);
 
-    // binary data
-    fp = fopen(bin_file, "wb");
-    if (fp==NULL) return;
-    fwrite((void*)(this->bin_buffer.buf), this->bin_buffer.vldsz, 1, fp);
-    fclose(fp);
-
+    free_Buffer(&out_path);
+    free_Buffer(&tex_path);
+    free_Buffer(&json_out);
+    freeGLBTextureInfo(texture_info);
     return;
 }
 
 
 // "xyz.png"  ->  "(tex_dirn)xyz.png"
-void  GLTFData::changeTexturePath(char* tex_dirn)
+void  GLTFData::convertJson_TexturePath(char* tex_dirn)
 {
     if (tex_dirn==NULL) return;
 
-    tJson* jsn = this->images;
-    if (jsn!=NULL) jsn = jsn->next;
-    if (jsn!=NULL) {
-        while (jsn->esis!=NULL) jsn = jsn->esis;
+    tJson* json = this->images;
+    if (json!=NULL) json = json->next;
+    if (json!=NULL) {
+        while (json->esis!=NULL) json = json->esis;
     }
     //
-    while (jsn!=NULL) {     // here is {
-        tJson* uri = search_key_json(jsn, "uri", FALSE, 1);
+    while (json!=NULL) {     // here is {
+        tJson* uri = search_key_json(json, "uri", FALSE, 1);
         if (uri!=NULL) {
             Buffer* tex = new_Buffer(strlen(tex_dirn) + uri->ldat.val.vldsz + 5);   // ../ + \0 + 1(予備)
             cat_s2Buffer("\"", tex); 
@@ -1097,9 +1186,53 @@ void  GLTFData::changeTexturePath(char* tex_dirn)
             free_Buffer(&uri->ldat.val);
             uri->ldat.val = *tex;
         }
-        jsn = jsn->ysis;
+        json = json->ysis;
     }
     return;
+}
+
+
+/**
+uDWord  GLTFData::convertJson_gltf2glb(glbTextureInfo* tex_info)
+
+glTFの Jsonデータを glbの Jsonデータに変換する．
+
+@param   tex_info  テクスチャ情報を格納したデータへのポインタ
+@retval  テクスチャデータの合計サイズ．PADを含む．uDWord（unsigned 4Byte int）
+*/
+uDWord  GLTFData::convertJson_gltf2glb(glbTextureInfo* tex_info)
+{
+    char buf[LBUF];
+
+    uDWord tex_size = 0;
+    while (tex_info!=NULL) {
+        // bufferViews
+        memset(buf, 0, LBUF);
+        uDWord length = tex_info->length + tex_info->pad;
+        snprintf(buf, LBUF-1, JBXL_GLTF_TEXTURE_VIEW, 0, this->bin_offset, length);
+        json_insert_parse(this->buffviews, buf);
+        // images
+        memset(buf, 0, LBUF);
+        snprintf(buf, LBUF-1, JBXL_GLB_PNG_IMAGE, this->view_no);
+        json_insert_parse(this->images, buf);
+        del_json(&(tex_info->json->prev));
+        //
+        this->bin_offset += length;
+        this->view_no++;
+        tex_size = tex_size + length;
+        tex_info = tex_info->next;
+    }
+
+    // buffers
+    uDWord bin_len = this->bin_buffer.vldsz + tex_size;
+    uDWord bin_pad = (4 - bin_len%4)%4;
+
+    tJson* buffer_uri = search_key_json(this->buffers, "uri", FALSE, 1);
+    tJson* buffer_len = buffer_uri->ysis;
+    del_json(&buffer_uri);
+    json_set_int_val(buffer_len, bin_len + bin_pad);
+
+    return tex_size;
 }
 
 
@@ -1154,8 +1287,8 @@ gltfFacetMinMax  GLTFData::getFacetMinMax(MeshFacetNode* facet)
     min_max.texcrd_v_max = 1.0f - (float)facet->texcrd_value[0].v;
     min_max.texcrd_v_min = 1.0f - (float)facet->texcrd_value[0].v;
 
-    int   i_temp;
-    float f_temp;
+    int    i_temp;
+    float  f_temp;
 
     for (int i=1; i<facet->num_index; i++) {
         i_temp = facet->data_index[i];
@@ -1186,10 +1319,78 @@ gltfFacetMinMax  GLTFData::getFacetMinMax(MeshFacetNode* facet)
         f_temp = (float)facet->texcrd_value[i].u;
         if (min_max.texcrd_u_max < f_temp) min_max.texcrd_u_max = f_temp;
         if (min_max.texcrd_u_min > f_temp) min_max.texcrd_u_min = f_temp;
-        f_temp = 1.0f - (float)facet->texcrd_value[i].v;
+        f_temp = (float)1.0f - facet->texcrd_value[i].v;
         if (min_max.texcrd_v_max < f_temp) min_max.texcrd_v_max = f_temp;
         if (min_max.texcrd_v_min > f_temp) min_max.texcrd_v_min = f_temp;
     }
     return min_max;
 }
 
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+glbTextureInfo*  GLTFData::getGLBTextureInfo(const char* tex_dirn)
+{
+    // Search Texture Top
+    tJson* tjsn = this->images;
+    if (tjsn!=NULL) tjsn = tjsn->next;
+    if (tjsn!=NULL) {
+        while (tjsn->esis!=NULL) tjsn = tjsn->esis;
+    }
+
+    // Texture Data
+    glbTextureInfo*  p_tex_info = NULL;
+    glbTextureInfo** n_info = &p_tex_info;
+    //
+    while (tjsn!=NULL) {     // here is {
+        tJson* texture_uri = search_key_json(tjsn, "uri", FALSE, 1);
+        if (texture_uri!=NULL) {
+            *n_info = (glbTextureInfo*)malloc(sizeof(glbTextureInfo));
+            (*n_info)->length = 0;
+            (*n_info)->pad    = 0;
+            (*n_info)->fname  = new_Buffer(strlen(tex_dirn) + texture_uri->ldat.val.vldsz + 2);     // \0 + 1(予備)
+            (*n_info)->json   = texture_uri;
+            (*n_info)->next   = NULL;
+            //
+            cat_s2Buffer(tex_dirn, (*n_info)->fname);
+            if (texture_uri->ldat.val.buf[0]=='"') {                                                // 最初の " を避ける
+                cat_s2Buffer(&(texture_uri->ldat.val.buf[1]), (*n_info)->fname);
+            }
+            if ((*n_info)->fname->buf[(*n_info)->fname->vldsz-1]=='"') {                            // 最期の " を避ける
+                (*n_info)->fname->buf[(*n_info)->fname->vldsz-1] = '\0';
+                (*n_info)->fname->vldsz--;
+            }
+            //
+            uDWord len = file_size((char*)(*n_info)->fname->buf);
+            (*n_info)->length = len;
+            (*n_info)->pad    = (4 - len%4)%4;
+            //
+            n_info = &((*n_info)->next);
+        }
+        tjsn = tjsn->ysis;
+    }
+    
+    /*
+    glbTextureInfo* info = p_tex_info;
+    while (info!=NULL) {
+        print_message("======> %s %d %d\n",  (char*)info->fname->buf, info->length, info->pad);
+        info = info->next;
+    }
+    */
+    return p_tex_info;
+}
+
+
+
+void  GLTFData::freeGLBTextureInfo(glbTextureInfo* texture_info)
+{
+    glbTextureInfo* tinfo = texture_info;
+    while (tinfo!=NULL) {
+        glbTextureInfo* next = tinfo->next;
+        free_Buffer(tinfo->fname);
+        ::free(tinfo);
+        tinfo = next;
+    }
+    return;
+}

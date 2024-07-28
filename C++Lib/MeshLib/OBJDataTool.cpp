@@ -198,50 +198,32 @@ Vector<double>  OBJData::execAffineTrans(void)
 }
 
 
-void  OBJData::outputFile(const char* fname, const char* out_path, const char* tex_dirn, const char* mtl_dirn)
+void  OBJData::outputFile(const char* fname, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* mtl_dirn)
 {
     char* packname = pack_head_tail_char(get_file_name(fname), ' ');
     Buffer file_name = make_Buffer_bystr(packname);
     ::free(packname);
-
+    //
     canonical_filename_Buffer(&file_name);
     if (file_name.buf[0]=='.') file_name.buf[0] = '_';
-    //
-    Buffer obj_path;
-    if (out_path==NULL) obj_path = make_Buffer_bystr("./");
-    else                obj_path = make_Buffer_bystr(out_path);
-    //
-    Buffer rel_tex;    //  相対パス
-    if (tex_dirn==NULL) rel_tex = make_Buffer_bystr("");
-    else                rel_tex = make_Buffer_bystr(tex_dirn);
-    Buffer rel_mtl;    //  相対パス
-    if (mtl_dirn==NULL) rel_mtl = make_Buffer_bystr("");
-    else                rel_mtl = make_Buffer_bystr(mtl_dirn);
-    //
-    cat_Buffer(&file_name, &rel_mtl);
-    change_file_extension_Buffer(&rel_mtl, ".mtl");
 
-    Buffer mtl_path = dup_Buffer(obj_path);
-    cat_Buffer(&rel_mtl, &mtl_path);
-    cat_Buffer(&file_name, &obj_path);
-    change_file_extension_Buffer(&obj_path, ".obj");
-
-    this->output_mtl((char*)mtl_path.buf, (char*)rel_tex.buf);  // mtl file
-    this->output_obj((char*)obj_path.buf, (char*)rel_mtl.buf);  // obj file
+    this->output_mtl((char*)file_name.buf, (char*)out_dirn, (char*)ptm_dirn, (char*)tex_dirn, (char*)mtl_dirn);
+    this->output_obj((char*)file_name.buf, (char*)out_dirn, (char*)ptm_dirn, (char*)tex_dirn, (char*)mtl_dirn);
     //
     free_Buffer(&file_name);
-    free_Buffer(&obj_path);
-    free_Buffer(&mtl_path);
-    free_Buffer(&rel_mtl);
-    free_Buffer(&rel_tex);
-    //
     return;
 }
 
 
-void  OBJData::output_mtl(const char* mtl_path, const char* tex_dirn)
+void  OBJData::output_mtl(char* fname, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* mtl_dirn)
 {
-    FILE* fp = fopen(mtl_path, "wb");
+    Buffer mtl_path = make_Buffer_bystr(out_dirn);
+    if (phantom_out) cat_s2Buffer(ptm_dirn, &mtl_path);
+    cat_s2Buffer(mtl_dirn, &mtl_path);
+    cat_s2Buffer(fname,    &mtl_path);
+    change_file_extension_Buffer(&mtl_path, ".mtl");
+
+    FILE* fp = fopen((char*)mtl_path.buf, "wb");
     if (fp==NULL) return;
 
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_MTLFL);
@@ -292,13 +274,26 @@ void  OBJData::output_mtl(const char* mtl_path, const char* tex_dirn)
     del_tList(&material_list);
 
     fclose(fp);
+    free_Buffer(&mtl_path);
     return;
 }
 
 
-void  OBJData::output_obj(const char* obj_path, const char* mtl_path)
+void  OBJData::output_obj(char* fname, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* mtl_dirn)
 {
-    FILE* fp = fopen(obj_path, "wb");
+    UNUSED(tex_dirn);
+
+    Buffer obj_path = make_Buffer_bystr((char*)out_dirn);
+    if (phantom_out) cat_s2Buffer(ptm_dirn, &obj_path);
+    cat_s2Buffer(fname, &obj_path);
+    change_file_extension_Buffer(&obj_path, ".obj");
+
+    Buffer mtl_path = make_Buffer_bystr(mtl_dirn);
+    cat_s2Buffer(fname, &mtl_path);
+    change_file_extension_Buffer(&mtl_path, ".mtl");
+
+    //
+    FILE* fp = fopen((char*)obj_path.buf, "wb");
     if (fp==NULL) return;
 
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_OBJFL);
@@ -315,7 +310,7 @@ void  OBJData::output_obj(const char* obj_path, const char* mtl_path)
         // file division for Unity
         if (facet_num>OBJDATATOOL_MAX_FACET && this->engine==JBXL_3D_ENGINE_UNITY) {
             fclose(fp);
-            Buffer obj_file = make_Buffer_str(obj_path);
+            Buffer obj_file = dup_Buffer(obj_path);
             del_file_extension_Buffer(&obj_file);
             cat_s2Buffer("_", &obj_file);
             cat_s2Buffer(itostr(file_num), &obj_file);
@@ -334,7 +329,7 @@ void  OBJData::output_obj(const char* obj_path, const char* mtl_path)
         OBJFacetGeoNode* facet = obj->geo_node;
         while(facet!=NULL) {
             fprintf(fp, "#\n# FACET\n");
-            fprintf(fp, "mtllib %s\n", mtl_path);               // ファイル名
+            fprintf(fp, "mtllib %s\n", (char*)mtl_path.buf);            // ファイル名
 
             for (int i=0; i<facet->num_vertex; i++) {
                 Vector<float> vv = Vector<float>((float)facet->vv[i].x, (float)facet->vv[i].y, (float)facet->vv[i].z);
@@ -377,6 +372,8 @@ void  OBJData::output_obj(const char* obj_path, const char* mtl_path)
     }
 
     fclose(fp);
+    free_Buffer(&obj_path);
+    free_Buffer(&mtl_path);
     return;
 }
 
