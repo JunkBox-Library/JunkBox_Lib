@@ -630,10 +630,10 @@ Buffer  json_inverse_parse(tJson* pp, int mode)
     if (pp->ctrl!=TREE_NOSIS_NODE) while (pp->esis!=NULL) pp = pp->esis;
 
     if (mode==JSON_CRLF_FORMAT) {
-        _json_to_Buffer(pp, &buf, "\r\n", "");
+        _json_to_Buffer(pp, &buf, CRLF, "");
     }
     else if (mode==JSON_INDENT_FORMAT) {
-        _json_to_Buffer(pp, &buf, "\r\n", "    ");
+        _json_to_Buffer(pp, &buf, CRLF, "    ");
     }
     else {
         _json_to_Buffer(pp, &buf, "", "");

@@ -227,6 +227,14 @@
 #define  YES      1
 #define  NO       0
 
+#ifndef  CRLF
+#ifdef WIN32
+#define  CRLF   "\n"
+#else
+#define  CRLF   "\r\n"
+#endif
+#endif
+
 
 #ifndef  Max
     #define  Max(x, y)  (((x)<(y)) ? (y):(x))

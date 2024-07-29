@@ -962,7 +962,7 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
     // Name TAG
     if (pp->ldat.id==XML_NAME_NODE) {
         if (mode!=XML_ONELINE_FORMAT) {
-            if (buf->vldsz>0 && buf->buf[buf->vldsz-1]!='\n') cat_s2Buffer("\r\n", buf);
+            if (buf->vldsz>0 && buf->buf[buf->vldsz-1]!='\n') cat_s2Buffer(CRLF, buf);
         }
         //
         if (mode==XML_TAB_FORMAT) {
@@ -990,7 +990,7 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
                 cat_s2Buffer(">", buf);
             }
             if (mode!=XML_ONELINE_FORMAT) {
-                cat_s2Buffer("\r\n", buf);
+                cat_s2Buffer(CRLF, buf);
             }
         }
         else {
@@ -1006,7 +1006,7 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
         }
         //
         if (pp->esis!=NULL || pp->ysis!=NULL) {
-            cat_s2Buffer("\r\n", buf); 
+            cat_s2Buffer(CRLF, buf);
             char* tabs = (char*)malloc(pp->depth-indent+1);
             if (tabs!=NULL) {
                 for (i=indent; i<pp->depth; i++) tabs[i-indent] = '\t';
@@ -1018,7 +1018,7 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
         //
         cat_Buffer(&(pp->ldat.key), buf);
         //
-        if (pp->esis!=NULL) cat_s2Buffer("\r\n", buf); 
+        if (pp->esis!=NULL) cat_s2Buffer(CRLF, buf);
     }
 
     // xml TAG
@@ -1042,13 +1042,13 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
         }
         cat_s2Buffer("?>", buf);
 
-        if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer("\r\n", buf);
+        if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer(CRLF, buf);
     }
 
     // Comment TAG
     else if (pp->ldat.id==XML_COMMENT_NODE) {
         if (mode!=XML_ONELINE_FORMAT) {
-            if (buf->buf[buf->vldsz-1]!='\n') cat_s2Buffer("\r\n", buf);
+            if (buf->buf[buf->vldsz-1]!='\n') cat_s2Buffer(CRLF, buf);
         }
 
         if (mode==XML_TAB_FORMAT) {
@@ -1067,13 +1067,13 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
         }
         cat_s2Buffer("-->", buf);
 
-        if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer("\r\n", buf);
+        if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer(CRLF, buf);
     }
 
     // Data TAG
     else if (pp->ldat.id==XML_DATA_NODE) {
         if (mode!=XML_ONELINE_FORMAT) {
-            if (buf->buf[buf->vldsz-1]!='\n') cat_s2Buffer("\r\n", buf);
+            if (buf->buf[buf->vldsz-1]!='\n') cat_s2Buffer(CRLF, buf);
         }
         //
         if (mode==XML_TAB_FORMAT) {
@@ -1092,13 +1092,13 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
         }
         cat_s2Buffer(">", buf);
 
-        if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer("\r\n", buf);
+        if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer(CRLF, buf);
     }
 
     // Processing TAG
     else if (pp->ldat.id==XML_PROCESS_NODE) {
         if (mode!=XML_ONELINE_FORMAT) {
-            if (buf->buf[buf->vldsz-1]!='\n') cat_s2Buffer("\r\n", buf);
+            if (buf->buf[buf->vldsz-1]!='\n') cat_s2Buffer(CRLF, buf);
         }
         //
         if (mode==XML_TAB_FORMAT) {
@@ -1120,7 +1120,7 @@ void  xml_open_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
         }
         cat_s2Buffer(" ?>", buf);
 
-        if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer("\r\n", buf);
+        if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer(CRLF, buf);
     }
     return;
 }
@@ -1160,7 +1160,7 @@ void  xml_close_node_Buffer(tXML* pp, Buffer* buf, int mode, int indent)
             cat_Buffer(&(pp->ldat.key), buf);
             cat_s2Buffer(">", buf);
 
-            if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer("\r\n", buf);
+            if (mode!=XML_ONELINE_FORMAT) cat_s2Buffer(CRLF, buf);
         }
     }
     return;
@@ -2251,7 +2251,7 @@ int  get_xml_int_attr(tXML* pp, tXML* pt, const char* attr)
             Buffer buf = make_Buffer_bystr(val);
             char* ptr  = (char*)buf.buf;
             if (ptr[strlen(ptr)-1]=='"') ptr[strlen(ptr)-1] = '\0';
-            if (ptr[0]=='"') ptr++; 
+            if (ptr[0]=='"') ptr++;
             ret = atoi(ptr);
             free_Buffer(&buf);
         }
@@ -2278,7 +2278,7 @@ double  get_xml_double_attr(tXML* pp, tXML* pt, const char* attr)
             Buffer buf = make_Buffer_bystr(val);
             char* ptr  = (char*)buf.buf;
             if (ptr[strlen(ptr)-1]=='"') ptr[strlen(ptr)-1] = '\0';
-            if (ptr[0]=='"') ptr++; 
+            if (ptr[0]=='"') ptr++;
             ret = atof(ptr);
             free_Buffer(&buf);
         }
@@ -2560,7 +2560,7 @@ int  get_xml_int_attr_bystr(tXML* pp, const char* str, const char* attr)
             Buffer buf = make_Buffer_bystr(val);
             char* ptr  = (char*)buf.buf;
             if (ptr[strlen(ptr)-1]=='"') ptr[strlen(ptr)-1] = '\0';
-            if (ptr[0]=='"') ptr++; 
+            if (ptr[0]=='"') ptr++;
             ret = atoi(ptr);
             free_Buffer(&buf);
         }
@@ -2588,7 +2588,7 @@ double  get_xml_double_attr_bystr(tXML* pp, const char* str, const char* attr)
             Buffer buf = make_Buffer_bystr(val);
             char* ptr  = (char*)buf.buf;
             if (ptr[strlen(ptr)-1]=='"') ptr[strlen(ptr)-1] = '\0';
-            if (ptr[0]=='"') ptr++; 
+            if (ptr[0]=='"') ptr++;
             ret = atof(ptr);
             free_Buffer(&buf);
         }

@@ -12,7 +12,7 @@
 
 #include <zlib.h>
 
-
+/*
 #ifdef WIN32
   #ifdef _DEBUG 
     #pragma  comment(lib, "zlibd.lib")
@@ -20,7 +20,7 @@
     #pragma  comment(lib, "zlib.lib")
   #endif
 #endif
-
+*/
 
 #define  GZIP_DEFLATE_ID1   0x78
 #define  GZIP_DEFLATE_ID2   0xda

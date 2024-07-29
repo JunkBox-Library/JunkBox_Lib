@@ -31,6 +31,7 @@
 
 #include <png.h>
 
+/*
 #ifdef WIN32
 #if defined(_DEBUG)
 #pragma  comment(lib, "libpng16d.lib")
@@ -38,7 +39,7 @@
 #pragma  comment(lib, "libpng16.lib")
 #endif
 #endif
-
+*/
 
 /*
 type
