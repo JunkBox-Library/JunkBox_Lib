@@ -131,7 +131,7 @@ void  PNGImage::readData(FILE* fp)
 
     // ヘッダチェック
     unsigned char png_sig[PNG_SIGNATURE_SIZE];
-    int sz = fread(png_sig, 1, PNG_SIGNATURE_SIZE, fp);
+    unsigned int sz = (unsigned int)fread(png_sig, 1, PNG_SIGNATURE_SIZE, fp);
     if (sz!=PNG_SIGNATURE_SIZE || png_sig_cmp(png_sig, 0, PNG_SIGNATURE_SIZE)) {
         state = JBXL_GRAPH_HEADER_ERROR;
         return;

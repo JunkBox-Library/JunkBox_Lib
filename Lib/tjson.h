@@ -12,7 +12,7 @@
 Tiny JSON tjson.h v1.0 @n
 サブセット版 JSON 簡易Parser ライブラリヘッダ
 
-@see tJson
+@see tJson.cpp
 
 @attention
 全てのパターンのパース可能性は保障しない．@n

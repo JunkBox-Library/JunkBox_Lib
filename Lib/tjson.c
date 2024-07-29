@@ -895,7 +895,7 @@ void  json_set_str_val(tJson* json, const char* val)
 
     Buffer buf = init_Buffer();
     if (val[0]!='"') {
-        buf = make_Buffer(strlen(val) + 3); // " + " + \0
+        buf = make_Buffer((int)strlen(val) + 3); // " + " + \0
         copy_s2Buffer("\"", &buf);
         cat_s2Buffer(val, &buf);
     }
@@ -1702,12 +1702,12 @@ Buffer  get_json_val(tJson* json)
     if (json!=NULL) {
         char* pp = (char*)json->ldat.val.buf;
         if ((*pp=='\"') || (*pp=='\'')) {
-            val = set_Buffer(pp+1, strlen(pp)-1);
+            val = set_Buffer(pp+1, (int)strlen(pp)-1);
             val.buf[val.vldsz-1] = '\0';
             val.vldsz = (int)strlen((const char*)val.buf);
         }
         else {
-            val = set_Buffer(pp, strlen(pp));
+            val = set_Buffer(pp, (int)strlen(pp));
         }
     }
     return val;

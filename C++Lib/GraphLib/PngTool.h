@@ -14,11 +14,13 @@
 #include "Gdata.h"
 #include "xtools.h"
 
+/*
 #ifndef HAVE_PNG_H
 #ifndef DISABLE_PNG
 #define DISABLE_PNG
 #endif
 #endif
+*/
 
 #ifdef  DISABLE_PNG
 #undef  ENABLE_PNG
@@ -30,7 +32,11 @@
 #include <png.h>
 
 #ifdef WIN32
+#if defined(_DEBUG)
+#pragma  comment(lib, "libpng16d.lib")
+#else
 #pragma  comment(lib, "libpng16.lib")
+#endif
 #endif
 
 
