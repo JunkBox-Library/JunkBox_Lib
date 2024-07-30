@@ -47,6 +47,7 @@ namespace jbxl {
 #define  JBXL_GLTF_TEXTURE      "{\"source\":%d}"
 //#define  JBXL_GLTF_TEXTURE      "{\"source\":%d, \"sampler\":%d}"
 #define  JBXL_GLTF_IMAGE        "{\"uri\":\"%s\"}"
+
 #define  JBXL_GLB_PNG_IMAGE     "{\"bufferView\":%d,\"mimeType\":\"image/png\"}"
 #define  JBXL_GLB_JPEG_IMAGE    "{\"bufferView\":%d,\"mimeType\":\"image/jpeg\"}"
 

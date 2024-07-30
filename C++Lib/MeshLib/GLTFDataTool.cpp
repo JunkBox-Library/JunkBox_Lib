@@ -361,7 +361,6 @@ void  GLTFData::addTextures(MeshFacetNode* facet)
 
                 // textures
                 memset(buf, 0, LBUF);
-                //snprintf(buf, LBUF-1, JBXL_GLTF_TEXTURE, this->image, 0);
                 snprintf(buf, LBUF-1, JBXL_GLTF_TEXTURE, this->image_no);
                 json_insert_parse(this->textures, buf);
 
@@ -1047,11 +1046,15 @@ void  GLTFData::output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_
     cat_s2Buffer(fn, &bin_path);
     change_file_extension_Buffer(&bin_path, ".bin");
 
+    Buffer tex_path = make_Buffer_bystr(tex_dirn);
     Buffer rel_path = make_Buffer_bystr(bin_dirn);
     cat_s2Buffer(fn, &rel_path);
     change_file_extension_Buffer(&rel_path, ".bin");
-
-    convertJson_TexturePath((char*)tex_dirn);
+#ifdef WIN32
+    replace_char(rel_path.buf, rel_path.vldsz, '\\', '/');
+    replace_char(tex_path.buf, tex_path.vldsz, '\\', '/');
+#endif
+    convertJson_TexturePath((char*)tex_path.buf);
 
     // update buffers
     tJson* uri = search_key_json(this->buffers, "uri", FALSE, 1);
@@ -1073,6 +1076,7 @@ void  GLTFData::output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_
         fclose(fp);
     }
 
+    free_Buffer(&tex_path);
     free_Buffer(&rel_path);
     free_Buffer(&out_path);
     free_Buffer(&bin_path);
@@ -1144,7 +1148,7 @@ void  GLTFData::output_glb(char* fn, char* out_dirn, char* ptm_dirn, char* tex_d
         // Texrure
         glbTextureInfo* tex_info = texture_info;
         while (tex_info!=NULL) {
-            FILE* tp = fopen((char*)tex_info->fname->buf, "r");
+            FILE* tp = fopen((char*)tex_info->fname->buf, "rb");
             if (tp!=NULL) {
                 uByte* tex_buf = (uByte*)malloc(tex_info->length);
                 if (tex_buf!=NULL) {

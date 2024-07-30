@@ -216,6 +216,7 @@ char*   get_seq_data(char* buf, int* ptr);                       ///< 文字型�
 char*   awk (char* str, char cc, int n);                         ///< ccを区切り記号として, strのバッファ内の n番目の項目を返す．要 free()
 char*   cawk(char* str, char cc, int n);                         ///< 連続するccを区切り記号として, strのバッファ内の n番目の項目を返す．要 free()
 
+void    replace_char(unsigned char* buf, int len, unsigned char frm, unsigned char toc);    ///< データbuf 中のバイトデータ frm を tocに変更する．
 char*   replace_str(char* buf, int len, const char* frm, const char* tos);    ///< 文字列 buf中の frmを tosに書き換えたものを返す．free() してはいけない．    
 char*   cut_str(char* buf, int ls, int le);                      ///< buf[ls]〜buf[le] を切り出す．要 free()
 char*   dup_str(char* buf);                                      ///< 文字列を複製する．要 free()

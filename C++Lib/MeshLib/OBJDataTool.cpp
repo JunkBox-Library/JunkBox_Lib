@@ -231,6 +231,11 @@ void  OBJData::output_mtl(char* fname, char* out_dirn, char* ptm_dirn, char* tex
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_AUTHOR);
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_VER);
 
+    Buffer tex_path = make_Buffer_bystr(tex_dirn);
+#ifdef WIN32
+    replace_char(tex_path.buf, tex_path.vldsz, '\\', '/');        // for MS Windows
+#endif
+
     tList* material_list = NULL;
     OBJData* obj = this->next;
     while (obj!=NULL) {
@@ -248,13 +253,13 @@ void  OBJData::output_mtl(char* fname, char* out_dirn, char* ptm_dirn, char* tex
                     fprintf(fp, "newmtl %s\n", node->material.buf+1);                   // マテリアル名
 
                     if (node->map_kd.buf!=NULL) {
-                        fprintf(fp, "map_Kd %s%s\n", tex_dirn, node->map_kd.buf);       // Texture ファイル名
+                        fprintf(fp, "map_Kd %s%s\n", (char*)tex_path.buf, node->map_kd.buf);       // Texture ファイル名
                     }
                     if (node->map_ks.buf!=NULL) {
-                        fprintf(fp, "map_Ks %s%s\n", tex_dirn, node->map_ks.buf);       // Specular Map ファイル名
+                        fprintf(fp, "map_Ks %s%s\n", (char*)tex_path.buf, node->map_ks.buf);       // Specular Map ファイル名
                     }
                     if (node->map_bump.buf!=NULL) {
-                        fprintf(fp, "map_bump %s%s\n", tex_dirn, node->map_bump.buf);   // Bump Map ファイル名
+                        fprintf(fp, "map_bump %s%s\n", (char*)tex_path.buf, node->map_bump.buf);   // Bump Map ファイル名
                     }
 
                     fprintf(fp, "Ka %f %f %f\n", (float)node->ka.x, (float)node->ka.y, (float)node->ka.z);
@@ -275,6 +280,7 @@ void  OBJData::output_mtl(char* fname, char* out_dirn, char* ptm_dirn, char* tex
 
     fclose(fp);
     free_Buffer(&mtl_path);
+    free_Buffer(&tex_path);
     return;
 }
 
@@ -291,6 +297,9 @@ void  OBJData::output_obj(char* fname, char* out_dirn, char* ptm_dirn, char* tex
     Buffer mtl_path = make_Buffer_bystr(mtl_dirn);
     cat_s2Buffer(fname, &mtl_path);
     change_file_extension_Buffer(&mtl_path, ".mtl");
+#ifdef WIN32
+    replace_char(mtl_path.buf, mlt_path.vldsz, '\\', '/');        // for MS Windows
+#endif
 
     //
     FILE* fp = fopen((char*)obj_path.buf, "wb");

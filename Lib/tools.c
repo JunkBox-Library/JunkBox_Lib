@@ -1239,6 +1239,30 @@ char*  change_esc(char* mesg)
 }
 
 
+/**
+void   replace_char(unsigned char* buf, int len, unsigned char frm, unsigned char toc)
+
+buf中の frm (char) を tosで置き換える．
+
+@param      buf  操作対象のデータ．バイナリも可．
+@param      len  bufの領域の大きさ（長さ）'@\0'を含む．<= 0 の場合は buf を文字列として扱う．
+@param      frm  変換するバイトデータ
+@param      tos  変換後の倍とデータ
+*/
+void   replace_char(unsigned char* buf, int len, unsigned char frm, unsigned char toc)
+{
+    if (buf==NULL) return;
+    if (len<=0) len = (int)strlen((char*)buf) + 1;
+
+    int i;
+    for (i=0; i<len; i++) {
+        if (buf[i]==frm) buf[i] = toc;
+    }
+
+    return;
+}
+
+
 /** 
 char*  replace_str(char* buf, int len, const char* frm, const char* tos)
 
@@ -1249,7 +1273,7 @@ bufには十分な領域がなければならない．frmは bufとメモリ領�
 
 @param[in]  buf  操作対象の文字列
 @param[out] buf  変換された文字列
-@param      len  bufの領域の大きさ（長さ）'@\0'を含む
+@param      len  buf中の変換対象のbufの領域の大きさ（長さ）
 @param      frm  変換する文字列
 @param      tos  変換後の文字列
 
@@ -1261,6 +1285,7 @@ char*  replace_str(char* buf, int len, const char* frm, const char* tos)
     int i, j, k, slen, flen, tlen;
 
     if (buf==NULL || frm==NULL || tos==NULL) return NULL;
+    if (len<=0) len = (int)strlen(buf) + 1;
 
     wrk = (char*)malloc(len);
     if (wrk==NULL) return NULL;
