@@ -298,7 +298,7 @@ void  OBJData::output_obj(char* fname, char* out_dirn, char* ptm_dirn, char* tex
     cat_s2Buffer(fname, &mtl_path);
     change_file_extension_Buffer(&mtl_path, ".mtl");
 #ifdef WIN32
-    replace_char(mtl_path.buf, mlt_path.vldsz, '\\', '/');        // for MS Windows
+    replace_char(mtl_path.buf, mtl_path.vldsz, '\\', '/');        // for MS Windows
 #endif
 
     //
