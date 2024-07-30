@@ -103,7 +103,7 @@ void  MeshFacetNode::setMaterialID(const char* str)
         free_Buffer(&texture_id);
     }
 
-    canonical_filename_Buffer(&material_id);
+    canonical_filename_Buffer(&material_id, TRUE);
     return;
 }
 

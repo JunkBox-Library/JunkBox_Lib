@@ -18,8 +18,8 @@ void  MeshObjectData::init(const char* name)
 {
     data_name    = make_Buffer_str(name);
     alt_name     = make_Buffer_str(name);
-    canonical_filename_Buffer(&data_name);
-    canonical_filename_Buffer(&alt_name);
+    canonical_filename_Buffer(&data_name, TRUE);
+    canonical_filename_Buffer(&alt_name,  TRUE);
 
     ttl_index    = 0;
     ttl_vertex   = 0;

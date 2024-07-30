@@ -750,9 +750,9 @@ char*  ColladaXML::addImage(const char* fn)
 {
     if (fn==NULL) return NULL;
 
-    Buffer filename = make_Buffer_str(fn);
-    canonical_filename_Buffer(&filename);
-    Buffer file_id  = replace_sBuffer_str(filename, ".", "_");
+    Buffer file_name = make_Buffer_str(fn);
+    canonical_filename_Buffer(&file_name, TRUE);
+    Buffer file_id  = replace_sBuffer_str(file_name, ".", "_");
 
     bool exist_same_image = existSameID(library_images_tag, "<library_images><image>", _tochar(file_id.buf));
     if (!exist_same_image) {
@@ -763,10 +763,10 @@ char*  ColladaXML::addImage(const char* fn)
         add_xml_attr_int(image_tag, "width",  0);
 
         tXML* init_from_tag = add_xml_node(image_tag, "init_from");
-        append_xml_content_node(init_from_tag, _tochar(filename.buf));
+        append_xml_content_node(init_from_tag, _tochar(file_name.buf));
     }
 
-    free_Buffer(&filename);
+    free_Buffer(&file_name);
     return _tochar(file_id.buf);
 }
 
@@ -1161,7 +1161,7 @@ void  ColladaXML::outputFile(const char* fname, const char* path, int mode)
     Buffer file_name = make_Buffer_bystr(packname);
     ::free(packname);
     //
-    canonical_filename_Buffer(&file_name);
+    canonical_filename_Buffer(&file_name, TRUE);
     if (file_name.buf[0]=='.') file_name.buf[0] = '_';
 
     Buffer out_path;

@@ -1012,7 +1012,7 @@ void  GLTFData::outputFile(const char* fname, const char* out_dirn, const char* 
     Buffer file_name = make_Buffer_bystr(packname);
     ::free(packname);
     //
-    canonical_filename_Buffer(&file_name);
+    canonical_filename_Buffer(&file_name, TRUE);
     if (file_name.buf[0]=='.') file_name.buf[0] = '_';
     
     //

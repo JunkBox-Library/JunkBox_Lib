@@ -204,7 +204,7 @@ void  OBJData::outputFile(const char* fname, const char* out_dirn, const char* p
     Buffer file_name = make_Buffer_bystr(packname);
     ::free(packname);
     //
-    canonical_filename_Buffer(&file_name);
+    canonical_filename_Buffer(&file_name, TRUE);
     if (file_name.buf[0]=='.') file_name.buf[0] = '_';
 
     this->output_mtl((char*)file_name.buf, (char*)out_dirn, (char*)ptm_dirn, (char*)tex_dirn, (char*)mtl_dirn);
@@ -505,15 +505,16 @@ void  OBJFacetMtlNode::setup_params(void)
 
     if (texture.isSetTexture()) {       // map_Kd
         this->map_kd = make_Buffer_str(texture.getName());
-        canonical_filename_Buffer(&this->map_kd);
+        canonical_filename_Buffer(&this->map_kd, TRUE);
+
     }
     if (specmap.isSetTexture()) {       // map_Ks
         this->map_ks = make_Buffer_str(specmap.getName());
-        canonical_filename_Buffer(&this->map_ks);
+        canonical_filename_Buffer(&this->map_ks, TRUE);
     }
     if (bumpmap.isSetTexture()) {       // map_bump
         this->map_bump = make_Buffer_str(bumpmap.getName());
-        canonical_filename_Buffer(&this->map_bump);
+        canonical_filename_Buffer(&this->map_bump, TRUE);
     }
 
     this->ka = Vector<double>(1.0, 1.0, 1.0);

@@ -133,7 +133,7 @@ void    del_file_extension_Buffer(Buffer* path);                        ///< フ
 void    change_file_extension_Buffer(Buffer* path, const char* ext);    ///< ファイルの拡張子を extにする．ファイルに拡張子が無い場合は extを付加する
 
 Buffer  relative_path_Buffer(Buffer path_a, Buffer path_b);             ///< path_a から path_b への相対パスを返す．
-void    canonical_filename_Buffer(Buffer* fname);                       ///< fname の問題になりそうな ASCII文字を '_' に変換する．
+void    canonical_filename_Buffer(Buffer* fname, int no_dir);           ///< fname の問題になりそうな ASCII文字を '_' に変換する．
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Resource (file) List

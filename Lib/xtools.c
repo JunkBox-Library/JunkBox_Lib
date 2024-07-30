@@ -2022,11 +2022,13 @@ Buffer  relative_path_Buffer(Buffer src, Buffer dst)
 
 
 /**
-void  canonical_filename_Buffer(Buffer* fname)
+void  canonical_filename_Buffer(Buffer* fname, int dirn)
 
 fname 中の問題になりそうな ASCII文字を '_' に変換する．
+no_dir が TRUE なら, '\\' や '/' も _ に変換する．
+
 */
-void  canonical_filename_Buffer(Buffer* fname)
+void  canonical_filename_Buffer(Buffer* fname, int no_dir)
 {
     if (fname==NULL || fname->buf==NULL) return;
 
@@ -2052,8 +2054,10 @@ void  canonical_filename_Buffer(Buffer* fname)
     rewrite_Buffer_bychar(fname, '>', '_');
 #ifdef WIN32
     rewrite_Buffer_bychar(fname, '/', '_');
+    if (no_dir) rewrite_Buffer_bychar(fname, '\\', '_');
 #else
     rewrite_Buffer_bychar(fname, '\\', '_');
+    if (no_dir) rewrite_Buffer_bychar(fname, '/', '_');
 #endif
 
     return;
