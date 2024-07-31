@@ -215,7 +215,7 @@ void  GLTFData::initGLTF(void)
 //////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints)
+void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tXML* joints_template)
 
 この関数は SOLID毎に複数回呼ばれ，SOLIDに SHELLを追加する．
 
@@ -223,7 +223,7 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
 @param  collider   コライダーのサポート
 @param  joints     ジョイントデータ．デフォルトは NULL
 */
-void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints)
+void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tXML* joints_template)
 {
     if (shelldata==NULL) return;
     if (this->shell_no==0 && this->gltf_name.buf==NULL) {
@@ -277,7 +277,7 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
             this->createBinDataSeqSoA(facet, shell_indexes, shell_vertexes);
         }
     }
-    else {
+    else {  // 最後に一気に BINデータを作成
         this->createShellGeoData(facet, shell_indexes, shell_vertexes);
     }
 
@@ -288,7 +288,12 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
     }
 
     //
-    if (joints!=NULL) {
+print_message("===>xxxxxxxx\n");
+    if (joints!=NULL && joints_template!=NULL) {
+print_message("===>%02d:\n", joints->joint_num);
+for (int i=0; i<joints->joint_num; i++) {
+print_message("%02d: %s\n", i, joints->joint_names.get_value(i));
+}
     }
 
     //
@@ -427,7 +432,7 @@ void  GLTFData::addMaterialParameters(tJson* pbr, MeshFacetNode* facet)
 
     MaterialParam param  = facet->material_param;
     TextureParam texture = param.texture;
-    
+
     char kind_obj   = param.getKind();
     bool hasAlpha   = texture.hasAlphaChannel();
     int  alpha_mode = texture.getAlphaMode();
@@ -440,10 +445,10 @@ void  GLTFData::addMaterialParameters(tJson* pbr, MeshFacetNode* facet)
     snprintf(buf, LBUF-1, JBXL_GLTF_MTL_BCOLORF, red, green, blue, transp);
     json_insert_parse(pbr, buf);
 
-    if (kind_obj!='E') {
+    if (kind_obj!='E') {        // !Earth
         float shininess = (float)param.getShininess();
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_MTL_METALF, shininess);
+        snprintf(buf, LBUF-1, JBXL_GLTF_MTL_ROUGHF, 1.0f - shininess);
         json_insert_parse(pbr, buf);
     }
 
@@ -456,8 +461,7 @@ void  GLTFData::addMaterialParameters(tJson* pbr, MeshFacetNode* facet)
     //
     //bright(0 or 1), light(?)
 
-
-    if (kind_obj=='T' || kind_obj=='G') {
+    if (kind_obj=='T' || kind_obj=='G') {       // Tree and Grass
         json_insert_parse(pbr->prev, "{\"alphaMode\":\"BLEND\"}");
     }
     else if (alpha_mode==MATERIAL_ALPHA_NONE) {

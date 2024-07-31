@@ -78,7 +78,7 @@ void  FBXData::outputFile(const char* fname, const char* out_dirn, const char* p
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints)
+void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template)
 {
     PRINT_MESG("FBXData::addShell: start\n");
 
@@ -118,7 +118,7 @@ void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* 
     }
 
     //
-    if (joints!=NULL) {
+    if (joints!=NULL && joints_template!=NULL) {
     }
 
     return;

@@ -224,7 +224,7 @@ public:
 
     void    initGLTF(void);
 
-    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL);
+    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL, tXML* joints_template=NULL);
     void    addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine);
 
     void    addTextures(MeshFacetNode* facet);

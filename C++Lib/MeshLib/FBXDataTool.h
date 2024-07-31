@@ -55,7 +55,7 @@ public:
     void    delAffineTrans (void) { freeAffineTrans(this->affineTrans);}
     Vector<double> execAffineTrans(void);
 
-    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL);
+    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL, tXML* joints_template=NULL);
     void    closeSolid(void) {}
 
     void    outputFile(const char* fn, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn);
