@@ -213,6 +213,7 @@ void  MaterialParam::init(void)
     paramstr = init_Buffer();
 
 //    transparent = 1.0;
+    kind        = 'O';  // OBJECT
     shininess   = 0.0;
     glow        = 0.0;
     bright      = 0.0;
@@ -347,7 +348,7 @@ void  MaterialParam::printParam(FILE* fp)
 @param obj オブジェクトの種類を示す任意の一文字
 @return マテリアルの各パラメータをBase64で文字列化したデータへのポインタ．33Byte (32Byte+0x00). 要 free
 */
-char*  MaterialParam::getBase64Params(unsigned char obj, unsigned char cc)
+char*  MaterialParam::getBase64Params(unsigned char cc)
 {
     //printParam(stderr);
 
@@ -390,7 +391,7 @@ char*  MaterialParam::getBase64Params(unsigned char obj, unsigned char cc)
     memcpy(attr + MATERIAL_ATTR_SCALE_V, &scalev, 2);
     memcpy(attr + MATERIAL_ATTR_ROTATE,  &rotate, 2);
     */
-    attr[MATERIAL_ATTR_OBJECT]      = (uByte)obj;
+    attr[MATERIAL_ATTR_OBJECT]      = kind;
 
     char* params = (char*)encode_base64_filename(attr, MATERIAL_ATTR_LEN, cc);  // 要 free   / -> cc
 

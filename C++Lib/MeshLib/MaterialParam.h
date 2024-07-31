@@ -154,12 +154,13 @@ class  MaterialParam
 private:
     Buffer  paramstr;       ///< パラメータ文字列 (Base64文字列)
 
+    char    kind;           ///< オブジェクトの種類．'O', 'T', 'G', 'E'
 //    double  transparent;    ///< テクスチャのアルファチャンネルの係数．
     double  shininess;      ///< 輝き
     double  glow;           ///< 発光
     double  bright;         ///< 明るさ
-    double  glossiness;     ///< 滑らかさ
 
+    double  glossiness;     ///< 滑らかさ
     double  speclightexp;   ///< SpecularLightExponents
     double  environment;    ///< 環境光
     double  light;          ///< 周りを照らすライト
@@ -214,6 +215,7 @@ public:
     void    addParamString(const char* param) { if(param!=NULL) cat_s2Buffer (param, &paramstr);}
     char*   getParamString(void) { return (char*)paramstr.buf;}     // 禁 free
 
+    void    setKind(char c) { kind = c;}
 //    void    setTransparent(double a) { if(a>1.0) a = 1.0; else if(a<0.0) a = 0.0; transparent = a;}
     void    setShininess(double s)   { /*if(s>1.0) s = 1.0; else if(s<0.0) s = 0.0;*/ shininess = s;}
     void    setGlow(double g)        { /*if(g>1.0) g = 1.0; else if(g<0.0) g = 0.0;*/ glow = g;}
@@ -223,6 +225,7 @@ public:
     void    setSpecExp(double s)     { /*if(s>1.0) l = 1.0; else if(s<0.0) l = 0.0;*/ speclightexp = s;}
     void    setLight(double l)       { /*if(l>1.0) l = 1.0; else if(l<0.0) l = 0.0;*/ light = l;}
 
+    char    getKind(void)        { return kind;}
     //double  getTransparent(void);
     double  getShininess(void)   { return shininess;}
     double  getGlow(void)        { return glow;}
@@ -233,7 +236,7 @@ public:
     double  getLight(void)       { return light;}
 
     void    printParam(FILE* fp);
-    char*   getBase64Params(unsigned char obj='\0', unsigned char cc='-');
+    char*   getBase64Params(unsigned char cc='-');
 };
 
 
