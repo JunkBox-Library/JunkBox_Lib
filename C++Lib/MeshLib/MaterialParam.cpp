@@ -156,13 +156,16 @@ void  TextureParam::printParam(FILE* fp)
     fprintf(fp, "TextureParam.scaleV       = %f\n", scaleV);
     fprintf(fp, "TextureParam.rotate       = %f\n", rotate);
     
-    if (alphaChannel) fprintf(fp, "TextureParam.alphaChannel = true\n");
-    else              fprintf(fp, "TextureParam.alphaChannel = flase\n");
-
     if (flipU) fprintf(fp, "TextureParam.flipU        = true\n");
     else       fprintf(fp, "TextureParam.flipU        = false\n");
     if (flipV) fprintf(fp, "TextureParam.flipV        = true\n");
     else       fprintf(fp, "TextureParam.flipV        = false\n");
+
+    if (alphaChannel) fprintf(fp, "TextureParam.alphaChannel = true\n");
+    else              fprintf(fp, "TextureParam.alphaChannel = flase\n");
+
+    fprintf(fp, "TextureParam.alphaMode    = %d\n", alphaMode);
+    fprintf(fp, "TextureParam.alphaCutoff  = %f\n", alphaCutoff);
 
     fflush(fp);
     return;
@@ -314,10 +317,12 @@ void  MaterialParam::printParam(FILE* fp)
         return;
     }
 
+    fprintf(fp, "----------------------------------------------\n");
     texture.printParam(fp);
-    if (bumpmap.isSetTexture()) bumpmap.printParam(fp);
     if (specmap.isSetTexture()) specmap.printParam(fp);
+    if (bumpmap.isSetTexture()) bumpmap.printParam(fp);
 
+    fprintf(fp, "----------------------------------------------\n");
     fprintf(fp, "MaterialParam.paramstr    = %s\n", paramstr.buf);
 //    fprintf(fp, "MaterialParam.transparent = %f\n", transparent);
     fprintf(fp, "MaterialParam.shininess   = %f\n", shininess);

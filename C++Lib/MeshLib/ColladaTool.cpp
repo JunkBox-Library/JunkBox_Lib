@@ -192,7 +192,6 @@ char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* shelld
 {
     if (geometry_id==NULL || shelldata==NULL || joints==NULL) return NULL;
 
-    //Buffer geometry_name = dup_Buffer(shelldata->data_name);
     Buffer geometry_name = dup_Buffer(shelldata->alt_name);
     if (geometry_name.buf==NULL) geometry_name = make_Buffer_str(geometry_id+1);
     Buffer randomstr = make_Buffer_randomstr(8);

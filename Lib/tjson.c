@@ -1008,7 +1008,7 @@ void  json_insert_child(tJson* parent, tJson* child)
 json ツリー parent に json ツリー child のノードを挿入する．
 ANCHORノードは処理しない．ANCHORが有る場合は，これを呼び出す前に処理すること．
 
-parent が { の場合
+parent が 単独の{ または 属性がOBJECTのノード の場合
    child の { は破棄されて，それ以下のノードが parent の子（姉妹）として結合される．
    child そのものは破棄される．
 
@@ -1021,11 +1021,12 @@ parent がそれ外の場合
 tJson*  json_insert_child(tJson* parent, tJson* child)
 {
     if (parent==NULL || child ==NULL) return NULL;
-    if (parent->ldat.id!=JSON_BRACKET_NODE && parent->ldat.id!=JSON_ARRAY_NODE) return NULL;
+    if (parent->ldat.id!=JSON_BRACKET_NODE && parent->ldat.lv!=JSON_VALUE_OBJ && parent->ldat.id!=JSON_ARRAY_NODE) return NULL;
     if (child->ldat.id !=JSON_BRACKET_NODE) return NULL;
     
     tJson* ret = NULL;
-    if (parent->ldat.id==JSON_BRACKET_NODE) {
+    //if (parent->ldat.id==JSON_BRACKET_NODE) {
+    if (parent->ldat.id==JSON_BRACKET_NODE || parent->ldat.lv==JSON_VALUE_OBJ) {
         tJson* cp = child->next;
         while (cp!=NULL) {
             add_tTree(parent, cp);
@@ -1149,9 +1150,10 @@ void  json_append_obj_str_val(tJson* json, const char* key, const char* val)
 void  json_append_obj_str_val(tJson* json, const char* key, const char* val)
 {
     if (json==NULL) return;
-    if (json->ldat.id!=JSON_BRACKET_NODE) {
+    if (json->ldat.id!=JSON_BRACKET_NODE && json->ldat.lv!=JSON_VALUE_OBJ) {
         json = json->next;
-        if (json==NULL || json->ldat.id!=JSON_BRACKET_NODE) return;
+        if (json!=NULL) return;
+        if (json->ldat.id!=JSON_BRACKET_NODE && json->ldat.lv!=JSON_VALUE_OBJ) return;
     }
 
     if (val!=NULL) {
@@ -1171,7 +1173,6 @@ void  json_append_obj_str_val(tJson* json, const char* key, const char* val)
 }
 
 
-
 /**
 void  json_append_obj_int_val(tJson* json, const char* key, int val)
 
@@ -1180,9 +1181,10 @@ void  json_append_obj_int_val(tJson* json, const char* key, int val)
 void  json_append_obj_int_val(tJson* json, const char* key, int val)
 {
     if (json==NULL) return;
-    if (json->ldat.id!=JSON_BRACKET_NODE) {
+    if (json->ldat.id!=JSON_BRACKET_NODE && json->ldat.lv!=JSON_VALUE_OBJ) {
         json = json->next;
-        if (json==NULL || json->ldat.id!=JSON_BRACKET_NODE) return;
+        if (json!=NULL) return;
+        if (json->ldat.id!=JSON_BRACKET_NODE && json->ldat.lv!=JSON_VALUE_OBJ) return;
     }
 
     Buffer val_buf = make_Buffer(LEN_INT + 1);
@@ -1193,6 +1195,7 @@ void  json_append_obj_int_val(tJson* json, const char* key, int val)
     return;
 }
 
+
 /**
 void  json_append_obj_real_val(tJson* json, const char* key, float val)
 
@@ -1201,9 +1204,10 @@ void  json_append_obj_real_val(tJson* json, const char* key, float val)
 void  json_append_obj_real_val(tJson* json, const char* key, float val)
 {
     if (json==NULL) return;
-    if (json->ldat.id!=JSON_BRACKET_NODE) {
+    if (json->ldat.id!=JSON_BRACKET_NODE && json->ldat.lv!=JSON_VALUE_OBJ) {
         json = json->next;
-        if (json==NULL || json->ldat.id!=JSON_BRACKET_NODE) return;
+        if (json!=NULL) return;
+        if (json->ldat.id!=JSON_BRACKET_NODE && json->ldat.lv!=JSON_VALUE_OBJ) return;
     }
 
     Buffer val_buf = make_Buffer(LEN_REAL + 1);
@@ -1213,6 +1217,7 @@ void  json_append_obj_real_val(tJson* json, const char* key, float val)
     free_Buffer(&val_buf);
     return;
 }
+
 
 /**
 void  json_append_array_str_val(tJson* json, const char* val)

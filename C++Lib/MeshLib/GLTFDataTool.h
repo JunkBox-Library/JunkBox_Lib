@@ -33,23 +33,32 @@ namespace jbxl {
 #define  JBXL_GLTF_GENERATOR    "JBXL glTF Tool Library (C) 2024 v1.0 by Fumi.Iseki"
 #define  JBXL_GLTF_VERSION      "2.0"
 
+#define  JBXL_GLB_PNG_IMAGE     "{\"bufferView\":%d,\"mimeType\":\"image/png\"}"
+#define  JBXL_GLB_JPEG_IMAGE    "{\"bufferView\":%d,\"mimeType\":\"image/jpeg\"}"
+
 //#define  JBXL_GLTF_BUFFER       "{\"uri\":%s,\"byteLength\":%u}"
 #define  JBXL_GLTF_VIEW         "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"byteStride\":%d,\"target\":34962}"
 #define  JBXL_GLTF_ELEMENT_VIEW "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"target\":34963}"
 #define  JBXL_GLTF_TEXTURE_VIEW "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u}"
 #define  JBXL_GLTF_ACCESSOR     "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\"}"
 #define  JBXL_GLTF_ACCESSOR_S   "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%d],\"min\":[%d]}"
-#define  JBXL_GLTF_ACCESSOR_V2  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%lf,%lf],\"min\":[%lf,%lf]}"
-#define  JBXL_GLTF_ACCESSOR_V3  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%lf,%lf,%lf],\"min\":[%lf,%lf,%lf]}"
+#define  JBXL_GLTF_ACCESSOR_V2  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f],\"min\":[%f,%f]}"
+#define  JBXL_GLTF_ACCESSOR_V3  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f,%f],\"min\":[%f,%f,%f]}"
 #define  JBXL_GLTF_MESH         "{\"name\":\"%s\",\"mesh\":%d}"
 #define  JBXL_GLTF_MESH_PRIM    "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d},\"material\":%d,\"mode\":4}"
-#define  JBXL_GLTF_MATERIAL     "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorFactor\":[%f,%f,%f,%f],\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}"
+//#define  JBXL_GLTF_MATERIAL     "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorFactor\":[%f,%f,%f,%f],\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}"
+
 #define  JBXL_GLTF_TEXTURE      "{\"source\":%d}"
 //#define  JBXL_GLTF_TEXTURE      "{\"source\":%d, \"sampler\":%d}"
 #define  JBXL_GLTF_IMAGE        "{\"uri\":\"%s\"}"
 
-#define  JBXL_GLB_PNG_IMAGE     "{\"bufferView\":%d,\"mimeType\":\"image/png\"}"
-#define  JBXL_GLB_JPEG_IMAGE    "{\"bufferView\":%d,\"mimeType\":\"image/jpeg\"}"
+#define  JBXL_GLTF_MTL_NAME_PBR "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}"
+#define  JBXL_GLTF_MTL_BCOLORF  "{\"baseColorFactor\":[%f,%f,%f,%f]}"
+#define  JBXL_GLTF_MTL_METALF   "{\"metallicFactor\":%f}"
+#define  JBXL_GLTF_MTL_ROUGHF   "{\"roughnessFactor\":%f}"
+
+#define  JBXL_GLTF_MTL_CUTOFF   "{\"alphaCutoff\":%f}"
+#define  JBXL_GLTF_MTL_EMISSIVE "{\"emissiveFactor\":[%f,%f,%f]}"
 
 
 
@@ -221,6 +230,7 @@ public:
     void    addTextures(MeshFacetNode* facet);
     void    addMeshes(MeshFacetNode* facet);
     void    addMaterials(MeshFacetNode* facet);
+    void    addMaterialParameters(tJson* pbr, MeshFacetNode* facet);
 
     void    execAffineUVMap(MeshFacetNode* facet, AffineTrans<double>* affine);
 

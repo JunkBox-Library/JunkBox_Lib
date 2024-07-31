@@ -158,7 +158,9 @@ private:
     double  shininess;      ///< 輝き
     double  glow;           ///< 発光
     double  bright;         ///< 明るさ
-    double  glossiness;     ///< 光沢
+    double  glossiness;     ///< 滑らかさ
+
+    double  speclightexp;   ///< SpecularLightExponents
     double  environment;    ///< 環境光
     double  light;          ///< 周りを照らすライト
 
@@ -170,8 +172,8 @@ public:
     int     others;         ///< その他のフラグ
 
     TextureParam  texture;  ///< テクスチャ
-    TextureParam  bumpmap;  ///< Bumpmap テクスチャ
     TextureParam  specmap;  ///< Specular マップ テクスチャ
+    TextureParam  bumpmap;  ///< Bumpmap テクスチャ
 
 public:
     MaterialParam(void) { init();}
@@ -213,12 +215,13 @@ public:
     char*   getParamString(void) { return (char*)paramstr.buf;}     // 禁 free
 
 //    void    setTransparent(double a) { if(a>1.0) a = 1.0; else if(a<0.0) a = 0.0; transparent = a;}
-    void    setShininess(double s)   { if(s>1.0) s = 1.0; else if(s<0.0) s = 0.0; shininess = s;}
-    void    setGlow(double g)        { if(g>1.0) g = 1.0; else if(g<0.0) g = 0.0; glow = g;}
-    void    setBright(double b)      { if(b>1.0) b = 1.0; else if(b<0.0) b = 0.0; bright = b;}
-    void    setGlossiness (double g) { if(g>1.0) g = 1.0; else if(g<0.0) g = 0.0; glossiness = g;}
-    void    setEnvironment(double e) { if(e>1.0) e = 1.0; else if(e<0.0) e = 0.0; environment = e;}
-    void    setLight(double l)       { if(l>1.0) l = 1.0; else if(l<0.0) l = 0.0; light = l;}
+    void    setShininess(double s)   { /*if(s>1.0) s = 1.0; else if(s<0.0) s = 0.0;*/ shininess = s;}
+    void    setGlow(double g)        { /*if(g>1.0) g = 1.0; else if(g<0.0) g = 0.0;*/ glow = g;}
+    void    setBright(double b)      { /*if(b>1.0) b = 1.0; else if(b<0.0) b = 0.0;*/ bright = b;}
+    void    setGlossiness (double g) { /*if(g>1.0) g = 1.0; else if(g<0.0) g = 0.0;*/ glossiness = g;}
+    void    setEnvironment(double e) { /*if(e>1.0) e = 1.0; else if(e<0.0) e = 0.0;*/ environment = e;}
+    void    setSpecExp(double s)     { /*if(s>1.0) l = 1.0; else if(s<0.0) l = 0.0;*/ speclightexp = s;}
+    void    setLight(double l)       { /*if(l>1.0) l = 1.0; else if(l<0.0) l = 0.0;*/ light = l;}
 
     //double  getTransparent(void);
     double  getShininess(void)   { return shininess;}
@@ -226,6 +229,7 @@ public:
     double  getBright(void)      { return bright;}
     double  getGlossiness (void) { return glossiness;}
     double  getEnvironment(void) { return environment;}
+    double  getSpecExp(void    ) { return speclightexp;}
     double  getLight(void)       { return light;}
 
     void    printParam(FILE* fp);

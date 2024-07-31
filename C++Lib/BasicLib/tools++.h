@@ -38,7 +38,7 @@ public:
 
     void  init(int n = 0);
     void  free(void);
-    void  free_ptr(void);
+    void  free_ptr(void);           // _value[i] がポインタの場合，各ポイント先を開放
 
     int   get_size(void) { return _size;}
     T     get_value(int n);
@@ -77,7 +77,7 @@ template <typename T> void  ArrayParam<T>::free(void)
 
 /**
 _value[i] がポインタの場合．（実行注意！）@n
-_valkue 自体は freeしない．
+_value 自体は freeしない．
 */
 template <typename T> void  ArrayParam<T>::free_ptr(void)
 {

@@ -33,11 +33,15 @@ public:
     Vector<T>        scale;
     Quaternion<T>    rotate;
 
+private:
+    bool             _dirty_matrix;
+    bool             _dirty_components;
+
 public:
     AffineTrans(void) { init();}
     virtual ~AffineTrans(void) {}
 
-    void   init(void) { initComponents(); matrix = Matrix<T>(2, 4, 4); computeMatrix();}
+    void   init(void) { initComponents(); matrix=Matrix<T>(2, 4, 4); computeMatrix(); _dirty_matrix=_dirty_components=false;}
     void   setup(void){ init();}
     void   initComponents(void) { initScale(); initRotate(); initShift();}
 
@@ -47,28 +51,33 @@ public:
     void   dup(AffineTrans a);
     AffineTrans<T>  dup(void);
 
+    void   dirty_matrix(void)       { _dirty_matrix = true;}        // matrix を手動で変更したら実行する（推奨）
+    void   dirty_components(void)   { _dirty_components = true;}    // component の要素を変更したら実行する（推奨）
+    bool   is_dirty_matrix(void)    { return _dirty_matrix;}        // true なら computeComponents() を実行する（推奨）
+    bool   is_dirty_components(void){ return _dirty_components;}    // true なら computeMatrix() を実行する（推奨）
+
     void   computeMatrix(bool with_scale=true);
     void   computeComponents(void);
 
-    void   initShift (void) { shift.init();}
-    void   initScale (void) { scale.set((T)1.0, (T)1.0, (T)1.0);}
-    void   initRotate(void) { rotate.init();}
+    void   initShift (void) { shift.init(); _dirty_components=true;}
+    void   initScale (void) { scale.set((T)1.0, (T)1.0, (T)1.0); _dirty_components=true;}
+    void   initRotate(void) { rotate.init(); _dirty_components=true;}
 
-    void   setShift (T x, T y, T z) { shift.set(x, y, z);}
-    void   setScale (T x, T y, T z) { scale.set(x, y, z);}
-    void   setRotate(T s, T x, T y, T z) { rotate.setRotation(s, x, y, z);}
+    void   setShift (T x, T y, T z) { shift.set(x, y, z); _dirty_components=true;}
+    void   setScale (T x, T y, T z) { scale.set(x, y, z); _dirty_components=true;}
+    void   setRotate(T s, T x, T y, T z) { rotate.setRotation(s, x, y, z); _dirty_components=true;}
 
-    void   setShift (Vector<T> v) { shift = v;}
-    void   setScale (Vector<T> v) { scale = v;}
-    void   setRotate(Quaternion<T> q) { rotate = q;}
+    void   setShift (Vector<T> v) { shift = v; _dirty_components=true;}
+    void   setScale (Vector<T> v) { scale = v; _dirty_components=true;}
+    void   setRotate(Quaternion<T> q) { rotate = q; _dirty_components=true;}
 
-    void   addShift (T x, T y, T z) { shift.x += x; shift.y += y; shift.z += z;}
-    void   addScale (T x, T y, T z) { scale.x *= x; scale.y *= y; scale.z *= z;}
-    void   addRotate(T s, T x, T y, T z) { Quaternion<T> q(s, x, y, z); rotate = q*rotate;}
+    void   addShift (T x, T y, T z) { shift.x += x; shift.y += y; shift.z += z; _dirty_components=true;}
+    void   addScale (T x, T y, T z) { scale.x *= x; scale.y *= y; scale.z *= z; _dirty_components=true;}
+    void   addRotate(T s, T x, T y, T z) { Quaternion<T> q(s, x, y, z); rotate = q*rotate; _dirty_components=true;}
 
-    void   addShift (Vector<T> v) { shift = shift + v;}
-    void   addScale (Vector<T> v) { scale = shift + v;}
-    void   addRotate(Quaternion<T> q) { rotate = q*rotate;}
+    void   addShift (Vector<T> v) { shift = shift + v; _dirty_components=true;}
+    void   addScale (Vector<T> v) { scale = shift + v; _dirty_components=true;}
+    void   addRotate(Quaternion<T> q) { rotate = q*rotate; _dirty_components=true;}
 
     Vector<T>        getShift (void) { return shift;}
     Vector<T>        getScale (void) { return scale;}
@@ -325,6 +334,8 @@ template <typename T> void   AffineTrans<T>::computeMatrix(bool with_scale)
     matrix.element(4, 2) = (T)0.0;
     matrix.element(4, 3) = (T)0.0;
 
+    _dirty_matrix     = false;
+    _dirty_components = false;
     return;
 }
 
@@ -355,9 +366,11 @@ template <typename T> void   AffineTrans<T>::computeComponents(void)
     }
     rotate = RotMatrix2Quaternion<T>(mt);    
     mt.free();
-
     //
     shift.set(matrix.element(1,4), matrix.element(2,4), matrix.element(3,4));
+
+    _dirty_matrix     = false;
+    _dirty_components = false;
     return;
 }
 

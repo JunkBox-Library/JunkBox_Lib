@@ -7,8 +7,8 @@ rewrite configure.ac, doxygen.conf
 working now ..... v1.10.0alpha
 
 v1.10.0alpha
+	glTF, glb サポート(*)
 	JPEG, TGA, PNG の書き込み時のデータをポンタ渡しに変更．
-	for glTF and FBX data (*)
 	add PNG Tool (C/C++)
 	tjson
 		insert_json_nodes() -> json_insert_child()
@@ -23,7 +23,6 @@ v1.10.0alpha
 	read_index_tList_fp() 値の中に区切り文字が存在しても大丈夫にした．ex.) パスの中の空白など．
 	fix ColladaTool.cpp
 	add_resource_list() に第5引数 mode を追加．mode==0 の場合，互換あり．
-
 
 
 v1.9.2 '24/05/20
