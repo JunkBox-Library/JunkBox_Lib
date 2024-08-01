@@ -45,7 +45,7 @@ void  FBXData::free(void)
     this->delAffineTrans();
     this->affineTrans = NULL;
     
-    if (this->joints_name!=NULL) del_all_xml(&this->joints_name);
+    if (this->joints_name!=NULL) del_tList(&this->joints_name);
     this->joints_name = NULL;
 }
 
@@ -84,7 +84,7 @@ void  FBXData::outputFile(const char* fname, const char* out_dirn, const char* p
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tTree* joints_template)
+void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tList* joints_template)
 {
     //PRINT_MESG("FBXData::addShell: start\n");
 
@@ -94,6 +94,10 @@ void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* 
         if (this->joints_name==NULL && !this->has_joints) {
             this->joints_name = joints_template;
             this->has_joints = true;
+        }
+        else {
+            if (joints_template!=NULL) del_tList(&joints_template);
+            joints_template = NULL;
         }
     }
 
@@ -132,6 +136,7 @@ void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* 
 
     //
     if (this->has_joints && this->joints_name!=NULL) {
+        
     }
 
     return;

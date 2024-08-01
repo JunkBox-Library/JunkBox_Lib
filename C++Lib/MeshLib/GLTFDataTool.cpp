@@ -158,7 +158,7 @@ void  GLTFData::free(void)
         this->shellNode = NULL;
     }
 
-    if (this->joints_name!=NULL) del_all_xml(&this->joints_name);
+    if (this->joints_name!=NULL) del_tList(&this->joints_name);
     this->joints_name = NULL;
 
     this->delAffineTrans();
@@ -221,7 +221,7 @@ void  GLTFData::initGLTF(void)
 //////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tTree* joints_template)
+void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tList* joints_template)
 
 この関数は SOLID毎に複数回呼ばれ，SOLIDに SHELLを追加する．
 
@@ -229,7 +229,7 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
 @param  collider   コライダーのサポート
 @param  joints     ジョイントデータ．デフォルトは NULL
 */
-void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tTree* joints_template)
+void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tList* joints_template)
 {
     if (shelldata==NULL) return;
     if (this->shell_no==0 && this->gltf_name.buf==NULL) {
@@ -244,6 +244,10 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         if (this->joints_name==NULL && !this->has_joints) {
             this->joints_name = joints_template;
             this->has_joints = true;
+        }
+        else {
+            if (joints_template!=NULL) del_tList(&joints_template);
+            joints_template = NULL;
         }
     }
 
@@ -303,7 +307,7 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
 
     //
     if (this->has_joints && this->joints_name!=NULL) {
-        print_tTree(stderr, this->joints_name);
+        print_tList(stderr, this->joints_name);
         print_message("-----------------------\n");
     }
 

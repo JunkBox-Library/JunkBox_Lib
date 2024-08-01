@@ -78,6 +78,9 @@ tList 構造体
     int         num     子ノードの数                    for tTree
     int         ctrl    制御用                          for tTree
     int         state   ノードの状態
+    if (this->joints_name!=NULL) del_all_xml(&this->joints_name);
+    this->joints_name = NULL;
+
 @endcode
 */
 typedef  struct _tList  tList;

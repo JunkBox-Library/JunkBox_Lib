@@ -175,7 +175,7 @@ public:
     int     engine;
 
     bool    has_joints;
-    tTree*  joints_name;
+    tList*  joints_name;
 
     tList*  image_list;
     tList*  material_list;
@@ -226,7 +226,7 @@ public:
 
     void    initGLTF(void);
 
-    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL, tTree* joints_template=NULL);
+    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL, tList* joints_template=NULL);
     void    addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine);
 
     void    addTextures(MeshFacetNode* facet);
