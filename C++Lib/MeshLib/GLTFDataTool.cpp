@@ -99,6 +99,9 @@ void  GLTFData::init(void)
     this->glb_out       = false;
     this->center        = Vector<double>(0.0, 0.0, 0.0);
 
+    this->has_joints    = false;
+    this->joints_name   = NULL;
+
     this->forUnity      = true;
     this->forUE         = false;
     this->engine        = JBXL_3D_ENGINE_UNITY;
@@ -154,6 +157,9 @@ void  GLTFData::free(void)
         this->shellNode->delete_next();
         this->shellNode = NULL;
     }
+
+    if (this->joints_name!=NULL) del_all_xml(&this->joints_name);
+    this->joints_name = NULL;
 
     this->delAffineTrans();
     this->affineTrans = NULL;
@@ -215,7 +221,7 @@ void  GLTFData::initGLTF(void)
 //////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tXML* joints_template)
+void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tTree* joints_template)
 
 この関数は SOLID毎に複数回呼ばれ，SOLIDに SHELLを追加する．
 
@@ -223,7 +229,7 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
 @param  collider   コライダーのサポート
 @param  joints     ジョイントデータ．デフォルトは NULL
 */
-void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tXML* joints_template)
+void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tTree* joints_template)
 {
     if (shelldata==NULL) return;
     if (this->shell_no==0 && this->gltf_name.buf==NULL) {
@@ -232,6 +238,13 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
     }
     if (shelldata->alt_name.buf!=NULL) {
         this->alt_name = dup_Buffer(shelldata->alt_name);
+    }
+
+    if (joints!=NULL && joints_template!=NULL) {
+        if (this->joints_name==NULL && !this->has_joints) {
+            this->joints_name = joints_template;
+            this->has_joints = true;
+        }
     }
 
     MeshFacetNode* facet = shelldata->facet;
@@ -270,6 +283,7 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
     }
 
     if (this->bin_seq) {
+        // その都度 BINデータを作成していく
         if (this->bin_mode==JBXL_GLTF_BIN_AOS) {
             this->createBinDataSeqAoS(facet, shell_indexes, shell_vertexes);
         }
@@ -288,12 +302,9 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
     }
 
     //
-print_message("===>xxxxxxxx\n");
-    if (joints!=NULL && joints_template!=NULL) {
-print_message("===>%02d:\n", joints->joint_num);
-for (int i=0; i<joints->joint_num; i++) {
-print_message("%02d: %s\n", i, joints->joint_names.get_value(i));
-}
+    if (this->has_joints && this->joints_name!=NULL) {
+        print_tTree(stderr, this->joints_name);
+        print_message("-----------------------\n");
     }
 
     //
@@ -1476,7 +1487,6 @@ glbTextureInfo*  GLTFData::getGLBTextureInfo(const char* tex_dirn)
 }
 
 
-
 void  GLTFData::freeGLBTextureInfo(glbTextureInfo* texture_info)
 {
     glbTextureInfo* tinfo = texture_info;
@@ -1488,3 +1498,5 @@ void  GLTFData::freeGLBTextureInfo(glbTextureInfo* texture_info)
     }
     return;
 }
+
+

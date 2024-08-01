@@ -26,6 +26,9 @@ void  FBXData::init(void)
     this->phantom_out = true;
     this->no_offset   = false;
 
+    this->has_joints  = false;
+    this->joints_name = NULL;
+
     this->forUnity    = true;
     this->forUE       = false;
 
@@ -41,6 +44,9 @@ void  FBXData::free(void)
     this->skeleton.free();
     this->delAffineTrans();
     this->affineTrans = NULL;
+    
+    if (this->joints_name!=NULL) del_all_xml(&this->joints_name);
+    this->joints_name = NULL;
 }
 
 
@@ -78,11 +84,18 @@ void  FBXData::outputFile(const char* fname, const char* out_dirn, const char* p
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tXML* joints_template)
+void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tTree* joints_template)
 {
-    PRINT_MESG("FBXData::addShell: start\n");
+    //PRINT_MESG("FBXData::addShell: start\n");
 
     if (meshdata==NULL) return;
+
+    if (joints!=NULL && joints_template!=NULL) {
+        if (this->joints_name==NULL && !this->has_joints) {
+            this->joints_name = joints_template;
+            this->has_joints = true;
+        }
+    }
 
     MeshFacetNode* facet = meshdata->facet;
     while (facet!=NULL) {
@@ -118,7 +131,7 @@ void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* 
     }
 
     //
-    if (joints!=NULL && joints_template!=NULL) {
+    if (this->has_joints && this->joints_name!=NULL) {
     }
 
     return;

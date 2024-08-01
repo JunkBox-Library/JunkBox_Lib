@@ -33,12 +33,14 @@ public:
 public:
     Buffer  fbx_name;
     bool    phantom_out;
-    bool    has_joints;
     bool    no_offset;
 
     bool    forUnity;
     bool    forUE;
     int     engine;
+
+    bool    has_joints;
+    tTree*  joints_name;
 
     AffineTrans<double>* affineTrans;
     AffineTrans<double>  skeleton;
@@ -55,7 +57,7 @@ public:
     void    delAffineTrans (void) { freeAffineTrans(this->affineTrans);}
     Vector<double> execAffineTrans(void);
 
-    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL, tXML* joints_template=NULL);
+    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL, tTree* joints_template=NULL);
     void    closeSolid(void) {}
 
     void    outputFile(const char* fn, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn);

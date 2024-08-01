@@ -54,6 +54,7 @@ typedef  tList        tTree;
 #define    TREE_COPY_NODE                  102        ///< 後でコピー処理を行うノード．copy_tTree_byctrl()など．
 #define    TREE_NOSIS_NODE                 103        ///< このノードの姉妹ノードは処理しない．一部の関数のみ有効．
 #define    TREE_DELETE_NODE                104        ///< 後で削除処理を行うノード．
+#define    TREE_KEEP_NODE                  105        ///< 削除などの処理対象から外すノードに設定．
 #define    TREE_ALREADY_FOUND_NODE         110        ///< 検索などにおいて既に見つけたノード．見つけたことを確定したノード．
 #define    TREE_ALREADY_FOUND_NODE_TEMP    111        ///< 一時的に比較対照から外す場合にノード．作業中に設定．
 
@@ -105,6 +106,11 @@ tTree*  free_tTree_node(tTree* node); ///< ツリーノードの解放．解放�
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Tiny Tree Graph
+
+void    del_delete_node_tTree(tTree** pp);      ///< ctrl==TREE_DELETE_NODE を削除する．
+void    _del_delete_node_tTree(tTree** pp);     ///< 
+void    del_non_keep_node_tTree(tTree** pp);    ///< ctrl==TREE_KEEP_NODE 以外を削除する．
+void    _del_non_keep_node_tTree(tTree** pp);   ///<
 
 tTree*  del_tTree(tTree** pp);                  ///< 指定したノード以下のツリーを削除する．
 void    del_all_tTree(tTree** pp);              ///< ツリーの全ノードの削除．ポインタ ppのノードを含むツリー全体を削除する．

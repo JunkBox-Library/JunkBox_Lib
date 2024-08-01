@@ -106,7 +106,7 @@ tList_data  make_tList_data_bystr(int id, int lv, const char*  key, const char* 
 #define     make_tList_data_str(k, v)       make_tList_data_bystr(0, 0, (char*)(k), (char*)(v), NULL, 0)    ///< make_tList_data_bystr()
 #define     make_tList_data_Buffer(k, v)    make_tList_data(0, 0, (k), (v), NULL, 0)                        ///< make_tList_data()
 
-void        free_tList_data(tList_data* ldat);      ///< ノードデータのバッファ部をクリアする．データ自身は削除しない．
+void        clear_tList_data(tList_data* ldat);     ///< ノードデータのバッファ部をクリアする．データ自身は削除しない．
 void        del_tList_data(tList_data** ldat);      ///< ノードデータを削除する．
 tList_data  dup_tList_data(tList_data ldat);        ///< ノードデータの複製を作成する
 

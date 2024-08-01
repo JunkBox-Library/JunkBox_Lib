@@ -381,7 +381,7 @@ tTree*  free_tTree_node(tTree* node)
     }
 
     tTree* pp = node->prev;
-    free_tList_data(&(node->ldat));
+    clear_tList_data(&(node->ldat));
     if (node->prev!=NULL) node->prev->num += node->num - 1;
 
     return pp;
@@ -524,6 +524,114 @@ int  replace_all_tTree_node(tTree* tp, char* key, char* src, char* dst, int len)
 //
 
 /**
+void    del_delete_node_tTree(tTree** pp)
+
+ctrl==TREE_DELETE_NODE の ノードを削除する
+
+*pp は アンカーノードである必要がある．
+アンカーノードでない場合，*ppが削除されるとリストを見失う．
+*/
+void    del_delete_node_tTree(tTree** pp)
+{
+    if (pp==NULL || *pp==NULL) return;
+
+    tTree* tp = *pp;
+    if (tp->ldat.id==TREE_ANCHOR_NODE) {
+        tp = tp->next;
+    }
+    else {
+        PRINT_MESG("JBXL::del_delete_node_tTree: WARNING: top node is not ANCHOR node. top addresses are not guaranteed.\n");
+    }
+    
+    _del_delete_node_tTree(&tp);
+    return;
+}
+
+
+void    _del_delete_node_tTree(tTree** pp)
+{
+    if (pp==NULL || *pp==NULL) return;
+
+    tTree* tp = *pp;
+    while(tp->esis!=NULL) tp = tp->esis;
+
+    while(tp!=NULL) {
+        if (tp->next) _del_delete_node_tTree(&(tp->next));
+        // delete own
+        if (tp->ctrl==TREE_DELETE_NODE) {
+            tTree* tt = tp;
+            del_tTree_node(&tp);
+            tp = tt;
+        }
+        tp = tp->ysis;
+    }
+    return;
+}
+
+
+/**
+void    del_non_keep_node_tTree(tTree** pp)
+
+ctrl==TREE_KEEP_NODE 以外のノードを削除する
+
+*pp は アンカーノードである必要がある．
+アンカーノードでない場合，*ppが削除されるとリストを見失う．
+*/
+void    del_non_keep_node_tTree(tTree** pp)
+{
+    if (pp==NULL || *pp==NULL) return;
+
+    tTree* tp = *pp;
+    if (tp->ldat.id==TREE_ANCHOR_NODE) {
+        tp = tp->next;
+    }
+    else {
+        PRINT_MESG("JBXL::del_non_keep_node_tTree: WARNING: top node is not ANCHOR node. top addresses are not guaranteed.\n");
+    }
+    
+    _del_non_keep_node_tTree(&tp);
+    return;
+}
+
+
+void    _del_non_keep_node_tTree(tTree** pp)
+{
+    if (pp==NULL || *pp==NULL) return;
+
+    tTree* tp = *pp;
+    while(tp->esis!=NULL) tp = tp->esis;
+
+    while(tp!=NULL) {
+        if (tp->next) _del_non_keep_node_tTree(&(tp->next));
+        // delete own
+        if (tp->ctrl!=TREE_KEEP_NODE) {
+            tTree* tt = tp;
+            del_tTree_node(&tp);
+            tp = tt;
+        }
+        tp = tp->ysis;
+    }
+    return;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
 tTree*  del_tTree(tTree** pp) 
 
 指定したノード以下のツリーを削除する．
@@ -555,7 +663,7 @@ tTree*  del_tTree(tTree** pp)
     if ((*pp)->ysis!=NULL) (*pp)->ysis->esis = (*pp)->esis;
     if ((*pp)->esis!=NULL) (*pp)->esis->ysis = (*pp)->ysis;
 
-    free_tList_data(&((*pp)->ldat));
+    clear_tList_data(&((*pp)->ldat));
     free(*pp);
     *pp = NULL;
 
@@ -637,7 +745,7 @@ tTree*  del_sisters_children_tTree(tTree** pp)
         tTree* pw = pm;
         if (pm->next!=NULL) del_sisters_children_tTree(&(pm->next)); 
         pm = pm->ysis;
-        free_tList_data(&(pw->ldat));
+        clear_tList_data(&(pw->ldat));
         free(pw);
     }
     *pp = NULL;
@@ -1035,7 +1143,7 @@ void  print_tTree(FILE* fp, tTree* pp)
 /**
 tTree*  find_tTree_end(tTree* pp)
 
-ツリーの最終ノードを見つける．
+ツリーの最終ノードを見つける．最終ノード：最後に追加されたノード．
 */
 tTree*  find_tTree_end(tTree* pp)
 {

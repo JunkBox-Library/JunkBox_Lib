@@ -111,13 +111,13 @@ tList_data  make_tList_data_bystr(int id, int lv, const char* key, const char* v
 
 
 /**
-void  free_tList_data(tList_data* ldat)
+void  clear_tList_data(tList_data* ldat)
 
 ノードデータのバッファ部をクリアする．データ自身は削除しない．
 
 @param  ldat  クリアするノードデータ
 */
-void  free_tList_data(tList_data* ldat)
+void  clear_tList_data(tList_data* ldat)
 {
     if (ldat==NULL) return;
 
@@ -150,7 +150,7 @@ void  del_tList_data(tList_data** ldat)
 {
     if (ldat==NULL || *ldat==NULL) return;
 
-    free_tList_data(*ldat);
+    clear_tList_data(*ldat);
     *ldat = NULL;
 
     return;
@@ -244,7 +244,7 @@ tList*  free_tList_node(tList* node)
 {    
     if (node==NULL) return NULL;
 
-    free_tList_data(&(node->ldat));
+    clear_tList_data(&(node->ldat));
 
     tList* pp = NULL;
     if (node->prev!=NULL) node->prev->next = node->next;
@@ -514,7 +514,7 @@ void  set_tList_node_bydata(tList* node, tList_data dat)
 {
     if (node==NULL) return;
 
-    free_tList_data(&(node->ldat));
+    clear_tList_data(&(node->ldat));
     node->ldat = dat;
 }
 
@@ -747,7 +747,7 @@ tList*  del_tList(tList** pp)
     while (pm!=NULL) {
         pw = pm;
         pm = pm->next;
-        free_tList_data(&(pw->ldat));
+        clear_tList_data(&(pw->ldat));
         free(pw);
     }
     *pp = NULL;

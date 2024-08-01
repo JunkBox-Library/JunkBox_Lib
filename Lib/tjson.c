@@ -1033,7 +1033,7 @@ tJson*  json_insert_child(tJson* parent, tJson* child)
             ret = cp;
             cp = cp->ysis;
         }
-        free_tList_data(&child->ldat);
+        clear_tList_data(&child->ldat);
         free(child);
     }
     else if (parent->ldat.id==JSON_ARRAY_NODE) {

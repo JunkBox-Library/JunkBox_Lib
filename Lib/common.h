@@ -138,26 +138,32 @@
 #define  MBUFSZ       8192      ///<   8K
 #define  SBUFSZ       4096      ///<   4K
 
+#define  L_4096       4096
+#define  L_2048       2048
 #define  LFRAME       2048
+#define  L_1024       1024
 #define  LBUF         1024
+#define  L_512         512
 #define  LMESG         512
+#define  L_256         256
 #define  LPATH         256
 #define  LDATA         256
-#define  LNAME         128
 #define  L_128         128
+#define  LNAME         128
 #define  LMDATA        128
 #define  LPASS         128        ///< $6$ -> 98文字
+#define  L_64           64
 #define  LMNAME         64
 #define  LSDATA         64
-#define  L_64           64
 #define  LGUID          40        ///< 16*2 + 4(-) + 1('@\0') = 37 以上の 4の倍数
 #define  LUUID          36        ///< 16*2 + 1('@\0') = 33 以上の 4の倍数
 #define  L_32           32
 #define  LADDR          32
 #define  LADDR6        128
 #define  LSNAME         32
-#define  L_ID           16
 #define  L_16           16
+#define  L_ID           16
+#define  L_8             8
 #define  L_OCT           8
 
 #define  LEN_REAL       32        ///< 15*2 + '@\0' + 1(予備)

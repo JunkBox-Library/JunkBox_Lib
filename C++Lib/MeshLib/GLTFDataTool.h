@@ -163,7 +163,6 @@ public:
     Buffer  gltf_name;
     Buffer  alt_name;
     bool    phantom_out;
-    bool    has_joints;
     bool    no_offset;
 
     int     bin_mode;       // JBXL_GLTF_BIN_AOS or JBXL_GLTF_BIN_SOA
@@ -174,6 +173,9 @@ public:
     bool    forUnity;
     bool    forUE;
     int     engine;
+
+    bool    has_joints;
+    tTree*  joints_name;
 
     tList*  image_list;
     tList*  material_list;
@@ -224,7 +226,7 @@ public:
 
     void    initGLTF(void);
 
-    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL, tXML* joints_template=NULL);
+    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL, tTree* joints_template=NULL);
     void    addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine);
 
     void    addTextures(MeshFacetNode* facet);
