@@ -44,7 +44,8 @@ namespace jbxl {
 #define  JBXL_GLTF_ACCESSOR_S   "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%d],\"min\":[%d]}"
 #define  JBXL_GLTF_ACCESSOR_V2  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f],\"min\":[%f,%f]}"
 #define  JBXL_GLTF_ACCESSOR_V3  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f,%f],\"min\":[%f,%f,%f]}"
-#define  JBXL_GLTF_MESH         "{\"name\":\"%s\",\"mesh\":%d}"
+#define  JBXL_GLTF_MESH_NODE    "{\"name\":\"%s\",\"mesh\":%d}"
+#define  JBXL_GLTF_SKLTN_NODE   "{\"name\":%s}"
 #define  JBXL_GLTF_MESH_PRIM    "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d},\"material\":%d,\"mode\":4}"
 //#define  JBXL_GLTF_MATERIAL     "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorFactor\":[%f,%f,%f,%f],\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}"
 
@@ -175,7 +176,7 @@ public:
     int     engine;
 
     bool    has_joints;
-    tList*  joints_name;
+    tList*  joints_list;
 
     tList*  image_list;
     tList*  material_list;
@@ -226,8 +227,9 @@ public:
 
     void    initGLTF(void);
 
-    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints=NULL, tList* joints_template=NULL);
+    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints_data=NULL, tList* joints_template=NULL);
     void    addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine);
+    void    addSkeletonNodes(MeshFacetNode* facet);
 
     void    addTextures(MeshFacetNode* facet);
     void    addMeshes(MeshFacetNode* facet);

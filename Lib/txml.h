@@ -53,6 +53,7 @@ typedef  tTree  tXML;   ///<
     int     depth       深さ                    
     int     num         子ノードの数（全ての子ノードの数）    
     int     ctrl        制御用
+    int     ctrl_alt    制御用（一時的な制御）
     int     state       ノードの状態  JBXL_XML_PARSED, JBXL_XML_NODE_OPENED, JBXL_XML_NODE_CLOSES, JBXL_XML_PARSE_ERR, ....
 @endcode
 
@@ -66,6 +67,10 @@ typedef  tTree  tXML;   ///<
                                                                        -> EFG (XML_CONTENT_NODE)
                                                   -> E (XML_NAME_NODE)
                                                   -> @COMMENT_NODE (XML_COMMENT_NODE)     // ただしコメントの処理は暫定的
+version: 属性名
+"1.0"  : 属性値
+ABC    : コンテント
+
 @endcode
 
 3. ノード（ノード）種別 (ldat.id)

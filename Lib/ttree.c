@@ -526,7 +526,7 @@ int  replace_all_tTree_node(tTree* tp, char* key, char* src, char* dst, int len)
 /**
 void    del_delete_node_tTree(tTree** pp)
 
-ctrl==TREE_DELETE_NODE の ノードを削除する
+ctrl または　ctrl_alt が TREE_DELETE_NODE の ノードを削除する
 
 *pp は アンカーノードである必要がある．
 アンカーノードでない場合，*ppが削除されるとリストを見失う．
@@ -558,7 +558,7 @@ void    _del_delete_node_tTree(tTree** pp)
     while(tp!=NULL) {
         if (tp->next) _del_delete_node_tTree(&(tp->next));
         // delete own
-        if (tp->ctrl==TREE_DELETE_NODE) {
+        if (tp->ctrl==TREE_DELETE_NODE || tp->ctrl_alt==TREE_DELETE_NODE) {
             tTree* tt = tp;
             del_tTree_node(&tp);
             tp = tt;
@@ -572,7 +572,7 @@ void    _del_delete_node_tTree(tTree** pp)
 /**
 void    del_non_keep_node_tTree(tTree** pp)
 
-ctrl==TREE_KEEP_NODE 以外のノードを削除する
+ctrl または ctrl_alt が TREE_KEEP_NODE 以外のノードを削除する
 
 *pp は アンカーノードである必要がある．
 アンカーノードでない場合，*ppが削除されるとリストを見失う．
@@ -604,7 +604,7 @@ void    _del_non_keep_node_tTree(tTree** pp)
     while(tp!=NULL) {
         if (tp->next) _del_non_keep_node_tTree(&(tp->next));
         // delete own
-        if (tp->ctrl!=TREE_KEEP_NODE) {
+        if (tp->ctrl!=TREE_KEEP_NODE && tp->ctrl_alt!=TREE_KEEP_NODE) {
             tTree* tt = tp;
             del_tTree_node(&tp);
             tp = tt;
@@ -613,22 +613,6 @@ void    _del_non_keep_node_tTree(tTree** pp)
     }
     return;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /**

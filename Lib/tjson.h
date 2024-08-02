@@ -91,6 +91,7 @@ typedef  tTree  tJson;
     int     depth       深さ                    
     int     num         子ノードの数（全ての子ノードの数）    
     int     ctrl        制御用
+    int     ctrl_alt    制御用（一時的な制御）
     int     state       ノードの状態  JBXL_JSON_DEFAULT_STATE, JBXL_JSON_PARSED, JBXL_JSON_PARSE_TERM, JBXL_JSON_MULTI_ROOT, ....
 @endcode
 

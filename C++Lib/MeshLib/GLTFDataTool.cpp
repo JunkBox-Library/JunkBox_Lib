@@ -100,7 +100,7 @@ void  GLTFData::init(void)
     this->center        = Vector<double>(0.0, 0.0, 0.0);
 
     this->has_joints    = false;
-    this->joints_name   = NULL;
+    this->joints_list   = NULL;
 
     this->forUnity      = true;
     this->forUE         = false;
@@ -158,8 +158,8 @@ void  GLTFData::free(void)
         this->shellNode = NULL;
     }
 
-    if (this->joints_name!=NULL) del_tList(&this->joints_name);
-    this->joints_name = NULL;
+    if (this->joints_list!=NULL) del_tList(&this->joints_list);
+    this->joints_list = NULL;
 
     this->delAffineTrans();
     this->affineTrans = NULL;
@@ -221,15 +221,16 @@ void  GLTFData::initGLTF(void)
 //////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tList* joints_template)
+void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tList* joints_tempkate)
 
 この関数は SOLID毎に複数回呼ばれ，SOLIDに SHELLを追加する．
 
-@param  shelldata  SHELLデータ．複数の FACETを含む．
-@param  collider   コライダーのサポート
-@param  joints     ジョイントデータ．デフォルトは NULL
+@param  shelldata    SHELLデータ．複数の FACETを含む．
+@param  collider     コライダーのサポート
+@param  joints       ジョイントデータ．デフォルトは NULL
+@param  joints_tempkate  ジョイントの連結情報．デフォルトは NULL
 */
-void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tList* joints_template)
+void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tList* joints_tempkate)
 {
     if (shelldata==NULL) return;
     if (this->shell_no==0 && this->gltf_name.buf==NULL) {
@@ -240,14 +241,14 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         this->alt_name = dup_Buffer(shelldata->alt_name);
     }
 
-    if (joints!=NULL && joints_template!=NULL) {
-        if (this->joints_name==NULL && !this->has_joints) {
-            this->joints_name = joints_template;
+    if (joints!=NULL && joints_tempkate!=NULL) {
+        if (this->joints_list==NULL && !this->has_joints) {
+            this->joints_list = joints_tempkate;
             this->has_joints = true;
         }
         else {
-            if (joints_template!=NULL) del_tList(&joints_template);
-            joints_template = NULL;
+            if (joints_tempkate!=NULL) del_tList(&joints_tempkate);
+            joints_tempkate = NULL;
         }
     }
 
@@ -306,9 +307,8 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
     }
 
     //
-    if (this->has_joints && this->joints_name!=NULL) {
-        print_tList(stderr, this->joints_name);
-        print_message("-----------------------\n");
+    if (this->has_joints && this->joints_list!=NULL) {
+        //addSkeletonNodes(facet);
     }
 
     //
@@ -326,6 +326,9 @@ void  GLTFData::addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine
     // scenes
     if (this->node_no==0) {
         json_set_str_val(this->scenes_name, (char*)this->gltf_name.buf);
+        if (this->has_joints && this->joints_list!=NULL) {
+            this->addSkeletonNodes(facet);
+        }
     }
     json_append_array_int_val(this->scenes_nodes, this->node_no);
 
@@ -339,7 +342,8 @@ void  GLTFData::addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine
         node_name = make_Buffer_bystr("Node_#");
         cat_i2Buffer(this->node_no, &node_name);
     }
-    snprintf(buf, LBUF-1, JBXL_GLTF_MESH, (char*)node_name.buf, this->node_no);
+    //snprintf(buf, LBUF-1, JBXL_GLTF_MESH_NODE, (char*)node_name.buf, this->node_no);
+    snprintf(buf, LBUF-1, JBXL_GLTF_MESH_NODE, (char*)node_name.buf, this->mesh_no);
     tJson* mesh = json_insert_parse(this->nodes, buf);
     free_Buffer(&node_name);
 
@@ -357,6 +361,45 @@ void  GLTFData::addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine
     }
     this->node_no++;
 
+    return;
+}
+
+
+void  GLTFData::addSkeletonNodes(MeshFacetNode* facet)
+{
+    if (facet==NULL) return;
+    char buf[LBUF];
+
+    tList* jl = this->joints_list;
+    if (jl!=NULL) jl = jl->next;     // top is ACKHOR
+    tList* jt = jl;
+
+    while (jl!=NULL) {
+        json_append_array_int_val(this->scenes_nodes, this->node_no);
+        //
+        memset(buf, 0, LBUF);
+        snprintf(buf, LBUF-1, JBXL_GLTF_SKLTN_NODE, (char*)jl->ldat.val.buf);
+        tJson* skltn = json_insert_parse(this->nodes, buf);
+        tJson* children = json_append_array_key(skltn, "children");
+        //
+        tList* jp = jt; // jl
+        while (jp!=NULL) {
+            if (jp->ldat.lv==jl->ldat.id) {
+                json_append_array_int_val(children, jp->ldat.id);
+            }
+            jp = jp->next;
+        }
+        if (jl->ldat.ptr!=NULL) {
+            tJson* transl = json_append_array_key(skltn, "translation");
+            Vector<float>* vec = (Vector<float>*)(jl->ldat.ptr);
+            json_append_array_real_val(transl, vec->x);
+            json_append_array_real_val(transl, vec->y);
+            json_append_array_real_val(transl, vec->z);
+        }
+
+        this->node_no++;
+        jl = jl->next;
+    }
     return;
 }
 

@@ -2425,7 +2425,7 @@ tXML*  get_xml_content_bystr(tXML* pp, const char* str)
 int  get_xml_int_content_bystr(tXML* pp, const char* str)
 
 get_xml_int_content(tXML* pp, tXML* pt) の _bystr バージョン．@n
-get_xml_content()_bystr を使用し，XML コンテンツの内容を int型で返す．
+get_xml_content_bystr() を使用し，XML コンテンツの内容を int型で返す．
 */
 int  get_xml_int_content_bystr(tXML* pp, const char* str)
 {

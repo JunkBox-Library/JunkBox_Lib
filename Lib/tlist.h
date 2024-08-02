@@ -57,6 +57,7 @@ struct  _tList {
     int                 depth;   ///< 深さ                            for tTree
     int                 num;     ///< 子ノードの数                    for tTree
     int                 ctrl;    ///< 制御用
+    int                 ctrl_alt;///< 制御用2
     int                 state;   ///< ノードの状態
 };
 
@@ -64,20 +65,21 @@ struct  _tList {
 /** @struct tList
 @code
 tList 構造体
-    tList_data  ldat    データ
+    tList_data  ldat     データ
 
-    tList*      next    子ノードへのポインタ
-    tList*      prev    親ノードへのポインタ
-    tList*      altp    他のノードへのポインタ
-    tList*      yngr    子（末っ子）ノードへのポインタ  for tTree
+    tList*      next     子ノードへのポインタ
+    tList*      prev     親ノードへのポインタ
+    tList*      altp     他のノードへのポインタ
+    tList*      yngr     子（末っ子）ノードへのポインタ  for tTree
 
-    tList*      esis    前の姉妹ノードへのポインタ      for tTree
-    tList*      ysis    次の姉妹ノードへのポインタ      for tTree
+    tList*      esis     前の姉妹ノードへのポインタ      for tTree
+    tList*      ysis     次の姉妹ノードへのポインタ      for tTree
 
-    int         depth   深さ                            for tTree
-    int         num     子ノードの数                    for tTree
-    int         ctrl    制御用                          for tTree
-    int         state   ノードの状態
+    int         depth    深さ                            for tTree
+    int         num      子ノードの数                    for tTree
+    int         ctrl     制御用                          for tTree
+    int         ctrl_alt 制御用（一時的な制御）          for tTree
+    int         state    ノードの状態
     if (this->joints_name!=NULL) del_all_xml(&this->joints_name);
     this->joints_name = NULL;
 

@@ -27,7 +27,7 @@ void  FBXData::init(void)
     this->no_offset   = false;
 
     this->has_joints  = false;
-    this->joints_name = NULL;
+    this->joints_list = NULL;
 
     this->forUnity    = true;
     this->forUE       = false;
@@ -45,8 +45,8 @@ void  FBXData::free(void)
     this->delAffineTrans();
     this->affineTrans = NULL;
     
-    if (this->joints_name!=NULL) del_tList(&this->joints_name);
-    this->joints_name = NULL;
+    if (this->joints_list!=NULL) del_tList(&this->joints_list);
+    this->joints_list = NULL;
 }
 
 
@@ -84,15 +84,15 @@ void  FBXData::outputFile(const char* fname, const char* out_dirn, const char* p
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints, tList* joints_template)
+void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints_data, tList* joints_template)
 {
     //PRINT_MESG("FBXData::addShell: start\n");
 
     if (meshdata==NULL) return;
 
-    if (joints!=NULL && joints_template!=NULL) {
-        if (this->joints_name==NULL && !this->has_joints) {
-            this->joints_name = joints_template;
+    if (joints_data!=NULL && joints_template!=NULL) {
+        if (this->joints_list==NULL && !this->has_joints) {
+            this->joints_list = joints_template;
             this->has_joints = true;
         }
         else {
@@ -135,7 +135,7 @@ void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* 
     }
 
     //
-    if (this->has_joints && this->joints_name!=NULL) {
+    if (this->has_joints && this->joints_list!=NULL) {
         
     }
 

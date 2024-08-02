@@ -8,6 +8,7 @@ working now ..... v1.10.0alpha
 
 v1.10.0alpha
 	Lib/tlist.h
+		ctrl_alt を導入．
 		free_tList_data(tList_data* ldat) -> clear_tList_data(tList_data* ldat)
 	glTF, glb サポート(*)
 	JPEG, TGA, PNG の書き込み時のデータをポンタ渡しに変更．

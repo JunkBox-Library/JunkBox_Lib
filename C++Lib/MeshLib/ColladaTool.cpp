@@ -148,11 +148,11 @@ void  ColladaXML::initCollada(double meter, int axis, const char* ver)
 }
 
 
-void  ColladaXML::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints, tXML* joints_template)
+void  ColladaXML::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* joints_data, tXML* joints_template)
 {
     if (shelldata==NULL) return;
 
-    if (joints!=NULL && joints_template!=NULL) {
+    if (joints_data!=NULL && joints_template!=NULL) {
         if (joints_template_tag==NULL) {
             has_joints = true;
             joints_template_tag = joints_template;
@@ -163,8 +163,8 @@ void  ColladaXML::addShell(MeshObjectData* shelldata, bool collider, SkinJointDa
     }
     //
     char* geom_id = addGeometry(shelldata);                          // 幾何情報を配置
-    char* ctrl_id = addController(geom_id, shelldata, joints);       // Joints 情報を配置
-    addScene(geom_id, ctrl_id, shelldata, collider, joints);         // Scene への配置（位置，サイズ，回転，コライダー, Joints）
+    char* ctrl_id = addController(geom_id, shelldata, joints_data);  // Joints 情報を配置
+    addScene(geom_id, ctrl_id, shelldata, collider, joints_data);    // Scene への配置（位置，サイズ，回転，コライダー, Joints）
     
     if (geom_id!=NULL) ::free(geom_id);
     if (ctrl_id!=NULL) ::free(ctrl_id);
