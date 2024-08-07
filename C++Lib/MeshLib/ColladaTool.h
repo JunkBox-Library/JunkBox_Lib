@@ -57,7 +57,7 @@ public:
 
     char*   addGeometry(MeshObjectData* shelldata);
     char*   addController(const char* geometry_id, MeshObjectData* shelldata, SkinJointData* skin_joint);
-    void    addScene(const char* geometry_id, char* controll_id, MeshObjectData* shelldata, bool collider, SkinJointData* skin_join);
+    void    addScene(const char* geometry_id, char* controll_id, MeshObjectData* shelldata, bool collider, SkinJointData* skin_joint);
 
     char*   addVertexSource(tXML* tag, MeshObjectData* shelldata);
     char*   addNormalSource(tXML* tag, MeshObjectData* shelldata);

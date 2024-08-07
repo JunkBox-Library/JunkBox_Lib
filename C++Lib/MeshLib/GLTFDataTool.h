@@ -19,47 +19,54 @@
 
 namespace jbxl {
 
-#define  JBXL_GLB_HEADER       "glTF"
-#define  JBXL_GLB_VERSION      2.0
-#define  JBXL_GLB_TYPE_JSON    "JSON"
-#define  JBXL_GLB_TYPE_BIN     "BIN\0"
+#define  JBXL_GLB_HEADER         "glTF"
+#define  JBXL_GLB_VERSION        2.0
+#define  JBXL_GLB_TYPE_JSON      "JSON"
+#define  JBXL_GLB_TYPE_BIN       "BIN\0"
 
 
-#define  JBXL_GLTF_BIN_AOS      1
-#define  JBXL_GLTF_BIN_SOA      2
+#define  JBXL_GLTF_BIN_AOS       1
+#define  JBXL_GLTF_BIN_SOA       2
 
 
-#define  JBXL_GLTF_COPYRIGHT    "From OpenSimulator"
-#define  JBXL_GLTF_GENERATOR    "JBXL glTF Tool Library (C) 2024 v1.0 by Fumi.Iseki"
-#define  JBXL_GLTF_VERSION      "2.0"
+#define  JBXL_GLTF_COPYRIGHT     "From OpenSimulator"
+#define  JBXL_GLTF_GENERATOR     "JBXL glTF Tool Library (C) 2024 v1.0 by Fumi.Iseki"
+#define  JBXL_GLTF_VERSION       "2.0"
 
-#define  JBXL_GLB_PNG_IMAGE     "{\"bufferView\":%d,\"mimeType\":\"image/png\"}"
-#define  JBXL_GLB_JPEG_IMAGE    "{\"bufferView\":%d,\"mimeType\":\"image/jpeg\"}"
+#define  JBXL_GLB_PNG_IMAGE      "{\"bufferView\":%d,\"mimeType\":\"image/png\"}"
+#define  JBXL_GLB_JPEG_IMAGE     "{\"bufferView\":%d,\"mimeType\":\"image/jpeg\"}"
 
-//#define  JBXL_GLTF_BUFFER       "{\"uri\":%s,\"byteLength\":%u}"
-#define  JBXL_GLTF_VIEW         "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"byteStride\":%d,\"target\":34962}"
-#define  JBXL_GLTF_ELEMENT_VIEW "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"target\":34963}"
-#define  JBXL_GLTF_TEXTURE_VIEW "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u}"
-#define  JBXL_GLTF_ACCESSOR     "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\"}"
-#define  JBXL_GLTF_ACCESSOR_S   "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%d],\"min\":[%d]}"
-#define  JBXL_GLTF_ACCESSOR_V2  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f],\"min\":[%f,%f]}"
-#define  JBXL_GLTF_ACCESSOR_V3  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f,%f],\"min\":[%f,%f,%f]}"
-#define  JBXL_GLTF_MESH_NODE    "{\"name\":\"%s\",\"mesh\":%d}"
-#define  JBXL_GLTF_SKLTN_NODE   "{\"name\":%s}"
-#define  JBXL_GLTF_MESH_PRIM    "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d},\"material\":%d,\"mode\":4}"
-//#define  JBXL_GLTF_MATERIAL     "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorFactor\":[%f,%f,%f,%f],\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}"
+#define  JBXL_GLTF_BUFFERS_BIN   "{\"uri\":\"%s\",\"byteLength\":%u}"
+#define  JBXL_GLTF_BUFFERS_B64   "{\"uri\":\"data:application/octet-stream;base64,%s\",\"byteLength\":%u}"
 
-#define  JBXL_GLTF_TEXTURE      "{\"source\":%d}"
-//#define  JBXL_GLTF_TEXTURE      "{\"source\":%d, \"sampler\":%d}"
-#define  JBXL_GLTF_IMAGE        "{\"uri\":\"%s\"}"
+#define  JBXL_GLTF_VIEWS         "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"byteStride\":%u,\"target\":34962}"
+#define  JBXL_GLTF_VIEWS_ELEMENT "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"target\":34963}"
+#define  JBXL_GLTF_VIEWS_TEXTURE "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u}"
+#define  JBXL_GLTF_ACCESSORS     "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\"}"
+#define  JBXL_GLTF_ACCESSORS_S   "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%d],\"min\":[%d]}"
+#define  JBXL_GLTF_ACCESSORS_V2  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f],\"min\":[%f,%f]}"
+#define  JBXL_GLTF_ACCESSORS_V3  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f,%f],\"min\":[%f,%f,%f]}"
 
-#define  JBXL_GLTF_MTL_NAME_PBR "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}"
-#define  JBXL_GLTF_MTL_BCOLORF  "{\"baseColorFactor\":[%f,%f,%f,%f]}"
-#define  JBXL_GLTF_MTL_METALF   "{\"metallicFactor\":%f}"
-#define  JBXL_GLTF_MTL_ROUGHF   "{\"roughnessFactor\":%f}"
+#define  JBXL_GLTF_NODES_MESH    "{\"name\":\"%s\",\"mesh\":%d}"
+#define  JBXL_GLTF_NODES_SKIN    "{\"skin\":%d}"
+#define  JBXL_GLTF_NODES_SKLTN   "{\"name\":%s}"
 
-#define  JBXL_GLTF_MTL_CUTOFF   "{\"alphaCutoff\":%f}"
-#define  JBXL_GLTF_MTL_EMISSIVE "{\"emissiveFactor\":[%f,%f,%f]}"
+#define  JBXL_GLTF_MESHES_PRIM   "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d},\"material\":%d,\"mode\":4}"
+#define  JBXL_GLTF_MESHES_PRIM_J "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d,\"JOINTS_0\":%d,\"WEIGHTS_0\":%d},\"material\":%d,\"mode\":4}"
+#define  JBXL_GLTF_SKINS         "{\"inverseBindMatrices\":%d}"
+//#define  JBXL_GLTF_MTLS          "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorFactor\":[%f,%f,%f,%f],\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}"
+
+#define  JBXL_GLTF_TEXTURES      "{\"source\":%d}"
+//#define  JBXL_GLTF_TEXTURES      "{\"source\":%d, \"sampler\":%d}"
+#define  JBXL_GLTF_IMAGES        "{\"uri\":\"%s\"}"
+
+#define  JBXL_GLTF_MTLS_NAME_PBR "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}"
+#define  JBXL_GLTF_MTLS_BCOLORF  "{\"baseColorFactor\":[%f,%f,%f,%f]}"
+#define  JBXL_GLTF_MTLS_METALF   "{\"metallicFactor\":%f}"
+#define  JBXL_GLTF_MTLS_ROUGHF   "{\"roughnessFactor\":%f}"
+
+#define  JBXL_GLTF_MTLS_CUTOFF   "{\"alphaCutoff\":%f}"
+#define  JBXL_GLTF_MTLS_EMISSIVE "{\"emissiveFactor\":[%f,%f,%f]}"
 
 
 
@@ -122,28 +129,31 @@ public:
     virtual ~GLTFShellNode(void) { this->free();}
 
 public:
-    int    shell_indexes;       // この SHELL での data_index の総数
-    int    shell_vertexes;      // この SHELL での vv の総数 (vn, vt に対しても同じ数)
+    unsigned int    shell_indexes;  // この SHELL での vi の総数
+    unsigned int    shell_vertexes; // この SHELL での vv の総数 (vn, vu に対しても同じ数)
 
-    bool   collider;
+    bool            collider;
 
-    int    num_facet;           // この SHELL での FACET の数   
-    int*   facet_index;         // 各 FACET での data_index の数を格納した配列
-    int*   facet_vertex;        // 各 FACET での vv (vn, vt) の数を格納した配列
+    unsigned int    num_facet;      // この SHELL での FACET の数   
+    unsigned int*   facet_index;    // 各 FACET での vi の数を格納した配列
+    unsigned int*   facet_vertex;   // 各 FACET での vv (vn, vu) の数を格納した配列
 
-    int*            data_index;
-    Vector<double>* vv;
-    Vector<double>* vn;
-    UVMap<double>*  vt;
+    unsigned int*   vi;             // インデックス
+    Vector<double>* vv;             // 頂点座標
+    Vector<double>* vn;             // 法線ベクトル
+    UVMap<double>*  vu;             // UVマップ
+    unsigned int*   vj;             // 重み付けされたジョイント
+    float*          vw;             // ジョイントの重み
+    float*          vm;             // Inverse Bind 行列
 
     //AffineTrans<double>* uvmap_trans;
 
-    GLTFShellNode* next;        // 次の SHELL ノードへのポインタ
+    GLTFShellNode* next;            // 次の SHELL ノードへのポインタ
 
 public:
     void   init(void);
     void   free(void);
-    void   delete_next(void);   // 次の SHELLノードを再帰的に呼び出して削除する
+    void   delete_next(void);       // 次の SHELLノードを再帰的に呼び出して削除する
 };
 
 
@@ -187,14 +197,19 @@ public:
 
     Buffer  bin_buffer;
     unsigned int bin_offset;
+    //
+    Buffer  matrix_buffer;
+    unsigned int matrix_offset;
 
     // counter
     int     shell_no;
     int     node_no;
-    int     image_no;
-    int     material_no;
     int     mesh_no;
+    int     skin_no;
     int     view_no;
+    int     access_no;
+    int     material_no;
+    int     image_no;
 
     tJson*  json_data;
     tJson*  scenes;
@@ -202,6 +217,7 @@ public:
     tJson*  scenes_nodes;
     tJson*  nodes;
     tJson*  meshes;
+    tJson*  skins;
     tJson*  buffers;
     tJson*  buffviews;
     tJson*  accessors;
@@ -209,7 +225,7 @@ public:
     tJson*  textures;
     tJson*  images;
 
-    GLTFShellNode* shellNode;
+    GLTFShellNode* shellNode;   // 
 
 public:
     void    init(void); 
@@ -227,12 +243,13 @@ public:
 
     void    initGLTF(void);
 
-    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints_data=NULL, tList* joints_template=NULL);
+    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tList* joints_template=NULL);
     void    addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine);
     void    addSkeletonNodes(MeshFacetNode* facet);
 
     void    addTextures(MeshFacetNode* facet);
     void    addMeshes(MeshFacetNode* facet);
+    void    addSkins(MeshFacetNode* facet, SkinJointData* joints);
     void    addMaterials(MeshFacetNode* facet);
     void    addMaterialParameters(tJson* pbr, MeshFacetNode* facet);
 
@@ -252,6 +269,13 @@ public:
     void    createShellGeoData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes);
     void    createBinDataAoS(void);
     void    createBinDataSoA(void);
+
+    void    addBufferViewsIBM(void);
+    void    addAccessorsIBM(void);
+    void    createInverseBindMatrix(SkinJointData* skin_joint);
+
+
+
 
     void    outputFile (const char* fn, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn);
     void    output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn);

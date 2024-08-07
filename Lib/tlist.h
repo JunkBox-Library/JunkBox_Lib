@@ -77,8 +77,8 @@ tList 構造体
 
     int         depth    深さ                            for tTree
     int         num      子ノードの数                    for tTree
-    int         ctrl     制御用                          for tTree
-    int         ctrl_alt 制御用（一時的な制御）          for tTree
+    int         ctrl     制御用（ライブラリ内部用）
+    int         ctrl_alt 制御用（ライブラリ外で使用可能）
     int         state    ノードの状態
     if (this->joints_name!=NULL) del_all_xml(&this->joints_name);
     this->joints_name = NULL;

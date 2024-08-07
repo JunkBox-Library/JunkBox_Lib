@@ -37,7 +37,7 @@ public:
     bool    same_material;          ///< 他の Node が既に同じマテリアルを使用している．
     int     facet_no;               ///< 面（Polygon）番号
 
-    MaterialParam material_param;   ///< マテリアルパラメータ
+    MaterialParam  material_param;  ///< マテリアルパラメータ
 
     int     num_index;              ///< 頂点の延べ数．num_polygon*MeshObjectData::num_vcount (num_polygon*3)（data_index の要素数）
     int     num_polygon;            ///< ポリゴンの数
@@ -48,7 +48,7 @@ public:
     Vector<double>*  vertex_value;  ///< 頂点データの並び．要素数は num_vertex
     Vector<double>*  normal_value;  ///< 法線ベクトルデータの並び．要素数は num_vertex
     UVMap<double>*   texcrd_value;  ///< テクスチャマップの並び．要素数は num_texcrd
-    ArrayParam<int>* weight_value;  ///< 頂点の重み．Jointを持つデータに使用される．要素数は num_vertex
+    ArrayParam<int>* weight_value;  ///< 頂点の重み．Jointを持つデータに使用される．要素数は num_vertex. 各 weight_value[i] の値は トータルで正規化される必要がある．
 
     MeshFacetNode* next;
     MeshFacetNode* prev;

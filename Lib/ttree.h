@@ -30,8 +30,8 @@ tTree 構造体
 
     int         depth       深さ                    
     int         num         子ノードの数 
-    int         ctrl        制御用
-    int         ctrl_alt    制御用（一時的な制御）
+    int         ctrl        制御用（ライブラリ内部用）
+    int         ctrl_alt    制御用（ライブラリ外で使用可能）
     int         state       ノードの状態
 
 tList_data 構造体
