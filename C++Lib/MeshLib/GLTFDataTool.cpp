@@ -655,7 +655,7 @@ void  GLTFData::addMeshes(MeshFacetNode* facet)
         else {
             accessor_no = this->mesh_prim_no;
             snprintf(buf, LBUF-1, JBXL_GLTF_MESHES_PRIM, accessor_no, accessor_no+1, accessor_no+2, accessor_no+3, mtl_no);
-            this->mesh_prim_no += 6;
+            this->mesh_prim_no += 4;
         }
         json_insert_parse(primitives, buf);
 
