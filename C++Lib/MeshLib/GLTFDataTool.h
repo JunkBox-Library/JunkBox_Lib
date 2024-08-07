@@ -33,8 +33,9 @@ namespace jbxl {
 #define  JBXL_GLTF_GENERATOR     "JBXL glTF Tool Library (C) 2024 v1.0 by Fumi.Iseki"
 #define  JBXL_GLTF_VERSION       "2.0"
 
-#define  JBXL_GLB_PNG_IMAGE      "{\"bufferView\":%d,\"mimeType\":\"image/png\"}"
-#define  JBXL_GLB_JPEG_IMAGE     "{\"bufferView\":%d,\"mimeType\":\"image/jpeg\"}"
+// accessors
+#define  JBXL_GLB_ACCESSORS_PNG_IMAGE   "{\"bufferView\":%d,\"mimeType\":\"image/png\"}"
+#define  JBXL_GLB_ACCESSORS_JPEG_IMAGE  "{\"bufferView\":%d,\"mimeType\":\"image/jpeg\"}"
 
 #define  JBXL_GLTF_BUFFERS_BIN   "{\"uri\":\"%s\",\"byteLength\":%u}"
 #define  JBXL_GLTF_BUFFERS_B64   "{\"uri\":\"data:application/octet-stream;base64,%s\",\"byteLength\":%u}"
@@ -42,6 +43,7 @@ namespace jbxl {
 #define  JBXL_GLTF_VIEWS         "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"byteStride\":%u,\"target\":34962}"
 #define  JBXL_GLTF_VIEWS_ELEMENT "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"target\":34963}"
 #define  JBXL_GLTF_VIEWS_DATA    "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u}"
+
 #define  JBXL_GLTF_ACCESSORS     "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\"}"
 #define  JBXL_GLTF_ACCESSORS_S   "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%d],\"min\":[%d]}"
 #define  JBXL_GLTF_ACCESSORS_V2  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f],\"min\":[%f,%f]}"
@@ -203,14 +205,15 @@ public:
     unsigned int matrix_offset;
 
     // counter
-    int     shell_no;
-    int     node_no;
-    int     mesh_no;
-    int     skin_no;
-    int     view_no;
-    int     access_no;
-    int     material_no;
-    int     image_no;
+    int     shell_no;           // shell の通し番号（addShellが呼ばれた回数）
+    int     node_no;            // nodes の要素（node）の通し番号
+    int     mesh_no;            // meshes の要素（mesh）の通し番号
+    int     mesh_prim_no;       // meshe の primitive 要素の通し番号
+    int     skin_no;            // skins の要素（skin）の通し番号
+    int     view_no;            // bufferViews の要素（bufferView）の通し番号
+    int     accessor_no;        // accessors の要素（accessor）の通し番号
+    int     material_no;        // materials の要素（material）の通し番号
+    int     image_no;           // images の要素（image）の通し番号． material.index -> texture.source -> image
 
     int     joint_num;
 
@@ -243,7 +246,7 @@ public:
     void    setAffineTrans(AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}
     void    delAffineTrans(void) { freeAffineTrans(this->affineTrans);}
 
-    AffineTrans<double> getAffineTrans4Engine(AffineTrans<double> affine);
+//    AffineTrans<double> getAffineTrans4Engine(AffineTrans<double> affine);
     AffineTrans<double> getAffineBaseTrans4Engine(void);
     gltfFacetMinMax getFacetMinMax(MeshFacetNode* facet);
 

@@ -100,8 +100,8 @@ GLTFData::~GLTFData(void)
 void  GLTFData::init(void)
 {
     this->bin_mode          = JBXL_GLTF_BIN_AOS;
-    //this->bin_mode        = JBXL_GLTF_BIN_SOA;
-    //this->bin_seq         = false;
+    //this->bin_mode          = JBXL_GLTF_BIN_SOA;
+    //this->bin_seq           = false;
     this->bin_seq           = true;
 
     this->gltf_name         = init_Buffer();
@@ -132,9 +132,10 @@ void  GLTFData::init(void)
     this->shell_no          = 0;
     this->node_no           = 0;
     this->mesh_no           = 0;
+    this->mesh_prim_no      = 0;
     this->skin_no           = 0;
     this->view_no           = 0;
-    this->access_no         = 0;
+    this->accessor_no       = 0;
     this->material_no       = 0;
     this->image_no          = 0;
 
@@ -313,18 +314,13 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
 
 
 
-
-
-
-
-
     if (this->has_joints) {
         //this->addSkins(1);       // 1: Root
-        //this->addBufferViewsIBM();
-        //this->addAccessorsIBM(); 
-        //this->createInverseBindMatrix(skin_joint);
+        this->addBufferViewsIBM();
+        this->addAccessorsIBM(); 
+        this->createInverseBindMatrix(skin_joint);
 
-        del_json_node(&this->skins);
+  del_json_node(&this->skins);
     }
     else {
         del_json_node(&this->skins);
@@ -353,19 +349,9 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
     if (collider) {
         this->phantom_out = false;
     }
-
-    //
-    if (this->has_joints) {
-    }
-
     //
     free_Buffer(&this->alt_name);
     this->shell_no++;
-
-
-
-
-
     return;
 }
 
@@ -403,7 +389,6 @@ void  GLTFData::addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine
         // skins
         //memset(buf, 0, LBUF);
         //snprintf(buf, LBUF-1, JBXL_GLTF_NODES_SKIN, this->skin_no);
-        //snprintf(buf, LBUF-1, JBXL_GLTF_NODES_SKIN, 0);
         //json_insert_parse(mesh, buf);
     }
 //    else {
@@ -645,7 +630,7 @@ void  GLTFData::addMeshes(MeshFacetNode* facet)
 {
     if (facet==NULL) return;
     char buf[LBUF];
-    int access_no = 0;
+    int accessor_no = 0;
 
     tJson* primitives = json_append_array_key(this->meshes, "primitives");
     while (facet!=NULL) {
@@ -663,12 +648,14 @@ void  GLTFData::addMeshes(MeshFacetNode* facet)
         //
         memset(buf, 0, LBUF);
         if (this->has_joints) {
-            access_no = this->mesh_no*6;
-            snprintf(buf, LBUF-1, JBXL_GLTF_MESHES_PRIM_J, access_no, access_no+1, access_no+2, access_no+3, access_no+4, access_no+5, mtl_no);
+            accessor_no = this->mesh_prim_no;
+            snprintf(buf, LBUF-1, JBXL_GLTF_MESHES_PRIM_J, accessor_no, accessor_no+1, accessor_no+2, accessor_no+3, accessor_no+4, accessor_no+5, mtl_no);
+            this->mesh_prim_no += 6;
         }
         else {
-            access_no = this->mesh_no*4;
-            snprintf(buf, LBUF-1, JBXL_GLTF_MESHES_PRIM, access_no, access_no+1, access_no+2, access_no+3, mtl_no);
+            accessor_no = this->mesh_prim_no;
+            snprintf(buf, LBUF-1, JBXL_GLTF_MESHES_PRIM, accessor_no, accessor_no+1, accessor_no+2, accessor_no+3, mtl_no);
+            this->mesh_prim_no += 6;
         }
         json_insert_parse(primitives, buf);
 
@@ -685,7 +672,7 @@ void  GLTFData::addSkins(int joint_offset)
     char buf[LBUF];
     
     memset(buf, 0, LBUF);
-    snprintf(buf, LBUF-1, JBXL_GLTF_SKINS, this->access_no, joint_offset);
+    snprintf(buf, LBUF-1, JBXL_GLTF_SKINS, this->accessor_no, joint_offset);
     tJson* skn = json_insert_parse(skins, buf);
     tJson* jnt = json_append_array_key(skn, "joints");
     //for (int j=0; j<this->joint_num; j++) {
@@ -785,7 +772,7 @@ void  GLTFData::addAccessorsAoS(MeshFacetNode* facet)
         snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS_S, this->view_no, 0U, 5125, facet->num_index, "SCALAR", mm.index_max, mm.index_min);   // 5125: unsigned int
         json_insert_parse(this->accessors, buf);
         this->view_no++;
-        this->access_no++;
+        this->accessor_no++;
 
         // accessors of vertex/normal/uvmap
         unsigned int offset = 0;
@@ -794,21 +781,21 @@ void  GLTFData::addAccessorsAoS(MeshFacetNode* facet)
                                                      mm.vertex_x_max, mm.vertex_y_max, mm.vertex_z_max, mm.vertex_x_min, mm.vertex_y_min, mm.vertex_z_min);
         json_insert_parse(this->accessors, buf);
         offset += float_size*3U;
-        this->access_no++;
+        this->accessor_no++;
         //
         memset(buf, 0, LBUF);
         snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS_V3, this->view_no, offset, 5126, facet->num_vertex, "VEC3",
                                                      mm.normal_x_max, mm.normal_y_max, mm.normal_z_max, mm.normal_x_min, mm.normal_y_min, mm.normal_z_min);
         json_insert_parse(this->accessors, buf);
         offset += float_size*3U;
-        this->access_no++;
+        this->accessor_no++;
         //
         memset(buf, 0, LBUF);
         snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS_V2, this->view_no, offset, 5126, facet->num_vertex, "VEC2",
                                                      mm.texcrd_u_max, mm.texcrd_v_max, mm.texcrd_u_min, mm.texcrd_v_min);
         json_insert_parse(this->accessors, buf);
         offset += float_size*2U;
-        this->access_no++;
+        this->accessor_no++;
         //
         if (this->has_joints) {
             // weighted joints
@@ -816,13 +803,13 @@ void  GLTFData::addAccessorsAoS(MeshFacetNode* facet)
             snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS, this->view_no, offset, 5123, facet->num_vertex, "VEC4");     // 5123: unsigned short
             json_insert_parse(this->accessors, buf);
             offset += ushort_size*4U;
-            this->access_no++;
+            this->accessor_no++;
             // weight value
             memset(buf, 0, LBUF);
             snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS, this->view_no, offset, 5126, facet->num_vertex, "VEC4");
             json_insert_parse(this->accessors, buf);
             offset += float_size*4U;
-            this->access_no++;
+            this->accessor_no++;
         }
         this->view_no++;
         facet = facet->next;
@@ -1027,7 +1014,7 @@ void  GLTFData::addAccessorsSoA(MeshFacetNode* facet)
         snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS_S, this->view_no, 0U, 5125, facet->num_index, "SCALAR", mm.index_max, mm.index_min);   // 5125: unsigned int
         json_insert_parse(this->accessors, buf);
         this->view_no++;
-        this->access_no++;
+        this->accessor_no++;
 
         // accessors of vertex/normal/uvmap
         memset(buf, 0, LBUF);
@@ -1035,21 +1022,21 @@ void  GLTFData::addAccessorsSoA(MeshFacetNode* facet)
                                                      mm.vertex_x_max, mm.vertex_y_max, mm.vertex_z_max, mm.vertex_x_min, mm.vertex_y_min, mm.vertex_z_min);
         json_insert_parse(this->accessors, buf);
         this->view_no++;
-        this->access_no++;
+        this->accessor_no++;
         //
         memset(buf, 0, LBUF);
         snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS_V3, this->view_no, 0U, 5126, facet->num_vertex, "VEC3",
                                                      mm.normal_x_max, mm.normal_y_max, mm.normal_z_max, mm.normal_x_min, mm.normal_y_min, mm.normal_z_min);
         json_insert_parse(this->accessors, buf);
         this->view_no++;
-        this->access_no++;
+        this->accessor_no++;
         //
         memset(buf, 0, LBUF);
         snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS_V2, this->view_no, 0U, 5126, facet->num_vertex, "VEC2",
                                                      mm.texcrd_u_max, mm.texcrd_v_max, mm.texcrd_u_min, mm.texcrd_v_min);
         json_insert_parse(this->accessors, buf);
         this->view_no++;
-        this->access_no++;
+        this->accessor_no++;
         
         if (this->has_joints) {
             // weighted joints
@@ -1057,13 +1044,13 @@ void  GLTFData::addAccessorsSoA(MeshFacetNode* facet)
             snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS,  this->view_no, 0U, 5123, facet->num_vertex, "VEC4");    // 5123: unsigned short
             json_insert_parse(this->accessors, buf);
             this->view_no++;
-            this->access_no++;
+            this->accessor_no++;
             // weight value
             memset(buf, 0, LBUF);
             snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS,  this->view_no, 0U, 5126, facet->num_vertex, "VEC4");
             json_insert_parse(this->accessors, buf);
             this->view_no++;
-            this->access_no++;
+            this->accessor_no++;
         }
 
         facet = facet->next;
@@ -1245,7 +1232,8 @@ void  GLTFData::addAccessorsIBM(void)
     json_insert_parse(this->accessors, buf);
 
     this->view_no++;
-    this->access_no++;
+    this->accessor_no++;
+    this->mesh_prim_no++;
 }
 
 
@@ -1274,10 +1262,6 @@ void  GLTFData::createInverseBindMatrix(SkinJointData* skin_joint)
     //}
     return;
 }
-
-
-
-
 
 
 
@@ -1786,13 +1770,13 @@ uDWord  GLTFData::convertJson_gltf2glb(glbTextureInfo* tex_info)
         json_insert_parse(this->buffviews, buf);
         // images
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLB_PNG_IMAGE, this->view_no);
+        snprintf(buf, LBUF-1, JBXL_GLB_ACCESSORS_PNG_IMAGE, this->view_no);
         json_insert_parse(this->images, buf);
         del_json(&(tex_info->json->prev));
         //
         this->bin_offset += length;
         this->view_no++;
-        this->access_no++;  ////////////////////////
+        this->accessor_no++;
         tex_size = tex_size + length;
         tex_info = tex_info->next;
     }
@@ -1818,6 +1802,7 @@ AffineTrans<double>  GLTFData::getAffineTrans4Engine(AffineTrans<double> affine)
 
 使用するエンジンに合わせて，FACET毎の Affine変換のパラメータを変更する．
 */
+/*
 AffineTrans<double>  GLTFData::getAffineTrans4Engine(AffineTrans<double> affine)
 {
     AffineTrans<double> trans;
@@ -1836,6 +1821,7 @@ AffineTrans<double>  GLTFData::getAffineTrans4Engine(AffineTrans<double> affine)
     trans.affineMatrixFllow(affine);     // engineTrans = engineTrans * (*affine)
     return trans;
 }
+*/
 
 
 
