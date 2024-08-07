@@ -41,19 +41,20 @@ namespace jbxl {
 
 #define  JBXL_GLTF_VIEWS         "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"byteStride\":%u,\"target\":34962}"
 #define  JBXL_GLTF_VIEWS_ELEMENT "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"target\":34963}"
-#define  JBXL_GLTF_VIEWS_TEXTURE "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u}"
+#define  JBXL_GLTF_VIEWS_DATA    "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u}"
 #define  JBXL_GLTF_ACCESSORS     "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\"}"
 #define  JBXL_GLTF_ACCESSORS_S   "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%d],\"min\":[%d]}"
 #define  JBXL_GLTF_ACCESSORS_V2  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f],\"min\":[%f,%f]}"
 #define  JBXL_GLTF_ACCESSORS_V3  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f,%f],\"min\":[%f,%f,%f]}"
 
+#define  JBXL_GLTF_NODES_ROOT    "{\"name\":\"Root\"}"
 #define  JBXL_GLTF_NODES_MESH    "{\"name\":\"%s\",\"mesh\":%d}"
 #define  JBXL_GLTF_NODES_SKIN    "{\"skin\":%d}"
 #define  JBXL_GLTF_NODES_SKLTN   "{\"name\":%s}"
 
 #define  JBXL_GLTF_MESHES_PRIM   "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d},\"material\":%d,\"mode\":4}"
 #define  JBXL_GLTF_MESHES_PRIM_J "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d,\"JOINTS_0\":%d,\"WEIGHTS_0\":%d},\"material\":%d,\"mode\":4}"
-#define  JBXL_GLTF_SKINS         "{\"inverseBindMatrices\":%d}"
+#define  JBXL_GLTF_SKINS         "{\"inverseBindMatrices\":%d,\"skeleton\":%d}"
 //#define  JBXL_GLTF_MTLS          "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorFactor\":[%f,%f,%f,%f],\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}"
 
 #define  JBXL_GLTF_TEXTURES      "{\"source\":%d}"
@@ -211,6 +212,8 @@ public:
     int     material_no;
     int     image_no;
 
+    int     joint_num;
+
     tJson*  json_data;
     tJson*  scenes;
     tJson*  scenes_name;
@@ -224,6 +227,8 @@ public:
     tJson*  materials;
     tJson*  textures;
     tJson*  images;
+
+    tJson*  nodes_children;
 
     GLTFShellNode* shellNode;   // 
 
@@ -239,17 +244,18 @@ public:
     void    delAffineTrans(void) { freeAffineTrans(this->affineTrans);}
 
     AffineTrans<double> getAffineTrans4Engine(AffineTrans<double> affine);
+    AffineTrans<double> getAffineBaseTrans4Engine(void);
     gltfFacetMinMax getFacetMinMax(MeshFacetNode* facet);
 
     void    initGLTF(void);
 
     void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tList* joints_template=NULL);
     void    addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine);
-    void    addSkeletonNodes(MeshFacetNode* facet);
+    void    addSkeletonNodes(void);
 
     void    addTextures(MeshFacetNode* facet);
     void    addMeshes(MeshFacetNode* facet);
-    void    addSkins(MeshFacetNode* facet, SkinJointData* joints);
+    void    addSkins(int joint_offset);
     void    addMaterials(MeshFacetNode* facet);
     void    addMaterialParameters(tJson* pbr, MeshFacetNode* facet);
 
@@ -287,7 +293,7 @@ public:
     glbTextureInfo*  getGLBTextureInfo(const char* tex_dirn);
     void    freeGLBTextureInfo(glbTextureInfo* tex_info);
 
-    void    closeSolid(void) {}
+    void    closeSolid(void);
 };
 
 

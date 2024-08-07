@@ -99,61 +99,65 @@ GLTFData::~GLTFData(void)
 
 void  GLTFData::init(void)
 {
-    //this->bin_mode      = JBXL_GLTF_BIN_AOS;
-    this->bin_mode      = JBXL_GLTF_BIN_SOA;
-    //this->bin_seq       = false;
-    this->bin_seq       = true;
+    this->bin_mode          = JBXL_GLTF_BIN_AOS;
+    //this->bin_mode        = JBXL_GLTF_BIN_SOA;
+    //this->bin_seq         = false;
+    this->bin_seq           = true;
 
-    this->gltf_name     = init_Buffer();
-    this->alt_name      = init_Buffer();
-    this->phantom_out   = true;
-    this->no_offset     = false;
-    this->glb_out       = false;
-    this->center        = Vector<double>(0.0, 0.0, 0.0);
+    this->gltf_name         = init_Buffer();
+    this->alt_name          = init_Buffer();
+    this->phantom_out       = true;
+    this->no_offset         = false;
+    this->glb_out           = false;
+    this->center            = Vector<double>(0.0, 0.0, 0.0);
 
-    this->has_joints    = false;
-    this->joints_list   = NULL;
+    this->has_joints        = false;
+    this->joints_list       = NULL;
 
-    this->forUnity      = true;
-    this->forUE         = false;
-    this->engine        = JBXL_3D_ENGINE_UNITY;
+    this->forUnity          = true;
+    this->forUE             = false;
+    this->engine            = JBXL_3D_ENGINE_UNITY;
 
-    this->image_list    = new_tList_anchor_node();
-    this->material_list = new_tList_anchor_node();
+    this->image_list        = new_tList_anchor_node();
+    this->material_list     = new_tList_anchor_node();
 
-    this->affineTrans   = NULL;
+    this->affineTrans       = NULL;
     this->skeleton.init();
 
-    this->bin_buffer    = init_Buffer();
-    this->matrix_buffer = init_Buffer();
-    this->bin_offset    = 0;
-    this->matrix_offset = 0;
+    this->bin_buffer        = init_Buffer();
+    this->matrix_buffer     = init_Buffer();
+    this->bin_offset        = 0;
+    this->matrix_offset     = 0;
 
-    this->shell_no      = 0;
-    this->node_no       = 0;
-    this->mesh_no       = 0;
-    this->skin_no       = 0;
-    this->view_no       = 0;
-    this->access_no     = 0;
-    this->material_no   = 0;
-    this->image_no      = 0;
+    this->shell_no          = 0;
+    this->node_no           = 0;
+    this->mesh_no           = 0;
+    this->skin_no           = 0;
+    this->view_no           = 0;
+    this->access_no         = 0;
+    this->material_no       = 0;
+    this->image_no          = 0;
 
-    this->json_data     = NULL;
+    this->joint_num         = 0;
 
-    this->scenes        = NULL;
-    this->scenes_name   = NULL;
-    this->scenes_nodes  = NULL;
-    this->nodes         = NULL;
-    this->meshes        = NULL;
-    this->skins         = NULL;
-    this->buffers       = NULL;
-    this->buffviews     = NULL;
-    this->accessors     = NULL;
-    this->materials     = NULL;
-    this->textures      = NULL;
-    this->images        = NULL;
+    this->json_data         = NULL;
 
-    this->shellNode     = NULL;
+    this->scenes            = NULL;
+    this->scenes_name       = NULL;
+    this->scenes_nodes      = NULL;
+    this->nodes             = NULL;
+    this->meshes            = NULL;
+    this->skins             = NULL;
+    this->buffers           = NULL;
+    this->buffviews         = NULL;
+    this->accessors         = NULL;
+    this->materials         = NULL;
+    this->textures          = NULL;
+    this->images            = NULL;
+
+    this->nodes_children    = NULL;
+
+    this->shellNode         = NULL;
 
     initGLTF();
 }
@@ -263,6 +267,7 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         if (this->joints_list==NULL && !this->has_joints) {
             this->joints_list = joints_template;
             this->has_joints = true;
+            this->joint_num = skin_joint->joint_num;
         }
         else {
             if (joints_template!=NULL) del_tList(&joints_template);
@@ -289,13 +294,12 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
     }
 
     facet = shelldata->facet;
-    this->addScenesNodes(facet, affine);
+    this->addScenesNodes(facet, affine);        // has_joints
     this->addTextures(facet);
     this->addMaterials(facet);
 
     this->addMeshes(facet);
     this->execAffineUVMap(facet, affine);
-
 
     // for bin data
     if (this->bin_mode==JBXL_GLTF_BIN_AOS) {
@@ -307,13 +311,20 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         this->addAccessorsSoA(facet);
     }
 
+
+
+
+
+
+
+
     if (this->has_joints) {
-        //this->addSkins(facet, skin_joint);
-        del_json_node(&this->skins);
-
-
+        //this->addSkins(1);       // 1: Root
         //this->addBufferViewsIBM();
         //this->addAccessorsIBM(); 
+        //this->createInverseBindMatrix(skin_joint);
+
+        del_json_node(&this->skins);
     }
     else {
         del_json_node(&this->skins);
@@ -321,7 +332,7 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
 
 
 
-
+    // BINデータ作成
     if (this->bin_seq) {
         // その都度 BINデータを作成していく
         if (this->bin_mode==JBXL_GLTF_BIN_AOS) {
@@ -335,11 +346,7 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         this->createShellGeoData(facet, shell_indexes, shell_vertexes);
     }
 
-    if (this->has_joints) {
-        //this->createInverseBindMatrix(skin_joint);
-    }
 
-    
 
     //
     this->phantom_out = true;
@@ -349,7 +356,6 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
 
     //
     if (this->has_joints) {
-        //addSkeletonNodes(facet);
     }
 
     //
@@ -374,7 +380,7 @@ void  GLTFData::addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine
         json_set_str_val(this->scenes_name, (char*)this->gltf_name.buf);
         // skeleton structure
         if (this->has_joints) {
-            //this->addSkeletonNodes(facet);
+            //this->addSkeletonNodes();
         }
     }
     json_append_array_int_val(this->scenes_nodes, this->node_no);
@@ -393,18 +399,20 @@ void  GLTFData::addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine
     tJson* mesh = json_insert_parse(this->nodes, buf);
     free_Buffer(&node_name);
 
-    //if (this->has_joints) {
-    if (false) {
+    if (this->has_joints) {
         // skins
-        memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_NODES_SKIN, this->skin_no);
-        json_insert_parse(mesh, buf);
+        //memset(buf, 0, LBUF);
+        //snprintf(buf, LBUF-1, JBXL_GLTF_NODES_SKIN, this->skin_no);
+        //snprintf(buf, LBUF-1, JBXL_GLTF_NODES_SKIN, 0);
+        //json_insert_parse(mesh, buf);
     }
-    else {
+//    else {
         // affine translarion
         tJson* matrix = json_append_array_key(mesh, "matrix");
         if (affine!=NULL) {
-            AffineTrans<double> trans = this->getAffineTrans4Engine(*affine);
+            //AffineTrans<double> trans = this->getAffineTrans4Engine(*affine);
+            AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
+            trans.affineMatrixFllow(*affine);
             for (int j=1; j<=4; j++) {
                 for (int i=1; i<=4; i++) {
                     float element = (float)trans.matrix.element(i, j);
@@ -413,20 +421,39 @@ void  GLTFData::addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine
             }
             trans.free();
         }
-    }
+//    }
+
+    json_append_array_int_val(this->nodes_children, this->node_no);
     this->node_no++;
 
     return;
 }
 
 
-void  GLTFData::addSkeletonNodes(MeshFacetNode* facet)
+
+void  GLTFData::addSkeletonNodes(void)
 {
-    if (facet==NULL) return;
     char buf[LBUF];
 
+    json_append_array_int_val(this->scenes_nodes, this->node_no);
+    memset(buf, 0, LBUF);
+    tJson* nodes_root = json_insert_parse(this->nodes, JBXL_GLTF_NODES_ROOT);
+    this->nodes_children = json_append_array_key(nodes_root, "children");
+    tJson* nodes_matrix  = json_append_array_key(nodes_root, "matrix");
+
+    json_append_array_int_val(this->nodes_children, 1);
+    AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
+    for (int j=1; j<=4; j++) {
+        for (int i=1; i<=4; i++) {
+            json_append_array_real_val(nodes_matrix, trans.matrix.element(i,j));
+        }
+    }
+    trans.free();
+    this->node_no++;
+
+
     tList* jl = this->joints_list;
-    if (jl!=NULL) jl = jl->next;     // top is ACKHOR
+    if (jl!=NULL) jl = jl->next;     // top is Json ACKHOR
     tList* jt = jl;
 
     while (jl!=NULL) {
@@ -441,7 +468,7 @@ void  GLTFData::addSkeletonNodes(MeshFacetNode* facet)
         tList* jp = jt; // jl
         while (jp!=NULL) {
             if (jp->ldat.lv==jl->ldat.id) {
-                json_append_array_int_val(children, jp->ldat.id);
+                json_append_array_int_val(children, jp->ldat.id + 1);
                 count++;
             }
             jp = jp->next;
@@ -652,18 +679,19 @@ void  GLTFData::addMeshes(MeshFacetNode* facet)
 }
 
 
-void  GLTFData::addSkins(MeshFacetNode* facet, SkinJointData* skin_joint)
+void  GLTFData::addSkins(int joint_offset)
 {
-    if (!this->has_joints || facet==NULL) return;
+    if (!this->has_joints) return;
     char buf[LBUF];
     
     memset(buf, 0, LBUF);
-    snprintf(buf, LBUF-1, JBXL_GLTF_SKINS, this->access_no);
+    snprintf(buf, LBUF-1, JBXL_GLTF_SKINS, this->access_no, joint_offset);
     tJson* skn = json_insert_parse(skins, buf);
     tJson* jnt = json_append_array_key(skn, "joints");
-    for (int j=0; j<skin_joint->joint_num; j++) {
-        json_append_array_int_val(jnt, j);
-    }
+    //for (int j=0; j<this->joint_num; j++) {
+    //    json_append_array_int_val(jnt, j + joint_offset);
+    //}
+    json_append_array_int_val(jnt, joint_offset);
     this->skin_no++;
     return;
 }
@@ -892,7 +920,7 @@ void  GLTFData::createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int
                     for (unsigned int j=0; j<jnum; j++) {
                         unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                         if (w!=0) {
-                            weight_index[jcnt] = (unsigned short int)j;
+                            weight_index[jcnt] = (unsigned short int)j + 1;
                             weight_value[jcnt] = (float)w/(float)total;
                             jcnt++;
                             if (jcnt>=4) break;
@@ -1147,7 +1175,7 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
                     for (unsigned int j=0; j<jnum; j++) {
                         unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                         if (w!=0) {
-                            weight_index[jcnt] = (unsigned short int)j;
+                            weight_index[jcnt] = (unsigned short int)j + 1;
                             jcnt++;
                             if (jcnt>=4) break;
                         }
@@ -1202,7 +1230,7 @@ void  GLTFData::addBufferViewsIBM(void)
     // 4x4 matrix
     unsigned int length = (unsigned int)sizeof(float)*16U;
     memset(buf, 0, LBUF);
-    snprintf(buf, LBUF-1, JBXL_GLTF_VIEWS, 1, this->matrix_offset, length, 0);
+    snprintf(buf, LBUF-1, JBXL_GLTF_VIEWS_DATA, 1, this->matrix_offset, length);
     json_insert_parse(this->buffviews, buf);
     this->matrix_offset += length;
 }
@@ -1213,7 +1241,7 @@ void  GLTFData::addAccessorsIBM(void)
 
     // 4x4 matrix
     memset(buf, 0, LBUF);
-    snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS, this->view_no, 0U, 5126, 1, "MT4");
+    snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS, this->view_no, 0U, 5126, 1, "MAT4");
     json_insert_parse(this->accessors, buf);
 
     this->view_no++;
@@ -1228,7 +1256,7 @@ void  GLTFData::createInverseBindMatrix(SkinJointData* skin_joint)
     unsigned int float_size = (unsigned int)sizeof(float);
 
     if (this->matrix_buffer.buf==NULL) {
-        this->matrix_buffer = make_Buffer(float_size*32U);     // 取り敢えず 2個分確保
+        this->matrix_buffer = make_Buffer(float_size*16U);
         if (this->matrix_buffer.bufsz<=0) {
             PRINT_MESG("GLTFData::createInvBindMatrix: ERROR: matrix_buffer. no more memory.\n");
             return;
@@ -1236,12 +1264,14 @@ void  GLTFData::createInverseBindMatrix(SkinJointData* skin_joint)
     }
 
     // Matrix
-    for (int i=1; i<=4; i++) {
-        for (int j=1; j<=4; j++) {
-            float element = skin_joint->bind_shape.matrix.element(i, j);
-            cat_b2Buffer(&element, &this->matrix_buffer, float_size);
+    //for (int k=0; k<this->joint_num; k++) {
+        for (int i=1; i<=4; i++) {
+            for (int j=1; j<=4; j++) {
+                float element = skin_joint->bind_shape.matrix.element(i, j);
+                cat_b2Buffer(&element, &this->matrix_buffer, float_size);
+            }
         }
-    }
+    //}
     return;
 }
 
@@ -1284,6 +1314,15 @@ void  GLTFData::execAffineUVMap(MeshFacetNode* facet, AffineTrans<double>* affin
     }
     return;
 }
+
+
+void  GLTFData::closeSolid(void)
+{
+    return;
+}
+
+
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -1576,12 +1615,16 @@ void  GLTFData::output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_
     memset(buf, 0, LBUF);
     snprintf(buf, LBUF-1, JBXL_GLTF_BUFFERS_BIN, (char*)rel_path.buf, this->bin_buffer.vldsz);
     json_insert_parse(this->buffers, buf);
+
     if (this->has_joints && this->matrix_buffer.vldsz>0) {
         Buffer base64 = encode_base64_Buffer(this->matrix_buffer);
-        memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_BUFFERS_B64, (char*)base64.buf, this->matrix_buffer.vldsz);
-        json_insert_parse(this->buffers, buf);
+        unsigned int len = base64.vldsz + LBUF;
+        char* big_buf = (char*)malloc(len);
+        memset(big_buf, 0, len);
+        snprintf(big_buf, len-1, JBXL_GLTF_BUFFERS_B64, (char*)base64.buf, this->matrix_buffer.vldsz);
+        json_insert_parse(this->buffers, big_buf);
         free_Buffer(&base64);
+        ::free(big_buf);
     }
 
     // output json data
@@ -1739,7 +1782,7 @@ uDWord  GLTFData::convertJson_gltf2glb(glbTextureInfo* tex_info)
         // bufferViews
         memset(buf, 0, LBUF);
         uDWord length = tex_info->length + tex_info->pad;
-        snprintf(buf, LBUF-1, JBXL_GLTF_VIEWS_TEXTURE, 0, this->bin_offset, length);
+        snprintf(buf, LBUF-1, JBXL_GLTF_VIEWS_DATA, 0, this->bin_offset, length);
         json_insert_parse(this->buffviews, buf);
         // images
         memset(buf, 0, LBUF);
@@ -1793,6 +1836,36 @@ AffineTrans<double>  GLTFData::getAffineTrans4Engine(AffineTrans<double> affine)
     trans.affineMatrixFllow(affine);     // engineTrans = engineTrans * (*affine)
     return trans;
 }
+
+
+
+AffineTrans<double>  GLTFData::getAffineBaseTrans4Engine(void)
+{
+    AffineTrans<double> trans;
+    for (int i=1; i<=4; i++) trans.matrix.element(i, i) = 1.0;
+    //
+    if (this->engine==JBXL_3D_ENGINE_UE) {
+        for (int i=1; i<=4; i++) trans.matrix.element(i, i) = 100.0;
+    }
+    else {
+        trans.matrix.element(2, 2) =  0.0;
+        trans.matrix.element(3, 3) =  0.0;
+        trans.matrix.element(3, 2) = -1.0;    // y -> -z
+        trans.matrix.element(2, 3) =  1.0;    // z -> y
+    }
+    //
+    //trans.affineMatrixFllow(affine);     // engineTrans = engineTrans * (*affine)
+    return trans;
+}
+
+
+
+
+
+
+
+
+
 
 
 gltfFacetMinMax  GLTFData::getFacetMinMax(MeshFacetNode* facet)
