@@ -34,7 +34,7 @@ void  ColladaXML::init(double meter, int axis, const char* ver)
     forUnity      = true;
      
     affineTrans   = NULL;;
-    skeleton.init();
+    affineSkeleton.init();
 }
 
 
@@ -42,8 +42,8 @@ void  ColladaXML::free(void)
 {
     free_Buffer(&blank_texture);
     del_all_xml(&xml_tag);
-    skeleton.free();
 
+    affineSkeleton.free();
     if (affineTrans!=NULL) affineTrans->free();
     affineTrans = NULL;
 }
@@ -162,7 +162,7 @@ void  ColladaXML::addShell(MeshObjectData* shelldata, bool collider, SkinJointDa
         }
     }
     //
-    char* geom_id = addGeometry(shelldata);                          // 幾何情報を配置
+    char* geom_id = addGeometry(shelldata);                         // 幾何情報を配置
     char* ctrl_id = addController(geom_id, shelldata, skin_joint);  // Joints 情報を配置
     addScene(geom_id, ctrl_id, shelldata, collider, skin_joint);    // Scene への配置（位置，サイズ，回転，コライダー, Joints）
     
@@ -994,7 +994,7 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
                     for (int i=1; i<=4; i++) {
                         for (int j=1; j<=4; j++) {
                             double element = skin_joint->alt_inverse_bind[jnt].matrix.element(i, j);
-                            if (i==1 && j==1) set_xml_content_node(matrix_tag, dtostr(element));
+                            if (i==1 && j==1) set_xml_content_node(matrix_tag, dtostr(element));                // 最初にタグを生成// 最初にタグを生成
                             else           append_xml_content_node(matrix_tag, dtostr(element));
                         }
                     }
@@ -1025,7 +1025,7 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
 
             Vector<double> shift = joint_trans.execRotateScale(pelvis);
             joint_trans.shift = joint_trans.shift - shift;
-            skeleton = affine*joint_trans;      // Joint -> Real の Affine変換
+            affineSkeleton = affine*joint_trans;      // Joint -> Real の Affine変換
             setJointLocationMatrix();
             //
             joint_space.free();
@@ -1190,13 +1190,13 @@ void  ColladaXML::setJointLocationMatrix(void)
 
     tXML* avatar_tag = get_xml_node_str(collada_tag, "<library_visual_scenes><visual_scene><node><matrix>");
     if (avatar_tag!=NULL) {
-        if (no_offset) skeleton.shift = skeleton.shift - affineTrans->shift;
-        skeleton.computeMatrix();
+        if (no_offset) affineSkeleton.shift = affineSkeleton.shift - affineTrans->shift;
+        affineSkeleton.computeMatrix();
         //
         for (int i=1; i<=4; i++) {
             for (int j=1; j<=4; j++) {
-                double element = skeleton.matrix.element(i, j);
-                if (i==1 && j==1) set_xml_content_node(avatar_tag, dtostr(element));
+                double element = affineSkeleton.matrix.element(i, j);
+                if (i==1 && j==1) set_xml_content_node(avatar_tag, dtostr(element));        // 最初にタグを生成
                 else           append_xml_content_node(avatar_tag, dtostr(element));
             }
         }

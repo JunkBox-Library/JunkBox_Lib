@@ -99,8 +99,8 @@ GLTFData::~GLTFData(void)
 
 void  GLTFData::init(void)
 {
-    this->bin_mode          = JBXL_GLTF_BIN_AOS;
-    //this->bin_mode          = JBXL_GLTF_BIN_SOA;
+    //this->bin_mode          = JBXL_GLTF_BIN_AOS;
+    this->bin_mode          = JBXL_GLTF_BIN_SOA;
     //this->bin_seq           = false;
     this->bin_seq           = true;
 
@@ -122,7 +122,7 @@ void  GLTFData::init(void)
     this->material_list     = new_tList_anchor_node();
 
     this->affineTrans       = NULL;
-    this->skeleton.init();
+    this->affineSkeleton.init();
 
     this->bin_buffer        = init_Buffer();
     this->matrix_buffer     = init_Buffer();
@@ -140,6 +140,7 @@ void  GLTFData::init(void)
     this->image_no          = 0;
 
     this->joint_num         = 0;
+    this->joint_offset      = 0;
 
     this->json_data         = NULL;
 
@@ -174,7 +175,6 @@ void  GLTFData::free(void)
     del_tList(&(this->image_list));
     del_tList(&(this->material_list));
     del_json(&(this->json_data));
-    this->skeleton.free();
 
     if (this->shellNode!=NULL) {
         this->shellNode->delete_next();
@@ -182,10 +182,11 @@ void  GLTFData::free(void)
     }
 
     if (this->joints_list!=NULL) del_tList(&this->joints_list);
-    this->joints_list = NULL;
+    this->joints_list = NULL;       // unnecessary. just to be sure
 
+    this->affineSkeleton.free();
     this->delAffineTrans();
-    this->affineTrans = NULL;
+    this->affineTrans = NULL;       // unnecessary. just to be sure
 }
 
 
@@ -244,16 +245,16 @@ void  GLTFData::initGLTF(void)
 //////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* skin_joint, tList* joints_template)
+void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* skin_joint, tList* joints_connection)
 
 この関数は SOLID毎に複数回呼ばれ，SOLIDに SHELLを追加する．
 
 @param  shelldata    SHELLデータ．複数の FACETを含む．
 @param  collider     コライダーのサポート
 @param  skin_joint   ジョイントデータ．デフォルトは NULL
-@param  joints_template  ジョイントの連結情報．デフォルトは NULL
+@param  joints_connection  ジョイントの連結情報．デフォルトは NULL
 */
-void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* skin_joint, tList* joints_template)
+void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* skin_joint, tList* joints_connection)
 {
     if (shelldata==NULL) return;
     if (this->shell_no==0 && this->gltf_name.buf==NULL) {
@@ -264,15 +265,15 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         this->alt_name = dup_Buffer(shelldata->alt_name);
     }
 
-    if (skin_joint!=NULL && joints_template!=NULL) {
+    if (skin_joint!=NULL && joints_connection!=NULL) {
         if (this->joints_list==NULL && !this->has_joints) {
-            this->joints_list = joints_template;
+            this->joints_list = joints_connection;
             this->has_joints = true;
             this->joint_num = skin_joint->joint_num;
         }
         else {
-            if (joints_template!=NULL) del_tList(&joints_template);
-            joints_template = NULL;
+            if (joints_connection!=NULL) del_tList(&joints_connection);
+            joints_connection = NULL;
         }
     }
 
@@ -293,9 +294,14 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         affine->shift = affine->shift - this->center;
         affine->computeMatrix();
     }
-
     facet = shelldata->facet;
-    this->addScenesNodes(facet, affine);        // has_joints
+
+    //
+    this->addScenes();
+    if (this->node_no==0 && this->has_joints) {
+        this->addSkeletonNodes(skin_joint, affine);
+    }
+    this->addNodes(affine);
     this->addTextures(facet);
     this->addMaterials(facet);
 
@@ -312,21 +318,13 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         this->addAccessorsSoA(facet);
     }
 
-
-
     if (this->has_joints) {
-        //this->addSkins(1);       // 1: Root
-        this->addBufferViewsIBM();
-        this->addAccessorsIBM(); 
-        this->createInverseBindMatrix(skin_joint);
-
-  del_json_node(&this->skins);
+        //this->addSkins(this->joint_offset);
+        //this->addBufferViewsIBM();
+        //this->addAccessorsIBM(); 
+        //this->createInverseBindMatrix(skin_joint);
     }
-    else {
-        del_json_node(&this->skins);
-    }
-
-
+    del_json_node(&this->skins);
 
     // BINデータ作成
     if (this->bin_seq) {
@@ -342,8 +340,6 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         this->createShellGeoData(facet, shell_indexes, shell_vertexes);
     }
 
-
-
     //
     this->phantom_out = true;
     if (collider) {
@@ -356,20 +352,28 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
 }
 
 
-void  GLTFData::addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine)
+void  GLTFData::addScenes(void)
 {
-    if (facet==NULL) return;
-    char buf[LBUF];
-
-    // scenes
     if (this->node_no==0) {
         json_set_str_val(this->scenes_name, (char*)this->gltf_name.buf);
         // skeleton structure
         if (this->has_joints) {
-            //this->addSkeletonNodes();
+            json_append_array_int_val(this->scenes_nodes, 0);
+            this->joint_offset = 2;
         }
     }
-    json_append_array_int_val(this->scenes_nodes, this->node_no);
+
+    if (!this->has_joints) {
+        json_append_array_int_val(this->scenes_nodes, this->node_no);
+    }
+
+    return;
+}
+
+
+void  GLTFData::addNodes(AffineTrans<double>* affine)
+{
+    char buf[LBUF];
 
     // nodes
     Buffer node_name = init_Buffer();
@@ -391,22 +395,20 @@ void  GLTFData::addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine
         //snprintf(buf, LBUF-1, JBXL_GLTF_NODES_SKIN, this->skin_no);
         //json_insert_parse(mesh, buf);
     }
-//    else {
-        // affine translarion
-        tJson* matrix = json_append_array_key(mesh, "matrix");
-        if (affine!=NULL) {
-            //AffineTrans<double> trans = this->getAffineTrans4Engine(*affine);
-            AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
-            trans.affineMatrixFllow(*affine);
-            for (int j=1; j<=4; j++) {
-                for (int i=1; i<=4; i++) {
-                    float element = (float)trans.matrix.element(i, j);
-                    json_append_array_real_val(matrix, element);
-                }
+
+    // affine translarion
+    tJson* matrix = json_append_array_key(mesh, "matrix");
+    if (affine!=NULL) {
+        AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
+        trans.affineMatrixFllow(*affine);
+        for (int j=1; j<=4; j++) {
+            for (int i=1; i<=4; i++) {
+                float element = (float)trans.matrix.element(i, j);
+                json_append_array_real_val(matrix, element);
             }
-            trans.free();
         }
-//    }
+        trans.free();
+    }
 
     json_append_array_int_val(this->nodes_children, this->node_no);
     this->node_no++;
@@ -415,35 +417,62 @@ void  GLTFData::addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine
 }
 
 
-
-void  GLTFData::addSkeletonNodes(void)
+void  GLTFData::addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>* affine)
 {
     char buf[LBUF];
-
-    json_append_array_int_val(this->scenes_nodes, this->node_no);
     memset(buf, 0, LBUF);
+
+    // Root node of model
     tJson* nodes_root = json_insert_parse(this->nodes, JBXL_GLTF_NODES_ROOT);
     this->nodes_children = json_append_array_key(nodes_root, "children");
-    tJson* nodes_matrix  = json_append_array_key(nodes_root, "matrix");
+    json_append_array_int_val(this->nodes_children, this->joint_offset-1);
+    this->node_no++;
 
-    json_append_array_int_val(this->nodes_children, 1);
+    // Root node of skeletons
+    tJson* skeleton_root = json_insert_parse(this->nodes, JBXL_GLTF_NODES_AVATAR);
+    tJson* skeleton_children = json_append_array_key(skeleton_root, "children");
+    json_append_array_int_val(skeleton_children, this->joint_offset);
+    this->node_no++;
+
+    // skeleton の位置合わせ
+    Vector<double> pelvis = Vector<double>(0.0, 0.0, 1.067);                // ほぼ定数だが，一応データから....
+    pelvis.x = skin_joint->alt_inverse_bind[0].matrix.element(1, 4);        // 0 means mPelvis
+    pelvis.y = skin_joint->alt_inverse_bind[0].matrix.element(2, 4);
+    pelvis.z = skin_joint->alt_inverse_bind[0].matrix.element(3, 4);
+
+    AffineTrans<double> joint_space = skin_joint->inverse_bind[0] * skin_joint->bind_shape;     // 0 means mPelvis
+    AffineTrans<double> joint_trans = joint_space.getInvAffine();
+    Vector<double> shift = joint_trans.execRotateScale(pelvis);
+    joint_trans.shift = joint_trans.shift - shift;
+    this->affineSkeleton = (*affine)*joint_trans;      // Joint -> Real の Affine変換
+    joint_space.free();
+    joint_trans.free();
+
+    if (this->no_offset) this->affineSkeleton.shift = this->affineSkeleton.shift - affine->shift;
+    this->affineSkeleton.computeMatrix();
+
+    tJson* skeleton_matrix  = json_append_array_key(skeleton_root, "matrix");
     AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
+    trans.affineMatrixFllow(this->affineSkeleton);
     for (int j=1; j<=4; j++) {
         for (int i=1; i<=4; i++) {
-            json_append_array_real_val(nodes_matrix, trans.matrix.element(i,j));
+            json_append_array_real_val(skeleton_matrix, trans.matrix.element(i,j));
         }
     }
     trans.free();
-    this->node_no++;
 
-
+    //
     tList* jl = this->joints_list;
     if (jl!=NULL) jl = jl->next;     // top is Json ACKHOR
     tList* jt = jl;
-
+    
+    int jnt = 0;
     while (jl!=NULL) {
-        json_append_array_int_val(this->scenes_nodes, this->node_no);
-        //
+        // order check!
+        if (strncmp((char*)jl->ldat.val.buf+1, skin_joint->joint_names.get_value(jnt), strlen(skin_joint->joint_names.get_value(jnt)))) {
+            PRINT_MESG("GLTFData::addSkeletonNodes: ERROR: Joint is not in the correct order. %s != \"%s\"\n", 
+                                                                            (char*)jl->ldat.val.buf, skin_joint->joint_names.get_value(jnt));
+        }
         memset(buf, 0, LBUF);
         snprintf(buf, LBUF-1, JBXL_GLTF_NODES_SKLTN, (char*)jl->ldat.val.buf);
         tJson* skltn = json_insert_parse(this->nodes, buf);
@@ -453,7 +482,7 @@ void  GLTFData::addSkeletonNodes(void)
         tList* jp = jt; // jl
         while (jp!=NULL) {
             if (jp->ldat.lv==jl->ldat.id) {
-                json_append_array_int_val(children, jp->ldat.id + 1);
+                json_append_array_int_val(children, jp->ldat.id + this->joint_offset);
                 count++;
             }
             jp = jp->next;
@@ -461,6 +490,15 @@ void  GLTFData::addSkeletonNodes(void)
         if (count==0) {
             del_json_node(&children);
         }
+
+        tJson* matrix = json_append_array_key(skltn, "matrix");
+        for (int j=1; j<=4; j++) {
+            for (int i=1; i<=4; i++) {
+                double element = skin_joint->alt_inverse_bind[jnt].matrix.element(i, j);
+                json_append_array_real_val(matrix, element);
+            }
+        }
+/*
         if (jl->ldat.ptr!=NULL) {
             tJson* transl = json_append_array_key(skltn, "translation");
             Vector<float>* vec = (Vector<float>*)(jl->ldat.ptr);
@@ -468,9 +506,10 @@ void  GLTFData::addSkeletonNodes(void)
             json_append_array_real_val(transl, vec->y);
             json_append_array_real_val(transl, vec->z);
         }
-
+*/
         this->node_no++;
         jl = jl->next;
+        jnt++;
     }
     return;
 }
@@ -769,7 +808,7 @@ void  GLTFData::addAccessorsAoS(MeshFacetNode* facet)
 
         // accessor of indexies
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS_S, this->view_no, 0U, 5125, facet->num_index, "SCALAR", mm.index_max, mm.index_min);   // 5125: unsigned int
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS, this->view_no, 0U, 5125, facet->num_index, "SCALAR");            // 5125: unsigned int
         json_insert_parse(this->accessors, buf);
         this->view_no++;
         this->accessor_no++;
@@ -777,22 +816,20 @@ void  GLTFData::addAccessorsAoS(MeshFacetNode* facet)
         // accessors of vertex/normal/uvmap
         unsigned int offset = 0;
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS_V3, this->view_no,     0U, 5126, facet->num_vertex, "VEC3",
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS_V3, this->view_no, 0U, 5126, facet->num_vertex, "VEC3",
                                                      mm.vertex_x_max, mm.vertex_y_max, mm.vertex_z_max, mm.vertex_x_min, mm.vertex_y_min, mm.vertex_z_min);
         json_insert_parse(this->accessors, buf);
         offset += float_size*3U;
         this->accessor_no++;
         //
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS_V3, this->view_no, offset, 5126, facet->num_vertex, "VEC3",
-                                                     mm.normal_x_max, mm.normal_y_max, mm.normal_z_max, mm.normal_x_min, mm.normal_y_min, mm.normal_z_min);
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS, this->view_no, offset, 5126, facet->num_vertex, "VEC3");         // 5126: float
         json_insert_parse(this->accessors, buf);
         offset += float_size*3U;
         this->accessor_no++;
         //
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS_V2, this->view_no, offset, 5126, facet->num_vertex, "VEC2",
-                                                     mm.texcrd_u_max, mm.texcrd_v_max, mm.texcrd_u_min, mm.texcrd_v_min);
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS, this->view_no, offset, 5126, facet->num_vertex, "VEC2");
         json_insert_parse(this->accessors, buf);
         offset += float_size*2U;
         this->accessor_no++;
@@ -800,7 +837,7 @@ void  GLTFData::addAccessorsAoS(MeshFacetNode* facet)
         if (this->has_joints) {
             // weighted joints
             memset(buf, 0, LBUF);
-            snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS, this->view_no, offset, 5123, facet->num_vertex, "VEC4");     // 5123: unsigned short
+            snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS, this->view_no, offset, 5123, facet->num_vertex, "VEC4");     // 5123: unsigned short int
             json_insert_parse(this->accessors, buf);
             offset += ushort_size*4U;
             this->accessor_no++;
@@ -907,7 +944,7 @@ void  GLTFData::createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int
                     for (unsigned int j=0; j<jnum; j++) {
                         unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                         if (w!=0) {
-                            weight_index[jcnt] = (unsigned short int)j + 1;
+                            weight_index[jcnt] = (unsigned short int)(j + this->joint_offset);
                             weight_value[jcnt] = (float)w/(float)total;
                             jcnt++;
                             if (jcnt>=4) break;
@@ -1011,7 +1048,7 @@ void  GLTFData::addAccessorsSoA(MeshFacetNode* facet)
 
         // accessor of indexies
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS_S, this->view_no, 0U, 5125, facet->num_index, "SCALAR", mm.index_max, mm.index_min);   // 5125: unsigned int
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS, this->view_no, 0U, 5125, facet->num_index, "SCALAR");        // 5125: unsigned int
         json_insert_parse(this->accessors, buf);
         this->view_no++;
         this->accessor_no++;
@@ -1025,15 +1062,13 @@ void  GLTFData::addAccessorsSoA(MeshFacetNode* facet)
         this->accessor_no++;
         //
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS_V3, this->view_no, 0U, 5126, facet->num_vertex, "VEC3",
-                                                     mm.normal_x_max, mm.normal_y_max, mm.normal_z_max, mm.normal_x_min, mm.normal_y_min, mm.normal_z_min);
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS, this->view_no, 0U, 5126, facet->num_vertex, "VEC3");         // 5126: floaat
         json_insert_parse(this->accessors, buf);
         this->view_no++;
         this->accessor_no++;
         //
         memset(buf, 0, LBUF);
-        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS_V2, this->view_no, 0U, 5126, facet->num_vertex, "VEC2",
-                                                     mm.texcrd_u_max, mm.texcrd_v_max, mm.texcrd_u_min, mm.texcrd_v_min);
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS, this->view_no, 0U, 5126, facet->num_vertex, "VEC2");
         json_insert_parse(this->accessors, buf);
         this->view_no++;
         this->accessor_no++;
@@ -1041,7 +1076,7 @@ void  GLTFData::addAccessorsSoA(MeshFacetNode* facet)
         if (this->has_joints) {
             // weighted joints
             memset(buf, 0, LBUF);
-            snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS,  this->view_no, 0U, 5123, facet->num_vertex, "VEC4");    // 5123: unsigned short
+            snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS,  this->view_no, 0U, 5123, facet->num_vertex, "VEC4");    // 5123: unsigned short int
             json_insert_parse(this->accessors, buf);
             this->view_no++;
             this->accessor_no++;
@@ -1162,7 +1197,7 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
                     for (unsigned int j=0; j<jnum; j++) {
                         unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                         if (w!=0) {
-                            weight_index[jcnt] = (unsigned short int)j + 1;
+                            weight_index[jcnt] = (unsigned short int)(j + this->joint_offset);
                             jcnt++;
                             if (jcnt>=4) break;
                         }
@@ -1326,31 +1361,31 @@ void  GLTFData::createShellGeoData(MeshFacetNode* facet, int shell_indexes, int 
 {
     if (facet==NULL) return;
 
-    GLTFShellNode* _shell_node  = new GLTFShellNode();
-    _shell_node->shell_indexes  = shell_indexes;
-    _shell_node->shell_vertexes = shell_vertexes;
-    _shell_node->vi = (unsigned int*)  malloc(sizeof(unsigned int)  *shell_indexes);
-    _shell_node->vv = (Vector<double>*)malloc(sizeof(Vector<double>)*shell_vertexes);
-    _shell_node->vn = (Vector<double>*)malloc(sizeof(Vector<double>)*shell_vertexes);
-    _shell_node->vu = (UVMap<double>* )malloc(sizeof(UVMap<double> )*shell_vertexes);
+    GLTFShellNode* shell_node  = new GLTFShellNode();
+    shell_node->shell_indexes  = shell_indexes;
+    shell_node->shell_vertexes = shell_vertexes;
+    shell_node->vi = (unsigned int*)  malloc(sizeof(unsigned int)  *shell_indexes);
+    shell_node->vv = (Vector<double>*)malloc(sizeof(Vector<double>)*shell_vertexes);
+    shell_node->vn = (Vector<double>*)malloc(sizeof(Vector<double>)*shell_vertexes);
+    shell_node->vu = (UVMap<double>* )malloc(sizeof(UVMap<double> )*shell_vertexes);
     if (this->has_joints) {
-        _shell_node->vj = (unsigned int*)malloc(sizeof(unsigned int)*shell_vertexes);
-        _shell_node->vw = (float*)malloc(sizeof(float)*shell_vertexes);
-        _shell_node->vm = (float*)malloc(sizeof(float)*16);
+        shell_node->vj = (unsigned int*)malloc(sizeof(unsigned int)*shell_vertexes);
+        shell_node->vw = (float*)malloc(sizeof(float)*shell_vertexes);
+        shell_node->vm = (float*)malloc(sizeof(float)*16);
     }
     //
-    if (_shell_node->vv==NULL || _shell_node->vn==NULL || _shell_node->vu==NULL) {
-        delete(_shell_node);
+    if (shell_node->vv==NULL || shell_node->vn==NULL || shell_node->vu==NULL) {
+        delete(shell_node);
         return;
     }
     //
     MeshFacetNode* temp_facet = facet;
     while (temp_facet!=NULL) {
-        _shell_node->num_facet++;        // この SHELLにある FACETの数を数える
+        shell_node->num_facet++;        // この SHELLにある FACETの数を数える
         temp_facet = temp_facet->next;
     }
-    _shell_node->facet_index  = (unsigned int*)malloc(_shell_node->num_facet*sizeof(unsigned int));
-    _shell_node->facet_vertex = (unsigned int*)malloc(_shell_node->num_facet*sizeof(unsigned int));
+    shell_node->facet_index  = (unsigned int*)malloc(shell_node->num_facet*sizeof(unsigned int));
+    shell_node->facet_vertex = (unsigned int*)malloc(shell_node->num_facet*sizeof(unsigned int));
 
     unsigned int index_offset  = 0;
     unsigned int vertex_offset = 0;
@@ -1358,36 +1393,36 @@ void  GLTFData::createShellGeoData(MeshFacetNode* facet, int shell_indexes, int 
 
     while (facet!=NULL) {
         // save index and vertex number
-        _shell_node->facet_index [facet_no] = facet->num_index;
-        _shell_node->facet_vertex[facet_no] = facet->num_vertex;
+        shell_node->facet_index [facet_no] = facet->num_index;
+        shell_node->facet_vertex[facet_no] = facet->num_vertex;
         facet_no++;
 
         // indexies
         for (int i=0; i<facet->num_index; i++) {
-            _shell_node->vi[index_offset + i] = facet->data_index[i];
+            shell_node->vi[index_offset + i] = facet->data_index[i];
         }
         index_offset += facet->num_index;
 
         // vertex/normal/uvmap
         for (int i=0; i<facet->num_vertex; i++) {
-            _shell_node->vv[vertex_offset + i] = facet->vertex_value[i];
-            _shell_node->vn[vertex_offset + i] = facet->normal_value[i];
-            _shell_node->vu[vertex_offset + i] = facet->texcrd_value[i];
+            shell_node->vv[vertex_offset + i] = facet->vertex_value[i];
+            shell_node->vn[vertex_offset + i] = facet->normal_value[i];
+            shell_node->vu[vertex_offset + i] = facet->texcrd_value[i];
         }
         vertex_offset += facet->num_vertex;
 
         facet = facet->next;
     }
     
-    // _shell_node をリストの最後に繋げる
+    // shell_node をリストの最後に繋げる
     GLTFShellNode* prv = NULL;
     GLTFShellNode* ptr = this->shellNode;
     while(ptr!=NULL) {
         prv = ptr;
         ptr = ptr->next;
     }
-    if (prv==NULL) this->shellNode = _shell_node;
-    else           prv->next       = _shell_node;
+    if (prv==NULL) this->shellNode = shell_node;
+    else           prv->next       = shell_node;
 
     return;
 }
@@ -1407,11 +1442,11 @@ void  GLTFData::createBinDataAoS(void)
     unsigned int solid_indexes  = 0;
     unsigned int solid_vertexes = 0;
 
-    GLTFShellNode*  _shell_node = this->shellNode;
-    while (_shell_node!=NULL) {
-        solid_indexes  += _shell_node->shell_indexes;
-        solid_vertexes += _shell_node->shell_vertexes;
-        _shell_node = _shell_node->next;
+    GLTFShellNode*  shell_node = this->shellNode;
+    while (shell_node!=NULL) {
+        solid_indexes  += shell_node->shell_indexes;
+        solid_vertexes += shell_node->shell_vertexes;
+        shell_node = shell_node->next;
     }
 
     unsigned int buffer_len = solid_indexes*sizeof(int) + solid_vertexes*sizeof(float)*8U;
@@ -1425,39 +1460,39 @@ void  GLTFData::createBinDataAoS(void)
     unsigned int v_length = sizeof(float);
     float temp = 0.0f;
 
-    _shell_node = this->shellNode;
-    while (_shell_node!=NULL) {             // 全SHELL
+    shell_node = this->shellNode;
+    while (shell_node!=NULL) {             // 全SHELL
         unsigned int i_offset = 0;
         unsigned int v_offset = 0;
-        for (unsigned int f=0; f<_shell_node->num_facet; f++) {      // SHELL中の FACET
+        for (unsigned int f=0; f<shell_node->num_facet; f++) {      // SHELL中の FACET
             // binary of indexies
-            i_length = _shell_node->facet_index[f] * sizeof(int);
-            cat_b2Buffer(_shell_node->vi + i_offset, &(this->bin_buffer), i_length);
-            i_offset += _shell_node->facet_index[f];
+            i_length = shell_node->facet_index[f] * sizeof(int);
+            cat_b2Buffer(shell_node->vi + i_offset, &(this->bin_buffer), i_length);
+            i_offset += shell_node->facet_index[f];
 
-            for (unsigned int i=0; i<_shell_node->facet_vertex[f]; i++) {
-                temp = (float)_shell_node->vv[v_offset + i].x;
+            for (unsigned int i=0; i<shell_node->facet_vertex[f]; i++) {
+                temp = (float)shell_node->vv[v_offset + i].x;
                 cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vv[v_offset + i].y;
+                temp = (float)shell_node->vv[v_offset + i].y;
                 cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vv[v_offset + i].z;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                //
-                temp = (float)_shell_node->vn[v_offset + i].x;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vn[v_offset + i].y;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vn[v_offset + i].z;
+                temp = (float)shell_node->vv[v_offset + i].z;
                 cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
                 //
-                temp = (float)_shell_node->vu[v_offset + i].u;
+                temp = (float)shell_node->vn[v_offset + i].x;
                 cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = 1.0f - (float)_shell_node->vu[v_offset + i].v;
+                temp = (float)shell_node->vn[v_offset + i].y;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                temp = (float)shell_node->vn[v_offset + i].z;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                //
+                temp = (float)shell_node->vu[v_offset + i].u;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                temp = 1.0f - (float)shell_node->vu[v_offset + i].v;
                 cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
             }
-            v_offset += _shell_node->facet_vertex[f];
+            v_offset += shell_node->facet_vertex[f];
         }
-        _shell_node = _shell_node->next;
+        shell_node = shell_node->next;
     }
     return;
 }
@@ -1477,11 +1512,11 @@ void  GLTFData::createBinDataSoA(void)
     unsigned int solid_indexes  = 0;
     unsigned int solid_vertexes = 0;
 
-    GLTFShellNode*  _shell_node = this->shellNode;
-    while (_shell_node!=NULL) {
-        solid_indexes  += _shell_node->shell_indexes;
-        solid_vertexes += _shell_node->shell_vertexes;
-        _shell_node = _shell_node->next;
+    GLTFShellNode*  shell_node = this->shellNode;
+    while (shell_node!=NULL) {
+        solid_indexes  += shell_node->shell_indexes;
+        solid_vertexes += shell_node->shell_vertexes;
+        shell_node = shell_node->next;
     }
 
     unsigned int buffer_len = solid_indexes*sizeof(int) + solid_vertexes*sizeof(float)*8U;
@@ -1495,43 +1530,43 @@ void  GLTFData::createBinDataSoA(void)
     unsigned int v_length = sizeof(float);
     float temp = 0.0f;
 
-    _shell_node = this->shellNode;
-    while (_shell_node!=NULL) {             // 全SHELL
+    shell_node = this->shellNode;
+    while (shell_node!=NULL) {             // 全SHELL
         unsigned int i_offset = 0;
         unsigned int v_offset = 0;
-        for (unsigned int f=0; f<_shell_node->num_facet; f++) {      // SHELL中の FACET
+        for (unsigned int f=0; f<shell_node->num_facet; f++) {      // SHELL中の FACET
             // binary of indexies
-            i_length = _shell_node->facet_index[f] * sizeof(int);
-            cat_b2Buffer(_shell_node->vi + i_offset, &(this->bin_buffer), i_length);
-            i_offset += _shell_node->facet_index[f];
+            i_length = shell_node->facet_index[f] * sizeof(int);
+            cat_b2Buffer(shell_node->vi + i_offset, &(this->bin_buffer), i_length);
+            i_offset += shell_node->facet_index[f];
 
-            for (unsigned int i=0; i<_shell_node->facet_vertex[f]; i++) {
-                temp = (float)_shell_node->vv[v_offset + i].x;
+            for (unsigned int i=0; i<shell_node->facet_vertex[f]; i++) {
+                temp = (float)shell_node->vv[v_offset + i].x;
                 cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vv[v_offset + i].y;
+                temp = (float)shell_node->vv[v_offset + i].y;
                 cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vv[v_offset + i].z;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-            }
-            //
-            for (unsigned int i=0; i<_shell_node->facet_vertex[f]; i++) {
-                temp = (float)_shell_node->vn[v_offset + i].x;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vn[v_offset + i].y;
-                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = (float)_shell_node->vn[v_offset + i].z;
+                temp = (float)shell_node->vv[v_offset + i].z;
                 cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
             }
             //
-            for (unsigned int i=0; i<_shell_node->facet_vertex[f]; i++) {
-                temp = (float)_shell_node->vu[v_offset + i].u;
+            for (unsigned int i=0; i<shell_node->facet_vertex[f]; i++) {
+                temp = (float)shell_node->vn[v_offset + i].x;
                 cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
-                temp = 1.0f - (float)_shell_node->vu[v_offset + i].v;
+                temp = (float)shell_node->vn[v_offset + i].y;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                temp = (float)shell_node->vn[v_offset + i].z;
                 cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
             }
-            v_offset += _shell_node->facet_vertex[f];
+            //
+            for (unsigned int i=0; i<shell_node->facet_vertex[f]; i++) {
+                temp = (float)shell_node->vu[v_offset + i].u;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+                temp = 1.0f - (float)shell_node->vu[v_offset + i].v;
+                cat_b2Buffer(&temp, &(this->bin_buffer), v_length);
+            }
+            v_offset += shell_node->facet_vertex[f];
         }
-        _shell_node = _shell_node->next;
+        shell_node = shell_node->next;
     }
     return;
 }

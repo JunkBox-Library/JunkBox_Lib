@@ -124,7 +124,7 @@ public:
 
 public:
     AffineTrans<double>* affineTrans;
-    AffineTrans<double>  skeleton;
+    AffineTrans<double>  affineSkeleton;
 
     tXML*   joints_template_tag;
     bool    has_joints;

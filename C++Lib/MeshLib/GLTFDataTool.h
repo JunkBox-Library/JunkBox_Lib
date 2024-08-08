@@ -50,9 +50,10 @@ namespace jbxl {
 #define  JBXL_GLTF_ACCESSORS_V3  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f,%f],\"min\":[%f,%f,%f]}"
 
 #define  JBXL_GLTF_NODES_ROOT    "{\"name\":\"Root\"}"
+#define  JBXL_GLTF_NODES_AVATAR  "{\"name\":\"Avatar\"}"
 #define  JBXL_GLTF_NODES_MESH    "{\"name\":\"%s\",\"mesh\":%d}"
 #define  JBXL_GLTF_NODES_SKIN    "{\"skin\":%d}"
-#define  JBXL_GLTF_NODES_SKLTN   "{\"name\":%s}"
+#define  JBXL_GLTF_NODES_SKLTN   "{\"name\":%s}"    // It doesn't have to be \"%s\" 
 
 #define  JBXL_GLTF_MESHES_PRIM   "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d},\"material\":%d,\"mode\":4}"
 #define  JBXL_GLTF_MESHES_PRIM_J "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d,\"JOINTS_0\":%d,\"WEIGHTS_0\":%d},\"material\":%d,\"mode\":4}"
@@ -195,8 +196,8 @@ public:
     tList*  material_list;
 
     Vector<double>       center;
-    AffineTrans<double>* affineTrans;   // SOLID のアフィン変換
-    AffineTrans<double>  skeleton;
+    AffineTrans<double>* affineTrans;       // SOLID のアフィン変換
+    AffineTrans<double>  affineSkeleton;    // Skeleton のアフィン変換
 
     Buffer  bin_buffer;
     unsigned int bin_offset;
@@ -216,6 +217,7 @@ public:
     int     image_no;           // images の要素（image）の通し番号． material.index -> texture.source -> image
 
     int     joint_num;
+    int     joint_offset;
 
     tJson*  json_data;
     tJson*  scenes;
@@ -252,9 +254,11 @@ public:
 
     void    initGLTF(void);
 
-    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tList* joints_template=NULL);
-    void    addScenesNodes(MeshFacetNode* facet, AffineTrans<double>* affine);
-    void    addSkeletonNodes(void);
+    void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tList* joints_info=NULL);
+
+    void    addScenes(void);
+    void    addNodes(AffineTrans<double>* affine);
+    void    addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>* affine);
 
     void    addTextures(MeshFacetNode* facet);
     void    addMeshes(MeshFacetNode* facet);
