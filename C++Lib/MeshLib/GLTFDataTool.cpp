@@ -1352,7 +1352,7 @@ SHELL毎に呼び出され，SHELL中の全FACETのジオメトリ情報を this
 @param  facet           SHELL中の FACETの先頭データ．
 @param  shell_indexes   SHELL中の indexデータの総数．
 @param  shell_vetexes   SHELL中の vertexデータの総数．
-@param  affine          SHELLの Affine変換へのポインタ．
+@param  skin_joint      SHELLの Joint情報へのポインタ．
 */
 void  GLTFData::createShellGeoData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, SkinJointData* skin_joint)
 {

@@ -248,10 +248,6 @@ public:
     void    setAffineTrans(AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}
     void    delAffineTrans(void) { freeAffineTrans(this->affineTrans);}
 
-//    AffineTrans<double> getAffineTrans4Engine(AffineTrans<double> affine);
-    AffineTrans<double> getAffineBaseTrans4Engine(void);
-    gltfFacetMinMax getFacetMinMax(MeshFacetNode* facet);
-
     void    initGLTF(void);
 
     void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tList* joints_info=NULL);
@@ -268,6 +264,9 @@ public:
 
     void    closeSolid(void);
 
+    // Affine Transfer
+//    AffineTrans<double> getAffineTrans4Engine(AffineTrans<double> affine);
+    AffineTrans<double> getAffineBaseTrans4Engine(void);
     void    execAffineUVMap(MeshFacetNode* facet, AffineTrans<double>* affine);
 
     // AoS
@@ -285,17 +284,21 @@ public:
     void    createBinDataAoS(void);
     void    createBinDataSoA(void);
 
+    // IBM
     void    addBufferViewsIBM(void);
     void    addAccessorsIBM(void);
     void    createInverseBindMatrix(SkinJointData* skin_joint);
 
+    // output
     void    outputFile (const char* fn, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn);
     void    output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn);
     void    output_glb (char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn);
-
     void    convertJson_TexturePath(char* tex_dirn);
-    uDWord  convertJson_gltf2glb(glbTextureInfo* tex_info);
 
+    gltfFacetMinMax getFacetMinMax(MeshFacetNode* facet);
+
+    // GLB
+    uDWord  convertJson_gltf2glb(glbTextureInfo* tex_info);
     glbTextureInfo*  getGLBTextureInfo(const char* tex_dirn);
     void    freeGLBTextureInfo(glbTextureInfo* tex_info);
 };
