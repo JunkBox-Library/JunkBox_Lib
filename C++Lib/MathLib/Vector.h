@@ -9,8 +9,9 @@
 
 
 /*
-template <typename T=double> class DllExport Vector      // ３次元ベクトルの定義
-template <typename T=double> class DllExport Vector2D    // ２次元ベクトルの定義, パラメトリック曲面用
+template <typename T=double> class DllExport Vector     // ３次元ベクトルの定義
+template <typename T=double> class DllExport Vector4    // ４次元ベクトルの定義
+template <typename T=double> class DllExport UVMap      // ２次元ベクトルの定義, パラメトリック曲面用
 template <typename T=int> class DllExport PCoordinate   // 多角形の座標の値を格納するクラス
 
 template <typename T=int> class DllExport RBound        // 境界構造体
@@ -32,6 +33,9 @@ namespace  jbxl {
 
 
 #define  VECTOR     Vector
+#define  VECTOR4    Vector4
+#define  VECTOR2    UVMap
+#define  Vector2    UVMap
 #define  UVMAP      UVMap
 
 
@@ -71,10 +75,10 @@ public:
     void   set(T X, T Y=0, T Z=0, double N=0.0, double C=1.0, int D=0);
 
     // 別名
-    T      element1(void) { return x;}
-    T      element2(void) { return y;}
-    T      element3(void) { return z;}
-    T      element(int i) { if(i==1) return x; else if(i==2) return y; else if(i==3) return z; else return (T)0;} 
+    T&     element1(void) { return x;}
+    T&     element2(void) { return y;}
+    T&     element3(void) { return z;}
+    T&     element(int i) { if(i==1) return x; else if(i==2) return y; else if(i==3) return z; else return x;} 
 
     template <typename R> Vector<T>& operator = (const Vector<R> a) { x=(T)a.x; y=(T)a.y; z=(T)a.z; n=a.n; c=a.c; d=a.d; return *this;}
 };
@@ -82,7 +86,7 @@ public:
 
 template <typename T> Vector<T> Vector<T>::normalize(void)
 {
-    double nrm = (double)sqrt(x*x+y*y+z*z);
+    double nrm = (double)sqrt(x*x + y*y + z*z);
 
     if (nrm>=Zero_Eps) {
         x  = (T)(x/nrm);
@@ -166,11 +170,10 @@ template <typename T, typename R> inline Vector<T> operator / (const Vector<T> a
 
 
 template <typename T, typename R> inline Vector<T> operator / (const R d, const Vector<T> a)
-{
-    Vector<T> v((T)d/a.x, (T)d/a.y, (T)d/a.z, 0.0, a.c, a.d);
-    v.norm();
-    return v;
-}
+{ return Vector<T>((T)d/a.x, (T)d/a.y, (T)d/a.z, 0.0, a.c, a.d); }
+//    v.norm();
+//    return v;
+//}
 
 
 template <typename T> inline Vector<T> operator += (Vector<T>& a, const Vector<T> b)
@@ -183,6 +186,7 @@ template <typename T, typename R> inline Vector<T> operator += (Vector<T>& a, co
 
 template <typename T> inline Vector<T> operator -= (Vector<T>& a, const Vector<T> b)
 { a = a - b; return a; }
+
 
 template <typename T, typename R> inline Vector<T> operator -= (Vector<T>& a, const Vector<R> b)
 { a = a - Cast<T>(b); return a; }
@@ -214,7 +218,6 @@ template <typename T> inline Vector<T> MidPoint(const Vector<T> a, const Vector<
 /// 点a と b の距離　（a,b は位置ベクトル）
 template <typename T> inline double VectorDist(const Vector<T> a, const Vector<T> b)
 {
-    //return (b-a).n;
     return (b-a).norm();
 }
 
@@ -687,6 +690,246 @@ template <typename T> inline UVMap<T> operator -= (UVMap<T>& a, const UVMap<T> b
 
 template <typename T, typename R> inline UVMap<T> operator -= (UVMap<T>& a, const UVMap<R> b)
 { a = a - Cast<T>(b); return a; }
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Vector4
+//
+
+/**
+template <typename T=double> class Vector
+
+    ４次元ベクトルの定義
+
+*/
+template <typename T=double> class DllExport Vector4
+{
+public:
+    T x;
+    T y;
+    T z;
+    T t;
+
+    double n;       ///< ノルム
+    double c;       ///< 信頼度
+    int    d;       ///< 汎用
+
+public:
+    Vector4(T X=0, T Y=0, T Z=0, T U=0, double N=0.0, double C=1.0, int D=0) { set(X, Y, Z, U, N, C, D);}
+    virtual ~Vector4(void) {}
+
+    T     norm2(void) { return (x*x + y*y + z*z + t*t);}
+    double norm(void) { n = (double)sqrt(x*x + y*y + z*z + t*t); return n;}
+    Vector4<T> normalize(void);
+
+    void   init(double C=1.0) { x = y = z = t = (T)0; n = 0.0; c = C; d = 0;}
+    void   set(T X, T Y=0, T Z=0, T U=0, double N=0.0, double C=1.0, int D=0);
+
+    // 別名
+    T&     element1(void) { return x;}
+    T&     element2(void) { return y;}
+    T&     element3(void) { return z;}
+    T&     element4(void) { return t;}
+    T&     element(int i) { if(i==1) return x; else if(i==2) return y; else if(i==3) return z; else if(i==4) return t; else return x;} 
+
+    template <typename R> Vector4<T>& operator = (const Vector4<R> a) { x=(T)a.x; y=(T)a.y; z=(T)a.z; t=(T)a.t; n=a.n; c=a.c; d=a.d; return *this;}
+};
+
+
+template <typename T> Vector4<T> Vector4<T>::normalize(void)
+{
+    double nrm = (double)sqrt(x*x + y*y + z*z + t*t);
+
+    if (nrm>=Zero_Eps) {
+        x  = (T)(x/nrm);
+        y  = (T)(y/nrm);
+        z  = (T)(z/nrm);
+        t  = (T)(t/nrm);
+        n  = 1.0;
+    }
+    else {
+        init();
+    }
+
+    return *this;
+}
+
+
+/**
+template <typename T> inline void Vector4<T>::set(T X, T Y, T Z, T U, double N, double C, int D) 
+
+3次元ベクトルに値をセット．
+*/
+template <typename T> inline void Vector4<T>::set(T X, T Y, T Z, T U, double N, double C, int D) 
+{
+    x  = X;
+    y  = Y;
+    z  = Z;
+    t  = U;
+    n  = N;
+    c  = C;
+    d  = D;
+
+    if (n<=0.0) {
+        n = (double)sqrt(x*x + y*y + z*z + t*t);
+    }
+}
+
+
+// Cast 
+template <typename T, typename R> inline Vector4<T> Cast(Vector4<R> v) { return Vector4<T>((T)v.x, (T)v.y, (T)v.z, (T)v.t, v.n, v.c, v.d);}
+
+
+///////////////////////////////////////////////////////////////////////////
+// Vector4 オペレータ
+
+template <typename T> inline Vector4<T> operator - (const Vector4<T> a)
+{ return Vector4<T>(-a.x, -a.y, -a.z, -a.t, a.n, a.c, a.d); }
+
+
+template <typename T> inline Vector4<T> operator + (const Vector4<T> a, const Vector4<T> b)
+{ return Vector4<T>(a.x + b.x, a.y + b.y, a.z + b.z, a.t + b.t, 0.0, Min(a.c, b.c), a.d); }
+
+
+template <typename T, typename R> inline Vector4<T> operator + (const Vector4<T> a, R c)
+{ return Vector4<T>(a.x + (T)c, a.y + (T)c, a.z + (T)c, a.t + (T)c, 0.0, a.c, a.d); }
+
+
+template <typename T, typename R> inline Vector4<T> operator + (const R c, Vector4<T> a)
+{ return Vector4<T>((T)c + a.x, (T)c + a.y, (T)c + a.z, (T)c + a.t, 0.0, a.c, a.d); }
+
+
+template <typename T> inline Vector4<T> operator - (const Vector4<T> a, const Vector4<T> b)
+{ return Vector4<T>(a.x - b.x, a.y - b.y, a.z - b.z, a.t - b.t, 0.0, Min(a.c, b.c), a.d); }
+
+
+template <typename T, typename R> inline Vector4<T> operator - (const Vector4<T> a, R c)
+{ return Vector4<T>(a.x - (T)c, a.y - (T)c, a.z - (T)c, a.t - (T)c, 0.0, a.c, a.d); }
+
+
+template <typename T, typename R> inline Vector4<T> operator - (R c, const Vector4<T> a)
+{ return Vector4<T>((T)c - a.x, (T)c - a.y, (T)c - a.z, (T)c - a.t, 0.0, a.c, a.d); }
+
+
+template <typename T, typename R> inline Vector4<T> operator * (const R d, const Vector4<T> a)
+{ return Vector4<T>((T)d*a.x, (T)d*a.y, (T)d*a.z, (T)d*a.t, (T)d*a.n, a.c, a.d); }
+
+
+template <typename T, typename R> inline Vector4<T> operator * (const Vector4<T> a, const R d)
+{ return Vector4<T>(a.x*(T)d, a.y*(T)d, a.z*(T)d, a.t*(T)d, a.n*(T)d, a.c, a.d); }
+
+
+template <typename T, typename R> inline Vector4<T> operator / (const Vector4<T> a, const R d)
+{ return Vector4<T>(a.x/(T)d, a.y/(T)d, a.z/(T)d, a.t/(T)d, a.n/(T)d, a.c, a.d); }
+
+
+template <typename T, typename R> inline Vector4<T> operator / (const R d, const Vector4<T> a)
+{ return Vector4<T>((T)d/a.x, (T)d/a.y, (T)d/a.z, (T)d/a.t, 0.0, a.c, a.d) ;}
+
+
+template <typename T> inline Vector4<T> operator += (Vector4<T>& a, const Vector4<T> b)
+{ a = a + b; return a; }
+
+
+template <typename T, typename R> inline Vector4<T> operator += (Vector4<T>& a, const Vector4<R> b)
+{ a = a + Cast<T>(b); return a; }
+
+
+template <typename T> inline Vector4<T> operator -= (Vector4<T>& a, const Vector4<T> b)
+{ a = a - b; return a; }
+
+template <typename T, typename R> inline Vector4<T> operator -= (Vector4<T>& a, const Vector4<R> b)
+{ a = a - Cast<T>(b); return a; }
+
+
+/// Dot product    内積
+template <typename T> inline T operator * (const Vector4<T> a, const Vector4<T> b)
+{ return (a.x*b.x + a.y*b.y + a.z*b.z + a.t*b.t); }
+
+
+template <typename T> inline bool operator == (const Vector4<T> v1, const Vector4<T> v2)
+{ return (v1.x == v2.x && v1.y == v2.y && v1.z == v2.z && v1.t == v2.t); }
+
+
+template <typename T> inline bool operator != (const Vector4<T> v1, const Vector4<T> v2)
+{ return (v1.x != v2.x || v1.y != v2.y || v1.z != v2.z || v1.t != v2.t); }
+
+
+template <typename T> inline Vector4<T> MidPoint(const Vector4<T> a, const Vector4<T> b)
+{ return 0.5*(a+b); }
+
+
+//
+/// 点a と b の距離　（a,b は位置ベクトル）
+template <typename T> inline double Vector4Dist(const Vector4<T> a, const Vector4<T> b)
+{
+    //return (b-a).n;
+    return (b-a).norm();
+}
+
+
+template <typename T> inline bool operator < (const Vector4<T> v1, const Vector4<T> v2)
+{
+    if (v1.x != v2.x) return v1.x < v2.x;
+    if (v1.y != v2.y) return v1.y < v2.y;
+    if (v1.z != v2.z) return v1.z < v2.z;
+    if (v1.t != v2.t) return v1.t < v2.t;
+    return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+
+/**
+v1, v2 が同じ点かチェックする．信頼度は考慮しない．
+
+*/
+template <typename T> inline bool same_vector(Vector4<T> v1, Vector4<T> v2)
+{
+    T dx = v1.x - v2.x;
+    T dy = v1.y - v2.y;
+    T dz = v1.z - v2.z;
+    T dt = v1.t - v2.t;
+    T d2 = dx*dx + dy*dy + dz*dz + dt*dt;
+    double t2 = Vector_Tolerance*Vector_Tolerance;
+
+    if ((double)d2>t2) return false;
+    return true;
+}
+
+
+template <typename T> inline Vector4<T>* dupVector4(Vector4<T>* a, int n)
+{
+    Vector4<T>* v = (Vector4<T>*)malloc(sizeof(Vector4<T>)*n);
+    if (v==NULL) return NULL;
+
+    for (int i=0; i<n; i++) v[i] = a[i];
+
+    return v;
+}
+
+
+// angle between a and b
+template <typename T> inline double Vector4Angle(Vector4<T> a, Vector4<T> b)
+{
+    a.normalize();
+    b.normalize();
+    if (a.n<Zero_Eps || b.n<Zero_Eps) return 0.0;
+
+    double cs = a*b;
+    if      (cs>=1.0)  return 0.0;
+    else if (cs<=-1.0) return PI;
+    
+    return acos(a*b);
+}
+
+
+template <typename T> inline double Vector4Angle(Vector4<T> a, Vector4<T> b,  Vector4<T> c)
+{
+    return Vector4Angle(b-a, c-b);
+}
+
 
 
 }       // namespace

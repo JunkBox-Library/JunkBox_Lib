@@ -11,19 +11,19 @@ using namespace jbxl;
 
 
 // 相対値
-double  jbxl::Vector_Tolerance     = 1.0e-6;
-double  jbxl::Vertex_Tolerance     = 1.0e-6;
+double  jbxl::Vector_Tolerance     = 1.0e-8;
+double  jbxl::Vertex_Tolerance     = 1.0e-8;
 double  jbxl::Edge_Tolerance       = 1.0e-12;
 double  jbxl::Facet_Tolerance      = 1.0e-12;
 
 // 絶対値
-double  jbxl::Abs_Vector_Tolerance = 1.0e-4;
-double  jbxl::Abs_Vertex_Tolerance = 1.0e-4;
-double  jbxl::Collision_Tolerance  = 1.0e-2;        ///< 衝突判定用トレランス
+double  jbxl::Abs_Vector_Tolerance = 1.0e-6;
+double  jbxl::Abs_Vertex_Tolerance = 1.0e-6;
+double  jbxl::Collision_Tolerance  = 1.0e-3;        ///< 衝突判定用トレランス
 double  jbxl::Sin_Tolerance        = 1.0e-6;        ///< sinθ==0 
 
 // 1に対して
-double  jbxl::Zero_Eps             = 1.0e-6;        ///< 1に対して 0とするトレランス
+double  jbxl::Zero_Eps             = 1.0e-8;        ///< 1に対して 0とするトレランス
 double  jbxl::Zero_Eps2            = Zero_Eps*Zero_Eps;
 
 

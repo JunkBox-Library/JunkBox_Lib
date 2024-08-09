@@ -138,17 +138,17 @@ public:
 
     bool            collider;
 
-    unsigned int    num_facet;      // この SHELL での FACET の数   
+    unsigned int    num_facets;     // この SHELL での FACET の数   
     unsigned int*   facet_index;    // 各 FACET での vi の数を格納した配列
     unsigned int*   facet_vertex;   // 各 FACET での vv (vn, vu) の数を格納した配列
 
-    unsigned int*   vi;             // インデックス
-    Vector<double>* vv;             // 頂点座標
-    Vector<double>* vn;             // 法線ベクトル
-    UVMap<double>*  vu;             // UVマップ
-    unsigned int*   vj;             // 重み付けされたジョイント
-    float*          vw;             // ジョイントの重み
-    float*          vm;             // Inverse Bind 行列
+    unsigned int*   vi;             // インデックス (shell_indexes  個)
+    Vector<float>*  vv;             // 頂点座標     (shell_vertexes 個)
+    Vector<float>*  vn;             // 法線ベクトル (shell_vertexes 個)
+    UVMap<float>*   vu;             // UVマップ     (shell_vertexes 個)
+    Vector4<short unsigned>* vj;    // 重み付けされたジョイント (shell_vertexes 個)
+    Vector4<float>*          vw;    // ジョイントの重み (shell_vertexes 個)
+    float*          vm;             // Inverse Bind Matrix (num_joints x 16 個)
 
     //AffineTrans<double>* uvmap_trans;
 
@@ -216,7 +216,7 @@ public:
     int     material_no;        // materials の要素（material）の通し番号
     int     image_no;           // images の要素（image）の通し番号． material.index -> texture.source -> image
 
-    int     joint_num;
+    int     num_joints;
     int     joint_offset;
 
     tJson*  json_data;
@@ -266,6 +266,8 @@ public:
     void    addMaterials(MeshFacetNode* facet);
     void    addMaterialParameters(tJson* pbr, MeshFacetNode* facet);
 
+    void    closeSolid(void);
+
     void    execAffineUVMap(MeshFacetNode* facet, AffineTrans<double>* affine);
 
     // AoS
@@ -279,16 +281,13 @@ public:
     void    createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int shell_vertexes);
 
     // create bin data at onece
-    void    createShellGeoData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes);
+    void    createShellGeoData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, SkinJointData* skin_joint=NULL);
     void    createBinDataAoS(void);
     void    createBinDataSoA(void);
 
     void    addBufferViewsIBM(void);
     void    addAccessorsIBM(void);
     void    createInverseBindMatrix(SkinJointData* skin_joint);
-
-
-
 
     void    outputFile (const char* fn, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn);
     void    output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn);
@@ -299,8 +298,6 @@ public:
 
     glbTextureInfo*  getGLBTextureInfo(const char* tex_dirn);
     void    freeGLBTextureInfo(glbTextureInfo* tex_info);
-
-    void    closeSolid(void);
 };
 
 

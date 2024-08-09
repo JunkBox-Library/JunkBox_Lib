@@ -185,7 +185,7 @@ inline void  freeContourBaseData(ContourBaseData*& contour) { if(contour!=NULL){
 class  SkinJointData
 {
 public:
-    int     joint_num;                      ///< Jointの数．
+    int     num_joints;                     ///< Jointの数．
     double  pelvis_offset;
 
     AffineTrans<double>* inverse_bind;

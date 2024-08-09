@@ -331,7 +331,7 @@ void  jbxl::freeTriPolygonData(TriPolygonData*& tridata, int n)
 
 void  SkinJointData::init(int n)
 {
-    joint_num = 0;
+    num_joints = 0;
     pelvis_offset = 0.0;
 
     inverse_bind = NULL;
@@ -340,25 +340,25 @@ void  SkinJointData::init(int n)
     joint_names.init();
 
     if (n>0) {
-        joint_num = n;
-        int len_data = sizeof(AffineTrans<double>)*joint_num;
+        num_joints = n;
+        int len_data = sizeof(AffineTrans<double>)*num_joints;
         inverse_bind     = (AffineTrans<double>*)malloc(len_data);
         alt_inverse_bind = (AffineTrans<double>*)malloc(len_data);
         memset(inverse_bind,     0, len_data);
         memset(alt_inverse_bind, 0, len_data);
         //
-        for (int i=0; i<joint_num; i++) {
+        for (int i=0; i<num_joints; i++) {
             inverse_bind[i].init();
             alt_inverse_bind[i].init();
         }
-        joint_names.init(joint_num);
+        joint_names.init(num_joints);
     }
 }
 
 
 void  SkinJointData::free()
 {
-    for (int i=0; i<joint_num; i++) {
+    for (int i=0; i<num_joints; i++) {
         inverse_bind[i].free();
         alt_inverse_bind[i].free();
     }

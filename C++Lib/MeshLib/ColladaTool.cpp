@@ -223,16 +223,16 @@ char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* shelld
     tXML* joint_tag = add_xml_node(skin_tag, "source");
     add_xml_attr_str(joint_tag, "id", _tochar(joint_id.buf + 1));
 
-    int joints_num = skin_joint->joint_names.get_size();
+    int num_joints = skin_joint->joint_names.get_size();
     tXML* joint_name_tag = add_xml_node(joint_tag, "Name_array");
     add_xml_attr_str(joint_name_tag, "id", _tochar(joint_name_id.buf + 1));
-    add_xml_attr_int(joint_name_tag, "count", joints_num);
+    add_xml_attr_int(joint_name_tag, "count", num_joints);
 
-    for (int jnt=0; jnt<joints_num; jnt++) {
+    for (int jnt=0; jnt<num_joints; jnt++) {
         const char* joint_name = (const char*)skin_joint->joint_names.get_value(jnt);
         append_xml_content_node(joint_name_tag, joint_name);
     }
-    addSimpleTechniqueAccessor(joint_tag, _tochar(joint_name_id.buf), joints_num, 1, "JOINT", "name");
+    addSimpleTechniqueAccessor(joint_tag, _tochar(joint_name_id.buf), num_joints, 1, "JOINT", "name");
 
     // source INVERSE_BIND_MATRIX
     Buffer invbind_id = make_Buffer_str("#SOURCE_INVBIND_");
@@ -245,23 +245,23 @@ char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* shelld
 
     tXML* invbind_float_tag = add_xml_node(invbind_tag, "float_array");
     add_xml_attr_str(invbind_float_tag, "id", _tochar(invbind_float_id.buf + 1));
-    add_xml_attr_int(invbind_float_tag, "count", joints_num*16);
+    add_xml_attr_int(invbind_float_tag, "count", num_joints*16);
 
-    for (int jnt=0; jnt<joints_num; jnt++) {
+    for (int jnt=0; jnt<num_joints; jnt++) {
         for (int i=1; i<=4; i++) {
             for (int j=1; j<=4; j++) {
                 append_xml_content_node(invbind_float_tag, dtostr(skin_joint->inverse_bind[jnt].matrix.element(i, j)));
             }
         }
     }
-    addSimpleTechniqueAccessor(invbind_tag, _tochar(invbind_float_id.buf), joints_num, 16, "TRANSFORM", "float4x4");
+    addSimpleTechniqueAccessor(invbind_tag, _tochar(invbind_float_id.buf), num_joints, 16, "TRANSFORM", "float4x4");
 
     // source WEIGHT
-    int vec_len = sizeof(Vector<int>)*shelldata->ttl_vertex*joints_num;
+    int vec_len = sizeof(Vector<int>)*shelldata->ttl_vertex*num_joints;
     Vector<int>* weight_index = (Vector<int>*)malloc(vec_len);
     if (weight_index==NULL) return NULL;
     memset(weight_index, 0, vec_len);
-    char* weight_id = addWeightSource(skin_tag, shelldata, weight_index, joints_num);
+    char* weight_id = addWeightSource(skin_tag, shelldata, weight_index, num_joints);
 
     // joints
     tXML* joints_tag = add_xml_node(skin_tag, "joints");
@@ -293,7 +293,7 @@ char*  ColladaXML::addController(const char* geometry_id, MeshObjectData* shelld
     int vnum = 0;
     int prev_vertex = -1;
     //
-    for (int i=0; i<shelldata->ttl_vertex*joints_num; i++) {
+    for (int i=0; i<shelldata->ttl_vertex*num_joints; i++) {
         if (weight_index[i].z==TRUE) {
             if (prev_vertex==-1) prev_vertex = weight_index[i].x;               // vertex number
             append_xml_content_node(vindex_tag, itostr(weight_index[i].y));     // joint number
@@ -504,14 +504,14 @@ char*  ColladaXML::addTexcrdSource(tXML* tag, MeshObjectData* shelldata)
 
 
 /**
-char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* shelldata, Vector<int>* weight_index, int joints_num)
+char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* shelldata, Vector<int>* weight_index, int num_joints)
 
 @retval  weight_index[].x: vertex No.
 @retval  weight_index[].y: joint No.
 @retval  weight_index[].z: FALSE->データなし, TRUE->データあり
 @return  source_id
 */
-char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* shelldata, Vector<int>* weight_index, int joints_num)
+char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* shelldata, Vector<int>* weight_index, int num_joints)
 {
     if (tag==NULL || shelldata==NULL || weight_index==NULL) return NULL;
 
@@ -540,10 +540,10 @@ char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* shelldata, Vector<
                 }
 
                 if (total!=0) {
-                    for (int j=0; j<joints_num; j++) {
-                        weight_index[joints_num*vnum + j].x = i;
-                        weight_index[joints_num*vnum + j].y = j;
-                        weight_index[joints_num*vnum + j].z = FALSE;
+                    for (int j=0; j<num_joints; j++) {
+                        weight_index[num_joints*vnum + j].x = i;
+                        weight_index[num_joints*vnum + j].y = j;
+                        weight_index[num_joints*vnum + j].z = FALSE;
 
                         int weight_value = 0;
                         if (j<jnum) weight_value = weight[i].get_value(j);
@@ -551,15 +551,15 @@ char*  ColladaXML::addWeightSource(tXML* tag, MeshObjectData* shelldata, Vector<
                         if (weight_value!=0) {
                             double value = weight_value/(double)total;
                             append_xml_content_node(source_array_tag, dtostr(value));
-                            weight_index[vnum*joints_num + j].z = TRUE;
+                            weight_index[vnum*num_joints + j].z = TRUE;
                             count++;
                         }
                     }
                 }
                 else {
-                    weight_index[vnum*joints_num].x = i;
-                    weight_index[vnum*joints_num].y = 0;
-                    weight_index[vnum*joints_num].z = TRUE;
+                    weight_index[vnum*num_joints].x = i;
+                    weight_index[vnum*num_joints].y = 0;
+                    weight_index[vnum*num_joints].z = TRUE;
                     append_xml_content_node(source_array_tag, "0.000000");
                     count++;
                 }
@@ -979,8 +979,8 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
         buf[0] = '"';
 
         int pelvis_num = -1;
-        int joints_num = skin_joint->joint_names.get_size();
-        for (int jnt=0; jnt<joints_num; jnt++) {
+        int num_joints = skin_joint->joint_names.get_size();
+        for (int jnt=0; jnt<num_joints; jnt++) {
             const char* joint_name = (const char*)skin_joint->joint_names.get_value(jnt);
             if (joint_name!=NULL) {
                 int len = (int)strlen(joint_name);
