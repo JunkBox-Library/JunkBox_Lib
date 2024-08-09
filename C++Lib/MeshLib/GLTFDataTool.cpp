@@ -385,6 +385,7 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         this->addSkeletonNodes(skin_joint, affine);
     }
     this->addNodes(affine);
+
     this->addTextures(facet);
     this->addMaterials(facet);
 
@@ -403,11 +404,14 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
 
     if (this->has_joints) {
         //this->addSkins(this->joint_offset);
-        //this->addBufferViewsIBM();
-        //this->addAccessorsIBM(); 
+        this->addBufferViewsIBM();
+        this->addAccessorsIBM(); 
         //this->createInverseBindMatrix(skin_joint);
+        del_json_node(&this->skins);
     }
-    del_json_node(&this->skins);
+    else {
+        del_json_node(&this->skins);
+    }
 
     // BINデータ作成
     if (this->bin_seq) {
@@ -419,7 +423,8 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
             this->createBinDataSeqSoA(facet, shell_indexes, shell_vertexes);
         }
     }
-    else {  // データを一旦 GLTFShellNodeに保存．最後に一気に BINデータを作成
+    else {
+        // データを一旦 GLTFShellNodeに保存．最後に closeSolid() で一気に BINデータを作成
         this->createShellGeoData(facet, shell_indexes, shell_vertexes, skin_joint);
     }
 
@@ -478,20 +483,22 @@ void  GLTFData::addNodes(AffineTrans<double>* affine)
         //snprintf(buf, LBUF-1, JBXL_GLTF_NODES_SKIN, this->skin_no);
         //json_insert_parse(mesh, buf);
     }
+    //else {
+        // affine translarion
+        tJson* matrix = json_append_array_key(mesh, "matrix");
+        if (affine!=NULL) {
+            AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
+            trans.affineMatrixFllow(*affine);
 
-    // affine translarion
-    tJson* matrix = json_append_array_key(mesh, "matrix");
-    if (affine!=NULL) {
-        AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
-        trans.affineMatrixFllow(*affine);
-        for (int j=1; j<=4; j++) {
-            for (int i=1; i<=4; i++) {
-                float element = (float)trans.matrix.element(i, j);
-                json_append_array_real_val(matrix, element);
+            for (int j=1; j<=4; j++) {
+                for (int i=1; i<=4; i++) {
+                    float element = (float)trans.matrix.element(i, j);
+                    json_append_array_real_val(matrix, element);
+                }
             }
+            trans.free();
         }
-        trans.free();
-    }
+    //}
 
     json_append_array_int_val(this->nodes_children, this->node_no);
     this->node_no++;
@@ -511,11 +518,31 @@ void  GLTFData::addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>*
     json_append_array_int_val(this->nodes_children, this->joint_offset-1);
     this->node_no++;
 
+/*
+    tJson* root_matrix = json_append_array_key(nodes_root, "matrix");
+    if (affine!=NULL) {
+        AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
+        trans.affineMatrixFllow(*affine);
+        for (int j=1; j<=4; j++) {
+            for (int i=1; i<=4; i++) {
+                float element = (float)trans.matrix.element(i, j);
+                json_append_array_real_val(root_matrix, element);
+            }
+        }
+        trans.free();
+    }
+*/
+
+
     // Root node of skeletons
     tJson* skeleton_root = json_insert_parse(this->nodes, JBXL_GLTF_NODES_AVATAR);
     tJson* skeleton_children = json_append_array_key(skeleton_root, "children");
     json_append_array_int_val(skeleton_children, this->joint_offset);
     this->node_no++;
+
+
+
+
 
     // skeleton の位置合わせ
     Vector<double> pelvis = Vector<double>(0.0, 0.0, 1.067);                // ほぼ定数だが，一応データから....
@@ -534,15 +561,17 @@ void  GLTFData::addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>*
     if (this->no_offset) this->affineSkeleton.shift = this->affineSkeleton.shift - affine->shift;
     this->affineSkeleton.computeMatrix();
 
-    tJson* skeleton_matrix  = json_append_array_key(skeleton_root, "matrix");
     AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
     trans.affineMatrixFllow(this->affineSkeleton);
+
+    tJson* skeleton_matrix  = json_append_array_key(skeleton_root, "matrix");
     for (int j=1; j<=4; j++) {
         for (int i=1; i<=4; i++) {
             json_append_array_real_val(skeleton_matrix, trans.matrix.element(i,j));
         }
     }
     trans.free();
+
 
     //
     tList* jl = this->joints_list;
@@ -574,6 +603,25 @@ void  GLTFData::addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>*
             del_json_node(&children);
         }
 
+        skin_joint->alt_inverse_bind[jnt].computeComponents();
+        tJson* shift = json_append_array_key(skltn, "translation");
+        json_append_array_real_val(shift, skin_joint->alt_inverse_bind[jnt].shift.x);
+        json_append_array_real_val(shift, skin_joint->alt_inverse_bind[jnt].shift.y);
+        json_append_array_real_val(shift, skin_joint->alt_inverse_bind[jnt].shift.z);
+
+/*
+        if (jnt==0) { 
+           tJson* rotate = json_append_array_key(skltn, "rotation");
+            json_append_array_real_val(rotate, trans.rotate.x);
+            json_append_array_real_val(rotate, trans.rotate.y);
+            json_append_array_real_val(rotate, trans.rotate.z);
+            json_append_array_real_val(rotate, trans.rotate.s);
+
+            tJson* scale = json_append_array_key(skltn, "scale");
+            json_append_array_real_val(scale, trans.scale.x);
+            json_append_array_real_val(scale, trans.scale.y);
+            json_append_array_real_val(scale, trans.scale.z);
+        }
         tJson* matrix = json_append_array_key(skltn, "matrix");
         for (int j=1; j<=4; j++) {
             for (int i=1; i<=4; i++) {
@@ -581,7 +629,6 @@ void  GLTFData::addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>*
                 json_append_array_real_val(matrix, element);
             }
         }
-/*
         if (jl->ldat.ptr!=NULL) {
             tJson* transl = json_append_array_key(skltn, "translation");
             Vector<float>* vec = (Vector<float>*)(jl->ldat.ptr);
@@ -797,10 +844,11 @@ void  GLTFData::addSkins(int joint_offset)
     snprintf(buf, LBUF-1, JBXL_GLTF_SKINS, this->accessor_no, joint_offset);
     tJson* skn = json_insert_parse(skins, buf);
     tJson* jnt = json_append_array_key(skn, "joints");
-    //for (int j=0; j<this->num_joints; j++) {
-    //    json_append_array_int_val(jnt, j + joint_offset);
-    //}
-    json_append_array_int_val(jnt, joint_offset);
+    for (int j=0; j<this->num_joints; j++) {
+        json_append_array_int_val(jnt, j + joint_offset);
+        //json_append_array_int_val(jnt, j);
+    }
+    //json_append_array_int_val(jnt, joint_offset);
     this->skin_no++;
     return;
 }
@@ -1029,9 +1077,14 @@ void  GLTFData::createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int
             if (this->has_joints) {
                 unsigned int total = 0;
                 unsigned int jnum  = (unsigned int)facet->weight_value[i].get_size();
+                int wcount = 0;
                 for (unsigned int j=0; j<jnum; j++) {
-                    total += (unsigned int)facet->weight_value[i].get_value(j);
+                    unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
+                    if (w!=0) wcount++;
+                    total += w;
                 }
+                if (wcount>4) PRINT_MESG("GLTFData::createBinDataSeqAoS: WARNING: more than 4 weighted joints (%d)\n", wcount);
+
                 short unsigned int weight_index[4];
                 float              weight_value[4];
                 memset(weight_index, 0, j_length);
@@ -1042,7 +1095,7 @@ void  GLTFData::createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int
                     for (unsigned int j=0; j<jnum; j++) {
                         unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                         if (w!=0) {
-                            weight_index[jcnt] = (short unsigned int)(j + this->joint_offset);
+                            weight_index[jcnt] = (short unsigned int)(j);
                             weight_value[jcnt] = (float)w/(float)total;
                             jcnt++;
                             if (jcnt>=4) break;
@@ -1284,9 +1337,14 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
             for (int i=0; i<facet->num_vertex; i++) {
                 unsigned int total = 0;
                 unsigned int jnum  = (unsigned int)facet->weight_value[i].get_size();
+                int wcount = 0;
                 for (unsigned int j=0; j<jnum; j++) {
-                    total += (unsigned int)facet->weight_value[i].get_value(j);
+                    unsigned int w =  (unsigned int)facet->weight_value[i].get_value(j);
+                    if (w!=0) wcount++;
+                    total += w;
                 }
+                if (wcount>4) PRINT_MESG("GLTFData::createBinDataSeqSoA: WARNING: more than 4 weighted joints (%d)\n", wcount);
+
                 short unsigned int weight_index[4];
                 memset(weight_index, 0, j_length);
 
@@ -1295,7 +1353,7 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
                     for (unsigned int j=0; j<jnum; j++) {
                         unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                         if (w!=0) {
-                            weight_index[jcnt] = (short unsigned int)(j + this->joint_offset);
+                            weight_index[jcnt] = (short unsigned int)(j);
                             jcnt++;
                             if (jcnt>=4) break;
                         }
@@ -1425,20 +1483,24 @@ void  GLTFData::createShellGeoData(MeshFacetNode* facet, int shell_indexes, int 
             for (int i=0; i<facet->num_vertex; i++) {
                 unsigned int total = 0;
                 unsigned int jnum  = (unsigned int)facet->weight_value[i].get_size();
+                int wcount = 0;
                 for (unsigned int j=0; j<jnum; j++) {
-                    total += (unsigned int)facet->weight_value[i].get_value(j);
+                    unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
+                    if (w>0) wcount++;
+                    total += w;
                 }
+                if (wcount>4) PRINT_MESG("GLTFData::createShellGeoData: WARNING: more than 4 weighted joints (%d)\n", wcount);
+                //
                 short unsigned int weight_index[4];
                 float              weight_value[4];
                 memset(weight_index, 0, j_length);
                 memset(weight_value, 0, w_length);
-
                 if (total!=0) {
                     unsigned int jcnt = 0;
                     for (unsigned int j=0; j<jnum; j++) {
                         unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                         if (w!=0) {
-                            weight_index[jcnt] = (short unsigned int)(j + this->joint_offset);
+                            weight_index[jcnt] = (short unsigned int)(j);
                             weight_value[jcnt] = (float)w/(float)total;
                             jcnt++;
                             if (jcnt>=4) break;
@@ -1552,6 +1614,23 @@ void  GLTFData::createBinDataAoS(void)
             }
             v_offset += shell_node->facet_vertex[f];
         }
+
+        // Inverse Bind Matrix
+/*
+        for (int k=0; k<this->num_joints; k++) {
+            int kz = k*16; 
+            for (int j=1; j<=4; j++) {
+                int jz = (j-1)*4;
+                for (int i=1; i<=4; i++) {
+                    cat_b2Buffer(&shell_node->vm[kz + jz + i - 1], &(this->bin_buffer), float_size);
+                }
+            }
+        } 
+*/
+        for (int i=0; i<this->num_joints*16; i++) {
+            cat_b2Buffer(&shell_node->vm[i], &(this->bin_buffer), float_size);
+        } 
+
         shell_node = shell_node->next;
     }
     return;
@@ -1649,53 +1728,51 @@ void  GLTFData::createBinDataSoA(void)
 void  GLTFData::addBufferViewsIBM(void)
 {
     char buf[LBUF];
+    unsigned int float_size = (unsigned int)sizeof(float);
+
     // 4x4 matrix
-    unsigned int length = (unsigned int)sizeof(float)*16U;
+    unsigned int length = float_size*16U*this->num_joints;
     memset(buf, 0, LBUF);
-    snprintf(buf, LBUF-1, JBXL_GLTF_VIEWS_DATA, 1, this->matrix_offset, length);
+    snprintf(buf, LBUF-1, JBXL_GLTF_VIEWS_DATA, 0, this->bin_offset, length);
     json_insert_parse(this->buffviews, buf);
-    this->matrix_offset += length;
+    this->bin_offset += length;
 }
 
 
 void  GLTFData::addAccessorsIBM(void)
 {
     char buf[LBUF];
+    unsigned int float_size = (unsigned int)sizeof(float);
+    unsigned int offset = 0;
+    unsigned int length = float_size*16U;
 
-    // 4x4 matrix
-    memset(buf, 0, LBUF);
-    snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS, this->view_no, 0U, 5126, 1, "MAT4");
-    json_insert_parse(this->accessors, buf);
-
+    //for (int i=0; i<this->num_joints; i++) {
+        // 4x4 matrix
+        memset(buf, 0, LBUF);
+        snprintf(buf, LBUF-1, JBXL_GLTF_ACCESSORS, this->view_no, offset, 5126, this->num_joints, "MAT4");
+        json_insert_parse(this->accessors, buf);
+        offset += length;
+        this->accessor_no++;
+        this->mesh_prim_no++;
+    //}
     this->view_no++;
-    this->accessor_no++;
-    this->mesh_prim_no++;
 }
 
 
 void  GLTFData::createInverseBindMatrix(SkinJointData* skin_joint)
 {
-    if (!this->has_joints || skin_joint==NULL) return;
-    //
     unsigned int float_size = (unsigned int)sizeof(float);
 
-    if (this->matrix_buffer.buf==NULL) {
-        this->matrix_buffer = make_Buffer(float_size*16U);
-        if (this->matrix_buffer.bufsz<=0) {
-            PRINT_MESG("GLTFData::createInvBindMatrix: ERROR: matrix_buffer. no more memory.\n");
-            return;
-        }
-    }
 
     // Matrix
-    //for (int k=0; k<this->num_joints; k++) {
-        for (int i=1; i<=4; i++) {
-            for (int j=1; j<=4; j++) {
+    for (int k=0; k<this->num_joints; k++) {
+        for (int j=1; j<=4; j++) {
+            for (int i=1; i<=4; i++) {
                 float element = skin_joint->bind_shape.matrix.element(i, j);
-                cat_b2Buffer(&element, &this->matrix_buffer, float_size);
+                cat_b2Buffer(&element, &this->bin_buffer, float_size);
             }
         }
-    //}
+    }
     return;
 }
 

@@ -42,6 +42,7 @@ namespace jbxl {
 
 #define  JBXL_GLTF_VIEWS         "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"byteStride\":%u,\"target\":34962}"
 #define  JBXL_GLTF_VIEWS_ELEMENT "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"target\":34963}"
+//#define  JBXL_GLTF_VIEWS_IBM     "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"byteStride\":%u}"
 #define  JBXL_GLTF_VIEWS_DATA    "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u}"
 
 #define  JBXL_GLTF_ACCESSORS     "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\"}"
