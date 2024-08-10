@@ -139,7 +139,7 @@ public:
 
     bool            collider;
 
-    unsigned int    num_facets;     // この SHELL での FACET の数   
+    unsigned int    num_facets;     // この SHELL での FACET の総数   
     unsigned int*   facet_index;    // 各 FACET での vi の数を格納した配列
     unsigned int*   facet_vertex;   // 各 FACET での vv (vn, vu) の数を格納した配列
 
@@ -207,18 +207,18 @@ public:
     unsigned int matrix_offset;
 
     // counter
-    int     shell_no;           // shell の通し番号（addShellが呼ばれた回数）
-    int     node_no;            // nodes の要素（node）の通し番号
-    int     mesh_no;            // meshes の要素（mesh）の通し番号
-    int     mesh_prim_no;       // meshe の primitive 要素の通し番号
-    int     skin_no;            // skins の要素（skin）の通し番号
-    int     view_no;            // bufferViews の要素（bufferView）の通し番号
-    int     accessor_no;        // accessors の要素（accessor）の通し番号
-    int     material_no;        // materials の要素（material）の通し番号
-    int     image_no;           // images の要素（image）の通し番号． material.index -> texture.source -> image
+    unsigned int  shell_no;                 // shell の通し番号（addShellが呼ばれた回数）
+    unsigned int  node_no;                  // nodes の要素（node）の通し番号
+    unsigned int  mesh_no;                  // meshes の要素（mesh）の通し番号
+    unsigned int  mesh_prim_no;             // meshe の primitive 要素の通し番号
+    unsigned int  skin_no;                  // skins の要素（skin）の通し番号
+    unsigned int  view_no;                  // bufferViews の要素（bufferView）の通し番号
+    unsigned int  accessor_no;              // accessors の要素（accessor）の通し番号
+    unsigned int  material_no;              // materials の要素（material）の通し番号
+    unsigned int  image_no;                 // images の要素（image）の通し番号． material.index -> texture.source -> image
 
-    int     num_joints;
-    int     joint_offset;
+    unsigned int  num_joints;
+    unsigned int  joint_offset;
 
     tJson*  json_data;
     tJson*  scenes;
@@ -288,7 +288,7 @@ public:
     // IBM
     void    addBufferViewsIBM(void);
     void    addAccessorsIBM(void);
-    void    createInverseBindMatrix(SkinJointData* skin_joint);
+    //void    createInverseBindMatrix(SkinJointData* skin_joint);
 
     // output
     void    outputFile (const char* fn, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn);
