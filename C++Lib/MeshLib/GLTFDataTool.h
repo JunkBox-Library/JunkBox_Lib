@@ -197,8 +197,8 @@ public:
     tList*  material_list;
 
     Vector<double>       center;
-    AffineTrans<double>* affineTrans;       // SOLID のアフィン変換
-    AffineTrans<double>  affineSkeleton;    // Skeleton のアフィン変換
+    AffineTrans<double>* affineTrans;       // SHELL のアフィン変換
+    AffineTrans<double>  affineRoot;
 
     Buffer  bin_buffer;
     unsigned int bin_offset;
@@ -281,7 +281,7 @@ public:
     void    createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int shell_vertexes);
 
     // create bin data at onece
-    void    createShellGeoData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, SkinJointData* skin_joint=NULL);
+    void    createShellGeoData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, SkinJointData* skin_joint=NULL, AffineTrans<double>* affine=NULL);
     void    createBinDataAoS(void);
     void    createBinDataSoA(void);
 

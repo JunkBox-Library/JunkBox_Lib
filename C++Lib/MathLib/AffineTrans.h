@@ -51,6 +51,8 @@ public:
     void   dup(AffineTrans a);
     AffineTrans<T>  dup(void);
 
+    void   clean_matrix(void)       { _dirty_matrix = false;}
+    void   clean_components(void)   { _dirty_components = false;}
     void   dirty_matrix(void)       { _dirty_matrix = true;}        // matrix を手動で変更したら実行する（推奨）
     void   dirty_components(void)   { _dirty_components = true;}    // component の要素を変更したら実行する（推奨）
     bool   is_dirty_matrix(void)    { return _dirty_matrix;}        // true なら computeComponents() を実行する（推奨）
@@ -88,8 +90,8 @@ public:
 
     // operator * は コンポーネントが計算されていることが条件．
     // 下記関数は コンポ―テントが計算されていなくても良い．
-    void   affineMatrixFllow(AffineTrans<T> a);  // *this = (*this) * a を Matrix のままで計算する．
-    void   affineMatrixPrev (AffineTrans<T> a);  // *this = a * (*this) を Matrix のままで計算する．
+    void   affineMatrixAfter (AffineTrans<T> a);  // *this = (*this) * a を Matrix のままで計算する．
+    void   affineMatrixBefore(AffineTrans<T> a);  // *this = a * (*this) を Matrix のままで計算する．
 
     bool   isSetComponents(void) { if(isSetShift() || isSetScale() || isSetRotate()) return true; else return false;}
     bool   isSetShift(void)  { return (shift !=Vector<T>());}
@@ -143,8 +145,8 @@ a, b ともに computeComponents() でコンポーネントが計算されてい
 */
 template <typename T> inline AffineTrans<T> operator * (AffineTrans<T> a, AffineTrans<T> b)
 { 
-    a.computeMatrix();
-    b.computeMatrix();
+    if (a.is_dirty_matrix()) a.computeMatrix();
+    if (b.is_dirty_matrix()) b.computeMatrix();
 
     AffineTrans<T> affine;
     for (int i=1; i<=4; i++) {
@@ -191,6 +193,7 @@ template <typename T> Matrix<T>  AffineTrans<T>::getRotMatrix(void)
 {
     Matrix<T> mt;
 
+    if (is_dirty_matrix()) computeMatrix();
     if (matrix.element(4, 4)==(T)1.0) {
         mt.init(2, 3, 3);
         for (int j=1; j<=3; j++) { 
@@ -202,6 +205,7 @@ template <typename T> Matrix<T>  AffineTrans<T>::getRotMatrix(void)
     else {
         mt = rotate.getRotMatrix();
     }
+
     return mt;
 }
 
@@ -211,6 +215,7 @@ template <typename T> AffineTrans<T>  AffineTrans<T>::getInvAffine(void)
 {
     AffineTrans<T> affine;
     if (!isNormal()) return affine;
+    if (is_dirty_components()) computeComponents();
 
     Matrix<T> rsz(2, 3, 3);
     rsz.element(1, 1) = (T)1.0/scale.x;
@@ -244,14 +249,14 @@ template <typename T> AffineTrans<T>  AffineTrans<T>::getInvAffine(void)
 
 
 /**
-template <typename T> void  AffineTrans<T>::affineMatrixFllow(AffineTrans<T> a)
+template <typename T> void  AffineTrans<T>::affineMatrixAfter(AffineTrans<T> a)
 
 *this = (*this) * a を Matrix のままで計算する．
 
 operator * は コンポーネントが計算されていることが条件．
 この関数は コンポ―テントが計算されていなくても良い．
 */
-template <typename T> void  AffineTrans<T>::affineMatrixFllow(AffineTrans<T> a)
+template <typename T> void  AffineTrans<T>::affineMatrixAfter(AffineTrans<T> a)
 {
     AffineTrans<T> affine;
     for (int i=1; i<=4; i++) {
@@ -273,14 +278,14 @@ template <typename T> void  AffineTrans<T>::affineMatrixFllow(AffineTrans<T> a)
 
 
 /**
-template <typename T> void  AffineTrans<T>::affineMatrixPrev(AffineTrans<T> a)
+template <typename T> void  AffineTrans<T>::affineMatrixBefore(AffineTrans<T> a)
 
 *this = a * (*this) を Matrix のままで計算する．
 
 operator * は コンポーネントが計算されていることが条件．
 この関数は コンポ―テントが計算されていなくても良い．
 */
-template <typename T> void  AffineTrans<T>::affineMatrixPrev(AffineTrans<T> a)
+template <typename T> void  AffineTrans<T>::affineMatrixBefore(AffineTrans<T> a)
 {
     AffineTrans<T> affine;
     for (int i=1; i<=4; i++) {
@@ -354,10 +359,10 @@ template <typename T> void   AffineTrans<T>::computeComponents(void)
     sy = (T)sqrt(sy); 
     sz = (T)sqrt(sz); 
     if (!isNormal()) return;
-
     scale.set(sx, sy, sz);
 
     //
+    clean_matrix();
     Matrix<T> mt = getRotMatrix();
     for (int i=1; i<=3; i++) {
         mt.element(i, 1) /= sx;
@@ -379,7 +384,7 @@ template <typename T> void   AffineTrans<T>::computeComponents(void)
 template <typename T> Vector<T>  AffineTrans<T>::execMatrixTrans(Vector<T> v)
 {
     //if (matrix.element(4,4)!=(T)1.0) computeMatrix(true);
-    computeMatrix(true);
+    if (is_dirty_matrix()) computeMatrix(true);
 
     Matrix<T> mv(1, 4);
     mv.mx[0] = v.x;
