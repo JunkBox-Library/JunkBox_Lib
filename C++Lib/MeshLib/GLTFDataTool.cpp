@@ -24,17 +24,17 @@ void  GLTFShellNode::init(void)
     this->facet_index    = NULL;
     this->facet_vertex   = NULL;
 
-    //this->material       = init_Buffer();
-
     this->vi             = NULL;
     this->vv             = NULL;
     this->vn             = NULL;
     this->vu             = NULL;
     this->vj             = NULL;
     this->vw             = NULL;
-    //this->uvmap_trans    = NULL;
-    this->next           = NULL;
 
+    //this->material       = init_Buffer();
+    //this->uvmap_trans    = NULL;
+
+    this->next           = NULL;
     return;
 }
 
@@ -118,8 +118,9 @@ void  GLTFData::init(void)
     this->image_list        = new_tList_anchor_node();
     this->material_list     = new_tList_anchor_node();
 
-    this->affineTrans       = NULL;
+    //this->affineTrans       = NULL;
     this->affineRoot.init();
+    this->affineSkeleton.init();
 
     this->bin_buffer        = init_Buffer();
     this->matrix_buffer     = init_Buffer();
@@ -136,11 +137,10 @@ void  GLTFData::init(void)
     this->material_no       = 0;
     this->image_no          = 0;
 
-    this->num_joints         = 0;
-    this->joint_offset      = 0;
+    this->num_joints        = 0;
+    this->node_offset       = 0;
 
     this->json_data         = NULL;
-
     this->scenes            = NULL;
     this->scenes_name       = NULL;
     this->scenes_nodes      = NULL;
@@ -181,9 +181,10 @@ void  GLTFData::free(void)
     if (this->joints_list!=NULL) del_tList(&this->joints_list);
     this->joints_list = NULL;       // unnecessary. just to be sure
 
-    this->delAffineTrans();
-    this->affineTrans = NULL;       // unnecessary. just to be sure
+    //this->delAffineTrans();
+    //this->affineTrans = NULL;       // unnecessary. just to be sure
     this->affineRoot.free();
+    this->affineSkeleton.free();
 }
 
 
@@ -247,37 +248,12 @@ AffineTrans<double>  GLTFData::getAffineTrans4Engine(AffineTrans<double> affine)
 
 使用するエンジンに合わせて，FACET毎の Affine変換のパラメータを変更する．
 */
-/*
-AffineTrans<double>  GLTFData::getAffineTrans4Engine(AffineTrans<double> affine)
-{
-    AffineTrans<double> trans;
-    for (int i=1; i<=4; i++) trans.matrix.element(i, i) = 1.0;
-    //
-    if (this->engine==JBXL_3D_ENGINE_UE) {
-        for (int i=1; i<=4; i++) trans.matrix.element(i, i) = 100.0;
-    }
-    else {
-        trans.matrix.element(2, 2) =  0.0;
-        trans.matrix.element(3, 3) =  0.0;
-        trans.matrix.element(3, 2) = -1.0;    // y -> -z
-        trans.matrix.element(2, 3) =  1.0;    // z -> y
-    }
-    //
-    trans.affineMatrixFllow(affine);     // engineTrans = engineTrans * (*affine)
-    return trans;
-}
-*/
-
-
 AffineTrans<double>  GLTFData::getAffineBaseTrans4Engine(void)
 {
     AffineTrans<double> trans;
     for (int i=1; i<=4; i++) trans.matrix.element(i, i) = 1.0;
     //
-    if (this->engine==JBXL_3D_ENGINE_UE) {
-        for (int i=1; i<=4; i++) trans.matrix.element(i, i) = 100.0;
-    }
-    else {
+    if (this->engine==JBXL_3D_ENGINE_UNITY) {
         trans.matrix.element(2, 2) =  0.0;
         trans.matrix.element(3, 3) =  0.0;
         trans.matrix.element(3, 2) = -1.0;    // y -> -z
@@ -382,8 +358,11 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
 
     //
     this->addScenes();
-    if (this->node_no==0 && this->has_joints) {
-        this->addSkeletonNodes(skin_joint, affine);
+    if (this->node_no==0) {
+        this->addRootNode(affine);
+        if (this->has_joints) {
+            this->addSkeletonNodes(skin_joint, affine);
+        }
     }
     this->addNodes(affine);
 
@@ -402,11 +381,11 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         this->addBufferViewsSoA(facet);
         this->addAccessorsSoA(facet);
     }
+
     if (this->has_joints) {
-        this->addSkins(this->joint_offset);
+        this->addSkins();
         this->addBufferViewsIBM();
         this->addAccessorsIBM(); 
-        //this->createInverseBindMatrix(skin_joint);
         //del_json_node(&this->skins);
     }
     else {
@@ -444,17 +423,42 @@ void  GLTFData::addScenes(void)
 {
     if (this->node_no==0) {
         json_set_str_val(this->scenes_name, (char*)this->gltf_name.buf);
-        // skeleton structure
-        if (this->has_joints) {
-            json_append_array_int_val(this->scenes_nodes, 0);
-            this->joint_offset = 2;
+        json_append_array_int_val(this->scenes_nodes, 0);
+        this->node_offset = 1;
+    }
+    return;
+}
+
+
+void  GLTFData::addRootNode(AffineTrans<double>* affine)
+{
+    // Root node of model
+    tJson* nodes_root = json_insert_parse(this->nodes, JBXL_GLTF_NODES_ROOT);
+    this->nodes_children = json_append_array_key(nodes_root, "children");
+
+    if (affine!=NULL) {
+        affine->computeMatrix();
+        this->affineRoot = getAffineBaseTrans4Engine();
+        this->affineRoot.affineMatrixAfter(*affine);
+        this->affineRoot.computeMatrix();
+
+        for (int j=1; j<=3; j++) {
+            for (int i=1; i<=4; i++) {
+                if (i==j) this->affineRoot.matrix.element(i, j) = 1.0f;
+                else      this->affineRoot.matrix.element(i, j) = 0.0f;
+            }
+        }
+        this->affineRoot.computeComponents();
+        //
+        tJson* root_matrix  = json_append_array_key(nodes_root, "matrix");
+        for (int j=1; j<=4; j++) {
+            for (int i=1; i<=4; i++) {
+                json_append_array_real_val(root_matrix, this->affineRoot.matrix.element(i, j));
+            }
         }
     }
-
-    if (!this->has_joints) {
-        json_append_array_int_val(this->scenes_nodes, this->node_no);
-    }
-
+    
+    this->node_no++;
     return;
 }
 
@@ -462,34 +466,6 @@ void  GLTFData::addScenes(void)
 void  GLTFData::addNodes(AffineTrans<double>* affine)
 {
     char buf[LBUF];
-
-
-
-/*
-    tJson* meshx = json_insert_parse(this->nodes, "{}");
-    tJson* matrixx = json_append_array_key(meshx, "matrix");
-    tJson* children = json_append_array_key(meshx, "children");
-    json_append_array_int_val(children, this->node_no + 1);
-
-        if (affine!=NULL) {
-            AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
-            trans.affineMatrixFllow(*affine);
-
-            for (int j=1; j<=4; j++) {
-                for (int i=1; i<=4; i++) {
-                    float element = (float)trans.matrix.element(i, j);
-                    json_append_array_real_val(matrixx, element);
-                }
-            }
-            trans.free();
-        }
-
-    json_append_array_int_val(this->nodes_children, this->node_no);
-    this->node_no++;
-*/
-
-
-
 
     // nodes
     Buffer node_name = init_Buffer();
@@ -500,8 +476,6 @@ void  GLTFData::addNodes(AffineTrans<double>* affine)
         node_name = make_Buffer_bystr("Node_#");
         cat_i2Buffer(this->node_no, &node_name);
     }
-
-
 
     memset(buf, 0, LBUF);
     snprintf(buf, LBUF-1, JBXL_GLTF_NODES_MESH, (char*)node_name.buf, this->shell_no);
@@ -516,11 +490,13 @@ void  GLTFData::addNodes(AffineTrans<double>* affine)
     }
     else {
         // affine translarion
-
         tJson* matrix = json_append_array_key(mesh, "matrix");
         if (affine!=NULL) {
             AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
+            AffineTrans<double> invroot = this->affineRoot.getInverseAffine();
             trans.affineMatrixAfter(*affine);
+            trans.affineMatrixBefore(invroot);
+            trans.computeMatrix();
 
             for (int j=1; j<=4; j++) {
                 for (int i=1; i<=4; i++) {
@@ -529,6 +505,7 @@ void  GLTFData::addNodes(AffineTrans<double>* affine)
                 }
             }
             trans.free();
+            invroot.free();
         }
     }
 
@@ -544,92 +521,52 @@ void  GLTFData::addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>*
     char buf[LBUF];
     memset(buf, 0, LBUF);
 
-    // Root node of model
-    tJson* nodes_root = json_insert_parse(this->nodes, JBXL_GLTF_NODES_ROOT);
-    this->nodes_children = json_append_array_key(nodes_root, "children");
-    json_append_array_int_val(this->nodes_children, this->joint_offset-1);
+    json_append_array_int_val(this->nodes_children, this->node_offset);
+    this->node_offset++;
+
+    // Root node of skeletons
+    tJson* skeleton_root = json_insert_parse(this->nodes, JBXL_GLTF_NODES_ARMATURE);
+    tJson* skeleton_children = json_append_array_key(skeleton_root, "children");
+    json_append_array_int_val(skeleton_children, this->node_offset);
     this->node_no++;
 
-/*
-    tJson* root_matrix = json_append_array_key(nodes_root, "matrix");
     if (affine!=NULL) {
+        Vector<double> pelvis = Vector<double>();
+        pelvis.x = skin_joint->alt_inverse_bind[0].matrix.element(1, 4);
+        pelvis.y = skin_joint->alt_inverse_bind[0].matrix.element(2, 4);
+        pelvis.z = skin_joint->alt_inverse_bind[0].matrix.element(3, 4);
+
+        AffineTrans<double> joint_space = skin_joint->inverse_bind[0] * skin_joint->bind_shape;
+        AffineTrans<double> joint_trans = joint_space.getInverseAffine();
+        Vector<double> shift = joint_trans.execRotationScale(pelvis);
+        joint_trans.shift = joint_trans.shift - shift;
+
         AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
+        AffineTrans<double> invroot = this->affineRoot.getInverseAffine();
         trans.affineMatrixAfter(*affine);
+        trans.affineMatrixBefore(invroot);
+        //
+        joint_trans.computeMatrix();
+        trans.affineMatrixAfter(joint_trans);
+        trans.computeMatrix();
+        
+
+        ///////////////////
+        tJson* skeleton_matrix = json_append_array_key(skeleton_root, "matrix");
         for (int j=1; j<=4; j++) {
             for (int i=1; i<=4; i++) {
                 float element = (float)trans.matrix.element(i, j);
-                json_append_array_real_val(root_matrix, element);
+                json_append_array_real_val(skeleton_matrix, element);
             }
         }
+        
+        this->affineSkeleton = trans.dup();
+
         trans.free();
+        invroot.free();
+        joint_space.free();
+        joint_trans.free();
     }
-*/
-
-
-    // Root node of skeletons
-    tJson* skeleton_root = json_insert_parse(this->nodes, JBXL_GLTF_NODES_AVATAR);
-    tJson* skeleton_children = json_append_array_key(skeleton_root, "children");
-    json_append_array_int_val(skeleton_children, this->joint_offset);
-    this->node_no++;
-
-    if (this->shell_no==0) {
-        affine->computeMatrix();
-        this->affineRoot = getAffineBaseTrans4Engine();
-        this->affineRoot.affineMatrixAfter(*affine);
-        this->affineRoot.computeMatrix();
-    }
-/*
-
-    // skeleton の位置合わせ
-    Vector<double> pelvis = Vector<double>(0.0, 0.0, 1.067);                // ほぼ定数だが，一応データから....
-    pelvis.x = skin_joint->alt_inverse_bind[0].matrix.element(1, 4);        // 0 means mPelvis
-    pelvis.y = skin_joint->alt_inverse_bind[0].matrix.element(2, 4);
-    pelvis.z = skin_joint->alt_inverse_bind[0].matrix.element(3, 4);
-
-    AffineTrans<double> joint_space = skin_joint->inverse_bind[0] * skin_joint->bind_shape;     // 0 means mPelvis
-    AffineTrans<double> joint_trans = joint_space.getInvAffine();
-    Vector<double> shift = joint_trans.execRotateScale(pelvis);
-    joint_trans.shift = joint_trans.shift - shift;
-    this->affineSkeleton = (*affine)*joint_trans;      // Joint -> Real の Affine変換
-    joint_space.free();
-    joint_trans.free();
-
-    if (this->no_offset) this->affineSkeleton.shift = this->affineSkeleton.shift - affine->shift;
-    this->affineSkeleton.computeMatrix();
-
-    AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
-    trans.affineMatrixAfter(this->affineSkeleton);
-
-*/
-    //tJson* skeleton_matrix  = json_append_array_key(skeleton_root, "matrix");
-    tJson* skeleton_matrix  = json_append_array_key(nodes_root, "matrix");
-    for (int j=1; j<=4; j++) {
-        for (int i=1; i<=4; i++) {
-            //json_append_array_real_val(skeleton_matrix, trans.matrix.element(i,j));
-            json_append_array_real_val(skeleton_matrix, this->affineRoot.matrix.element(i, j));
-        }
-    }
-    //trans.free();
-
-
-/*
-
-            tJson* shiftx = json_append_array_key(skeleton_root, "translation");
-            json_append_array_real_val(shiftx, affine->shift.x);
-            json_append_array_real_val(shiftx, affine->shift//.y);
-            json_append_array_real_val(shiftx, affine->shift.z);
-
-            tJson* rotate = json_append_array_key(skeleton_root, "rotation");
-            json_append_array_real_val(rotate, affine->rotate.x);
-            json_append_array_real_val(rotate, affine->rotate.y);
-            json_append_array_real_val(rotate, affine->rotate.z);
-            json_append_array_real_val(rotate, affine->rotate.s);
-
-            tJson* scale = json_append_array_key(skeleton_root, "scale");
-            json_append_array_real_val(scale, affine->scale.x);
-            json_append_array_real_val(scale, affine->scale.y);
-            json_append_array_real_val(scale, affine->scale.z);
-*/
 
     //
     tList* jl = this->joints_list;
@@ -653,7 +590,7 @@ void  GLTFData::addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>*
         tList* jp = jt; // top 
         while (jp!=NULL) {
             if (jp->ldat.lv==jl->ldat.id) {
-                json_append_array_int_val(children, jp->ldat.id + this->joint_offset);
+                json_append_array_int_val(children, jp->ldat.id + this->node_offset);
                 count++;
             }
             jp = jp->next;
@@ -662,44 +599,42 @@ void  GLTFData::addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>*
             del_json_node(&children);
         }
 
-        //trans.computeMatrix();
-
-
         skin_joint->alt_inverse_bind[jnt].computeComponents();
         tJson* shift = json_append_array_key(skltn, "translation");
         json_append_array_real_val(shift, skin_joint->alt_inverse_bind[jnt].shift.x);
         json_append_array_real_val(shift, skin_joint->alt_inverse_bind[jnt].shift.y);
         json_append_array_real_val(shift, skin_joint->alt_inverse_bind[jnt].shift.z);
+
 /*
+        tJson* rotate = json_append_array_key(skltn, "rotation");
+        json_append_array_real_val(rotate, skin_joint->alt_inverse_bind[jnt].rotate.x);
+        json_append_array_real_val(rotate, skin_joint->alt_inverse_bind[jnt].rotate.y);
+        json_append_array_real_val(rotate, skin_joint->alt_inverse_bind[jnt].rotate.z);
+        json_append_array_real_val(rotate, skin_joint->alt_inverse_bind[jnt].rotate.s);
 
- //       if (jnt==0) { 
-           tJson* rotate = json_append_array_key(skltn, "rotation");
-            json_append_array_real_val(rotate, trans.rotate.x);
-            json_append_array_real_val(rotate, trans.rotate.y);
-            json_append_array_real_val(rotate, trans.rotate.z);
-            json_append_array_real_val(rotate, trans.rotate.s);
-
-            tJson* scale = json_append_array_key(skltn, "scale");
-            json_append_array_real_val(scale, trans.scale.x);
-            json_append_array_real_val(scale, trans.scale.y);
-            json_append_array_real_val(scale, trans.scale.z);
-//        }
-
-        tJson* matrix = json_append_array_key(skltn, "matrix");
-        for (int j=1; j<=4; j++) {
-            for (int i=1; i<=4; i++) {
-                double element = skin_joint->alt_inverse_bind[jnt].matrix.element(i, j);
-                json_append_array_real_val(matrix, element);
-            }
-        }
-        if (jl->ldat.ptr!=NULL) {
-            tJson* transl = json_append_array_key(skltn, "translation");
-            Vector<float>* vec = (Vector<float>*)(jl->ldat.ptr);
-            json_append_array_real_val(transl, vec->x);
-            json_append_array_real_val(transl, vec->y);
-            json_append_array_real_val(transl, vec->z);
-        }
+        tJson* scale = json_append_array_key(skltn, "scale");
+        json_append_array_real_val(scale, skin_joint->alt_inverse_bind[jnt].scale.x);
+        json_append_array_real_val(scale, skin_joint->alt_inverse_bind[jnt].scale.y);
+        json_append_array_real_val(scale, skin_joint->alt_inverse_bind[jnt].scale.z);
 */
+/*
+        tJson* shift = json_append_array_key(skltn, "translation");
+        json_append_array_real_val(shift, this->affineSkeleton.shift.x + skin_joint->alt_inverse_bind[jnt].shift.x);
+        json_append_array_real_val(shift, this->affineSkeleton.shift.y + skin_joint->alt_inverse_bind[jnt].shift.y);
+        json_append_array_real_val(shift, this->affineSkeleton.shift.z + skin_joint->alt_inverse_bind[jnt].shift.z);
+
+        tJson* rotate = json_append_array_key(skltn, "rotation");
+        json_append_array_real_val(rotate, this->affineSkeleton.rotate.x);
+        json_append_array_real_val(rotate, this->affineSkeleton.rotate.y);
+        json_append_array_real_val(rotate, this->affineSkeleton.rotate.z);
+        json_append_array_real_val(rotate, this->affineSkeleton.rotate.s);
+
+        tJson* scale = json_append_array_key(skltn, "scale");
+        json_append_array_real_val(scale, this->affineSkeleton.scale.x);
+        json_append_array_real_val(scale, this->affineSkeleton.scale.y);
+        json_append_array_real_val(scale, this->affineSkeleton.scale.z);
+*/
+
         this->node_no++;
         jl = jl->next;
         jnt++;
@@ -766,7 +701,6 @@ void  GLTFData::addMaterials(MeshFacetNode* facet)
                 }
                 //
                 memset(buf, 0, LBUF);
-                //snprintf(buf, LBUF-1, JBXL_GLTF_MTRLS, material_name, 1.0, 1.0, 1.0, 1.0, img_no);
                 snprintf(buf, LBUF-1, JBXL_GLTF_MTLS_NAME_PBR, material_name, img_no);
                 json_insert_parse(this->materials, buf);
                 tJson* pbr = search_key_json(this->materials, "pbrMetallicRoughness", FALSE, this->material_no + 1);
@@ -814,12 +748,6 @@ void  GLTFData::addMaterialParameters(tJson* pbr, MeshFacetNode* facet)
         json_insert_parse(pbr, buf);
     }
 
-    /*
-    float glossiness = (float)param.getGlossiness();
-    memset(buf, 0, LBUF);
-    snprintf(buf, LBUF-1, JBXL_GLTF_MTLS_ROUGHF, 1.0f - glossiness);
-    json_insert_parse(pbr, buf);
-    */
     //
     //bright(0 or 1), light(?)
 
@@ -881,7 +809,7 @@ void  GLTFData::addMeshes(MeshFacetNode* facet)
         memset(buf, 0, LBUF);
         if (this->has_joints) {
             acsr_no = this->mesh_prim_no;
-            snprintf(buf, LBUF-1, JBXL_GLTF_MESHES_PRIM_J, acsr_no, acsr_no+1, acsr_no+2, acsr_no+3, acsr_no+4, acsr_no+5, mtl_no);
+            snprintf(buf, LBUF-1, JBXL_GLTF_MESHES_PRIM_JW, acsr_no, acsr_no+1, acsr_no+2, acsr_no+3, acsr_no+4, acsr_no+5, mtl_no);
             this->mesh_prim_no += 6;
         }
         else {
@@ -898,20 +826,18 @@ void  GLTFData::addMeshes(MeshFacetNode* facet)
 }
 
 
-void  GLTFData::addSkins(int joint_offset)
+void  GLTFData::addSkins(void)
 {
     if (!this->has_joints) return;
     char buf[LBUF];
     
     memset(buf, 0, LBUF);
-    snprintf(buf, LBUF-1, JBXL_GLTF_SKINS, this->accessor_no, joint_offset-1);
+    snprintf(buf, LBUF-1, JBXL_GLTF_SKINS, this->accessor_no, this->node_offset - 1);
     tJson* skn = json_insert_parse(skins, buf);
     tJson* jnt = json_append_array_key(skn, "joints");
     for (unsigned int j=0; j<this->num_joints; j++) {
-        json_append_array_int_val(jnt, (int)j + joint_offset);
-        //json_append_array_int_val(jnt, j);
+        json_append_array_int_val(jnt, (int)j + this->node_offset);
     }
-    //json_append_array_int_val(jnt, joint_offset);
     this->skin_no++;
     return;
 }
@@ -919,7 +845,6 @@ void  GLTFData::addSkins(int joint_offset)
 
 void  GLTFData::closeSolid(void)
 {
-    //
     if (this->bin_buffer.buf==NULL && !this->bin_seq) {
         if (this->bin_mode==JBXL_GLTF_BIN_AOS) createBinDataAoS();
         else                                   createBinDataSoA();
@@ -1518,6 +1443,11 @@ void  GLTFData::createShellGeoData(MeshFacetNode* facet, int shell_indexes, int 
     shell_node->facet_index  = (unsigned int*)malloc(shell_node->num_facets*uint_size);
     shell_node->facet_vertex = (unsigned int*)malloc(shell_node->num_facets*uint_size);
 
+    float mag_fac = 1.0f;
+    if (this->engine == JBXL_3D_ENGINE_UNITY) {
+        mag_fac = 1.0f;
+    }
+
     unsigned int index_offset  = 0;
     unsigned int vertex_offset = 0;
     unsigned int facet_no      = 0;
@@ -1536,7 +1466,7 @@ void  GLTFData::createShellGeoData(MeshFacetNode* facet, int shell_indexes, int 
 
         // vertex/normal/uvmap
         for (int i=0; i<facet->num_vertex; i++) {
-            shell_node->vv[vertex_offset + i]   = facet->vertex_value[i];
+            shell_node->vv[vertex_offset + i]   = facet->vertex_value[i] * mag_fac;
             shell_node->vn[vertex_offset + i]   = facet->normal_value[i];
             shell_node->vu[vertex_offset + i].u = facet->texcrd_value[i].u;
             shell_node->vu[vertex_offset + i].v = 1.0f - facet->texcrd_value[i].v;
@@ -1582,104 +1512,115 @@ void  GLTFData::createShellGeoData(MeshFacetNode* facet, int shell_indexes, int 
         facet = facet->next;
     }
     
+    //
+    for (unsigned int k=0; k<this->num_joints; k++) {
+        //Vector<double> pelvis = Vector<double>(0.0, 0.0, 1.067);
+        //pelvis.x = skin_joint->alt_inverse_bind[k].matrix.element(1, 4);
+        //pelvis.y = skin_joint->alt_inverse_bind[k].matrix.element(2, 4);
+        //pelvis.z = skin_joint->alt_inverse_bind[k].matrix.element(3, 4);
+
+        //AffineTrans<double> joint_space = skin_joint->inverse_bind[k] * skin_joint->bind_shape;     // 0 means mPelvis
+        //AffineTrans<double> joint_space = skin_joint->inverse_bind[k];     // 0 means mPelvis
+        //AffineTrans<double> joint_trans = joint_space.getInvAffine();
+
+        //Vector<double> shift = joint_trans.execRotateScale(pelvis);
+        //joint_trans.shift = joint_trans.shift - shift;
+        //this->affineSkeleton = (*affine)*joint_trans;      // Joint -> Real の Affine変換
+        //joint_space.free();
+        //joint_trans.free();
+
+        //if (this->no_offset) this->affineRoot.shift = this->affineRoot.shift - affine->shift;
+        //this->affineSkeleton.computeMatrix();
+
+        //trans.affineMatrixPrev(*affine);
+        //AffineTrans<double> trans = affine->dup();
+
+        //AffineTrans<double> trans = (*affine)*skin_joint->inverse_bind[k];
+        //AffineTrans<double> trans = (*affine)*skin_joint->inverse_bind[k] * skin_joint->bind_shape;
+
+        //trans.affineMatrixFllow(skin_joint->inverse_bind[k]);
+        //trans.shift = ;
+        //trans.computeMatrix();
+
+        //trans = affine->getInvAffine();
+        //affine->computeMatrix();
+
+        //////////////////////////////////////////////////////////////////////////////
+        // ONSET
+        /*
+        AffineTrans<double> joint_space = skin_joint->inverse_bind[k];
+        AffineTrans<double> invroot = this->affineRoot.getInverseAffine();
+        AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
+        trans.affineMatrixAfter(*affine);
+        trans.affineMatrixBefore(invroot);
+
+        joint_space.computeMatrix();
+        trans.affineMatrixBefore(joint_space);
+        */
+        //////////////////////////////////////////////////////////////////////////////
+
+
+
+
+        Vector<double> pelvis = Vector<double>();
+        pelvis.x = skin_joint->alt_inverse_bind[0].matrix.element(1, 4);
+        pelvis.y = skin_joint->alt_inverse_bind[0].matrix.element(2, 4);
+        pelvis.z = skin_joint->alt_inverse_bind[0].matrix.element(3, 4);
+
+        AffineTrans<double> joint_trans = skin_joint->inverse_bind[k];// * skin_joint->bind_shape;
+        //AffineTrans<double> joint_trans = joint_space.getInverseAffine();
+        //Vector<double> shift = joint_trans.execRotationScale(pelvis);
+        //joint_trans.shift = joint_trans.shift - shift;
+
+        AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
+        AffineTrans<double> invtrans = trans.getInverseAffine();
+        AffineTrans<double> invroot = this->affineRoot.getInverseAffine();
+        trans.affineMatrixAfter(*affine);
+        trans.affineMatrixBefore(invroot);
+        trans.computeComponents();
+        //trans.shift = trans.shift - this->affineSkeleton.shift;
+        trans.computeMatrix();
+        //trans.affineMatrixBefore(invtrans);
+        //
+        joint_trans.computeMatrix();
+        trans.affineMatrixBefore(joint_trans);
+        trans.computeMatrix();
+
+
+
+
+        //AffineTrans<double> invskltn = this->affineSkeleton.getInverseAffine();
+        //AffineTrans<double> joint_space2 = skin_joint->bind_shape * skin_joint->inverse_bind[k];
+
+        //trans.affineMatrixBefore(this->getAffineBaseTrans4Engine());
 
 /*
-    AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
-    if (affine!=NULL) trans.affineMatrixFllow(*affine);
-    // Inverse Bind Matrix
-    for (unsigned int k=0; k<this->num_joints; k++) {
-        int kz = (int)k*16; 
+        AffineTrans<double> invtr = trans.getInverseAffine();
+        trans.affineMatrixBefore(invskltn);
+*/
+
+        //AffineTrans<double> trans = this->affineSkeleton.dup();
+
+
+
+
+
+
+
+        //trans.affineMatrixBefore(joint_space);
+        trans.computeMatrix();
+
+        int ks = (int)k*16;
         for (int j=1; j<=4; j++) {
-            int jz = (j-1)*4;
+            int js = (j-1)*4;
             for (int i=1; i<=4; i++) {
-                shell_node->vm[kz + jz + i - 1] = (float)trans.matrix.element(i, j);
+                shell_node->vm[ks + js + i - 1] = (float)trans.matrix.element(i, j);
             }
         }
-    } 
-    trans.free();
-*/
-
-/*
-if (this->shell_no==0) {
-    this->affineSkeleton = getAffineBaseTrans4Engine();
-    this->affineSkeleton.affineMatrixAfter(*affine);
-    this->affineSkeleton.computeMatrix();
-}
-*/
-
-
-    for (unsigned int k=0; k<this->num_joints; k++) {
-
-    Vector<double> pelvis = Vector<double>(0.0, 0.0, 1.067);
-    pelvis.x = skin_joint->alt_inverse_bind[k].matrix.element(1, 4);
-    pelvis.y = skin_joint->alt_inverse_bind[k].matrix.element(2, 4);
-    pelvis.z = skin_joint->alt_inverse_bind[k].matrix.element(3, 4);
-
-    //AffineTrans<double> joint_space = skin_joint->inverse_bind[k] * skin_joint->bind_shape;     // 0 means mPelvis
-    AffineTrans<double> joint_space = skin_joint->inverse_bind[k];     // 0 means mPelvis
-    AffineTrans<double> joint_trans = joint_space.getInvAffine();
-
-    //Vector<double> shift = joint_trans.execRotateScale(pelvis);
-    //joint_trans.shift = joint_trans.shift - shift;
-    //this->affineSkeleton = (*affine)*joint_trans;      // Joint -> Real の Affine変換
-    //joint_space.free();
-    //joint_trans.free();
-
-    if (this->no_offset) this->affineRoot.shift = this->affineRoot.shift - affine->shift;
-    //this->affineSkeleton.computeMatrix();
-
-
-
-
-    AffineTrans<double> trans = this->getAffineBaseTrans4Engine();
-    trans.affineMatrixAfter(*affine);
-    trans.affineMatrixBefore(this->affineRoot.getInvAffine());
-    //joint_space = this->getAffineBaseTrans4Engine();
-    //joint_space.affineMatrixAfter(skin_joint->inverse_bind[k]);    
-
-    trans.affineMatrixBefore(joint_space);
-
-    trans.computeMatrix();
-
-
-    //trans.affineMatrixPrev(*affine);
-
-    
-
-    //AffineTrans<double> trans = affine->dup();
-
-    //AffineTrans<double> trans = (*affine)*skin_joint->inverse_bind[k];
-    //AffineTrans<double> trans = (*affine)*skin_joint->inverse_bind[k] * skin_joint->bind_shape;
-
-    //trans.affineMatrixFllow(skin_joint->inverse_bind[k]);
-    //trans.shift = ;
-    //trans.computeMatrix();
-
-    //trans = affine->getInvAffine();
-    //affine->computeMatrix();
-
-    int ks = (int)k*16;
-    for (int j=1; j<=4; j++) {
-        int js = (j-1)*4;
-        for (int i=1; i<=4; i++) {
-                //shell_node->vm[ks + js + i - 1] = (float)affine->matrix.element(i, j);
-                shell_node->vm[ks + js + i - 1] = (float)trans.matrix.element(i, j);
-        }
+        trans.free();
+        invroot.free();
+        //invskltn.free();
     }
-    trans.free();
-    //joint_trans.free();
-
-    }
-
-
-
-
-
-
-
-
-
-
 
     // shell_node をリストの最後に繋げる
     GLTFShellNode* prv = NULL;
@@ -1769,22 +1710,20 @@ void  GLTFData::createBinDataAoS(void)
         }
 
         // Inverse Bind Matrix
+/*
         for (unsigned int k=0; k<this->num_joints; k++) {
             int ks = (int)k*16; 
             for (int j=1; j<=4; j++) {
                 int js = (j-1)*4;
                 for (int i=1; i<=4; i++) {
-                    //cat_b2Buffer(&shell_node->vm[kz + jz + i - 1], &(this->bin_buffer), float_size);
                     cat_b2Buffer(&shell_node->vm[ks + js + i - 1], &(this->bin_buffer), float_size);
                 }
             }
-        } 
+        } */
 
-/*
-        for (int i=0; i<this->num_joints*16; i++) {
-            cat_b2Buffer(&shell_node->vm[i], &(this->bin_buffer), float_size);
+        for (unsigned int i=0; i<this->num_joints*16; i++) {
+            cat_b2Buffer(&shell_node->vm[(int)i], &(this->bin_buffer), float_size);
         } 
-*/
 
         shell_node = shell_node->next;
     }
@@ -1940,6 +1879,7 @@ void  GLTFData::createInverseBindMatrix(SkinJointData* skin_joint)
     return;
 }
 */
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2214,14 +2154,6 @@ gltfFacetMinMax  GLTFData::getFacetMinMax(MeshFacetNode* facet)
         if (min_max.texcrd_v_min > f_temp) min_max.texcrd_v_min = f_temp;
 */
     }
-
-min_max.vertex_x_max += 0.1;
-min_max.vertex_y_max += 0.1;
-min_max.vertex_z_max += 0.1;
-min_max.vertex_x_min -= 0.1;
-min_max.vertex_y_min -= 0.1;
-min_max.vertex_z_min -= 0.1;
-
 
     return min_max;
 }

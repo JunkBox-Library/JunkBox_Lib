@@ -99,7 +99,7 @@ int  BrepSolidList::addSolid(MeshObjectData* mesh)
 
         for (long int i=0; i<vnum; i++) {
             vertex_data[i]->point  = mesh->affineTrans->execTrans (vertex_data[i]->point);
-            vertex_data[i]->normal = mesh->affineTrans->execRotate(vertex_data[i]->normal);
+            vertex_data[i]->normal = mesh->affineTrans->execRotation(vertex_data[i]->normal);
         }
         ::free(vertex_data);
     }

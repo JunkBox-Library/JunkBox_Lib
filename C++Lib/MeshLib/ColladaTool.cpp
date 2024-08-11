@@ -1021,9 +1021,9 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
         // jointの位置合わせ用変換行列を計算
         if (pelvis_num >= 0) {
             AffineTrans<double> joint_space = skin_joint->inverse_bind[pelvis_num] * skin_joint->bind_shape;
-            AffineTrans<double> joint_trans = joint_space.getInvAffine();
+            AffineTrans<double> joint_trans = joint_space.getInverseAffine();
 
-            Vector<double> shift = joint_trans.execRotateScale(pelvis);
+            Vector<double> shift = joint_trans.execRotationScale(pelvis);
             joint_trans.shift = joint_trans.shift - shift;
             affineSkeleton = affine*joint_trans;      // Joint -> Real の Affine変換
             setJointLocationMatrix();

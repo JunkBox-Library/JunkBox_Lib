@@ -186,7 +186,7 @@ Vector<double>  OBJData::execAffineTrans(void)
             while(facet!=NULL) {
                 for (int i=0; i<facet->num_vertex; i++) {
                     facet->vv[i] = obj->affineTrans->execTrans(facet->vv[i]) - center;  // 頂点座標
-                    facet->vn[i] = obj->affineTrans->execRotate(facet->vn[i]);          // 法線ベクトル
+                    facet->vn[i] = obj->affineTrans->execRotation(facet->vn[i]);        // 法線ベクトル
                 }
                 facet = facet->next;
             }

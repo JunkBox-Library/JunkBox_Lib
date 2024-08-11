@@ -37,41 +37,41 @@ namespace jbxl {
 #define  JBXL_GLB_ACCESSORS_PNG_IMAGE   "{\"bufferView\":%d,\"mimeType\":\"image/png\"}"
 #define  JBXL_GLB_ACCESSORS_JPEG_IMAGE  "{\"bufferView\":%d,\"mimeType\":\"image/jpeg\"}"
 
-#define  JBXL_GLTF_BUFFERS_BIN   "{\"uri\":\"%s\",\"byteLength\":%u}"
-#define  JBXL_GLTF_BUFFERS_B64   "{\"uri\":\"data:application/octet-stream;base64,%s\",\"byteLength\":%u}"
+#define  JBXL_GLTF_BUFFERS_BIN    "{\"uri\":\"%s\",\"byteLength\":%u}"
+#define  JBXL_GLTF_BUFFERS_B64    "{\"uri\":\"data:application/octet-stream;base64,%s\",\"byteLength\":%u}"
 
-#define  JBXL_GLTF_VIEWS         "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"byteStride\":%u,\"target\":34962}"
-#define  JBXL_GLTF_VIEWS_ELEMENT "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"target\":34963}"
-//#define  JBXL_GLTF_VIEWS_IBM     "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"byteStride\":%u}"
-#define  JBXL_GLTF_VIEWS_DATA    "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u}"
+#define  JBXL_GLTF_VIEWS          "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"byteStride\":%u,\"target\":34962}"
+#define  JBXL_GLTF_VIEWS_ELEMENT  "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"target\":34963}"
+//#define  JBXL_GLTF_VIEWS_IBM      "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u,\"byteStride\":%u}"
+#define  JBXL_GLTF_VIEWS_DATA     "{\"buffer\":%d,\"byteOffset\":%u,\"byteLength\":%u}"
 
-#define  JBXL_GLTF_ACCESSORS     "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\"}"
-#define  JBXL_GLTF_ACCESSORS_S   "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%d],\"min\":[%d]}"
-#define  JBXL_GLTF_ACCESSORS_V2  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f],\"min\":[%f,%f]}"
-#define  JBXL_GLTF_ACCESSORS_V3  "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f,%f],\"min\":[%f,%f,%f]}"
+#define  JBXL_GLTF_ACCESSORS      "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\"}"
+#define  JBXL_GLTF_ACCESSORS_S    "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%d],\"min\":[%d]}"
+#define  JBXL_GLTF_ACCESSORS_V2   "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f],\"min\":[%f,%f]}"
+#define  JBXL_GLTF_ACCESSORS_V3   "{\"bufferView\":%d,\"byteOffset\":%u,\"componentType\":%d,\"count\":%d,\"type\":\"%s\",\"max\":[%f,%f,%f],\"min\":[%f,%f,%f]}"
 
-#define  JBXL_GLTF_NODES_ROOT    "{\"name\":\"Root\"}"
-#define  JBXL_GLTF_NODES_AVATAR  "{\"name\":\"Avatar\"}"
-#define  JBXL_GLTF_NODES_MESH    "{\"name\":\"%s\",\"mesh\":%d}"
-#define  JBXL_GLTF_NODES_SKIN    "{\"skin\":%d}"
-#define  JBXL_GLTF_NODES_SKLTN   "{\"name\":%s}"    // It doesn't have to be \"%s\" 
+#define  JBXL_GLTF_NODES_ROOT     "{\"name\":\"Root\"}"
+#define  JBXL_GLTF_NODES_ARMATURE "{\"name\":\"Armature\"}"
+#define  JBXL_GLTF_NODES_MESH     "{\"name\":\"%s\",\"mesh\":%d}"
+#define  JBXL_GLTF_NODES_SKIN     "{\"skin\":%d}"
+#define  JBXL_GLTF_NODES_SKLTN    "{\"name\":%s}"    // It doesn't have to be \"%s\" 
 
-#define  JBXL_GLTF_MESHES_PRIM   "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d},\"material\":%d,\"mode\":4}"
-#define  JBXL_GLTF_MESHES_PRIM_J "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d,\"JOINTS_0\":%d,\"WEIGHTS_0\":%d},\"material\":%d,\"mode\":4}"
-#define  JBXL_GLTF_SKINS         "{\"inverseBindMatrices\":%d,\"skeleton\":%d}"
-//#define  JBXL_GLTF_MTLS          "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorFactor\":[%f,%f,%f,%f],\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}"
+#define  JBXL_GLTF_MESHES_PRIM    "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d},\"material\":%d,\"mode\":4}"
+#define  JBXL_GLTF_MESHES_PRIM_JW "{\"indices\":%d,\"attributes\":{\"POSITION\":%d,\"NORMAL\":%d,\"TEXCOORD_0\":%d,\"JOINTS_0\":%d,\"WEIGHTS_0\":%d},\"material\":%d,\"mode\":4}"
+#define  JBXL_GLTF_SKINS          "{\"inverseBindMatrices\":%d,\"skeleton\":%d}"
+//#define  JBXL_GLTF_MTLS           "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorFactor\":[%f,%f,%f,%f],\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}"
 
-#define  JBXL_GLTF_TEXTURES      "{\"source\":%d}"
-//#define  JBXL_GLTF_TEXTURES      "{\"source\":%d, \"sampler\":%d}"
-#define  JBXL_GLTF_IMAGES        "{\"uri\":\"%s\"}"
+#define  JBXL_GLTF_TEXTURES       "{\"source\":%d}"
+//#define  JBXL_GLTF_TEXTURES       "{\"source\":%d, \"sampler\":%d}"
+#define  JBXL_GLTF_IMAGES         "{\"uri\":\"%s\"}"
 
-#define  JBXL_GLTF_MTLS_NAME_PBR "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}"
-#define  JBXL_GLTF_MTLS_BCOLORF  "{\"baseColorFactor\":[%f,%f,%f,%f]}"
-#define  JBXL_GLTF_MTLS_METALF   "{\"metallicFactor\":%f}"
-#define  JBXL_GLTF_MTLS_ROUGHF   "{\"roughnessFactor\":%f}"
+#define  JBXL_GLTF_MTLS_NAME_PBR  "{\"name\":\"%s\",\"pbrMetallicRoughness\":{\"baseColorTexture\":{\"index\":%d,\"texCoord\":0}}}"
+#define  JBXL_GLTF_MTLS_BCOLORF   "{\"baseColorFactor\":[%f,%f,%f,%f]}"
+#define  JBXL_GLTF_MTLS_METALF    "{\"metallicFactor\":%f}"
+#define  JBXL_GLTF_MTLS_ROUGHF    "{\"roughnessFactor\":%f}"
 
-#define  JBXL_GLTF_MTLS_CUTOFF   "{\"alphaCutoff\":%f}"
-#define  JBXL_GLTF_MTLS_EMISSIVE "{\"emissiveFactor\":[%f,%f,%f]}"
+#define  JBXL_GLTF_MTLS_CUTOFF    "{\"alphaCutoff\":%f}"
+#define  JBXL_GLTF_MTLS_EMISSIVE  "{\"emissiveFactor\":[%f,%f,%f]}"
 
 
 
@@ -197,8 +197,9 @@ public:
     tList*  material_list;
 
     Vector<double>       center;
-    AffineTrans<double>* affineTrans;       // SHELL のアフィン変換
+    //AffineTrans<double>* affineTrans;       // SHELL のアフィン変換
     AffineTrans<double>  affineRoot;
+    AffineTrans<double>  affineSkeleton;
 
     Buffer  bin_buffer;
     unsigned int bin_offset;
@@ -218,7 +219,7 @@ public:
     unsigned int  image_no;                 // images の要素（image）の通し番号． material.index -> texture.source -> image
 
     unsigned int  num_joints;
-    unsigned int  joint_offset;
+    unsigned int  node_offset;
 
     tJson*  json_data;
     tJson*  scenes;
@@ -246,20 +247,21 @@ public:
     void    setUE(bool b)    { this->forUE    = b;}
     void    setEngine(int);
 
-    void    setAffineTrans(AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}
-    void    delAffineTrans(void) { freeAffineTrans(this->affineTrans);}
+    //void    setAffineTrans(AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}
+    //void    delAffineTrans(void) { freeAffineTrans(this->affineTrans);}
 
     void    initGLTF(void);
 
     void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tList* joints_info=NULL);
 
     void    addScenes(void);
+    void    addRootNode(AffineTrans<double>* affine);
+    void    addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>* affin);
     void    addNodes(AffineTrans<double>* affine);
-    void    addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>* affine);
 
     void    addTextures(MeshFacetNode* facet);
     void    addMeshes(MeshFacetNode* facet);
-    void    addSkins(int joint_offset);
+    void    addSkins(void);
     void    addMaterials(MeshFacetNode* facet);
     void    addMaterialParameters(tJson* pbr, MeshFacetNode* facet);
 
