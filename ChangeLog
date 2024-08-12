@@ -7,6 +7,8 @@ rewrite configure.ac, doxygen.conf
 working now ..... v1.10.0alpha
 
 v1.10.0alpha
+	C++Lib/MathLib/AffineTrans.h
+		メンバ変数を private に変更	
 	C++Lib/MathLib/Vector.h
 		scalar/vector の normalize 取りやめ
 	Lib/tlist.h

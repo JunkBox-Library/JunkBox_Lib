@@ -112,7 +112,7 @@ void  FBXData::addShell(MeshObjectData* meshdata, bool collider, SkinJointData* 
         // UV Map and PLANAR Texture
         if (facet->material_param.mapping == MATERIAL_MAPPING_PLANAR) {
             Vector<double> scale(1.0, 1.0, 1.0);
-            if (meshdata->affineTrans!=NULL) scale = meshdata->affineTrans->scale;
+            if (meshdata->affineTrans!=NULL) scale = meshdata->affineTrans->getScale();
             facet->generatePlanarUVMap(scale, facet->texcrd_value);
         }
         facet->execAffineTransUVMap(facet->texcrd_value, facet->num_vertex);
@@ -153,7 +153,7 @@ Vector<double>  FBXData::execAffineTrans(void)
 {
     Vector<double> center(0.0, 0.0, 0.0);
 
-    if (this->no_offset) center = affineTrans->shift;
+    if (this->no_offset) center = affineTrans->getShift();
 
     return center;
 }

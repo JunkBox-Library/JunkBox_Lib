@@ -26,7 +26,7 @@ namespace  jbxl {
 */
 template <typename T=double> class  DllExport AffineTrans
 {
-public:
+private:
     Matrix<T>        matrix;        // Matrix(2, 4, 4); 2次元 4x4行列 
 
     Vector<T>        shift;
@@ -41,52 +41,70 @@ public:
     AffineTrans(void) { init();}
     virtual ~AffineTrans(void) {}
 
-    void   init(void) { initComponents(); matrix=Matrix<T>(2, 4, 4); computeMatrix(); _changed_matrix=_changed_components=false;}
+    void   init(void) { initComponents(); matrix = Matrix<T>(2, 4, 4);}
     void   setup(void){ init();}
-    void   initComponents(void) { initScale(); initRotation(); initShift();}
+    void   initComponents(void) { initScale(); initRotation(); initShift(); _changed_matrix = false; computeMatrix();}
 
-    void   set(Vector<T> s, Quaternion<T> q, Vector<T> t) { scale=s; shift=t, rotate=q; computeMatrix();}
+    void   set(Vector<T> s, Quaternion<T> q, Vector<T> t) { scale = s; shift = t, rotate = q; computeMatrix();}
     void   free(void) { initComponents(); matrix.free();}
-    void   clear(void){ initComponents(); matrix.clear(); computeMatrix();}
+    void   clear(void){ initComponents(); matrix.clear();}
     void   dup(AffineTrans a);
     AffineTrans<T>  dup(void);
 
-    void   clean_matrix(void)         { _changed_matrix = false;}
-    void   clean_components(void)     { _changed_components = false;}
-    void   changed_matrix(void)       { _changed_matrix = true;}        // matrix を手動で変更したら実行する（推奨）
-    void   changed_components(void)   { _changed_components = true;}    // component の要素を変更したら実行する（推奨）
-    bool   is_changed_matrix(void)    { return _changed_matrix;}        // true なら computeComponents() を実行する（推奨）
-    bool   is_changed_components(void){ return _changed_components;}    // true なら computeMatrix() を実行する（推奨）
+    void   clean_matrix(void)           { _changed_matrix = false;}
+    void   clean_components(void)       { _changed_components = false;}
+    void   changed_matrix(void)         { _changed_matrix = true;}
+    void   changed_components(void)     { _changed_components = true;}
+    bool   is_changed_matrix(void)      { return _changed_matrix;}        // true なら computeComponents() を実行する（推奨）
+    bool   is_changed_components(void)  { return _changed_components;}    // true なら computeMatrix() を実行する（推奨）
+    bool   need_compute_matrix(void)    { return ( _changed_components && !_changed_matrix);}
+    bool   need_compute_components(void){ return (!_changed_components &&  _changed_matrix);}
 
-    void   computeMatrix(bool with_scale=true);
+    void   computeMatrix(bool with_scale = true);
     void   computeComponents(void);
 
-    void   initShift(void) { shift.init(); _changed_components=true;}
-    void   initScale(void) { scale.set((T)1.0, (T)1.0, (T)1.0); _changed_components=true;}
-    void   initRotation(void) { rotate.init(); _changed_components=true;}
+    void   initShift(void) { shift.init(); _changed_components = true;}
+    void   initScale(void) { scale.set((T)1.0, (T)1.0, (T)1.0); _changed_components = true;}
+    void   initRotation(void) { rotate.init(); _changed_components = true;}
 
-    void   setShift(T x, T y, T z) { shift.set(x, y, z); _changed_components=true;}
-    void   setScale(T x, T y, T z) { scale.set(x, y, z); _changed_components=true;}
-    void   setRotation(T s, T x, T y, T z) { rotate.setRotation(s, x, y, z); _changed_components=true;}
+    void   setShift(T x, T y, T z) { shift.set(x, y, z); _changed_components = true;}
+    void   setScale(T x, T y, T z) { scale.set(x, y, z); _changed_components = true;}
+    void   setRotation(T s, T x, T y, T z) { rotate.setRotation(s, x, y, z); _changed_components = true;}
 
-    void   setShift(Vector<T> v) { shift = v; _changed_components=true;}
-    void   setScale(Vector<T> v) { scale = v; _changed_components=true;}
-    void   setRotation(Quaternion<T> q) { rotate = q; _changed_components=true;}
+    void   setShift(Vector<T> v) { shift = v; _changed_components = true;}
+    void   setScale(Vector<T> v) { scale = v; _changed_components = true;}
+    void   setRotation(Quaternion<T> q) { rotate = q; _changed_components = true;}
 
-    void   addShift(T x, T y, T z) { shift.x += x; shift.y += y; shift.z += z; _changed_components=true;}
-    void   addScale(T x, T y, T z) { scale.x *= x; scale.y *= y; scale.z *= z; _changed_components=true;}
-    void   addRotation(T s, T x, T y, T z) { Quaternion<T> q(s, x, y, z); rotate = q*rotate; _changed_components=true;}
+    void   addShift(T x, T y, T z) { shift.x += x; shift.y += y; shift.z += z; _changed_components = true;}
+    void   addScale(T x, T y, T z) { scale.x *= x; scale.y *= y; scale.z *= z; _changed_components = true;}
+    void   addRotation(T s, T x, T y, T z) { Quaternion<T> q(s, x, y, z); rotate = q*rotate; _changed_components = true;}
 
-    void   addShift(Vector<T> v) { shift = shift + v; _changed_components=true;}
-    void   addScale(Vector<T> v) { scale = shift + v; _changed_components=true;}
-    void   addRotation(Quaternion<T> q) { rotate = q*rotate; _changed_components=true;}
+    void   addShift(Vector<T> v) { shift = shift + v; _changed_components = true;}
+    void   addScale(Vector<T> v) { scale = shift + v; _changed_components = true;}
+    void   addRotation(Quaternion<T> q) { rotate = q*rotate; _changed_components = true;}
 
-    Vector<T>        getShift (void)   { return shift;}
-    Vector<T>        getScale (void)   { return scale;}
-    Quaternion<T>    getRotation(void) { return rotate;}
-    Matrix<T>        getMatrix(void)   { return matrix;}
-    Matrix<T>        getRotationMatrix(void);
-    AffineTrans<T>   getInverseAffine(void);
+    void   setMatrix(int i, int j, T v) { matrix.element(i, j) = v; _changed_matrix = true;}
+    T      getMatrix(int i, int j) { return matrix.element(i, j);}
+    void   element(int i, int j, T v) { matrix.element(i, j) = v; _changed_matrix = true;}
+    T      element(int i, int j) { return matrix.element(i, j);}
+
+    T      getShiftX(void)   { return shift.x;}
+    T      getShiftY(void)   { return shift.y;}
+    T      getShiftZ(void)   { return shift.z;}
+    T      getScaleX(void)   { return scale.x;}
+    T      getScaleY(void)   { return scale.y;}
+    T      getScaleZ(void)   { return scale.z;}
+    T      getRotationS(void){ return rotate.s;}
+    T      getRotationX(void){ return rotate.x;}
+    T      getRotationY(void){ return rotate.y;}
+    T      getRotationZ(void){ return rotate.z;}
+
+    Vector<T>       getScale (void)   { return scale;}
+    Quaternion<T>   getRotation(void) { return rotate;}
+    Vector<T>       getShift (void)   { return shift;}
+    Matrix<T>       getMatrix(void)   { return matrix;}
+    Matrix<T>       getRotationMatrix(void);
+    AffineTrans<T>  getInverseAffine(void);
 
     // operator * は コンポーネントが計算されていることが条件．
     // 下記関数は コンポ―テントが計算されていなくても良い．
@@ -141,20 +159,20 @@ template <typename T> inline AffineTrans<T>*  newAffineTrans(AffineTrans<T> p)
 /**
 変換の合成：A*B => Bの変換 -> Aの変換
 
-a, b ともに computeComponents() でコンポーネントが計算されている事が条件．
 */
 template <typename T> inline AffineTrans<T> operator * (AffineTrans<T> a, AffineTrans<T> b)
 { 
-    if (a.is_changed_components()) a.computeMatrix();
-    if (b.is_changed_components()) b.computeMatrix();
+    a.computeMatrix();
+    b.computeMatrix();
 
     AffineTrans<T> affine;
     for (int i=1; i<=4; i++) {
         for (int j=1; j<=4; j++) {
-            affine.matrix.element(i,j) = (T)0.0;
+            T sum = (T)0.0;
             for (int k=1; k<=4; k++) {
-                affine.matrix.element(i,j) += a.matrix.element(i,k)*b.matrix.element(k,j);
+                sum += a.element(i, k) * b.element(k, j);
             }
+            affine.element(i, j, sum);
         }
     }
     affine.computeComponents();
@@ -189,11 +207,11 @@ template <typename T>  AffineTrans<T> AffineTrans<T>::dup(void)
 
 
 // 3x3 の回転行列を得る
+// Matrix が計算されていること．
 template <typename T> Matrix<T>  AffineTrans<T>::getRotationMatrix(void)
 {
     Matrix<T> mt;
 
-    if (_changed_components) computeMatrix();
     if (matrix.element(4, 4)==(T)1.0) {
         mt.init(2, 3, 3);
         for (int j=1; j<=3; j++) { 
@@ -215,7 +233,7 @@ template <typename T> AffineTrans<T>  AffineTrans<T>::getInverseAffine(void)
 {
     AffineTrans<T> affine;
     if (!isNormal()) return affine;
-    if (_changed_matrix) computeComponents();
+    computeComponents();
 
     Matrix<T> rsz(2, 3, 3);
     rsz.element(1, 1) = (T)1.0/scale.x;
@@ -252,26 +270,25 @@ template <typename T> AffineTrans<T>  AffineTrans<T>::getInverseAffine(void)
 template <typename T> void  AffineTrans<T>::affineMatrixAfter(AffineTrans<T> a)
 
 *this = (*this) * a を Matrix のままで計算する．
-
-operator * は コンポーネントが計算されていることが条件．
-この関数は コンポ―テントが計算されていなくても良い．
 */
 template <typename T> void  AffineTrans<T>::affineMatrixAfter(AffineTrans<T> a)
 {
     AffineTrans<T> affine;
     for (int i=1; i<=4; i++) {
         for (int j=1; j<=4; j++) {
-            affine.matrix.element(i,j) = (T)0.0;
+            T sum = (T)0;
             for (int k=1; k<=4; k++) {
-                affine.matrix.element(i,j) += matrix.element(i,k) * a.matrix.element(k,j);
+                sum += matrix.element(i, k) * a.element(k, j);
             }
+            affine.element(i, j, sum);
         }
     }
     for (int i=1; i<=4; i++) {
         for (int j=1; j<=4; j++) {
-            matrix.element(i,j) = affine.matrix.element(i,j);
+            matrix.element(i, j) = affine.element(i, j);
         }
     }
+    affine.free();
     computeComponents();
     return;
 }
@@ -281,26 +298,25 @@ template <typename T> void  AffineTrans<T>::affineMatrixAfter(AffineTrans<T> a)
 template <typename T> void  AffineTrans<T>::affineMatrixBefore(AffineTrans<T> a)
 
 *this = a * (*this) を Matrix のままで計算する．
-
-operator * は コンポーネントが計算されていることが条件．
-この関数は コンポ―テントが計算されていなくても良い．
 */
 template <typename T> void  AffineTrans<T>::affineMatrixBefore(AffineTrans<T> a)
 {
     AffineTrans<T> affine;
     for (int i=1; i<=4; i++) {
         for (int j=1; j<=4; j++) {
-            affine.matrix.element(i,j) = (T)0.0;
+            T sum = (T)0;
             for (int k=1; k<=4; k++) {
-                affine.matrix.element(i,j) += a.matrix.element(i,k) * matrix.element(k,j);
+                sum += a.element(i, k) * matrix.element(k, j);
             }
+            affine.element(i, j, sum);
         }
     }
     for (int i=1; i<=4; i++) {
         for (int j=1; j<=4; j++) {
-            matrix.element(i,j) = affine.matrix.element(i,j);
+            matrix.element(i, j) = affine.element(i, j);
         }
     }
+    affine.free();
     computeComponents();
     return;
 }
@@ -309,6 +325,10 @@ template <typename T> void  AffineTrans<T>::affineMatrixBefore(AffineTrans<T> a)
 // 各コンポーネントから，変換行列を計算する．
 template <typename T> void   AffineTrans<T>::computeMatrix(bool with_scale)
 {
+    if (_changed_matrix) {
+        PRINT_MESG("AffineTrans<T>::computeMatrix: ERROR: may destroy Matrix!\n");
+    }
+
     Matrix<T> sz(2, 3, 3);
     if (with_scale) {
         sz.element(1, 1) = scale.x;
@@ -348,6 +368,10 @@ template <typename T> void   AffineTrans<T>::computeMatrix(bool with_scale)
 // 変換行列から，各コンポーネントを再計算する．
 template <typename T> void   AffineTrans<T>::computeComponents(void)
 {
+    if (_changed_components) {
+        PRINT_MESG("AffineTrans<T>::computeComponents: ERROR: may destroy Components!\n");
+    }
+
     T sx, sy, sz; 
     sx = sy = sz = (T)0.0;
     for (int i=1; i<=3; i++) {
@@ -362,7 +386,6 @@ template <typename T> void   AffineTrans<T>::computeComponents(void)
     scale.set(sx, sy, sz);
 
     //
-    clean_components();
     Matrix<T> mt = getRotationMatrix();
 
     for (int i=1; i<=3; i++) {
@@ -385,7 +408,7 @@ template <typename T> void   AffineTrans<T>::computeComponents(void)
 template <typename T> Vector<T>  AffineTrans<T>::execMatrixTrans(Vector<T> v)
 {
     //if (matrix.element(4,4)!=(T)1.0) computeMatrix(true);
-    if (_changed_components) computeMatrix(true);
+    computeMatrix(true);
 
     Matrix<T> mv(1, 4);
     mv.mx[0] = v.x;
@@ -393,7 +416,7 @@ template <typename T> Vector<T>  AffineTrans<T>::execMatrixTrans(Vector<T> v)
     mv.mx[2] = v.z;
     mv.mx[3] = (T)1.0;
 
-    Matrix<T> mt = matrix*mv;
+    Matrix<T> mt = matrix * mv;
     Vector<T> vct;
     vct.x = mt.mx[0];
     vct.y = mt.mx[1];

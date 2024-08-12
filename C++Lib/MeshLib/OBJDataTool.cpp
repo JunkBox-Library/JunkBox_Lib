@@ -107,7 +107,7 @@ void  OBJData::addShell(MeshObjectData* shelldata, bool collider)
         // UV Map and PLANAR Texture
         if (facet->material_param.mapping==MATERIAL_MAPPING_PLANAR) {
             Vector<double> scale(1.0, 1.0, 1.0);
-            if (shelldata->affineTrans!=NULL) scale = shelldata->affineTrans->scale;
+            if (shelldata->affineTrans!=NULL) scale = shelldata->affineTrans->getScale();
             facet->generatePlanarUVMap(scale, facet->texcrd_value);
         }
         facet->execAffineTransUVMap(facet->texcrd_value, facet->num_vertex);
@@ -177,7 +177,7 @@ Vector<double>  OBJData::execAffineTrans(void)
 
     OBJData* obj = this->next;  // Top はアンカー
     if (obj!=NULL && no_offset) {
-        if (obj->affineTrans!=NULL) center = obj->affineTrans->shift;
+        if (obj->affineTrans!=NULL) center = obj->affineTrans->getShift();
     }
 
     while (obj!=NULL) {
