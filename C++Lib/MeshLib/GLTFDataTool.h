@@ -151,8 +151,6 @@ public:
     Vector4<float>*          vw;    // ジョイントの重み (shell_vertexes 個)
     float*          vm;             // Inverse Bind Matrix (num_joints x 16 個)
 
-    //AffineTrans<double>* uvmap_trans;
-
     GLTFShellNode* next;            // 次の SHELL ノードへのポインタ
 
 public:
@@ -197,9 +195,7 @@ public:
     tList*  material_list;
 
     Vector<double>       center;
-    //AffineTrans<double>* affineTrans;       // SHELL のアフィン変換
     AffineTrans<double>  affineRoot;
-    AffineTrans<double>  affineSkeleton;
 
     Buffer  bin_buffer;
     unsigned int bin_offset;
@@ -242,15 +238,11 @@ public:
 public:
     void    init(void); 
     void    free(void); 
+    void    initGLTF(void);
 
     void    setUnity(bool b) { this->forUnity = b;}
     void    setUE(bool b)    { this->forUE    = b;}
     void    setEngine(int);
-
-    //void    setAffineTrans(AffineTrans<double> a) { delAffineTrans(); affineTrans = new AffineTrans<double>(); affineTrans->dup(a);}
-    //void    delAffineTrans(void) { freeAffineTrans(this->affineTrans);}
-
-    void    initGLTF(void);
 
     void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* skin_joint=NULL, tList* joints_info=NULL);
 
@@ -268,7 +260,6 @@ public:
     void    closeSolid(void);
 
     // Affine Transfer
-//    AffineTrans<double> getAffineTrans4Engine(AffineTrans<double> affine);
     AffineTrans<double> getAffineBaseTrans4Engine(void);
     void    execAffineUVMap(MeshFacetNode* facet, AffineTrans<double>* affine);
 
@@ -283,14 +274,14 @@ public:
     void    createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int shell_vertexes);
 
     // create bin data at onece
-    void    createShellGeoData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, SkinJointData* skin_joint=NULL, AffineTrans<double>* affine=NULL);
+    void    createShellGeometryData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, SkinJointData* skin_joint=NULL);
     void    createBinDataAoS(void);
     void    createBinDataSoA(void);
 
     // IBM
     void    addBufferViewsIBM(void);
     void    addAccessorsIBM(void);
-    //void    createInverseBindMatrix(SkinJointData* skin_joint);
+    void    createInverseBindMatrix(SkinJointData* skin_joint);
 
     // output
     void    outputFile (const char* fn, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn);
