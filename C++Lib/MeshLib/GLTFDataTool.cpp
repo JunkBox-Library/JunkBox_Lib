@@ -115,9 +115,9 @@ void  GLTFData::init(void)
     this->affineRoot.init();
 
     this->bin_buffer        = init_Buffer();
-    this->matrix_buffer     = init_Buffer();
     this->bin_offset        = 0;
-    this->matrix_offset     = 0;
+    //this->matrix_buffer     = init_Buffer();
+    //this->matrix_offset     = 0;
 
     this->shell_no          = 0;
     this->node_no           = 0;
@@ -158,7 +158,7 @@ void  GLTFData::free(void)
 {
     free_Buffer(&(this->gltf_name));
     free_Buffer(&(this->alt_name));
-    free_Buffer(&(this->matrix_buffer));
+    //free_Buffer(&(this->matrix_buffer));
     free_Buffer(&(this->bin_buffer));
 
     del_tList(&(this->image_list));
@@ -1779,6 +1779,7 @@ void  GLTFData::output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_
     snprintf(buf, LBUF-1, JBXL_GLTF_BUFFERS_BIN, (char*)rel_path.buf, this->bin_buffer.vldsz);
     json_insert_parse(this->buffers, buf);
 
+/*
     if (this->has_joints && this->matrix_buffer.vldsz>0) {
         Buffer base64 = encode_base64_Buffer(this->matrix_buffer);
         unsigned int len = base64.vldsz + LBUF;
@@ -1789,6 +1790,7 @@ void  GLTFData::output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_
         free_Buffer(&base64);
         ::free(big_buf);
     }
+*/
 
     // output json data
     FILE* fp = fopen((char*)out_path.buf, "w");
@@ -1815,6 +1817,12 @@ void  GLTFData::output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_
 void  GLTFData::output_glb(char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn)
 {
     UNUSED(bin_dirn);
+
+    // update buffers
+    char buf[LBUF];
+    memset(buf, 0, LBUF);
+    snprintf(buf, LBUF-1, JBXL_GLTF_BUFFERS_BIN, "", 0);
+    json_insert_parse(this->buffers, buf);
 
     Buffer out_path = make_Buffer_bystr(out_dirn);
     if (this->phantom_out) cat_s2Buffer(ptm_dirn, &out_path);

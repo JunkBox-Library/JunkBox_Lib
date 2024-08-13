@@ -200,8 +200,8 @@ public:
     Buffer  bin_buffer;
     unsigned int bin_offset;
     //
-    Buffer  matrix_buffer;
-    unsigned int matrix_offset;
+    //Buffer  matrix_buffer;
+    //unsigned int matrix_offset;
 
     // counter
     unsigned int  shell_no;                 // shell の通し番号（addShellが呼ばれた回数）
