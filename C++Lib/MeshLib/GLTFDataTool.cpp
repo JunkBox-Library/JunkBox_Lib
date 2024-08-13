@@ -241,11 +241,6 @@ AffineTrans<double>  GLTFData::getAffineBaseTrans4Engine(void)
         trans.element(3, 2, -1.0);    // y -> -z
         trans.element(2, 3,  1.0);    // z -> y
     }
-    else if (this->engine==JBXL_3D_ENGINE_UE) {
-        trans.element(1, 1,  100.0);
-        trans.element(2, 2,  100.0);
-        trans.element(3, 3,  100.0);
-    }
     trans.computeComponents();
 
     return trans;

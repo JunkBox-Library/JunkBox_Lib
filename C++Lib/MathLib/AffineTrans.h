@@ -41,13 +41,13 @@ public:
     AffineTrans(void) { init();}
     virtual ~AffineTrans(void) {}
 
-    void   init(void) { initComponents(); matrix = Matrix<T>(2, 4, 4);}
+    void   init(void) { initComponents(); matrix = Matrix<T>(2, 4, 4); _changed_matrix = false; computeMatrix();}
     void   setup(void){ init();}
-    void   initComponents(void) { initScale(); initRotation(); initShift(); _changed_matrix = false; computeMatrix();}
+    void   initComponents(void) { initScale(); initRotation(); initShift();}
 
     void   set(Vector<T> s, Quaternion<T> q, Vector<T> t) { scale = s; shift = t, rotate = q; computeMatrix();}
-    void   free(void) { initComponents(); matrix.free();}
-    void   clear(void){ initComponents(); matrix.clear();}
+    void   free(void) { initComponents(); matrix.free();  _changed_matrix = false; computeMatrix();}
+    void   clear(void){ initComponents(); matrix.clear(); _changed_matrix = false; computeMatrix();}
     void   dup(AffineTrans a);
     AffineTrans<T>  dup(void);
 
@@ -69,7 +69,7 @@ public:
 
     void   setShift(T x, T y, T z) { shift.set(x, y, z); _changed_components = true;}
     void   setScale(T x, T y, T z) { scale.set(x, y, z); _changed_components = true;}
-    void   setRotation(T s, T x, T y, T z) { rotate.setRotation(s, x, y, z); _changed_components = true;}
+    void   setRotation(T s, T x, T y, T z) { rotate.set(s, x, y, z); _changed_components = true;}
 
     void   setShift(Vector<T> v) { shift = v; _changed_components = true;}
     void   setScale(Vector<T> v) { scale = v; _changed_components = true;}
