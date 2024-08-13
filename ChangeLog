@@ -4,9 +4,9 @@
 (*) indicates the main theme of that version.
 
 rewrite configure.ac, doxygen.conf
-working now ..... v1.10.0alpha
+working now ..... v1.10.0
 
-v1.10.0alpha
+v1.10.0
 	C++Lib/MathLib/AffineTrans.h
 		メンバ変数を private に変更．メンバ関数追加．
 	C++Lib/MathLib/Vector.h
