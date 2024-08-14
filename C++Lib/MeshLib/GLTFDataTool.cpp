@@ -381,7 +381,7 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         else {
             this->createBinDataSeqSoA(facet, shell_indexes, shell_vertexes);
         }
-        if (this->has_joints) this->createInverseBindMatrix(skin_joint);
+        if (this->has_joints) this->createBinDataIBM(skin_joint);
     }
     else {
         // データを一旦 GLTFShellNodeに保存．最後に closeSolid() で一気に BINデータを作成
@@ -1703,7 +1703,7 @@ void  GLTFData::addAccessorsIBM(void)
 }
 
 
-void  GLTFData::createInverseBindMatrix(SkinJointData* skin_joint)
+void  GLTFData::createBinDataIBM(SkinJointData* skin_joint)
 {
     if (skin_joint==NULL) return;
 

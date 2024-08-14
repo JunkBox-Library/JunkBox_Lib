@@ -281,7 +281,7 @@ public:
     // IBM
     void    addBufferViewsIBM(void);
     void    addAccessorsIBM(void);
-    void    createInverseBindMatrix(SkinJointData* skin_joint);
+    void    createBinDataIBM(SkinJointData* skin_joint);
 
     // output
     void    outputFile (const char* fn, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn);
