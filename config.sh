@@ -1,5 +1,6 @@
 rm -f aclocal.m4
 autoheader
 aclocal
-automake
+automake -c -a
+autoupdate
 autoconf

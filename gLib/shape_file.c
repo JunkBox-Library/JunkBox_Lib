@@ -170,6 +170,7 @@ void  draw_shape_polygon(ShapeIndex* idx, BSGraph* mp, vector og, vector dd, int
             }
 
             double xx, yy, ox, oy;
+            ox = oy = 0.0;
             fseek(fp, sx->offset*2+52+parts*4+sttidx*16, SEEK_SET); // offset*2 + 8 + 44 + parts*4 + sttidx*16
 
             for (k=sttidx; k<=endidx; k++) {

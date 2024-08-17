@@ -2,11 +2,11 @@
 # Process this file with autoconf to produce a configure script.
 
 
-AC_PREREQ(2.59)
+AC_PREREQ([2.71])
 
-AC_INIT([JunkBox_Lib], [1.10.0alpha], [fumi.hax@gmail.com], [JunkBox_Lib])
+AC_INIT([JunkBox_Lib],[1.10.0alpha],[fumi.hax@gmail.com],[JunkBox_Lib])
 AC_CONFIG_SRCDIR([Lib/tools.c])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 #AM_INIT_AUTOMAKE([no-define])
 AM_INIT_AUTOMAKE([subdir-objects])
@@ -442,7 +442,15 @@ AM_CONDITIONAL(ENABLE_X11, test "$ENABLE_X11" = "yes")
 
 
 # Checks for header files.
-AC_HEADER_STDC
+m4_warn([obsolete],
+[The preprocessor macro `STDC_HEADERS' is obsolete.
+  Except in unusual embedded environments, you can safely include all
+  ISO C90 headers unconditionally.])dnl
+# Autoupdate added the next two lines to ensure that your configure
+# script's behavior did not change.  They are probably safe to remove.
+AC_CHECK_INCLUDES_DEFAULT
+AC_PROG_EGREP
+
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS([rpcsvc/ypclnt.h sys/socket.h sys/errno.h locale.h syslog.h crypt.h sys/sockio.h arpa/inet.h fcntl.h netdb.h netinet/in.h shadow.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h time.h sys/time.h unistd.h])
 
@@ -495,7 +503,20 @@ AC_C_CONST
 AC_C_INLINE
 AC_TYPE_MODE_T
 AC_TYPE_PID_T
-AC_HEADER_TIME
+m4_warn([obsolete],
+[Update your code to rely only on HAVE_SYS_TIME_H,
+then remove this warning and the obsolete code below it.
+All current systems provide time.h; it need not be checked for.
+Not all systems provide sys/time.h, but those that do, all allow
+you to include it and time.h simultaneously.])dnl
+AC_CHECK_HEADERS_ONCE([sys/time.h])
+# Obsolete code to be removed.
+if test $ac_cv_header_sys_time_h = yes; then
+  AC_DEFINE([TIME_WITH_SYS_TIME],[1],[Define to 1 if you can safely include both <sys/time.h>
+	     and <time.h>.  This macro is obsolete.])
+fi
+# End of obsolete code.
+
 AC_STRUCT_TM
 
 

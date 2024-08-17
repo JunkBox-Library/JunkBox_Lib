@@ -31,7 +31,7 @@ CmnHead  jbxl::readRasData(FILE* fp)
 {
     RasHead rhd;
     CmnHead  hd;
-    int  i, linebyte, databyte;
+    int  i, linebyte, databyte, ret;
     uByte null[2], *buf;
     sWord* wptr;
 
@@ -41,9 +41,13 @@ CmnHead  jbxl::readRasData(FILE* fp)
     hd.grptr = NULL;
 
     fseek(fp, 0, 0);
-    fread(&rhd, hd.bsize, 1, fp);
+    ret = fread(&rhd, hd.bsize, 1, fp);
     ntoh_st(&rhd, 4);
-
+    if (ret<=0) {
+        hd.xsize = JBXL_FILE_READ_ERROR;
+        hd.kind  = HEADER_NONE;
+        return hd;
+    } 
     hd.xsize = rhd.ras_width;
     hd.ysize = rhd.ras_height;
     hd.zsize = 1;
@@ -72,12 +76,27 @@ CmnHead  jbxl::readRasData(FILE* fp)
     linebyte = rhd.ras_length/hd.ysize;
 
     if (databyte==linebyte) {
-        fread(buf, hd.lsize, 1, fp);
+        ret = fread(buf, hd.lsize, 1, fp);
+        if (ret<=0) {
+            hd.xsize = JBXL_FILE_READ_ERROR;
+            hd.kind  = HEADER_NONE;
+            return hd;
+        } 
     }
     else {
         for (i=0; i<hd.ysize; i++) {
-            fread(buf, databyte, 1, fp);
-            fread(null, linebyte-databyte, 1, fp);
+            ret = fread(buf, databyte, 1, fp);
+            if (ret<=0) {
+                hd.xsize = JBXL_FILE_READ_ERROR;
+                hd.kind  = HEADER_NONE;
+                return hd;
+            }
+            ret = fread(null, linebyte-databyte, 1, fp);
+            if (ret<=0) {
+                hd.xsize = JBXL_FILE_READ_ERROR;
+                hd.kind  = HEADER_NONE;
+                return hd;
+            }
             buf += databyte;
         }
     }
@@ -242,7 +261,12 @@ CmnHead  jbxl::readUserSetData(FILE* fp, CmnHead* chd, bool cnt)
         return hd;
     }
     memset(hd.buf, 0, hd.bsize);
-    fread((void*)hd.buf, hd.bsize, 1, fp);
+    int ret = fread((void*)hd.buf, hd.bsize, 1, fp);
+    if (ret<=0) {
+        hd.xsize = JBXL_FILE_READ_ERROR;
+        hd.kind  = HEADER_NONE;
+        return hd;
+    } 
 
     // カウンタ
     if (hd.zsize>=10 && cnt) {
@@ -266,12 +290,22 @@ CmnHead  jbxl::readUserSetData(FILE* fp, CmnHead* chd, bool cnt)
     fseek(fp, hd.bsize, 0);
 
     if (counter==NULL) {
-        fread(hd.grptr, hd.lsize, 1, fp);
+        ret = fread(hd.grptr, hd.lsize, 1, fp);
+        if (ret<=0) {
+            hd.xsize = JBXL_FILE_READ_ERROR;
+            hd.kind  = HEADER_NONE;
+            return hd;
+        }
     }
     else {
         int psize = hd.xsize*hd.ysize*((hd.depth+7)/8);
         for (int i=0; i<hd.zsize; i++) {
-            fread(hd.grptr+i*psize, psize, 1, fp);
+            ret = fread(hd.grptr+i*psize, psize, 1, fp);
+            if (ret<=0) {
+                hd.xsize = JBXL_FILE_READ_ERROR;
+                hd.kind  = HEADER_NONE;
+                return hd;
+            }
             if (i%10==0) {
                 counter->StepIt();
                 if (counter->isCanceled()) {    // キャンセル
@@ -357,7 +391,7 @@ MOON_DATA形式（16bit）のグラフィックファイルを読み込む．
 */
 CmnHead  jbxl::readMoonData(FILE* fp, unsigned int fsz, bool no_ntoh)
 {
-    int i;
+    int i, ret;
     CTHead chd;
     CmnHead hd;
 
@@ -366,7 +400,12 @@ CmnHead  jbxl::readMoonData(FILE* fp, unsigned int fsz, bool no_ntoh)
 
     // ヘッダ読み込み
     fseek(fp, 0, 0);
-    fread((void*)&chd, hd.bsize, 1, fp);
+    ret = fread((void*)&chd, hd.bsize, 1, fp);
+    if (ret==0) {
+         hd.xsize = JBXL_FILE_READ_ERROR;
+         hd.kind  = HEADER_NONE;
+         return hd;
+    }
     ntoh_st(&chd, 2);
 
     hd.xsize = chd.xsize - chd.cutleft - chd.cutright;
@@ -396,8 +435,12 @@ CmnHead  jbxl::readMoonData(FILE* fp, unsigned int fsz, bool no_ntoh)
     memset(hd.grptr, 0, hd.lsize);
 
     fseek(fp, hd.bsize, 0);
-    fread(hd.grptr, hd.lsize, 1, fp);
-
+    ret = fread(hd.grptr, hd.lsize, 1, fp);
+    if (ret<=0) {
+         hd.xsize = JBXL_FILE_READ_ERROR;
+         hd.kind  = HEADER_NONE;
+         return hd;
+    }
     if (!no_ntoh) {
         sWord* wptr = (sWord*)hd.grptr;
         for (i=0; i<hd.xsize*hd.ysize; i++) wptr[i] = ntohs(wptr[i]);
@@ -487,8 +530,10 @@ int  jbxl::dicomHeader(FILE* fp, int fsize, int* dsize, int* xsize, int* ysize, 
     /////////////////////////////////////////////////////////////////////
     // ヘッダ読み込み
     fseek(fp, 0, 0);
-    fread(wp, sz, 1, fp);
-
+    int ret = fread(wp, sz, 1, fp);
+    if (ret<=0) {
+         return JBXL_FILE_READ_ERROR;
+    }
     for (i=0; i<sz/2-3; i++) {
         //if ((uWord)ntohs(wp[i])==0x2800 && (uWord)ntohs(wp[i+1])==0x3000) {
         if (wp[i]==DICOM_IMAGE_GROUP) {
@@ -636,8 +681,10 @@ MSGraph<sWord>   jbxl::readDicomData(FILE* fp, int fsize)
     vp.set(xsize, ysize, 1, 0, 0, rzxy);
 
     fseek(fp, sz, 0);
-    fread(vp.gp, dsize, 1, fp);
-
+    int ret = fread(vp.gp, dsize, 1, fp);
+    if (ret<=0) {
+         vp.xs = JBXL_FILE_READ_ERROR;
+    }
     return vp;
 }
 
@@ -698,10 +745,16 @@ CmnHead  jbxl::readXHead(const char* fn, CmnHead* chd)
 
     int hsz = sizeof(CmnHead_Entry);
     fseek(fp, 0, 0);
-    fread(&hd.entry, hsz, 1, fp);
+    int ret  = fread(&hd.entry, hsz, 1, fp);
     hd.buf   = NULL;
     hd.grptr = NULL;
     ntoh_st(&hd, 4);
+    if (ret<=0) {
+        hd.xsize = JBXL_FILE_READ_ERROR;
+        hd.kind  = HEADER_NONE;
+        fclose(fp);
+        return hd;
+    }
 
     // Sun Raster
     if (hd.kind==RAS_MAGIC) {
@@ -734,9 +787,15 @@ CmnHead  jbxl::readXHead(const char* fn, CmnHead* chd)
                 memset(hd.buf, 0, hd.bsize);
 
                 fseek(fp, hsz, 0);
-                fread(hd.buf, hd.bsize, 1, fp);
+                ret = fread(hd.buf, hd.bsize, 1, fp);
                 ntoh_ar((sWord*)hd.buf, hd.bsize); 
                 hd.grptr = NULL;
+                if (ret<=0) {
+                    hd.xsize = JBXL_FILE_READ_ERROR;
+                    hd.kind  = HEADER_NONE;
+                    fclose(fp);
+                    return hd;
+                }
             }
 
             PRINT_MESG("readXHead: Common ヘッダ\n");
@@ -759,7 +818,13 @@ CmnHead  jbxl::readXHead(const char* fn, CmnHead* chd)
     CTHead cthd;
     csz = sizeof(CTHead);
     fseek(fp, 0, 0);
-    fread(&cthd, csz, 1, fp);
+    ret = fread(&cthd, csz, 1, fp);
+    if (ret<=0) {
+        hd.xsize = JBXL_FILE_READ_ERROR;
+        hd.kind  = HEADER_NONE;
+        fclose(fp);
+        return hd;
+    }
     ntoh_st(&cthd, 2);
 
     hd.xsize = cthd.xsize - cthd.cutleft - cthd.cutright;
@@ -967,10 +1032,16 @@ CmnHead  jbxl::readXHeadFile(const char* fn, CmnHead* chd, bool cnt)
     //
     int hsz = sizeof(CmnHead_Entry);
     fseek(fp, 0, 0);
-    fread(&hd.entry, hsz, 1, fp);
+    int ret = fread(&hd.entry, hsz, 1, fp);
     hd.buf = NULL;
     hd.grptr = NULL;
     ntoh_st(&hd, 4);
+    if (ret<=0) {
+        hd.xsize = JBXL_FILE_READ_ERROR;
+        hd.kind  = HEADER_NONE;
+        fclose(fp);
+        return hd;
+    }
 
     // Sun Raster
     if (hd.kind==RAS_MAGIC) {
@@ -1013,12 +1084,16 @@ CmnHead  jbxl::readXHeadFile(const char* fn, CmnHead* chd, bool cnt)
                 return hd;
             }
             memset(hd.grptr, 0, hd.lsize);
-            
-
 
             fseek(fp, hsz, 0);
             if (hd.bsize > 0) {
-                fread(hd.buf, hd.bsize, 1, fp);
+                int ret = fread(hd.buf, hd.bsize, 1, fp);
+                if (ret<=0)  {
+                    hd.xsize = JBXL_FILE_READ_ERROR;
+                    hd.kind  = HEADER_NONE;
+                    fclose(fp);
+                    return hd;
+                }
                 ntoh_ar((sWord*)hd.buf, hd.bsize);
             }
         }
@@ -1032,12 +1107,24 @@ CmnHead  jbxl::readXHeadFile(const char* fn, CmnHead* chd, bool cnt)
 
         // データ本体
         if (counter==NULL) {
-            fread(hd.grptr, hd.lsize, 1, fp);
+            int ret = fread(hd.grptr, hd.lsize, 1, fp);
+            if (ret<=0) {
+                hd.xsize = JBXL_FILE_READ_ERROR;
+                hd.kind  = HEADER_NONE;
+                fclose(fp);
+                return hd;
+            }
         }
         else {
             int psize = hd.xsize*hd.ysize*((hd.depth+7)/8);
             for (int i=0; i<hd.zsize; i++) {
-                fread(hd.grptr+i*psize, psize, 1, fp);
+                int ret = fread(hd.grptr+i*psize, psize, 1, fp);
+                if (ret<=0) {
+                    hd.xsize = JBXL_FILE_READ_ERROR;
+                    hd.kind  = HEADER_NONE;
+                    fclose(fp);
+                    return hd;
+                }
                 if (i%10==0) {
                     counter->StepIt();
                     if (counter->isCanceled()) {    // キャンセル
@@ -1130,7 +1217,13 @@ CmnHead  jbxl::readXHeadFile(const char* fn, CmnHead* chd, bool cnt)
     ///////////////////////////////////////////////////////////////////////
     // TIFF
     /*
-    fread(head, 32, 1, fp);
+    int ret = fread(head, 32, 1, fp);
+    if (ret<=0) {
+        hd.xsize = JBXL_FILE_READ_ERROR;
+        hd.kind  = HEADER_NONE;
+        fclose(fp);
+        return hd;
+    }
     if (head[0]=='I' && head[1]=='I') {
         if (head[2]==0x2a && head[3]==0x00) {
             PRINT_MESG("readXHeadFile: TIFFデータ形式\n");
@@ -1181,10 +1274,11 @@ CmnHead  jbxl::readXHeadFile(const char* fn, CmnHead* chd, bool cnt)
     memset(hd.grptr, 0, fsz);
 
     fseek(fp, 0, 0);
-    fread(hd.grptr, fsz, 1, fp);
-
-    hd.kind  = UN_KNOWN_DATA;
-    hd.lsize = fsz;
+    ret = fread(hd.grptr, fsz, 1, fp);
+    if (ret>0) {
+        hd.kind  = UN_KNOWN_DATA;
+        hd.lsize = fsz;
+    }
 
     fclose(fp);
     return hd;
@@ -1340,12 +1434,17 @@ CmnHead  jbxl::readCmnHeadFile(const char* fn, CmnHead* chd, bool cnt)
 
         int hsz = sizeof(CmnHead_Entry);
         fseek(fp, 0, 0);
-        fread(&hd.entry, hsz, 1, fp);
+        int ret = fread(&hd.entry, hsz, 1, fp);
         hd.buf = NULL;
         hd.grptr = NULL;
         ntoh_st(&hd, 4);
+        if (ret<=0) {
+            hd.xsize = JBXL_FILE_READ_ERROR;
+            hd.kind  = HEADER_NONE;
+            fclose(fp);
+            return hd;
+        }
         if (hd.zsize<=0) hd.zsize = 1;
-
         if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 4 ) hsz = 36;     // x86 file
         if (fsz == (int)(hsz + hd.bsize + hd.lsize) + 16) hsz = 48;     // x64 file
         
@@ -1375,8 +1474,14 @@ CmnHead  jbxl::readCmnHeadFile(const char* fn, CmnHead* chd, bool cnt)
 
         fseek(fp, hsz, 0);
         if (hd.bsize>0) {
-            fread(hd.buf, hd.bsize, 1, fp);
+            ret = fread(hd.buf, hd.bsize, 1, fp);
             ntoh_ar((sWord*)hd.buf, hd.bsize);
+            if (ret<=0) {
+                hd.xsize = JBXL_FILE_READ_ERROR;
+                hd.kind  = HEADER_NONE;
+                fclose(fp);
+                return hd;
+            }
         }
         
         // ヘッダのみ
@@ -1386,12 +1491,24 @@ CmnHead  jbxl::readCmnHeadFile(const char* fn, CmnHead* chd, bool cnt)
         else {
             // データ本体
             if (counter==NULL) {
-                fread(hd.grptr, hd.lsize, 1, fp);
+                int ret = fread(hd.grptr, hd.lsize, 1, fp);
+                if (ret<=0) {
+                    hd.xsize = JBXL_FILE_READ_ERROR;
+                    hd.kind  = HEADER_NONE;
+                    fclose(fp);
+                    return hd;
+                }
             }
             else {
                 int psize = hd.xsize*hd.ysize*((hd.depth+7)/8);
                 for (int i=0; i<hd.zsize; i++) {
-                    fread(hd.grptr+i*psize, psize, 1, fp);
+                    int ret = fread(hd.grptr+i*psize, psize, 1, fp);
+                    if (ret<=0) {
+                        hd.xsize = JBXL_FILE_READ_ERROR;
+                        hd.kind  = HEADER_NONE;
+                        fclose(fp);
+                        return hd;
+                    }
                     if (i%10==0) {
                         counter->StepIt();
                         if (counter->isCanceled()) {    // キャンセル
@@ -1502,7 +1619,11 @@ int  jbxl::writeCmnHeadFile(const char* fn, CmnHead* hd, bool cnt)
         return JBXL_GRAPH_RDFILE_ERROR;
     }
  
-    fread((sByte*)&cmd.entry, sizeof(CmnHead_Entry), 1, fp);
+    int ret = fread((sByte*)&cmd.entry, sizeof(CmnHead_Entry), 1, fp);
+    if (ret<=0) {
+        PRINT_MESG("WRITECMNHEADFILE: ファイルの再オープン後に読み込みエラー\n");
+        return JBXL_FILE_READ_ERROR;
+    }
     fclose(fp);
     ntoh_st(&cmd.entry, 4);
     if (cmd.xsize!=hd->xsize || cmd.ysize!=hd->ysize || cmd.zsize!=hd->zsize ||

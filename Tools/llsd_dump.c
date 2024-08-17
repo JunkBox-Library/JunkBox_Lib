@@ -39,8 +39,9 @@ int main(int argc, char** argv)
         fprintf(stderr, "Cannot open file: %s\n", argv[1]);
         exit(1);
     }
-    fread(buf, sz, 1, fp);
+    int ret = fread(buf, sz, 1, fp);
     fclose(fp);
+    if (ret==0) exit(1);
 
     ////////////////////////////////////////////////
     tXML* xml = NULL; 

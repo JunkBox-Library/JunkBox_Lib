@@ -174,7 +174,12 @@ TGAImage  jbxl::readTGAData(FILE* fp)
     fseek(fp, 0, 0);
     tga.free();
 
-    fread(&tga.hd, TGA_HEADER_SIZE, 1, fp);
+    int ret = fread(&tga.hd, TGA_HEADER_SIZE, 1, fp);
+    if (ret<=0) {
+        DEBUG_MODE PRINT_MESG("JBXL::readTGAData: ERROR: File read Error\n");
+        tga.state = JBXL_FILE_READ_ERROR;
+        return tga;
+    }
 
     int kind = (int)tga.hd[2];
     if (kind == 2) {
@@ -240,22 +245,39 @@ TGAImage  jbxl::readTGAData(FILE* fp)
         uByte buf[LBUF];
 
         while (size<datasize && !feof(fp)) {
-            fread(&chunk, 1, 1, fp);
+            ret = fread(&chunk, 1, 1, fp);
+            if (ret<=0) {
+                DEBUG_MODE PRINT_MESG("JBXL::readTGAData: ERROR: File read Error\n");
+                tga.state = JBXL_FILE_READ_ERROR;
+                return tga;
+            }
             int rep = (int)(chunk & 0x7f) + 1;
             if (chunk & 0x80) {
-                fread(buf, tga.col, 1, fp);
+                ret = fread(buf, tga.col, 1, fp);
+                if (ret<=0) {
+                    tga.state = JBXL_FILE_READ_ERROR;
+                    return tga;
+                }
                 for (int j=0; j<rep; j++) {
                     for (int i=0; i<tga.col; i++) tga.gp[size++] = buf[i];
                 }
             }
             else {
                 if (tga.col*rep<LBUF) {
-                    fread(buf, tga.col*rep, 1, fp);
+                    ret = fread(buf, tga.col*rep, 1, fp);
+                    if (ret<=0) {
+                        tga.state = JBXL_FILE_READ_ERROR;
+                        return tga;
+                    }
                     for (int i=0; i<tga.col*rep; i++) tga.gp[size++] = buf[i];
                 }
                 else {
                     for (int j=0; j<rep; j++) {
-                        fread(buf, tga.col, 1, fp);
+                        ret = fread(buf, tga.col, 1, fp);
+                        if (ret<=0) {
+                            tga.state = JBXL_FILE_READ_ERROR;
+                            return tga;
+                        }
                         for (int i=0; i<tga.col; i++) tga.gp[size++] = buf[i];
                     }
                 }
@@ -269,10 +291,19 @@ TGAImage  jbxl::readTGAData(FILE* fp)
         tga.hd[2] &= ~0x08; //  非圧縮状態
     }
     else {
-        fread(tga.gp, datasize, 1, fp);
+        ret = fread(tga.gp, datasize, 1, fp);
+        if (ret<=0) {
+            tga.state = JBXL_FILE_READ_ERROR;
+            return tga;
+        }
     }
-    if (!feof(fp)) fread(tga.ft, TGA_FOOTER_SIZE, 1, fp);
-
+    if (!feof(fp)) {
+        ret = fread(tga.ft, TGA_FOOTER_SIZE, 1, fp);
+        if (ret<=0) {
+            tga.state = JBXL_FILE_READ_ERROR;
+            return tga;
+        }
+    }
     tga.state = 0;
     return tga;
 }

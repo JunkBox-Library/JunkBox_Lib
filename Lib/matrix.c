@@ -199,6 +199,7 @@ matrix  make_matrix1(int n)
     a.mx = (double*)malloc(n*sizeof(double));
     if (a.mx==NULL) {
         free(a.sz);
+        a.sz = NULL;
         return a;
     }
 
@@ -232,6 +233,7 @@ imatrix  make_imatrix1(int n)
     a.mx = (int*)malloc(n*sizeof(int));
     if (a.mx==NULL) {
         free(a.sz);
+        a.sz = NULL;
         return a;
     }
 
@@ -268,6 +270,7 @@ matrix  make_matrix2(int n, int m)
     a.mx = (double*)malloc(s*sizeof(double));
     if (a.mx==NULL) {
         free(a.sz);
+        a.sz = NULL;
         return a;
     }
 
@@ -304,6 +307,7 @@ imatrix  make_imatrix2(int n, int m)
     a.mx = (int*)malloc(s*sizeof(int));
     if (a.mx==NULL) {
         free(a.sz);
+        a.sz = NULL;
         return a;
     }
 
@@ -343,6 +347,7 @@ matrix  make_matrix(int n, int* sz)
     a.mx = (double*)malloc(s*sizeof(double));
     if (a.mx==NULL) {
         free(a.sz);
+        a.sz = NULL;
         return a;
     }
 
@@ -382,6 +387,7 @@ imatrix  make_imatrix(int n, int* sz)
     a.mx = (int*)malloc(s*sizeof(int));
     if (a.mx==NULL) {
         free(a.sz);
+        a.sz = NULL;
         return a;
     }
 
