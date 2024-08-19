@@ -36,7 +36,6 @@
     #include  <rpcsvc/ypclnt.h>
 #endif
 
-
 #ifdef AIX
     struct dom_binding {int dummy;};
 #endif

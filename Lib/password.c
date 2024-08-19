@@ -60,7 +60,7 @@ char*   get_passwd(char* user_id)
     }
 #endif
 
-    return NULL;
+    return pass;    // *, x, !
 }
 
 

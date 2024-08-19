@@ -93,7 +93,7 @@ int  command_USERID(Buffer operand, Buffer comment, int sock)
             if (ld!=NULL) {
                 cc = simple_check_ldap_passwd(ld, (char*)User_ID->buf, NULL, LdapBind);
                 close_ldap_connection(ld, &LdapHost, &LdapBind);
-                if (cc==1) {
+                if (cc==JBXL_LDAP_PASSWD_ERROR) {
                     cc = tcp_send_crypt_mesg(sock, (char*)"OK\r\n", CRYPT_SharedKey, CRYPT_Type);
                     return 0;
                 }

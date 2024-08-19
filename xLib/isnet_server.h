@@ -22,4 +22,3 @@ int    command_PASSWD (Buffer operand, Buffer comment, int sock);    // 130
 int    command_NOCHLNG(Buffer operand, Buffer comment, int sock);    // 140
 int    command_KEYEX  (Buffer operand, Buffer comment, int sock);    // 160
 int    command_CRYPT  (Buffer operand, Buffer comment, int sock);    // 170
-

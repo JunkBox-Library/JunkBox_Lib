@@ -21,7 +21,6 @@ This work is part of OpenLDAP Software <http://www.openldap.org/>.
 
 #ifdef ENABLE_LDAP
 
-
 #include "tlist.h"
 
 
