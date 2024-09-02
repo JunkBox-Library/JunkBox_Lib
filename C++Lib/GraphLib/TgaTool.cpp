@@ -174,7 +174,7 @@ TGAImage  jbxl::readTGAData(FILE* fp)
     fseek(fp, 0, 0);
     tga.free();
 
-    int ret = fread(&tga.hd, TGA_HEADER_SIZE, 1, fp);
+    size_t ret = fread(&tga.hd, TGA_HEADER_SIZE, 1, fp);
     if (ret<=0) {
         DEBUG_MODE PRINT_MESG("JBXL::readTGAData: ERROR: File read Error\n");
         tga.state = JBXL_FILE_READ_ERROR;

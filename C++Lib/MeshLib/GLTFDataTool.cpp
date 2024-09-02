@@ -1892,8 +1892,8 @@ void  GLTFData::output_glb(char* fn, char* out_dirn, char* ptm_dirn, char* tex_d
             if (tp!=NULL) {
                 uByte* tex_buf = (uByte*)malloc(tex_info->length);
                 if (tex_buf!=NULL) {
-                    int ret = fread(tex_buf, 1, tex_info->length, tp);
-                    if (ret<=0) {
+                    size_t ret = fread(tex_buf, 1, tex_info->length, tp);
+                    if (ret==0) {
                         PRINT_MESG("GLTFData::output_glb: File read Error! (%s)\n",  (char*)out_path.buf);
                     }
                     fwrite((void*)tex_buf, tex_info->length, 1, fp);

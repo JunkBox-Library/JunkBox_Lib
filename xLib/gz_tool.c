@@ -202,7 +202,7 @@ int  gz_encode_gzfp(FILE* fp, gzFile* gf)
     if (*gf==NULL) return JBXL_ARGS_ERROR;
 
     memset(buf, 0, RECVBUFSZ);
-    sz = cc = (int)fread(buf, RECVBUFSZ, 1, fp);
+    sz = cc = fread(buf, RECVBUFSZ, 1, fp);
     while(cc>0) {
         gzwrite(*gf, (voidp)buf, (unsigned int)cc);
         memset(buf, 0, cc);

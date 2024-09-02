@@ -177,7 +177,7 @@ int  send_spki_recv_ans(int sock, Buffer mkey, int tm, Buffer* key, EVP_CIPHER* 
 //
 
 /** 
-int  check_auth(Buffer ahost, int aport, Buffer userid, Buffer passwd, int keyex, int cryptm, char* cfn, int cont)
+int  check_auth(Buffer ahost, int aport, Buffer userid, Buffer passwd, int chmode, int keyex, int cryptm, char* cfn, int cont)
 
 認証サーバに接続し，認証を行なう．
 
