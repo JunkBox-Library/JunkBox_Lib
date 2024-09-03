@@ -28,7 +28,11 @@ DllExport STLData*  jbxl::readSTLFile(char* fname, long int* fno)
     unsigned int temp;
 
     fp = fopen(fname, "rb");
-    if (fp==NULL) return NULL;
+    if (fp==NULL) {
+        PRINT_MESG("JBXL::readSTLFile: ERROR: File open Error! (%s)\n", fname);
+        return NULL;
+    }
+
     fseek(fp, 80, SEEK_SET);
     fread(&temp, 4, 1, fp);
     fclose(fp);
@@ -116,7 +120,10 @@ DllExport STLData*  jbxl::readSTLFileA(char* fname, long int* fno)
     // ファイルをオープンしてデータ数を数える．
     *fno = 0;
     fp = fopen(fname, "r");
-    if (fp==NULL) return NULL;
+    if (fp==NULL) {
+        PRINT_MESG("JBXL::readSTLFileA: ERROR: File open Error! (%s)\n", fname);
+        return NULL;
+    }
 
     fgets(buffer, LBUF, fp);
     while (!feof(fp)) {
@@ -142,7 +149,10 @@ DllExport STLData*  jbxl::readSTLFileA(char* fname, long int* fno)
     // もう一度ファイルをオープンして，データを読み込む．
     int i = 0, j = 0;
     fp = fopen(fname, "r");
-    if (fp==NULL) return NULL;
+    if (fp==NULL) {
+        PRINT_MESG("JBXL::readSTLFileA: ERROR: File re-open Error! (%s)\n", fname);
+        return NULL;
+    }
 
     fgets(buffer, LBUF, fp);
     while (!feof(fp)) {
@@ -182,7 +192,10 @@ DllExport STLData*  jbxl::readSTLFileB(char* fname, long int* fno)
     STLData*    exdata;
 
     fp = fopen(fname, "rb");
-    if (fp==NULL) return NULL;
+    if (fp==NULL) {
+        PRINT_MESG("JBXL::readSTLFileB: ERROR: File open Error! (%s)\n", fname);
+        return NULL;
+    }
     fread(message, 80, 1, fp);
     message[80] = '\0';         // STLのファイルメッセージ(message[]）80Byteは未使用
 
@@ -223,7 +236,10 @@ DllExport int  jbxl::writeSTLFileA(char* fname, BREP_SOLID* solid)
     int   nn = 0;
 
     fp = fopen(fname, "w");
-    if (fp==NULL) return -1;
+    if (fp==NULL) {
+        PRINT_MESG("JBXL::writeSTLFileA: ERROR: Solid file open Error! (%s)\n", fname);
+        return -1;
+    }
 
     fprintf(fp, "solid %s\n", fname);
 
@@ -262,7 +278,10 @@ DllExport int  jbxl::writeSTLFileB(char* fname, BREP_SOLID* solid)
     STLData  stldata;
 
     fp = fopen(fname, "wb");
-    if (fp==NULL) return -1;
+    if (fp==NULL) {
+        PRINT_MESG("JBXL::writeSTLFileB: ERROR: Solid file open Error! (%s)\n", fname);
+        return -1;
+    }
 
     fno = (int)solid->contours.size();
     fwrite(message, 80, 1, fp);
@@ -301,7 +320,10 @@ DllExport int  jbxl::writeSTLFileA(char* fname, BREP_SOLID_LIST solid_list)
     int   nn = 0;
 
     fp = fopen(fname, "wa");
-    if (fp==NULL) return -1;
+    if (fp==NULL) {
+        PRINT_MESG("JBXL::writeSTLFileA: ERROR: Solid list file open Error! (%s)\n", fname);
+        return -1;
+    }
 
     fprintf(fp, "solid %s\n", fname);
 
@@ -344,7 +366,10 @@ DllExport int  jbxl::writeSTLFileB(char* fname, BREP_SOLID_LIST solid_list)
     STLData  stldata;
 
     fp = fopen(fname, "wb");
-    if (fp==NULL) return -1;
+    if (fp==NULL) {
+        PRINT_MESG("JBXL::writeSTLFileB: ERROR: Solid list file open Error! (%s)\n", fname);
+        return -1;
+    }
 
     BREP_SOLID_LIST::iterator isolid;
     for (isolid=solid_list.begin(); isolid!=solid_list.end(); isolid++){

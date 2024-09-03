@@ -241,6 +241,10 @@ AffineTrans<double>  GLTFData::getAffineBaseTrans4Engine(void)
         trans.element(3, 2, -1.0);    // y -> -z
         trans.element(2, 3,  1.0);    // z -> y
     }
+    else {  // UE
+        for (int i=1; i<=4; i++) trans.element(i, i, 100.0);
+    }
+
     trans.computeComponents();
 
     return trans;
@@ -1757,12 +1761,12 @@ void  GLTFData::outputFile(const char* fname, const char* out_dirn, const char* 
 void  GLTFData::output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn)
 {
     Buffer out_path = make_Buffer_bystr(out_dirn);
-    if (this->phantom_out) cat_s2Buffer(ptm_dirn, &out_path);
+    if (this->phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &out_path);
     cat_s2Buffer(fn, &out_path);
     change_file_extension_Buffer(&out_path, ".gltf");
 
     Buffer bin_path = make_Buffer_bystr(out_dirn);
-    if (this->phantom_out) cat_s2Buffer(ptm_dirn, &bin_path);
+    if (this->phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &bin_path);
     cat_s2Buffer(bin_dirn, &bin_path);
     cat_s2Buffer(fn, &bin_path);
     change_file_extension_Buffer(&bin_path, ".bin");
@@ -1802,12 +1806,18 @@ void  GLTFData::output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_
         print_json(fp, this->json_data, JSON_INDENT_FORMAT);
         fclose(fp);
     }
+    else {
+        PRINT_MESG("GLTFData::output_gltf: ERROR: Json file open Error! (%s)\n", (char*)out_path.buf);
+    }
 
     // output binary data
     fp = fopen((char*)bin_path.buf, "wb");
     if (fp!=NULL) {
         fwrite((void*)(this->bin_buffer.buf), this->bin_buffer.vldsz, 1, fp);
         fclose(fp);
+    }
+    else {
+        PRINT_MESG("GLTFData::output_gltf: ERROR: Binary file open Error! (%s)\n", (char*)bin_path.buf);
     }
 
     free_Buffer(&tex_path);
@@ -1829,7 +1839,7 @@ void  GLTFData::output_glb(char* fn, char* out_dirn, char* ptm_dirn, char* tex_d
     json_insert_parse(this->buffers, buf);
 
     Buffer out_path = make_Buffer_bystr(out_dirn);
-    if (this->phantom_out) cat_s2Buffer(ptm_dirn, &out_path);
+    if (this->phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &out_path);
     cat_s2Buffer(fn, &out_path);
     change_file_extension_Buffer(&out_path, ".glb");
 
@@ -1894,7 +1904,7 @@ void  GLTFData::output_glb(char* fn, char* out_dirn, char* ptm_dirn, char* tex_d
                 if (tex_buf!=NULL) {
                     size_t ret = fread(tex_buf, 1, tex_info->length, tp);
                     if (ret==0) {
-                        PRINT_MESG("GLTFData::output_glb: File read Error! (%s)\n",  (char*)out_path.buf);
+                        PRINT_MESG("GLTFData::output_glb: ERROR: Texture file read Error! (%s)\n",  (char*)tex_info->fname->buf);
                     }
                     fwrite((void*)tex_buf, tex_info->length, 1, fp);
                     for (uDWord i=0; i<tex_info->pad; i++) fwrite((void*)"\0", 1, 1, fp);
@@ -1902,10 +1912,16 @@ void  GLTFData::output_glb(char* fn, char* out_dirn, char* ptm_dirn, char* tex_d
                 }
                 fclose(tp);
             }
+            else {
+                PRINT_MESG("GLTFData::output_glb: ERROR: Texture file open Error! (%s)\n",  (char*)tex_info->fname->buf);
+            }
             tex_info = tex_info->next;
         }
+        fclose(fp);
     }
-    fclose(fp);
+    else {
+        PRINT_MESG("GLTFData::output_glb: ERROR: GLB file open Error! (%s)\n",  (char*)out_path.buf);
+    }
 
     free_Buffer(&out_path);
     free_Buffer(&tex_path);

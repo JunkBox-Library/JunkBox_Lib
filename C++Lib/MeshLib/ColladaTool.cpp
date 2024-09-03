@@ -1174,6 +1174,10 @@ void  ColladaXML::outputFile(const char* fname, const char* path, int mode)
         output_dae(fp, mode);
         fclose(fp);
     }
+    else {
+        PRINT_MESG("ColladaXML::outputFile: ERROR: File open Error! (%s)\n", (char*)out_path.buf);
+    }
+
     free_Buffer(&file_name);
     free_Buffer(&out_path);
 

@@ -218,13 +218,17 @@ void  OBJData::outputFile(const char* fname, const char* out_dirn, const char* p
 void  OBJData::output_mtl(char* fname, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* mtl_dirn)
 {
     Buffer mtl_path = make_Buffer_bystr(out_dirn);
-    if (phantom_out) cat_s2Buffer(ptm_dirn, &mtl_path);
+    if (phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &mtl_path);
     cat_s2Buffer(mtl_dirn, &mtl_path);
     cat_s2Buffer(fname,    &mtl_path);
     change_file_extension_Buffer(&mtl_path, ".mtl");
 
     FILE* fp = fopen((char*)mtl_path.buf, "wb");
-    if (fp==NULL) return;
+    if (fp==NULL) {
+        PRINT_MESG("OBJData::output_mtl: ERROR: Material file open Error! (%s)\n", (char*)mtl_path.buf);
+        free_Buffer(&mtl_path);
+        return;
+    }
 
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_MTLFL);
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_TOOL);
@@ -288,9 +292,10 @@ void  OBJData::output_mtl(char* fname, char* out_dirn, char* ptm_dirn, char* tex
 void  OBJData::output_obj(char* fname, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* mtl_dirn)
 {
     UNUSED(tex_dirn);
+//PRINT_MESG("===> %s, %s, %s, %s, %s, %s\n", fname, out_dirn, ptm_dirn, tex_dirn, mtl_dirn);
 
     Buffer obj_path = make_Buffer_bystr((char*)out_dirn);
-    if (phantom_out) cat_s2Buffer(ptm_dirn, &obj_path);
+    if (phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &obj_path);
     cat_s2Buffer(fname, &obj_path);
     change_file_extension_Buffer(&obj_path, ".obj");
 
@@ -303,7 +308,11 @@ void  OBJData::output_obj(char* fname, char* out_dirn, char* ptm_dirn, char* tex
 
     //
     FILE* fp = fopen((char*)obj_path.buf, "wb");
-    if (fp==NULL) return;
+    if (fp==NULL) {
+        PRINT_MESG("OBJData::output_obj: ERROR: Object file open Error! (%s)\n", (char*)obj_path.buf);
+        free_Buffer(&obj_path);
+        return;
+    }
 
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_OBJFL);
     fprintf(fp, "# %s\n", OBJDATATOOL_STR_TOOL);
@@ -326,8 +335,13 @@ void  OBJData::output_obj(char* fname, char* out_dirn, char* ptm_dirn, char* tex
             cat_s2Buffer(".obj", &obj_file);
 
             fp = fopen((char*)obj_file.buf, "wb");
+            if (fp==NULL) {
+                PRINT_MESG("OBJData::output_obj: ERROR: Object file re-open Error! (%s)\n", (char*)obj_file.buf);
+                free_Buffer(&obj_path);
+                free_Buffer(&obj_file);
+                return;
+            }
             free_Buffer(&obj_file);
-            if (fp==NULL) return;
 
             file_num++;
             facet_num = 0;
