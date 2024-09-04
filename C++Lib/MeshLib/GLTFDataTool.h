@@ -274,14 +274,14 @@ public:
     void    createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int shell_vertexes);
 
     // create bin data at onece
-    void    createShellGeometryData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, SkinJointData* skin_joint=NULL);
+    void    createShellGeometryData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, SkinJointData* skin_joint=NULL, AffineTrans<double>* ue_trans=NULL);
     void    createBinDataAoS(void);
     void    createBinDataSoA(void);
 
     // IBM
     void    addBufferViewsIBM(void);
     void    addAccessorsIBM(void);
-    void    createBinDataIBM(SkinJointData* skin_joint);
+    void    createBinDataIBM(SkinJointData* skin_joint, AffineTrans<double>* ue_trans=NULL);
 
     // output
     void    outputFile (const char* fn, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn);

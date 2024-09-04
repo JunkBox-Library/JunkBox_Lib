@@ -226,24 +226,21 @@ void  GLTFData::initGLTF(void)
 //
 
 /**
-AffineTrans<double>  GLTFData::getAffineTrans4Engine(AffineTrans<double> affine)
+AffineTrans<double>  GLTFData::getAffineBaseTrans4Engine(void)
 
-使用するエンジンに合わせて，FACET毎の Affine変換のパラメータを変更する．
+// ×使用するエンジンに合わせて.... (UNITY と UE で同じ? GLTFの規格のせい?)
+
+FACET毎の Affine変換のパラメータを変更する．
 */
 AffineTrans<double>  GLTFData::getAffineBaseTrans4Engine(void)
 {
     AffineTrans<double> trans;
     for (int i=1; i<=4; i++) trans.element(i, i, 1.0);
     //
-    if (this->engine==JBXL_3D_ENGINE_UNITY) {
-        trans.element(2, 2,  0.0);
-        trans.element(3, 3,  0.0);
-        trans.element(3, 2, -1.0);    // y -> -z
-        trans.element(2, 3,  1.0);    // z -> y
-    }
-    else {  // UE
-        for (int i=1; i<=4; i++) trans.element(i, i, 100.0);
-    }
+    trans.element(2, 2,  0.0);
+    trans.element(3, 3,  0.0);
+    trans.element(3, 2, -1.0);    // y -> -z
+    trans.element(2, 3,  1.0);    // z -> y
 
     trans.computeComponents();
 
@@ -376,6 +373,20 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         del_json_node(&this->skins);
     }
 
+    // for UE5 Bug
+    AffineTrans<double> ue_trans;
+    ue_trans.init();
+    if (affine!=NULL && this->engine==JBXL_3D_ENGINE_UE) {
+        AffineTrans<double> bstrans = this->getAffineBaseTrans4Engine();
+        AffineTrans<double> invroot = this->affineRoot.getInverseAffine();
+        bstrans.affineMatrixAfter(*affine);
+        bstrans.affineMatrixBefore(invroot);
+        ue_trans = bstrans.getInverseAffine();
+        ue_trans.computeMatrix();
+        bstrans.free();
+        invroot.free();
+    }
+
     // BINデータ作成
     if (this->bin_seq) {
         // その都度 BINデータを作成していく
@@ -385,12 +396,13 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         else {
             this->createBinDataSeqSoA(facet, shell_indexes, shell_vertexes);
         }
-        if (this->has_joints) this->createBinDataIBM(skin_joint);
+        if (this->has_joints) this->createBinDataIBM(skin_joint, &ue_trans);
     }
     else {
         // データを一旦 GLTFShellNodeに保存．最後に closeSolid() で一気に BINデータを作成
-        this->createShellGeometryData(facet, shell_indexes, shell_vertexes, skin_joint);
+        this->createShellGeometryData(facet, shell_indexes, shell_vertexes, skin_joint, &ue_trans);
     }
+    ue_trans.free();
 
     //
     this->phantom_out = true;
@@ -473,23 +485,24 @@ void  GLTFData::addNodes(AffineTrans<double>* affine)
         snprintf(buf, LBUF-1, JBXL_GLTF_NODES_SKIN, this->skin_no);
         json_insert_parse(mesh, buf);
     }
-    else {
+    //else {
+    if (!this->has_joints || this->engine==JBXL_3D_ENGINE_UE) {     // for UE5 Bug
         // affine translarion
         tJson* matrix = json_append_array_key(mesh, "matrix");
         if (affine!=NULL) {
-            AffineTrans<double> trans   = this->getAffineBaseTrans4Engine();
+            AffineTrans<double> bstrans = this->getAffineBaseTrans4Engine();
             AffineTrans<double> invroot = this->affineRoot.getInverseAffine();
-            trans.affineMatrixAfter(*affine);
-            trans.affineMatrixBefore(invroot);
-            trans.computeMatrix();
+            bstrans.affineMatrixAfter(*affine);
+            bstrans.affineMatrixBefore(invroot);
+            bstrans.computeMatrix();
 
             for (int j=1; j<=4; j++) {
                 for (int i=1; i<=4; i++) {
-                    float element = (float)trans.element(i, j);
+                    float element = (float)bstrans.element(i, j);
                     json_append_array_real_val(matrix, element);
                 }
             }
-            trans.free();
+            bstrans.free();
             invroot.free();
         }
     }
@@ -1349,7 +1362,7 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
 // Create all bin data at once
 
 /**
-void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, SkinJointData* skin_joint)
+void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, SkinJointData* skin_joint, AffineTrans<double>* ue_trans)
 
 SHELL毎に呼び出され，SHELL中の全FACETのジオメトリ情報を this->shellNode に格納する．
 
@@ -1357,8 +1370,9 @@ SHELL毎に呼び出され，SHELL中の全FACETのジオメトリ情報を this
 @param  shell_indexes   SHELL中の indexデータの総数．
 @param  shell_vetexes   SHELL中の vertexデータの総数．
 @param  skin_joint      SHELLの Joint情報へのポインタ．
+@param  ue_trans        UE5 Bug 修正用 Affine変換行列．addNode() で変換した分を元に戻すための逆行列．
 */
-void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, SkinJointData* skin_joint)
+void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, SkinJointData* skin_joint, AffineTrans<double>* ue_trans)
 {
     unsigned int float_size  = (unsigned int)sizeof(float);
     unsigned int uint_size   = (unsigned int)sizeof(unsigned int);
@@ -1402,7 +1416,7 @@ void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes,
     shell_node->facet_vertex = (unsigned int*)malloc(shell_node->num_facets*uint_size);
 
     float mag_fac = 1.0f;
-    if (this->engine == JBXL_3D_ENGINE_UNITY) {
+    if (this->engine==JBXL_3D_ENGINE_UNITY) {
         mag_fac = 1.0f;
     }
 
@@ -1473,17 +1487,19 @@ void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes,
     
     // Inverse Bind Matrix
     for (unsigned int k=0; k<this->num_joints; k++) {
-        AffineTrans<double> trans = skin_joint->inverse_bind[k] * skin_joint->bind_shape;
-        trans.computeMatrix();
+        // IBM
+        AffineTrans<double> ibm_trans = skin_joint->inverse_bind[k] * skin_joint->bind_shape;
+        if (this->engine==JBXL_3D_ENGINE_UE && ue_trans!=NULL) ibm_trans.affineMatrixAfter(*ue_trans);    // for UE5 Bug
+        ibm_trans.computeMatrix();
 
         int ks = (int)k*16;
         for (int j=1; j<=4; j++) {
             int js = (j-1)*4;
             for (int i=1; i<=4; i++) {
-                shell_node->vm[ks + js + i - 1] = (float)trans.element(i, j);
+                shell_node->vm[ks + js + i - 1] = (float)ibm_trans.element(i, j);
             }
         }
-        trans.free();
+        ibm_trans.free();
     }
 
     // shell_node をリストの最後に繋げる
@@ -1707,23 +1723,25 @@ void  GLTFData::addAccessorsIBM(void)
 }
 
 
-void  GLTFData::createBinDataIBM(SkinJointData* skin_joint)
+void  GLTFData::createBinDataIBM(SkinJointData* skin_joint, AffineTrans<double>* ue_trans)
 {
     if (skin_joint==NULL) return;
 
     unsigned int float_size = (unsigned int)sizeof(float);
     //
     for (unsigned int k=0; k<this->num_joints; k++) {
-        AffineTrans<double> trans = skin_joint->inverse_bind[k] * skin_joint->bind_shape;
-        trans.computeMatrix();
+        // IBM
+        AffineTrans<double> ibm_trans = skin_joint->inverse_bind[k] * skin_joint->bind_shape;
+        if (this->engine==JBXL_3D_ENGINE_UE && ue_trans!=NULL) ibm_trans.affineMatrixAfter(*ue_trans);    // for UE5 Bug
+        ibm_trans.computeMatrix();
 
         for (int j=1; j<=4; j++) {
             for (int i=1; i<=4; i++) {
-                float ibm = (float)trans.element(i, j);
+                float ibm = (float)ibm_trans.element(i, j);
                 cat_b2Buffer(&ibm, &(this->bin_buffer), float_size);
             }
         }
-        trans.free();
+        ibm_trans.free();
     }
     return;
 }
@@ -1947,7 +1965,7 @@ void  GLTFData::convertJson_TexturePath(char* tex_dirn)
         if (uri!=NULL) {
             Buffer* tex = new_Buffer((int)strlen(tex_dirn) + uri->ldat.val.vldsz + 5);   // ../ + \0 + 1(予備)
             cat_s2Buffer("\"", tex); 
-            if (this->phantom_out) cat_s2Buffer("../", tex); 
+            if (this->phantom_out && this->engine==JBXL_3D_ENGINE_UNITY) cat_s2Buffer("../", tex); 
             cat_s2Buffer(tex_dirn, tex);
             cat_s2Buffer(&(uri->ldat.val.buf[1]), tex); 
             free_Buffer(&uri->ldat.val);
