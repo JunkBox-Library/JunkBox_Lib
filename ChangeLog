@@ -6,7 +6,8 @@
 rewrite configure.ac, doxygen.conf
 working now ..... v1.10.0
 
-v1.10.0
+
+v1.10.0 '24/09/04
 	C++Lib/MathLib/AffineTrans.h
 		メンバ変数を private に変更．メンバ関数追加．
 	C++Lib/MathLib/Vector.h
