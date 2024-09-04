@@ -80,7 +80,6 @@ v1.9.0 '23/12/29
 	OpenSSL 3.0 で deprecated となっているDH関連の関数を xLib/dh_tool.c へ
 
 
-
 v1.8.2 '23/08/30
 	FBRTL_ -> JBXL_FIO_  at Lib/xtools.h
 	Support Chain Certificate: xLib/ssl_tool.c
@@ -266,6 +265,7 @@ v1.2.0  '10 4/25
 
 
 v1.1.2  '09 11/12
+	fix few bugs
 
 
 v1.1.1  '09 4/30
