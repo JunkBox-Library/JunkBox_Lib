@@ -1813,7 +1813,7 @@ Windows の場合は 非 Unicode専用
 @param  dirn  ディレクトリ名
 @return ファイル名をバッファ部（ldat.val）に格納したリストへのポインタ．
 
-@attention ファイルの種類は区別しない．
+@attention ldat.lv が 0 ならその他のファイル．1 ならディレクトリ．
 */
 tList*  get_dir_files(const char* dirn)
 {
@@ -1836,9 +1836,12 @@ tList*  get_dir_files(const char* dirn)
         Buffer tmp;    
         do {
             if (strcmp(".", FindFileData.cFileName) && strcmp("..", FindFileData.cFileName)) { 
+                int fkind = 0;  // other file
+                if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) fkind = 1;    // directory
                 tmp = dup_Buffer(pth);
                 cat_s2Buffer(FindFileData.cFileName, &tmp);
                 ln = add_tList_node_str(ln, NULL, tmp.buf);
+                if (ln!=NULL) ln->ldat.lv = fkind;
                 if (lp==NULL) lp = ln;
                 free_Buffer(&tmp);
             }
@@ -1863,9 +1866,12 @@ tList*  get_dir_files(const char* dirn)
         dir = readdir(dp);
         while (dir != NULL ){
             if (strcmp(".", dir->d_name) && strcmp("..", dir->d_name)) { 
+                int fkind = 0;  // other file
+                if (dir->d_type==DT_DIR) fkind = 1; // directory
                 tmp = dup_Buffer(pth);
                 cat_s2Buffer(dir->d_name, &tmp);
                 ln = add_tList_node_str(ln, NULL, (char*)tmp.buf);
+                if (ln!=NULL) ln->ldat.lv = fkind;
                 if (lp==NULL) lp = ln;
                 free_Buffer(&tmp);
             }
@@ -1902,13 +1908,33 @@ tList*  get_dir_files_rcsv(const char* dirn)
 
     tList* lt = dup_tList(lp);
     while (lt!=NULL) {
-        tList* lc = get_dir_files_rcsv((char*)lt->ldat.val.buf);
-        if (lc!=NULL) add_tList_end(lp, lc);
+        if (lt->ldat.lv==1) {
+            tList* lc = get_dir_files_rcsv((char*)lt->ldat.val.buf);
+            if (lc!=NULL) lp = add_tList_end(lc, lp);
+        }
         lt = lt->next;
     }
     del_tList(&lt);
 
     return lp;
+}
+
+
+void  rm_dir_rcsv(const char* dirn)
+{
+    if (dirn==NULL) return;
+
+    tList* lp = get_dir_files_rcsv(dirn);
+    tList* lt = lp;
+    while (lt!=NULL) {
+        if (lt->ldat.lv==1) rmdir((char*)lt->ldat.val.buf);
+        else unlink((char*)lt->ldat.val.buf);
+        lt = lt->next;
+    }
+    rmdir(dirn);
+    //
+    del_tList(&lp);
+    return;
 }
 
 

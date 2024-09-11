@@ -198,7 +198,8 @@ Vector<double>  OBJData::execAffineTrans(void)
 }
 
 
-void  OBJData::outputFile(const char* fname, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* mtl_dirn)
+//void  OBJData::outputFile(const char* fname, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* mtl_dirn)
+void  OBJData::outputFile(const char* fname, const char* out_dirn, const char* tex_dirn, const char* mtl_dirn)
 {
     char* packname = pack_head_tail_char(get_file_name(fname), ' ');
     Buffer file_name = make_Buffer_bystr(packname);
@@ -207,18 +208,21 @@ void  OBJData::outputFile(const char* fname, const char* out_dirn, const char* p
     canonical_filename_Buffer(&file_name, TRUE);
     if (file_name.buf[0]=='.') file_name.buf[0] = '_';
 
-    this->output_mtl((char*)file_name.buf, (char*)out_dirn, (char*)ptm_dirn, (char*)tex_dirn, (char*)mtl_dirn);
-    this->output_obj((char*)file_name.buf, (char*)out_dirn, (char*)ptm_dirn, (char*)tex_dirn, (char*)mtl_dirn);
+    //this->output_mtl((char*)file_name.buf, (char*)out_dirn, (char*)ptm_dirn, (char*)tex_dirn, (char*)mtl_dirn);
+    //this->output_obj((char*)file_name.buf, (char*)out_dirn, (char*)ptm_dirn, (char*)tex_dirn, (char*)mtl_dirn);
+    this->output_mtl((char*)file_name.buf, (char*)out_dirn, (char*)tex_dirn, (char*)mtl_dirn);
+    this->output_obj((char*)file_name.buf, (char*)out_dirn, (char*)tex_dirn, (char*)mtl_dirn);
     //
     free_Buffer(&file_name);
     return;
 }
 
 
-void  OBJData::output_mtl(char* fname, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* mtl_dirn)
+//void  OBJData::output_mtl(char* fname, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* mtl_dirn)
+void  OBJData::output_mtl(char* fname, char* out_dirn, char* tex_dirn, char* mtl_dirn)
 {
     Buffer mtl_path = make_Buffer_bystr(out_dirn);
-    if (phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &mtl_path);
+    //if (phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &mtl_path);
     cat_s2Buffer(mtl_dirn, &mtl_path);
     cat_s2Buffer(fname,    &mtl_path);
     change_file_extension_Buffer(&mtl_path, ".mtl");
@@ -289,13 +293,14 @@ void  OBJData::output_mtl(char* fname, char* out_dirn, char* ptm_dirn, char* tex
 }
 
 
-void  OBJData::output_obj(char* fname, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* mtl_dirn)
+//void  OBJData::output_obj(char* fname, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* mtl_dirn)
+void  OBJData::output_obj(char* fname, char* out_dirn, char* tex_dirn, char* mtl_dirn)
 {
     UNUSED(tex_dirn);
 //PRINT_MESG("===> %s, %s, %s, %s, %s, %s\n", fname, out_dirn, ptm_dirn, tex_dirn, mtl_dirn);
 
     Buffer obj_path = make_Buffer_bystr((char*)out_dirn);
-    if (phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &obj_path);
+    //if (phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &obj_path);
     cat_s2Buffer(fname, &obj_path);
     change_file_extension_Buffer(&obj_path, ".obj");
 

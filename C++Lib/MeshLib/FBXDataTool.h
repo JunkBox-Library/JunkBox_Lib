@@ -60,7 +60,8 @@ public:
     void    addShell(MeshObjectData* meshdata, bool collider, SkinJointData* joints_data=NULL, tList* joints_template=NULL);
     void    closeSolid(void) {}
 
-    void    outputFile(const char* fn, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn);
+    //void    outputFile(const char* fn, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn);
+    void    outputFile(const char* fn, const char* out_dirn, const char* tex_dirn, const char* bin_dirn);
     void    output_fbx(FILE* fp);
 };
 

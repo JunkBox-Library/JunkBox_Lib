@@ -28,6 +28,10 @@ double dx2(double t)
 
 int main()
 {
+rm_dir_rcsv("/opt/GIT/JunkBox_Lib/Testing/tools/dara_rm");
+
+//tList* lt = get_dir_files("/opt/GIT/JunkBox_Lib/Testing/tools");
+//print_tList(stderr, lt);
 
     //Buffer a = make_Buffer_str("/sss/xzzzz/xxx/sssss/bax/xxxa/");
     //Buffer b = make_Buffer_str("/sss/xzzzz/xxx/sssss/baxx/");

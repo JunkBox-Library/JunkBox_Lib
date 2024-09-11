@@ -1752,7 +1752,8 @@ void  GLTFData::createBinDataIBM(SkinJointData* skin_joint, AffineTrans<double>*
 // Output
 //
 
-void  GLTFData::outputFile(const char* fname, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn)
+//void  GLTFData::outputFile(const char* fname, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn)
+void  GLTFData::outputFile(const char* fname, const char* out_dirn, const char* tex_dirn, const char* bin_dirn)
 {
     //PRINT_MESG("GLTFData::outputFile: start\n");
 
@@ -1765,10 +1766,12 @@ void  GLTFData::outputFile(const char* fname, const char* out_dirn, const char* 
     
     //
     if (this->glb_out) {
-        this->output_glb ((char*)file_name.buf, (char*)out_dirn, (char*)ptm_dirn, (char*)tex_dirn, (char*)bin_dirn);
+        //this->output_glb ((char*)file_name.buf, (char*)out_dirn, (char*)ptm_dirn, (char*)tex_dirn, (char*)bin_dirn);
+        this->output_glb ((char*)file_name.buf, (char*)out_dirn, (char*)tex_dirn, (char*)bin_dirn);
     }
     else {
-        this->output_gltf((char*)file_name.buf, (char*)out_dirn, (char*)ptm_dirn, (char*)tex_dirn, (char*)bin_dirn);
+        //this->output_gltf((char*)file_name.buf, (char*)out_dirn, (char*)ptm_dirn, (char*)tex_dirn, (char*)bin_dirn);
+        this->output_gltf((char*)file_name.buf, (char*)out_dirn, (char*)tex_dirn, (char*)bin_dirn);
     }
 
     free_Buffer(&file_name);
@@ -1776,15 +1779,16 @@ void  GLTFData::outputFile(const char* fname, const char* out_dirn, const char* 
 }
 
 
-void  GLTFData::output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn)
+//void  GLTFData::output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn)
+void  GLTFData::output_gltf(char* fn, char* out_dirn, char* tex_dirn, char* bin_dirn)
 {
     Buffer out_path = make_Buffer_bystr(out_dirn);
-    if (this->phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &out_path);
+    //if (this->phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &out_path);
     cat_s2Buffer(fn, &out_path);
     change_file_extension_Buffer(&out_path, ".gltf");
 
     Buffer bin_path = make_Buffer_bystr(out_dirn);
-    if (this->phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &bin_path);
+    //if (this->phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &bin_path);
     cat_s2Buffer(bin_dirn, &bin_path);
     cat_s2Buffer(fn, &bin_path);
     change_file_extension_Buffer(&bin_path, ".bin");
@@ -1846,7 +1850,8 @@ void  GLTFData::output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_
 }
 
 
-void  GLTFData::output_glb(char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn)
+//void  GLTFData::output_glb(char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn)
+void  GLTFData::output_glb(char* fn, char* out_dirn, char* tex_dirn, char* bin_dirn)
 {
     UNUSED(bin_dirn);
 
@@ -1857,7 +1862,7 @@ void  GLTFData::output_glb(char* fn, char* out_dirn, char* ptm_dirn, char* tex_d
     json_insert_parse(this->buffers, buf);
 
     Buffer out_path = make_Buffer_bystr(out_dirn);
-    if (this->phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &out_path);
+    //if (this->phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &out_path);
     cat_s2Buffer(fn, &out_path);
     change_file_extension_Buffer(&out_path, ".glb");
 
@@ -1965,7 +1970,7 @@ void  GLTFData::convertJson_TexturePath(char* tex_dirn)
         if (uri!=NULL) {
             Buffer* tex = new_Buffer((int)strlen(tex_dirn) + uri->ldat.val.vldsz + 5);   // ../ + \0 + 1(予備)
             cat_s2Buffer("\"", tex); 
-            if (this->phantom_out && this->engine==JBXL_3D_ENGINE_UNITY) cat_s2Buffer("../", tex); 
+            ////if (this->phantom_out && this->engine==JBXL_3D_ENGINE_UNITY) cat_s2Buffer("../", tex); 
             cat_s2Buffer(tex_dirn, tex);
             cat_s2Buffer(&(uri->ldat.val.buf[1]), tex); 
             free_Buffer(&uri->ldat.val);

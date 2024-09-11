@@ -63,10 +63,10 @@ void  FBXData::setEngine(int e)
 }
 
 
-void  FBXData::outputFile(const char* fname, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn)
+//void  FBXData::outputFile(const char* fname, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn)
+void  FBXData::outputFile(const char* fname, const char* out_dirn, const char* tex_dirn, const char* bin_dirn)
 {
     UNUSED(out_dirn);
-    UNUSED(ptm_dirn);
     UNUSED(tex_dirn);
     UNUSED(bin_dirn);
 

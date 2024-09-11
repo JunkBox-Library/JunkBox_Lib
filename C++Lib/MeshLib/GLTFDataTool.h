@@ -284,9 +284,12 @@ public:
     void    createBinDataIBM(SkinJointData* skin_joint, AffineTrans<double>* ue_trans=NULL);
 
     // output
-    void    outputFile (const char* fn, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn);
-    void    output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn);
-    void    output_glb (char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn);
+    //void    outputFile (const char* fn, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn);
+    //void    output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn);
+    //void    output_glb (char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn);
+    void    outputFile (const char* fn, const char* out_dirn, const char* tex_dirn, const char* bin_dirn);
+    void    output_gltf(char* fn, char* out_dirn, char* tex_dirn, char* bin_dirn);
+    void    output_glb (char* fn, char* out_dirn, char* tex_dirn, char* bin_dirn);
     void    convertJson_TexturePath(char* tex_dirn);
 
     gltfFacetMinMax getFacetMinMax(MeshFacetNode* facet);

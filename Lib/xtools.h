@@ -129,6 +129,8 @@ int     replace_item_tList_node(tList* list, char deli, int nm, char* srcval, ch
 tList*  get_dir_files(const char* dirn);                                ///< 指定されたディレクトリにあるファイル名の一覧を取得．
 tList*  get_dir_files_rcsv(const char* dirn);                           ///< 指定されたディレクトリにあるファイル名の一覧を再帰的に取得．
 
+void    rm_dir_rcsv(const char* dirn);                                  ///< 指定されたディレクトリを再帰的に削除する．
+
 void    del_file_extension_Buffer(Buffer* path);                        ///< ファイルの拡張子を削除する．
 void    change_file_extension_Buffer(Buffer* path, const char* ext);    ///< ファイルの拡張子を extにする．ファイルに拡張子が無い場合は extを付加する
 

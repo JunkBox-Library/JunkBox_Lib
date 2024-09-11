@@ -59,6 +59,7 @@
     #define  strncasecmp _strnicmp
 //  #define  close(p)    _close(p)
     #define  mkdir(d, m) _mkdir(d)
+    #define  rmdir(d)    _rmdir(d)
     #define  mode_t      int
     #define  bzero(p, n)    ZeroMemory((p), (n))
     #define  bcopy(f, t, n) CopyMemory((t), (f), (n))

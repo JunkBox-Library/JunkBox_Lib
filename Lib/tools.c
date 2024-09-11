@@ -2299,14 +2299,14 @@ char* cut_file_extension(const char* str)
 
 
 /**
-unsigned long int   file_size(const char* fn)                                              
+unsigned long int  file_size(const char* fn)                                              
 
 通常のファイルの大きさを返す．シンボリックリンクなどは 0．
 
 @param  fn  ファイル名
 @return ファイルのサイズ．ファイルが異常の場合は -2. fn が NULL の場合は -1
  */
-unsigned long int   file_size(const char* fn)                                              
+unsigned long int  file_size(const char* fn)
 {
     if (fn==NULL) return -1;
 
