@@ -1065,20 +1065,10 @@ void  GLTFData::createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int
 
                 if (total!=0) {
                     unsigned int jcnt = 0;
-/*
-                    for (unsigned int j=0; j<jnum; j++) {
-                        unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
-                        if (w!=0) {
-                            weight_index[jcnt] = (short unsigned int)(j);
-                            weight_value[jcnt] = (float)w/(float)total;
-                            jcnt++;
-                            if (jcnt>=4) break;
-                        }
-                    }
-*/
                     int jord = 0;
                     tList* jl = this->joints_list;
                     if (jl!=NULL) jl = jl->next;
+                    //
                     while (jl!=NULL) {
                         int jnt = jl->ldat.id;
                         if (jnt<facet->weight_value[i].get_size()) {
@@ -1125,7 +1115,6 @@ SoA
 void  GLTFData::addBufferViewsSoA(MeshFacetNode* facet)
 {
     if (facet==NULL) return;
-PRINT_MESG("GLTFData::addBufferViewsSoA() start.\n");
     char buf[LBUF];
 
     unsigned int length = 0;
@@ -1186,7 +1175,6 @@ PRINT_MESG("GLTFData::addBufferViewsSoA() start.\n");
 void  GLTFData::addAccessorsSoA(MeshFacetNode* facet)
 {
     if (facet==NULL) return;
-PRINT_MESG("GLTFData::addAccessorsSoA() start.\n");
     char buf[LBUF];
 
     while (facet!=NULL) {
@@ -1257,7 +1245,6 @@ SoA
 void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int shell_vertexes)
 {
     if (facet==NULL) return;
-PRINT_MESG("GLTFData::createBinDataSeqSoA() start.\n");
 
     unsigned int float_size  = (unsigned int)sizeof(float);
     unsigned int uint_size   = (unsigned int)sizeof(unsigned int);
@@ -1346,19 +1333,10 @@ PRINT_MESG("GLTFData::createBinDataSeqSoA() start.\n");
 
                 if (total!=0) {
                     unsigned int jcnt = 0;
-/*
-                    for (unsigned int j=0; j<jnum; j++) {
-                        unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
-                        if (w!=0) {
-                            weight_index[jcnt] = (short unsigned int)(j);
-                            jcnt++;
-                            if (jcnt>=4) break;
-                        }
-                    }
-*/
                     int jord = 0;
                     tList* jl = this->joints_list;
                     if (jl!=NULL) jl = jl->next;
+                    //
                     while (jl!=NULL) {
                         int jnt = jl->ldat.id;
                         if (jnt<facet->weight_value[i].get_size()) {
@@ -1388,18 +1366,9 @@ PRINT_MESG("GLTFData::createBinDataSeqSoA() start.\n");
 
                 if (total!=0) {
                     unsigned int jcnt = 0;
-/*
-                    for (unsigned int j=0; j<jnum; j++) {
-                        unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
-                        if (w!=0) {
-                            weight_value[jcnt] = (float)w/(float)total;
-                            jcnt++;
-                            if (jcnt>=4) break;
-                        }
-                    }
-*/
                     tList* jl = this->joints_list;
                     if (jl!=NULL) jl = jl->next;
+                    //
                     while (jl!=NULL) {
                         int jnt = jl->ldat.id;
                         if (jnt<facet->weight_value[i].get_size()) {
@@ -1444,7 +1413,6 @@ SHELL毎に呼び出され，SHELL中の全FACETのジオメトリ情報を this
 */
 void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, SkinJointData* skin_joint, AffineTrans<double>* ue_trans)
 {
-PRINT_MESG("GLTFData::createShellGeometryData() start.\n");
     unsigned int float_size  = (unsigned int)sizeof(float);
     unsigned int uint_size   = (unsigned int)sizeof(unsigned int);
     unsigned int shortu_size = (unsigned int)sizeof(short unsigned int);
@@ -1535,20 +1503,10 @@ PRINT_MESG("GLTFData::createShellGeometryData() start.\n");
                 memset(weight_value, 0, w_length);
                 if (total!=0) {
                     unsigned int jcnt = 0;
-/*
-                    for (unsigned int j=0; j<jnum; j++) {
-                        unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
-                        if (w!=0) {
-                            weight_index[jcnt] = (short unsigned int)(j);
-                            weight_value[jcnt] = (float)w/(float)total;
-                            jcnt++;
-                            if (jcnt>=4) break;
-                        }
-                    }
-*/
                     int jord = 0;
                     tList* jl = this->joints_list;
                     if (jl!=NULL) jl = jl->next;
+                    //
                     while (jl!=NULL) {
                         int jnt = (unsigned int)jl->ldat.id;
                         if (jnt<facet->weight_value[i].get_size()) {
@@ -1598,23 +1556,6 @@ PRINT_MESG("GLTFData::createShellGeometryData() start.\n");
         jord++;
         jl = jl->next;
     }
-/*
-    for (unsigned int k=0; k<this->num_joints; k++) {
-        // IBM
-        AffineTrans<double> ibm_trans = skin_joint->inverse_bind[k] * skin_joint->bind_shape;
-        if (this->engine==JBXL_3D_ENGINE_UE && ue_trans!=NULL) ibm_trans.affineMatrixAfter(*ue_trans);    // for UE5 Bug
-        ibm_trans.computeMatrix();
-
-        int ks = (int)k*16;
-        for (int j=1; j<=4; j++) {
-            int js = (j-1)*4;
-            for (int i=1; i<=4; i++) {
-                shell_node->vm[ks + js + i - 1] = (float)ibm_trans.element(i, j);
-            }
-        }
-        ibm_trans.free();
-    }
-*/
 
     // shell_node をリストの最後に繋げる
     GLTFShellNode* prv = NULL;
@@ -1723,7 +1664,6 @@ this->bin_buffer はそのまま出力できる．
 */
 void  GLTFData::createBinDataSoA(void)
 {
-PRINT_MESG("GLTFData::createBinDataSoA() start.\n");
     unsigned int float_size  = (unsigned int)sizeof(float);
     unsigned int uint_size   = (unsigned int)sizeof(unsigned int);
     unsigned int shortu_size = (unsigned int)sizeof(short unsigned int);
@@ -1840,7 +1780,6 @@ void  GLTFData::addAccessorsIBM(void)
 
 void  GLTFData::createBinDataIBM(SkinJointData* skin_joint, AffineTrans<double>* ue_trans)
 {
-PRINT_MESG("GLTFData::createBinDataIBM() start.\n");
     if (skin_joint==NULL) return;
     unsigned int float_size = (unsigned int)sizeof(float);
 
@@ -1871,11 +1810,8 @@ PRINT_MESG("GLTFData::createBinDataIBM() start.\n");
 // Output
 //
 
-//void  GLTFData::outputFile(const char* fname, const char* out_dirn, const char* ptm_dirn, const char* tex_dirn, const char* bin_dirn)
 void  GLTFData::outputFile(const char* fname, const char* out_dirn, const char* tex_dirn, const char* bin_dirn)
 {
-    //PRINT_MESG("GLTFData::outputFile: start\n");
-
     char* packname = pack_head_tail_char(get_file_name(fname), ' ');
     Buffer file_name = make_Buffer_bystr(packname);
     ::free(packname);
@@ -1885,11 +1821,9 @@ void  GLTFData::outputFile(const char* fname, const char* out_dirn, const char* 
     
     //
     if (this->glb_out) {
-        //this->output_glb ((char*)file_name.buf, (char*)out_dirn, (char*)ptm_dirn, (char*)tex_dirn, (char*)bin_dirn);
         this->output_glb ((char*)file_name.buf, (char*)out_dirn, (char*)tex_dirn, (char*)bin_dirn);
     }
     else {
-        //this->output_gltf((char*)file_name.buf, (char*)out_dirn, (char*)ptm_dirn, (char*)tex_dirn, (char*)bin_dirn);
         this->output_gltf((char*)file_name.buf, (char*)out_dirn, (char*)tex_dirn, (char*)bin_dirn);
     }
 
@@ -1898,16 +1832,13 @@ void  GLTFData::outputFile(const char* fname, const char* out_dirn, const char* 
 }
 
 
-//void  GLTFData::output_gltf(char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn)
 void  GLTFData::output_gltf(char* fn, char* out_dirn, char* tex_dirn, char* bin_dirn)
 {
     Buffer out_path = make_Buffer_bystr(out_dirn);
-    //if (this->phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &out_path);
     cat_s2Buffer(fn, &out_path);
     change_file_extension_Buffer(&out_path, ".gltf");
 
     Buffer bin_path = make_Buffer_bystr(out_dirn);
-    //if (this->phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &bin_path);
     cat_s2Buffer(bin_dirn, &bin_path);
     cat_s2Buffer(fn, &bin_path);
     change_file_extension_Buffer(&bin_path, ".bin");
@@ -1940,7 +1871,6 @@ void  GLTFData::output_gltf(char* fn, char* out_dirn, char* tex_dirn, char* bin_
         ::free(big_buf);
     }
 */
-
     // output json data
     FILE* fp = fopen((char*)out_path.buf, "w");
     if (fp!=NULL) {
@@ -1969,7 +1899,6 @@ void  GLTFData::output_gltf(char* fn, char* out_dirn, char* tex_dirn, char* bin_
 }
 
 
-//void  GLTFData::output_glb(char* fn, char* out_dirn, char* ptm_dirn, char* tex_dirn, char* bin_dirn)
 void  GLTFData::output_glb(char* fn, char* out_dirn, char* tex_dirn, char* bin_dirn)
 {
     UNUSED(bin_dirn);
@@ -1981,7 +1910,6 @@ void  GLTFData::output_glb(char* fn, char* out_dirn, char* tex_dirn, char* bin_d
     json_insert_parse(this->buffers, buf);
 
     Buffer out_path = make_Buffer_bystr(out_dirn);
-    //if (this->phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &out_path);
     cat_s2Buffer(fn, &out_path);
     change_file_extension_Buffer(&out_path, ".glb");
 

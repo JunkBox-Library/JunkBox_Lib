@@ -98,7 +98,6 @@ template <typename T> T  ArrayParam<T>::get_value(int n)
     if (n>=_size || n<0) {
         PRINT_MESG("WARNING: ArrayParam<T>::get_value: size missmatch (%d !< %d)\n", n, _size);
     }
-
     if (_size<=0 || _value==NULL) return (T)0;
 
     if (n<0) n = 0;
@@ -113,14 +112,13 @@ template <typename T> T  ArrayParam<T>::get_value(int n)
 */
 template <typename T> bool  ArrayParam<T>::set_value(int n, T val)
 {
-    if (n>=_size || n<0) {
-        PRINT_MESG("WARNING: ArrayParam<T>::set_value: size missmatch (%d !< %d)\n", n, _size);
-    }
-
     if (_size<=0 || _value==NULL) return false;
 
-    if (n<0) n = 0;
-    else if (n>=_size) n = _size - 1;
+    if (n>=_size || n<0) {
+        PRINT_MESG("WARNING: ArrayParam<T>::set_value: size missmatch (%d !< %d)\n", n, _size);
+        return false;
+    }
+
     _value[n] = val;
 
     return true;
