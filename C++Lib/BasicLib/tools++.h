@@ -95,6 +95,10 @@ template <typename T> void  ArrayParam<T>::free_ptr(void)
 
 template <typename T> T  ArrayParam<T>::get_value(int n)
 {
+    if (n>=_size || n<0) {
+        PRINT_MESG("WARNING: ArrayParam<T>::get_value: size missmatch (%d !< %d)\n", n, _size);
+    }
+
     if (_size<=0 || _value==NULL) return (T)0;
 
     if (n<0) n = 0;

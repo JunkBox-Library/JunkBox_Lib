@@ -1065,7 +1065,7 @@ void  GLTFData::createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int
 
                 if (total!=0) {
                     unsigned int jcnt = 0;
-
+/*
                     for (unsigned int j=0; j<jnum; j++) {
                         unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                         if (w!=0) {
@@ -1075,23 +1075,24 @@ void  GLTFData::createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int
                             if (jcnt>=4) break;
                         }
                     }
-/*
+*/
                     int jord = 0;
                     tList* jl = this->joints_list;
                     if (jl!=NULL) jl = jl->next;
                     while (jl!=NULL) {
                         int jnt = jl->ldat.id;
-                        unsigned int w = (unsigned int)facet->weight_value[i].get_value(jnt);
-                        if (w!=0) {
-                            weight_index[jcnt] = (short unsigned int)(jord);
-                            weight_value[jcnt] = (float)w/(float)total;
-                            jcnt++;
-                            if (jcnt>=4) break;
+                        if (jnt<facet->weight_value[i].get_size()) {
+                            unsigned int w = (unsigned int)facet->weight_value[i].get_value(jnt);
+                            if (w!=0) {
+                                weight_index[jcnt] = (short unsigned int)(jord);
+                                weight_value[jcnt] = (float)w/(float)total;
+                                jcnt++;
+                                if (jcnt>=4) break;
+                            }
                         }
                         jord++;
                         jl = jl->next;
                     }
-*/
                 }
                 memcpy((void*)(temp_buffer + offset), (void*)weight_index, j_length);
                 offset += j_length;
@@ -1124,6 +1125,7 @@ SoA
 void  GLTFData::addBufferViewsSoA(MeshFacetNode* facet)
 {
     if (facet==NULL) return;
+PRINT_MESG("GLTFData::addBufferViewsSoA() start.\n");
     char buf[LBUF];
 
     unsigned int length = 0;
@@ -1184,6 +1186,7 @@ void  GLTFData::addBufferViewsSoA(MeshFacetNode* facet)
 void  GLTFData::addAccessorsSoA(MeshFacetNode* facet)
 {
     if (facet==NULL) return;
+PRINT_MESG("GLTFData::addAccessorsSoA() start.\n");
     char buf[LBUF];
 
     while (facet!=NULL) {
@@ -1254,6 +1257,7 @@ SoA
 void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int shell_vertexes)
 {
     if (facet==NULL) return;
+PRINT_MESG("GLTFData::createBinDataSeqSoA() start.\n");
 
     unsigned int float_size  = (unsigned int)sizeof(float);
     unsigned int uint_size   = (unsigned int)sizeof(unsigned int);
@@ -1342,7 +1346,7 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
 
                 if (total!=0) {
                     unsigned int jcnt = 0;
-
+/*
                     for (unsigned int j=0; j<jnum; j++) {
                         unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                         if (w!=0) {
@@ -1351,23 +1355,23 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
                             if (jcnt>=4) break;
                         }
                     }
-/*
+*/
                     int jord = 0;
-
                     tList* jl = this->joints_list;
                     if (jl!=NULL) jl = jl->next;
                     while (jl!=NULL) {
                         int jnt = jl->ldat.id;
-                        unsigned int w = (unsigned int)facet->weight_value[i].get_value(jnt);
-                        if (w!=0) {
-                            weight_index[jcnt] = (short unsigned int)(jord);
-                            jcnt++;
-                            if (jcnt>=4) break;
+                        if (jnt<facet->weight_value[i].get_size()) {
+                            unsigned int w = (unsigned int)facet->weight_value[i].get_value(jnt);
+                            if (w!=0) {
+                                weight_index[jcnt] = (short unsigned int)(jord);
+                                jcnt++;
+                                if (jcnt>=4) break;
+                            }
                         }
                         jord++;
                         jl = jl->next;
                     }
-*/
                 }
                 memcpy((void*)(temp_buffer + offset), (void*)weight_index, j_length);
                 offset += j_length;
@@ -1384,7 +1388,7 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
 
                 if (total!=0) {
                     unsigned int jcnt = 0;
-
+/*
                     for (unsigned int j=0; j<jnum; j++) {
                         unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                         if (w!=0) {
@@ -1393,20 +1397,21 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
                             if (jcnt>=4) break;
                         }
                     }
-/*
+*/
                     tList* jl = this->joints_list;
                     if (jl!=NULL) jl = jl->next;
                     while (jl!=NULL) {
                         int jnt = jl->ldat.id;
-                        unsigned int w = (unsigned int)facet->weight_value[i].get_value(jnt);
-                        if (w!=0) {
-                            weight_value[jcnt] = (float)w/(float)total;
-                            jcnt++;
-                            if (jcnt>=4) break;
+                        if (jnt<facet->weight_value[i].get_size()) {
+                            unsigned int w = (unsigned int)facet->weight_value[i].get_value(jnt);
+                            if (w!=0) {
+                                weight_value[jcnt] = (float)w/(float)total;
+                                jcnt++;
+                                if (jcnt>=4) break;
+                            }
                         }
                         jl = jl->next;
                     }
-*/
                 }
                 memcpy((void*)(temp_buffer + offset), (void*)weight_value, w_length);
                 offset += w_length;
@@ -1439,7 +1444,7 @@ SHELL毎に呼び出され，SHELL中の全FACETのジオメトリ情報を this
 */
 void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, SkinJointData* skin_joint, AffineTrans<double>* ue_trans)
 {
-PRINT_MESG("createShellGeometryData()\n");
+PRINT_MESG("GLTFData::createShellGeometryData() start.\n");
     unsigned int float_size  = (unsigned int)sizeof(float);
     unsigned int uint_size   = (unsigned int)sizeof(unsigned int);
     unsigned int shortu_size = (unsigned int)sizeof(short unsigned int);
@@ -1530,7 +1535,7 @@ PRINT_MESG("createShellGeometryData()\n");
                 memset(weight_value, 0, w_length);
                 if (total!=0) {
                     unsigned int jcnt = 0;
-
+/*
                     for (unsigned int j=0; j<jnum; j++) {
                         unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                         if (w!=0) {
@@ -1540,25 +1545,26 @@ PRINT_MESG("createShellGeometryData()\n");
                             if (jcnt>=4) break;
                         }
                     }
-/*
+*/
                     int jord = 0;
-
                     tList* jl = this->joints_list;
                     if (jl!=NULL) jl = jl->next;
                     while (jl!=NULL) {
-                        int jnt = jl->ldat.id;
-                        unsigned int w = (unsigned int)facet->weight_value[i].get_value(jnt);
-                        if (w!=0) {
-                            weight_index[jcnt] = (short unsigned int)(jord);
-                            weight_value[jcnt] = (float)w/(float)total;
-                            jcnt++;
-                            if (jcnt>=4) break;
+                        int jnt = (unsigned int)jl->ldat.id;
+                        if (jnt<facet->weight_value[i].get_size()) {
+                            unsigned int w = (unsigned int)facet->weight_value[i].get_value(jnt);
+                            if (w!=0) {
+                                weight_index[jcnt] = (short unsigned int)(jord);
+                                weight_value[jcnt] = (float)w/(float)total;
+                                jcnt++;
+                                if (jcnt>=4) break;
+                            }
                         }
                         jord++;
                         jl = jl->next;
                     }
-*/
                 }
+
                 // weighted joints and weight value
                 for (int j=0; j<4; j++) {
                     shell_node->vj[vertex_offset + i].element(j+1) = weight_index[j];
@@ -1717,6 +1723,7 @@ this->bin_buffer はそのまま出力できる．
 */
 void  GLTFData::createBinDataSoA(void)
 {
+PRINT_MESG("GLTFData::createBinDataSoA() start.\n");
     unsigned int float_size  = (unsigned int)sizeof(float);
     unsigned int uint_size   = (unsigned int)sizeof(unsigned int);
     unsigned int shortu_size = (unsigned int)sizeof(short unsigned int);
@@ -1833,7 +1840,7 @@ void  GLTFData::addAccessorsIBM(void)
 
 void  GLTFData::createBinDataIBM(SkinJointData* skin_joint, AffineTrans<double>* ue_trans)
 {
-PRINT_MESG("createBinDataIBM()\n");
+PRINT_MESG("GLTFData::createBinDataIBM() start.\n");
     if (skin_joint==NULL) return;
     unsigned int float_size = (unsigned int)sizeof(float);
 
