@@ -994,7 +994,7 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
                     for (int i=1; i<=4; i++) {
                         for (int j=1; j<=4; j++) {
                             double element = skin_joint->alt_inverse_bind[jnt].element(i, j);
-                            if (i==1 && j==1) set_xml_content_node(matrix_tag, dtostr(element));                // 最初にタグを生成// 最初にタグを生成
+                            if (i==1 && j==1) set_xml_content_node(matrix_tag, dtostr(element));                // 最初にタグを生成
                             else           append_xml_content_node(matrix_tag, dtostr(element));
                         }
                     }
