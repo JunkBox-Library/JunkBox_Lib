@@ -522,17 +522,18 @@ uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num, int* joints
 
 llmesh の LODデータから weight データを抜き出して，uWord の 2次元配列に格納する．
 
-@param  buf : Weghtデータが格納されたバイナリデータ．
+@param  buf : weightデータが格納されたバイナリデータ．
 @param  sz  : buf のサイズ．
 @param  vertex_num : 対応する頂点の数．
 
-@retval 2Byte の Weightデータ．weight[頂点*(*joints_num) + joint].
+@retval *joints_num : joint の総数．
+@retval 2Byte の Weightデータ．weight[頂点番号*(*joints_num) + joint番号].
 */
 uWord*  llsd_bin_get_skin_weight(uByte* buf, int sz, int vertex_num, int* joints_num)
 {
     if (buf==NULL) return NULL;
 
-    int max_joints = 4;      // 一つの頂点が持つ重み情報の数の最大値（対象Jointの最大数）
+    int max_joints = 4;     // 一つの頂点が持つ重み情報の数の最大値（対象Jointの最大数）
 
     if (joints_num!=NULL) *joints_num = 0;
     int jnum   = 0;         // Jointの数

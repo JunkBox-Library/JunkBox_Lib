@@ -548,38 +548,44 @@ void  GLTFData::addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>*
     this->node_no++;
 
     if (affine!=NULL) {
-        Vector<double> pelvis = Vector<double>();
-        pelvis.x = skin_joint->alt_inverse_bind[0].element(1, 4);
-        pelvis.y = skin_joint->alt_inverse_bind[0].element(2, 4);
-        pelvis.z = skin_joint->alt_inverse_bind[0].element(3, 4);
-
-        AffineTrans<double> joint_space = skin_joint->inverse_bind[0] * skin_joint->bind_shape;
-        AffineTrans<double> joint_trans = joint_space.getInverseAffine();
-        Vector<double> shift = joint_trans.execRotationScale(pelvis);
-        joint_trans.setShift(joint_trans.getShift() - shift);
-
-        AffineTrans<double> trans   = this->getAffineBaseTrans4Engine();
-        AffineTrans<double> invroot = this->affineRoot.getInverseAffine();
-        trans.affineMatrixAfter(*affine);
-        trans.affineMatrixBefore(invroot);
-        //
-        joint_trans.computeMatrix();
-        trans.affineMatrixAfter(joint_trans);
-        trans.computeMatrix();
-
-        ///////////////////
-        tJson* skeleton_matrix = json_append_array_key(skeleton_root, "matrix");
-        for (int j=1; j<=4; j++) {
-            for (int i=1; i<=4; i++) {
-                float element = (float)trans.element(i, j);
-                json_append_array_real_val(skeleton_matrix, element);
-            }
+        int pelvis_num = -1;
+        if (this->joints_list!=NULL && this->joints_list->next!=NULL) {
+            pelvis_num = this->joints_list->next->ldat.id;
         }
+        if (pelvis_num>=0) {
+            Vector<double> pelvis = Vector<double>();
+            pelvis.x = skin_joint->alt_inverse_bind[pelvis_num].element(1, 4);
+            pelvis.y = skin_joint->alt_inverse_bind[pelvis_num].element(2, 4);
+            pelvis.z = skin_joint->alt_inverse_bind[pelvis_num].element(3, 4);
 
-        trans.free();
-        invroot.free();
-        joint_space.free();
-        joint_trans.free();
+            AffineTrans<double> joint_space = skin_joint->inverse_bind[pelvis_num] * skin_joint->bind_shape;
+            AffineTrans<double> joint_trans = joint_space.getInverseAffine();
+            Vector<double> shift = joint_trans.execRotationScale(pelvis);
+            joint_trans.setShift(joint_trans.getShift() - shift);
+
+            AffineTrans<double> trans   = this->getAffineBaseTrans4Engine();
+            AffineTrans<double> invroot = this->affineRoot.getInverseAffine();
+            trans.affineMatrixAfter(*affine);
+            trans.affineMatrixBefore(invroot);
+            //
+            joint_trans.computeMatrix();
+            trans.affineMatrixAfter(joint_trans);
+            trans.computeMatrix();
+
+            ///////////////////
+            tJson* skeleton_matrix = json_append_array_key(skeleton_root, "matrix");
+            for (int j=1; j<=4; j++) {
+                for (int i=1; i<=4; i++) {
+                    float element = (float)trans.element(i, j);
+                    json_append_array_real_val(skeleton_matrix, element);
+                }
+            }
+
+            trans.free();
+            invroot.free();
+            joint_space.free();
+            joint_trans.free();
+        }
     }
 
     //
@@ -587,8 +593,8 @@ void  GLTFData::addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>*
     if (jl!=NULL) jl = jl->next;     // top is Json ACKHOR
     tList* jt = jl;
     
-    int jnt = 0;
     while (jl!=NULL) {
+        int jnt = jl->ldat.id;
         // order check!
         if (strncmp((char*)jl->ldat.val.buf+1, skin_joint->joint_names.get_value(jnt), strlen(skin_joint->joint_names.get_value(jnt)))) {
             PRINT_MESG("GLTFData::addSkeletonNodes: ERROR: Joint is not in the correct order. %s != \"%s\"\n", 
@@ -601,12 +607,15 @@ void  GLTFData::addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>*
         tJson* children = json_append_array_key(skltn, "children");
         //
         int count = 0;
+        int lnum  = 0;  // リストのノードの位置（順番）
         tList* jp = jt; // top 
         while (jp!=NULL) {
             if (jp->ldat.lv==jl->ldat.id) {
-                json_append_array_int_val(children, jp->ldat.id + this->node_offset);
+                //json_append_array_int_val(children, jp->ldat.id + this->node_offset);
+                json_append_array_int_val(children, lnum + this->node_offset);
                 count++;
             }
+            lnum++;
             jp = jp->next;
         }
         if (count==0) {
@@ -621,7 +630,6 @@ void  GLTFData::addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>*
 
         this->node_no++;
         jl = jl->next;
-        jnt++;
     }
     return;
 }
@@ -1056,7 +1064,7 @@ void  GLTFData::createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int
                 unsigned int total = 0;
                 unsigned int jnum  = (unsigned int)facet->weight_value[i].get_size();
                 int wcount = 0;
-                for (unsigned int j=0; j<jnum; j++) {
+                for (unsigned int j=0; j<jnum; j++) {   // j: joint番号
                     unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                     if (w!=0) wcount++;
                     total += w;
@@ -1070,6 +1078,7 @@ void  GLTFData::createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int
 
                 if (total!=0) {
                     unsigned int jcnt = 0;
+
                     for (unsigned int j=0; j<jnum; j++) {
                         unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                         if (w!=0) {
@@ -1079,6 +1088,23 @@ void  GLTFData::createBinDataSeqAoS(MeshFacetNode* facet, int shell_indexes, int
                             if (jcnt>=4) break;
                         }
                     }
+/*
+                    int jord = 0;
+                    tList* jl = this->joints_list;
+                    if (jl!=NULL) jl = jl->next;
+                    while (jl!=NULL) {
+                        int jnt = jl->ldat.id;
+                        unsigned int w = (unsigned int)facet->weight_value[i].get_value(jnt);
+                        if (w!=0) {
+                            weight_index[jcnt] = (short unsigned int)(jord);
+                            weight_value[jcnt] = (float)w/(float)total;
+                            jcnt++;
+                            if (jcnt>=4) break;
+                        }
+                        jord++;
+                        jl = jl->next;
+                    }
+*/
                 }
                 memcpy((void*)(temp_buffer + offset), (void*)weight_index, j_length);
                 offset += j_length;
@@ -1329,6 +1355,7 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
 
                 if (total!=0) {
                     unsigned int jcnt = 0;
+
                     for (unsigned int j=0; j<jnum; j++) {
                         unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                         if (w!=0) {
@@ -1337,6 +1364,23 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
                             if (jcnt>=4) break;
                         }
                     }
+/*
+                    int jord = 0;
+
+                    tList* jl = this->joints_list;
+                    if (jl!=NULL) jl = jl->next;
+                    while (jl!=NULL) {
+                        int jnt = jl->ldat.id;
+                        unsigned int w = (unsigned int)facet->weight_value[i].get_value(jnt);
+                        if (w!=0) {
+                            weight_index[jcnt] = (short unsigned int)(jord);
+                            jcnt++;
+                            if (jcnt>=4) break;
+                        }
+                        jord++;
+                        jl = jl->next;
+                    }
+*/
                 }
                 memcpy((void*)(temp_buffer + offset), (void*)weight_index, j_length);
                 offset += j_length;
@@ -1353,6 +1397,7 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
 
                 if (total!=0) {
                     unsigned int jcnt = 0;
+
                     for (unsigned int j=0; j<jnum; j++) {
                         unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                         if (w!=0) {
@@ -1361,6 +1406,20 @@ void  GLTFData::createBinDataSeqSoA(MeshFacetNode* facet, int shell_indexes, int
                             if (jcnt>=4) break;
                         }
                     }
+/*
+                    tList* jl = this->joints_list;
+                    if (jl!=NULL) jl = jl->next;
+                    while (jl!=NULL) {
+                        int jnt = jl->ldat.id;
+                        unsigned int w = (unsigned int)facet->weight_value[i].get_value(jnt);
+                        if (w!=0) {
+                            weight_value[jcnt] = (float)w/(float)total;
+                            jcnt++;
+                            if (jcnt>=4) break;
+                        }
+                        jl = jl->next;
+                    }
+*/
                 }
                 memcpy((void*)(temp_buffer + offset), (void*)weight_value, w_length);
                 offset += w_length;
@@ -1483,6 +1542,7 @@ void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes,
                 memset(weight_value, 0, w_length);
                 if (total!=0) {
                     unsigned int jcnt = 0;
+
                     for (unsigned int j=0; j<jnum; j++) {
                         unsigned int w = (unsigned int)facet->weight_value[i].get_value(j);
                         if (w!=0) {
@@ -1492,6 +1552,24 @@ void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes,
                             if (jcnt>=4) break;
                         }
                     }
+/*
+                    int jord = 0;
+
+                    tList* jl = this->joints_list;
+                    if (jl!=NULL) jl = jl->next;
+                    while (jl!=NULL) {
+                        int jnt = jl->ldat.id;
+                        unsigned int w = (unsigned int)facet->weight_value[i].get_value(jnt);
+                        if (w!=0) {
+                            weight_index[jcnt] = (short unsigned int)(jord);
+                            weight_value[jcnt] = (float)w/(float)total;
+                            jcnt++;
+                            if (jcnt>=4) break;
+                        }
+                        jord++;
+                        jl = jl->next;
+                    }
+*/
                 }
                 // weighted joints and weight value
                 for (int j=0; j<4; j++) {
@@ -1505,6 +1583,29 @@ void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes,
     }
     
     // Inverse Bind Matrix
+/*
+    int jord = 0;
+    tList* jl = this->joints_list;
+    if (jl!=NULL) jl = jl->next;
+    while (jl!=NULL) {
+        int jnt = jl->ldat.id;
+        // IBM
+        AffineTrans<double> ibm_trans = skin_joint->inverse_bind[jnt] * skin_joint->bind_shape;
+        if (this->engine==JBXL_3D_ENGINE_UE && ue_trans!=NULL) ibm_trans.affineMatrixAfter(*ue_trans);    // for UE5 Bug
+        ibm_trans.computeMatrix();
+
+        int ks = (int)jord*16;
+        for (int j=1; j<=4; j++) {
+            int js = (j-1)*4;
+            for (int i=1; i<=4; i++) {
+                shell_node->vm[ks + js + i - 1] = (float)ibm_trans.element(i, j);
+            }
+        }
+        ibm_trans.free();
+        jord++;
+        jl = jl->next;
+    }
+*/
     for (unsigned int k=0; k<this->num_joints; k++) {
         // IBM
         AffineTrans<double> ibm_trans = skin_joint->inverse_bind[k] * skin_joint->bind_shape;
@@ -1762,6 +1863,27 @@ void  GLTFData::createBinDataIBM(SkinJointData* skin_joint, AffineTrans<double>*
         }
         ibm_trans.free();
     }
+
+/*
+    tList* jl = this->joints_list;
+    if (jl!=NULL) jl = jl->next;
+    while (jl!=NULL) {
+        int jnt = jl->ldat.id;
+        // IBM
+        AffineTrans<double> ibm_trans = skin_joint->inverse_bind[jnt] * skin_joint->bind_shape;
+        if (this->engine==JBXL_3D_ENGINE_UE && ue_trans!=NULL) ibm_trans.affineMatrixAfter(*ue_trans);    // for UE5 Bug
+        ibm_trans.computeMatrix();
+
+        for (int j=1; j<=4; j++) {
+            for (int i=1; i<=4; i++) {
+                float ibm = (float)ibm_trans.element(i, j);
+                cat_b2Buffer(&ibm, &(this->bin_buffer), float_size);
+            }
+        }
+        ibm_trans.free();
+        jl = jl->next;
+    }
+*/
     return;
 }
 
