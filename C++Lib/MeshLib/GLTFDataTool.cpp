@@ -306,23 +306,10 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
     if (shelldata->alt_name.buf!=NULL) {
         this->alt_name = dup_Buffer(shelldata->alt_name);
     }
-    /*
-    if (skin_joint!=NULL && joints_connection!=NULL) {
-        if (this->joints_list==NULL && !this->has_joints) {
-            this->joints_list = joints_connection;
-            this->has_joints = true;
-            this->num_joints = skin_joint->num_joints;
-        }
-        else {
-            if (joints_connection!=NULL) del_tList(&joints_connection);
-            joints_connection = NULL;
-        }
-    }
-    */
 
     if (skin_joint!=NULL) {
         if (joints_connection!=NULL) {
-            if (this->joints_list==NULL && !this->has_joints) {
+            if (this->joints_list==NULL) {
                 this->joints_list = joints_connection;
                 this->has_joints  = true;
                 this->num_joints  = skin_joint->num_joints;
