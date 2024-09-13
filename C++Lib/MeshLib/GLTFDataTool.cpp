@@ -1452,6 +1452,7 @@ SHELL毎に呼び出され，SHELL中の全FACETのジオメトリ情報を this
 */
 void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes, int shell_vertexes, SkinJointData* skin_joint, AffineTrans<double>* ue_trans)
 {
+PRINT_MESG("createShellGeometryData()\n");
     unsigned int float_size  = (unsigned int)sizeof(float);
     unsigned int uint_size   = (unsigned int)sizeof(unsigned int);
     unsigned int shortu_size = (unsigned int)sizeof(short unsigned int);
@@ -1583,7 +1584,6 @@ void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes,
     }
     
     // Inverse Bind Matrix
-/*
     int jord = 0;
     tList* jl = this->joints_list;
     if (jl!=NULL) jl = jl->next;
@@ -1605,7 +1605,7 @@ void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes,
         jord++;
         jl = jl->next;
     }
-*/
+/*
     for (unsigned int k=0; k<this->num_joints; k++) {
         // IBM
         AffineTrans<double> ibm_trans = skin_joint->inverse_bind[k] * skin_joint->bind_shape;
@@ -1621,6 +1621,7 @@ void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes,
         }
         ibm_trans.free();
     }
+*/
 
     // shell_node をリストの最後に繋げる
     GLTFShellNode* prv = NULL;
@@ -1845,26 +1846,10 @@ void  GLTFData::addAccessorsIBM(void)
 
 void  GLTFData::createBinDataIBM(SkinJointData* skin_joint, AffineTrans<double>* ue_trans)
 {
+PRINT_MESG("createBinDataIBM()\n");
     if (skin_joint==NULL) return;
-
     unsigned int float_size = (unsigned int)sizeof(float);
-    //
-    for (unsigned int k=0; k<this->num_joints; k++) {
-        // IBM
-        AffineTrans<double> ibm_trans = skin_joint->inverse_bind[k] * skin_joint->bind_shape;
-        if (this->engine==JBXL_3D_ENGINE_UE && ue_trans!=NULL) ibm_trans.affineMatrixAfter(*ue_trans);    // for UE5 Bug
-        ibm_trans.computeMatrix();
 
-        for (int j=1; j<=4; j++) {
-            for (int i=1; i<=4; i++) {
-                float ibm = (float)ibm_trans.element(i, j);
-                cat_b2Buffer(&ibm, &(this->bin_buffer), float_size);
-            }
-        }
-        ibm_trans.free();
-    }
-
-/*
     tList* jl = this->joints_list;
     if (jl!=NULL) jl = jl->next;
     while (jl!=NULL) {
@@ -1883,7 +1868,6 @@ void  GLTFData::createBinDataIBM(SkinJointData* skin_joint, AffineTrans<double>*
         ibm_trans.free();
         jl = jl->next;
     }
-*/
     return;
 }
 
