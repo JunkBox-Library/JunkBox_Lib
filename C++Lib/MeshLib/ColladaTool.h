@@ -127,6 +127,7 @@ public:
     AffineTrans<double>  affineSkeleton;
 
     tXML*   joints_template_tag;
+    bool    added_joints_xml;
     bool    has_joints;
     bool    no_offset;
     bool    phantom_out;

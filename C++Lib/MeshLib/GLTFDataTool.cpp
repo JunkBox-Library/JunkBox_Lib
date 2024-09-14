@@ -311,20 +311,19 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
     }
 
     this->has_joints = false;
+    this->num_joints = 0;
     if (skin_joint!=NULL) {
         this->has_joints = true;
+        this->num_joints = skin_joint->num_joints;
         if (joints_connection!=NULL) {
             if (this->joints_list==NULL) {
                 this->joints_list = joints_connection;
-                this->has_joints  = true;
-                this->num_joints  = skin_joint->num_joints;
             }
             else {
                 if (this->joints_list!=NULL) del_tList(&this->joints_list);
                 this->joints_list = NULL;
                 if (this->has_joints) {
                     this->joints_list = joints_connection;
-                    this->num_joints  = skin_joint->num_joints;
                 }
             }
         }
@@ -382,8 +381,7 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         this->addAccessorsIBM(); 
     }
     else {
-///////////////////////////////////////////////
-        //del_json_node(&this->skins);
+        //del_json_node(&this->skins);  // --> closeSolid()
     }
 
     // for UE5 Bug
@@ -842,6 +840,8 @@ void  GLTFData::closeSolid(void)
         if (this->bin_mode==JBXL_GLTF_BIN_AOS) createBinDataAoS();
         else                                   createBinDataSoA();
     }
+
+    if (this->skins->next==NULL) del_json_node(&this->skins);
 
     return;
 }
@@ -1543,7 +1543,7 @@ void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes,
     }
     
     // Inverse Bind Matrix
-    if (skin_joint!=NULL) {
+    if (this->has_joints) {
         int jord = 0;
         tList* jl = this->joints_list;
         if (jl!=NULL) jl = jl->next;
@@ -1565,10 +1565,6 @@ void  GLTFData::createShellGeometryData(MeshFacetNode* facet, int shell_indexes,
             jord++;
             jl = jl->next;
         }
-    }
-    else {
-        this->has_joints = false;
-        this->num_joints = 0;
     }
 
     // shell_node をリストの最後に繋げる

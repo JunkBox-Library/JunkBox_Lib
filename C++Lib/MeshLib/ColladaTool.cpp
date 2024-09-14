@@ -22,44 +22,45 @@ ColladaXML::~ColladaXML(void)
 
 void  ColladaXML::init(double meter, int axis, const char* ver)
 {
-    initCollada(meter, axis, ver);
+    this->initCollada(meter, axis, ver);
     //
-    joints_template_tag = NULL;
-    has_joints          = false;
-    no_offset           = false;
+    this->joints_template_tag = NULL;
+    this->added_joints_xml    = false;
+    this->has_joints          = false;
+    this->no_offset           = false;
 
-    blank_texture = init_Buffer();
-    phantom_out   = true;
-    forUnity5     = false;
-    forUnity      = true;
+    this->blank_texture = init_Buffer();
+    this->phantom_out   = true;
+    this->forUnity5     = false;
+    this->forUnity      = true;
      
-    affineTrans   = NULL;;
-    affineSkeleton.init();
+    this->affineTrans   = NULL;;
+    this->affineSkeleton.init();
 }
 
 
 void  ColladaXML::free(void)
 {
-    free_Buffer(&blank_texture);
-    del_all_xml(&xml_tag);
+    free_Buffer(&this->blank_texture);
+    del_all_xml(&this->xml_tag);
 
-    affineSkeleton.free();
-    if (affineTrans!=NULL) affineTrans->free();
-    affineTrans = NULL;
+    this->affineSkeleton.free();
+    if (this->affineTrans!=NULL) this->affineTrans->free();
+    this->affineTrans = NULL;
 }
 
 
 void  ColladaXML::clear(double meter, int axis, const char* ver)
 {
-    del_all_xml(&xml_tag);
-    init(meter, axis, ver);
+    del_all_xml(&this->xml_tag);
+    this->init(meter, axis, ver);
 }
 
 
 bool  ColladaXML::isBlankTexture(const char* name)
 {
-    if (blank_texture.buf==NULL) return false;
-    if (strncasecmp(_tochar(blank_texture.buf), name, strlen(_tochar(blank_texture.buf)))) return false;
+    if (this->blank_texture.buf==NULL) return false;
+    if (strncasecmp(_tochar(this->blank_texture.buf), name, strlen(_tochar(this->blank_texture.buf)))) return false;
 
     return true;
 }
@@ -76,95 +77,103 @@ void  ColladaXML::initCollada(double meter, int axis, const char* ver)
     else           buf = make_Buffer_str(COLLADA_STR_VER);
 
     // COLLADA
-    xml_tag     = init_xml_doc();
-    collada_tag = add_xml_node(xml_tag, "COLLADA");
+    this->xml_tag     = init_xml_doc();
+    this->collada_tag = add_xml_node(xml_tag, "COLLADA");
     //
-    add_xml_attr_str(collada_tag, "xmlns",   COLLADA_STR_XMLNS);
-    add_xml_attr_str(collada_tag, "version", _tochar(buf.buf));
+    add_xml_attr_str(this->collada_tag, "xmlns",   COLLADA_STR_XMLNS);
+    add_xml_attr_str(this->collada_tag, "version", _tochar(buf.buf));
 
     // asset
-    asset_tag          = add_xml_node(collada_tag, "asset");
-    contributor_tag    = add_xml_node(asset_tag, "contributor");
-    author_tag         = add_xml_node(contributor_tag, "author");
-    authoring_tool_tag = add_xml_node(contributor_tag, "authoring_tool");
-    created_tag        = add_xml_node(asset_tag, "created");
-    modified_tag       = add_xml_node(asset_tag, "modified");
-    unit_tag           = add_xml_node(asset_tag, "unit");
-    up_axis_tag        = add_xml_node(asset_tag, "up_axis");
+    this->asset_tag          = add_xml_node(collada_tag, "asset");
+    this->contributor_tag    = add_xml_node(asset_tag, "contributor");
+    this->author_tag         = add_xml_node(contributor_tag, "author");
+    this->authoring_tool_tag = add_xml_node(contributor_tag, "authoring_tool");
+    this->created_tag        = add_xml_node(asset_tag, "created");
+    this->modified_tag       = add_xml_node(asset_tag, "modified");
+    this->unit_tag           = add_xml_node(asset_tag, "unit");
+    this->up_axis_tag        = add_xml_node(asset_tag, "up_axis");
     
     //char* ltime = get_localtime('-', 'T', ':', 'Z');
     char* ltime = get_local_timestamp(time(0), "%Y-%m-%dT%H:%M:%SZ");
     //
-    add_xml_content_node(author_tag, COLLADA_STR_AUTHOR);
-    add_xml_content_node(authoring_tool_tag, COLLADA_STR_TOOL);
-    add_xml_content_node(created_tag,  ltime);
-    add_xml_content_node(modified_tag, ltime);
-    add_xml_attr_str(unit_tag, "name", "meter");
-    add_xml_attr_float(unit_tag, "meter", (float)meter);
+    add_xml_content_node(this->author_tag, COLLADA_STR_AUTHOR);
+    add_xml_content_node(this->authoring_tool_tag, COLLADA_STR_TOOL);
+    add_xml_content_node(this->created_tag,  ltime);
+    add_xml_content_node(this->modified_tag, ltime);
+    add_xml_attr_str(this->unit_tag, "name", "meter");
+    add_xml_attr_float(this->unit_tag, "meter", (float)meter);
     ::free(ltime);
 
-    if      (axis==COLLADA_X_UP) add_xml_content_node(up_axis_tag, "X_UP");
-    else if (axis==COLLADA_Y_UP) add_xml_content_node(up_axis_tag, "Y_UP");
-    else                         add_xml_content_node(up_axis_tag, "Z_UP");
+    if      (axis==COLLADA_X_UP) add_xml_content_node(this->up_axis_tag, "X_UP");
+    else if (axis==COLLADA_Y_UP) add_xml_content_node(this->up_axis_tag, "Y_UP");
+    else                         add_xml_content_node(this->up_axis_tag, "Z_UP");
 
-    library_images_tag      = add_xml_node(collada_tag, "library_images");
-    library_effects_tag     = add_xml_node(collada_tag, "library_effects");
-    library_materials_tag   = add_xml_node(collada_tag, "library_materials");
-    library_geometries_tag  = add_xml_node(collada_tag, "library_geometries");
-    library_controllers_tag = add_xml_node(collada_tag, "library_controllers");
+    this->library_images_tag      = add_xml_node(this->collada_tag, "library_images");
+    this->library_effects_tag     = add_xml_node(this->collada_tag, "library_effects");
+    this->library_materials_tag   = add_xml_node(this->collada_tag, "library_materials");
+    this->library_geometries_tag  = add_xml_node(this->collada_tag, "library_geometries");
+    this->library_controllers_tag = add_xml_node(this->collada_tag, "library_controllers");
 
     // library_physics_models
-    library_physics_models_tag = add_xml_node(collada_tag, "library_physics_models");
-    physics_model_tag          = add_xml_node(library_physics_models_tag, "physics_model");
-    add_xml_attr_str(physics_model_tag, "id",   "Physics_Model");
-    add_xml_attr_str(physics_model_tag, "name", "Physics_Model");
+    this->library_physics_models_tag = add_xml_node(this->collada_tag, "library_physics_models");
+    this->physics_model_tag          = add_xml_node(this->library_physics_models_tag, "physics_model");
+    add_xml_attr_str(this->physics_model_tag, "id",   "Physics_Model");
+    add_xml_attr_str(this->physics_model_tag, "name", "Physics_Model");
 
     // library_physics_scenes
-    library_physics_scenes_tag = add_xml_node(collada_tag, "library_physics_scenes");
-    physics_scene_tag          = add_xml_node(library_physics_scenes_tag, "physics_scene");
+    this->library_physics_scenes_tag = add_xml_node(this->collada_tag, "library_physics_scenes");
+    this->physics_scene_tag          = add_xml_node(this->library_physics_scenes_tag, "physics_scene");
     add_xml_attr_str(physics_scene_tag, "id",   "Physics_Scene");
     add_xml_attr_str(physics_scene_tag, "name", "Physics_Scene");
-    instance_physics_model_tag = add_xml_node(physics_scene_tag, "instance_physics_model");
-    add_xml_attr_str(instance_physics_model_tag, "url", "#Physics_Model");
-    //tXML* technique_tag = add_xml_node(physics_scene_tag, "technique_common");
-    //tXML* gravity_tag = add_xml_node(technique_tag, "gravity");
-    //add_xml_content(gravity_tag, "0.000000 -9.810000 0.000000");
+    this->instance_physics_model_tag = add_xml_node(this->physics_scene_tag, "instance_physics_model");
+    add_xml_attr_str(this->instance_physics_model_tag, "url", "#Physics_Model");
+    //tXML* technique_tag = add_xml_node(this->physics_scene_tag, "technique_common");
+    //tXML* gravity_tag = add_xml_node(this->technique_tag, "gravity");
+    //add_xml_content(this->gravity_tag, "0.000000 -9.810000 0.000000");
 
     // library_visual_scenes
-    library_visual_scenes_tag = add_xml_node(collada_tag, "library_visual_scenes");
-    visual_scene_tag          = add_xml_node(library_visual_scenes_tag, "visual_scene");
-    add_xml_attr_str(visual_scene_tag, "id",   "Scene");
-    add_xml_attr_str(visual_scene_tag, "name", "Scene");
+    this->library_visual_scenes_tag = add_xml_node(this->collada_tag, "library_visual_scenes");
+    this->visual_scene_tag          = add_xml_node(this->library_visual_scenes_tag, "visual_scene");
+    add_xml_attr_str(this->visual_scene_tag, "id",   "Scene");
+    add_xml_attr_str(this->visual_scene_tag, "name", "Scene");
 
     // scence
-    scene_tag = add_xml_node(collada_tag, "scene");
-    instance_physics_scene_tag = add_xml_node(scene_tag, "instance_physics_scene");
-    add_xml_attr_str(instance_physics_scene_tag, "url", "#Physics_Scene");
-    instance_visual_scene_tag = add_xml_node(scene_tag, "instance_visual_scene");
-    add_xml_attr_str(instance_visual_scene_tag, "url", "#Scene");
+    this->scene_tag = add_xml_node(this->collada_tag, "scene");
+    this->instance_physics_scene_tag = add_xml_node(this->scene_tag, "instance_physics_scene");
+    add_xml_attr_str(this->instance_physics_scene_tag, "url", "#Physics_Scene");
+    this->instance_visual_scene_tag = add_xml_node(this->scene_tag, "instance_visual_scene");
+    add_xml_attr_str(this->instance_visual_scene_tag, "url", "#Scene");
     //
 
     free_Buffer(&buf);
 }
 
 
+/*
+void  ColladaXML::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* skin_joint, tXML* joints_template)
+
+Collada XMLに一個の SHELLを追加．
+*/
 void  ColladaXML::addShell(MeshObjectData* shelldata, bool collider, SkinJointData* skin_joint, tXML* joints_template)
 {
     if (shelldata==NULL) return;
 
-    if (skin_joint!=NULL && joints_template!=NULL) {
-        if (joints_template_tag==NULL) {
-            has_joints = true;
-            joints_template_tag = joints_template;
-        }
-        else {
-            del_all_xml(&joints_template);
+    this->has_joints = false;
+    if (skin_joint!=NULL) {
+        if (joints_template!=NULL || this->joints_template_tag!=NULL) this->has_joints = true;
+        if (joints_template!=NULL) {
+            if (this->joints_template_tag==NULL) {
+                this->joints_template_tag = joints_template;
+            }
+            else {
+                del_all_xml(&joints_template);
+            }
         }
     }
     //
-    char* geom_id = addGeometry(shelldata);                         // 幾何情報を配置
-    char* ctrl_id = addController(geom_id, shelldata, skin_joint);  // Joints 情報を配置
-    addScene(geom_id, ctrl_id, shelldata, collider, skin_joint);    // Scene への配置（位置，サイズ，回転，コライダー, Joints）
+    char* geom_id = this->addGeometry(shelldata);                           // 幾何情報を配置
+    char* ctrl_id = this->addController(geom_id, shelldata, skin_joint);    // Joints 情報を配置
+    this->addScene(geom_id, ctrl_id, shelldata, collider, skin_joint);      // Scene への配置（位置，サイズ，回転，コライダー, Joints）
     
     if (geom_id!=NULL) ::free(geom_id);
     if (ctrl_id!=NULL) ::free(ctrl_id);
@@ -174,16 +183,15 @@ void  ColladaXML::addShell(MeshObjectData* shelldata, bool collider, SkinJointDa
 
 void  ColladaXML::closeSolid(void)
 {
-    if (has_joints) {
+    if (this->added_joints_xml) {
         tXML* pelvis_tag = get_xml_attr_node(joints_template_tag, "name","\"mPelvis\"");
         if (pelvis_tag!=NULL) {
-            deleteNousedJoints(pelvis_tag);
+            this->deleteNousedJoints(pelvis_tag);   // matrixデータの無い jointデータを削除
         }
         else {
             PRINT_MESG("WARNING: ColladaXML::closeObject: not found mPelvis in Joints template file.\n");
         }
     }
-
     return;
 }
 
@@ -973,7 +981,7 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
 
     Vector<double> pelvis = Vector<double>(0.0, 0.0, 1.067);
     // joints
-    if (has_joints && visual_scene_tag!=NULL) {
+    if (this->has_joints && this->visual_scene_tag!=NULL) {
         char buf[LNAME];
         memset(buf, 0, LNAME);
         buf[0] = '"';
@@ -988,7 +996,7 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
                 buf[len + 1] = '"';
                 buf[len + 2] = '\0';
 
-                tXML* node_tag = get_xml_attr_node(joints_template_tag, "name", (const char*)buf);
+                tXML* node_tag = get_xml_attr_node(this->joints_template_tag, "name", (const char*)buf);
                 if (node_tag!=NULL) {
                     tXML* matrix_tag = node_tag->next;
                     for (int i=1; i<=4; i++) {
@@ -1013,8 +1021,10 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
         }
 
         // joints_template の結合
-        if (visual_scene_tag->next==NULL) {
-            join_xml(visual_scene_tag, joints_template_tag);
+        if (!this->added_joints_xml) {
+            if (this->visual_scene_tag->next==NULL) add_tTree_node(this->visual_scene_tag, this->joints_template_tag);
+            else                                 insert_tTree_node(this->visual_scene_tag, this->joints_template_tag);
+            this->added_joints_xml = true;
         }
 
         //**********************************************************************************
@@ -1041,7 +1051,7 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
     Buffer node_id = make_Buffer_str("#NODE_");
     cat_Buffer(&randomstr, &node_id);
 
-    tXML* node_tag = add_xml_node(visual_scene_tag, "node");
+    tXML* node_tag = add_xml_node(this->visual_scene_tag, "node");
     add_xml_attr_str(node_tag, "id",   _tochar(node_id.buf + 1));
     add_xml_attr_str(node_tag, "name", _tochar(geometry_name.buf));
     add_xml_attr_str(node_tag, "type", "NODE");
@@ -1190,7 +1200,7 @@ void  ColladaXML::setJointLocationMatrix(void)
 */
 void  ColladaXML::setJointLocationMatrix(void)
 {
-    if (!has_joints) return;
+    if (!this->has_joints) return;
 
     tXML* avatar_tag = get_xml_node_str(collada_tag, "<library_visual_scenes><visual_scene><node><matrix>");
     if (avatar_tag!=NULL) {
@@ -1296,7 +1306,7 @@ void  ColladaXML::addCenterObject(void)
 //
 void  ColladaXML::addCenterScene(void)
 {
-    tXML* node_tag = add_xml_node(visual_scene_tag, "node");
+    tXML* node_tag = add_xml_node(this->visual_scene_tag, "node");
     add_xml_attr_str(node_tag, "id",   "#NODE_DUMMY");
     add_xml_attr_str(node_tag, "name", "center_origin");
     add_xml_attr_str(node_tag, "type", "NODE");

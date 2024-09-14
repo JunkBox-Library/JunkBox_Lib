@@ -2,7 +2,7 @@
 #define  __JBXL_CPP_GLTF_TOOL_H_
 
 /**
-  Wavefront GLTF ファイル用ツール
+  glTF/glb ファイル用ツール
 
 */
 
@@ -29,8 +29,8 @@ namespace jbxl {
 #define  JBXL_GLTF_BIN_SOA       2
 
 
-#define  JBXL_GLTF_COPYRIGHT     "From OpenSimulator"
-#define  JBXL_GLTF_GENERATOR     "JBXL glTF Tool Library (C) 2024 v1.0 by Fumi.Iseki"
+#define  JBXL_GLTF_COPYRIGHT     "glTF/glb"
+#define  JBXL_GLTF_GENERATOR     "JBXL glTF/glb Tool Library (C) 2024 v1.0 by Fumi.Iseki and Austin Tate"
 #define  JBXL_GLTF_VERSION       "2.0"
 
 // accessors

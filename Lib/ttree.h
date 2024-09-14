@@ -71,7 +71,7 @@ tTree*  del_tTree_anchor_node(tTree* node);             ///< ANCHORノードを�
 #define new_tTree()         new_tTree_node()            ///< new_tTree_node()
 #define new_tTree_anchor()  new_tTree_anchor_node()     ///< new_tTree_anchor_node()
 
-tTree*  add_tTree_node         (tTree* pp, tTree* pt);          ///< ツリー ppへノード nodeを末っ子として追加．
+tTree*  add_tTree_node         (tTree* pp, tTree* node);        ///< ツリー ppへノード nodeを末っ子として追加．
 tTree*  add_tTree_node_bydata  (tTree* pp, tList_data ldat);    ///< データから Treeノードをつくり出し,それを ppの子ノード（末っ子）として追加．
 tTree*  add_tTree_node_bystr   (tTree* pp, int id, int lv, const char*  key, const char*  val, void* ptr, int sz);  ///< ノードを末っ子としてリストに追加．
 tTree*  add_tTree_node_byBuffer(tTree* pp, int id, int lv, Buffer key, Buffer val, void* ptr, int sz);          ///< ノードを末っ子としてリストに追加．

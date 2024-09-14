@@ -182,7 +182,7 @@ tXML*   append_xml_content_node(tXML* xml, const char* value);              ///<
 tXML*   set_xml_content_node(tXML* xml, const char* value);                 ///< XMLツリーのxml の直下のコンテントノードの値を置き換える．
 int     add_xml_content_area(tXML* xml, int len);                           ///< xml に空のコンテントノードを追加する．
 
-#define join_xml(a, b)              add_tTree_node((a), (b))                ///< add_tTree_node()
+#define join_xml(a, b)              add_tTree_node((a), (b))                ///< ツリー aへノード bを末っ子として追加．
 
 Buffer  make_xml_attr_bystr   (const char* name, const char* value);        ///< 属性名 name, 文字列の属性値 value を持つ Buffer型変数を作成する．
 Buffer  make_xml_attr_byint   (const char* name, int   value);              ///< 属性名 name, 整数の属性値 value を持つ Buffer型変数を作成する．
