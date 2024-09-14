@@ -1023,9 +1023,12 @@ void  ColladaXML::addScene(const char* geometry_id, char* controller_id, MeshObj
         // joints_template の結合
         if (!this->added_joints_xml && this->has_joints) {
             tXML* jtemp = this->joints_template_tag;
-            if (jtemp->ldat.id==JBXL_STATE_ANCHOR) jtemp = jtemp->next;
-            if (this->visual_scene_tag->next==NULL) add_tTree_node(this->visual_scene_tag, jtemp);
-            else                                 insert_tTree_node(this->visual_scene_tag, jtemp);
+            if (jtemp->ldat.id==JBXL_STATE_ANCHOR) {
+                this->joints_template_tag = this->joints_template_tag->next;
+                del_xml_node(&jtemp);
+            }
+            if (this->visual_scene_tag->next==NULL) add_tTree_node(this->visual_scene_tag, this->joints_template_tag);
+            else                                 insert_tTree_node(this->visual_scene_tag, this->joints_template_tag);
             this->added_joints_xml = true;
         }
 
