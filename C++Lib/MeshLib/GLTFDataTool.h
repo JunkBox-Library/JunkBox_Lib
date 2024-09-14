@@ -189,6 +189,7 @@ public:
     int     engine;
 
     bool    has_joints;
+    bool    has_skeleton_node;
     tList*  joints_list;
 
     tList*  image_list;
