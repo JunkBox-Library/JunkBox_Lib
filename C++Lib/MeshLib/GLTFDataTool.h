@@ -217,6 +217,7 @@ public:
 
     unsigned int  num_joints;
     unsigned int  node_offset;
+    unsigned int  joint_offset;
 
     tJson*  json_data;
     tJson*  scenes;

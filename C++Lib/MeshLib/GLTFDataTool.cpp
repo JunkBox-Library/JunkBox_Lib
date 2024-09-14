@@ -132,6 +132,7 @@ void  GLTFData::init(void)
 
     this->num_joints        = 0;
     this->node_offset       = 0;
+    this->joint_offset      = 0;
 
     this->json_data         = NULL;
     this->scenes            = NULL;
@@ -309,8 +310,9 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         this->alt_name = dup_Buffer(shelldata->alt_name);
     }
 
-    //this->has_joints = false;
+    this->has_joints = false;
     if (skin_joint!=NULL) {
+        this->has_joints = true;
         if (joints_connection!=NULL) {
             if (this->joints_list==NULL) {
                 this->joints_list = joints_connection;
@@ -326,7 +328,6 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
                 }
             }
         }
-        //this->has_joints = true;
     }
 
     MeshFacetNode* facet = shelldata->facet;
@@ -381,7 +382,8 @@ void  GLTFData::addShell(MeshObjectData* shelldata, bool collider, SkinJointData
         this->addAccessorsIBM(); 
     }
     else {
-        del_json_node(&this->skins);
+///////////////////////////////////////////////
+        //del_json_node(&this->skins);
     }
 
     // for UE5 Bug
@@ -530,13 +532,14 @@ void  GLTFData::addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>*
     char buf[LBUF];
     memset(buf, 0, LBUF);
 
-    json_append_array_int_val(this->nodes_children, this->node_offset);
     this->node_offset++;
+    this->joint_offset = this->node_no - 1;
+    json_append_array_int_val(this->nodes_children, this->node_offset + this->joint_offset - 1);
 
     // Root node of skeletons
     tJson* skeleton_root = json_insert_parse(this->nodes, JBXL_GLTF_NODES_ARMATURE);
     tJson* skeleton_children = json_append_array_key(skeleton_root, "children");
-    json_append_array_int_val(skeleton_children, this->node_offset);
+    json_append_array_int_val(skeleton_children, this->node_offset + this->joint_offset);
     this->node_no++;
 
     if (affine!=NULL) {
@@ -604,7 +607,7 @@ void  GLTFData::addSkeletonNodes(SkinJointData* skin_joint, AffineTrans<double>*
         while (jp!=NULL) {
             if (jp->ldat.lv==jl->ldat.id) {
                 //json_append_array_int_val(children, jp->ldat.id + this->node_offset);
-                json_append_array_int_val(children, lnum + this->node_offset);
+                json_append_array_int_val(children, lnum + this->node_offset + joint_offset);
                 count++;
             }
             lnum++;
@@ -822,11 +825,11 @@ void  GLTFData::addSkins(void)
     char buf[LBUF];
     
     memset(buf, 0, LBUF);
-    snprintf(buf, LBUF-1, JBXL_GLTF_SKINS, this->accessor_no, this->node_offset - 1);
+    snprintf(buf, LBUF-1, JBXL_GLTF_SKINS, this->accessor_no, this->node_offset + this->joint_offset - 1);
     tJson* skn = json_insert_parse(skins, buf);
     tJson* jnt = json_append_array_key(skn, "joints");
     for (unsigned int j=0; j<this->num_joints; j++) {
-        json_append_array_int_val(jnt, (int)j + this->node_offset);
+        json_append_array_int_val(jnt, (int)j + this->node_offset + this->joint_offset);
     }
     this->skin_no++;
     return;
