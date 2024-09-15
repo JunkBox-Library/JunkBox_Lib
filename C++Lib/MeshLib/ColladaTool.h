@@ -14,10 +14,10 @@
 namespace jbxl {
 
 
-#define  COLLADA_STR_AUTHOR     "JBXL Collada Tool Library (C) 2014 by Fumi.Iseki"
+#define  COLLADA_STR_AUTHOR     "JBXL Collada Tool Library (C) 2014-2024 by Fumi.Iseki and Austin Tate"
 #define  COLLADA_STR_XMLNS      "http://www.collada.org/2005/11/COLLADASchema"
 #define  COLLADA_STR_TOOL       "JunkBox_Lib++ (https://github.com/JunkBox-Library)"
-#define  COLLADA_STR_VER        "1.5.0"
+#define  COLLADA_STR_VER        "1.6.0"
 
 //
 #define  COLLADA_X_UP           0

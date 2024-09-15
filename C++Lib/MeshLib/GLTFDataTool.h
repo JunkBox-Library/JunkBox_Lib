@@ -4,6 +4,8 @@
 /**
   glTF/glb ファイル用ツール
 
+  JBXL glTF/glb Tool Library (C) 2024 v1.0 by Fumi.Iseki and Austin Tate
+  v1.1.0
 */
 
 #include  "tools++.h"
@@ -19,19 +21,18 @@
 
 namespace jbxl {
 
+#define  JBXL_GLTF_COPYRIGHT     "glTF/glb"
+#define  JBXL_GLTF_GENERATOR     "JBXL glTF/glb Tool Library (C) 2024 v1.0 by Fumi.Iseki and Austin Tate"
+#define  JBXL_GLTF_VERSION       "2.0"
+
 #define  JBXL_GLB_HEADER         "glTF"
 #define  JBXL_GLB_VERSION        2.0
 #define  JBXL_GLB_TYPE_JSON      "JSON"
 #define  JBXL_GLB_TYPE_BIN       "BIN\0"
 
-
 #define  JBXL_GLTF_BIN_AOS       1
 #define  JBXL_GLTF_BIN_SOA       2
 
-
-#define  JBXL_GLTF_COPYRIGHT     "glTF/glb"
-#define  JBXL_GLTF_GENERATOR     "JBXL glTF/glb Tool Library (C) 2024 v1.0 by Fumi.Iseki and Austin Tate"
-#define  JBXL_GLTF_VERSION       "2.0"
 
 // accessors
 #define  JBXL_GLB_ACCESSORS_PNG_IMAGE   "{\"bufferView\":%d,\"mimeType\":\"image/png\"}"
