@@ -17,7 +17,7 @@ void  TextureParam::init(void)
 
     alphaChannel = false;
     alphaCutoff  = 0.0;
-    alphaMode    = MATERIAL_ALPHA_NONE;
+    alphaMode    = MATERIAL_ALPHA_BLENDING; //MATERIAL_ALPHA_NONE;
 
     shiftU       = 0.0;
     shiftV       = 0.0;
@@ -164,7 +164,7 @@ void  TextureParam::printParam(FILE* fp)
     if (alphaChannel) fprintf(fp, "TextureParam.alphaChannel = true\n");
     else              fprintf(fp, "TextureParam.alphaChannel = flase\n");
 
-    fprintf(fp, "TextureParam.alphaMode    = %d\n", alphaMode);
+    fprintf(fp, "TextureParam.alphaMode    = %d (%d)\n", alphaMode, getAlphaMode());
     fprintf(fp, "TextureParam.alphaCutoff  = %f\n", alphaCutoff);
 
     fflush(fp);
@@ -319,9 +319,20 @@ void  MaterialParam::printParam(FILE* fp)
     }
 
     fprintf(fp, "----------------------------------------------\n");
+
+    fprintf(fp, "Texture\n");
     texture.printParam(fp);
-    if (specmap.isSetTexture()) specmap.printParam(fp);
-    if (bumpmap.isSetTexture()) bumpmap.printParam(fp);
+    fprintf(fp, "\n");
+    if (specmap.isSetTexture()) {
+        fprintf(fp, "SpecMap\n");
+        specmap.printParam(fp);
+        fprintf(fp, "\n");
+    }
+    if (bumpmap.isSetTexture()) {
+        fprintf(fp, "BumpMap\n");
+        bumpmap.printParam(fp);
+        fprintf(fp, "\n");
+    }
 
     fprintf(fp, "----------------------------------------------\n");
     fprintf(fp, "MaterialParam.paramstr    = %s\n", paramstr.buf);

@@ -120,8 +120,8 @@ public:
     double  getRotate(void) { return rotate;}
 
     //bool    getAlphaChannel(void) { return alphaChannel;}
-    //int     getAlphaMode(void)    { if (color[3]<0.99) return MATERIAL_ALPHA_BLENDING; else return alphaMode;}
-    int     getAlphaMode(void)    { return alphaMode;}
+    int     getAlphaMode(void)    { if (color[3]<0.99) return MATERIAL_ALPHA_BLENDING; else return alphaMode;}
+    //int     getAlphaMode(void)    { return alphaMode;}
     double  getAlphaCutoff(void)  { return alphaCutoff;}
 
     void    execTrans (UVMap<double>* uv, int n);    ///< Rotate -> Scale -> Shift

@@ -772,7 +772,7 @@ void  GLTFData::addMaterialParameters(tJson* pbr, MeshFacetNode* facet)
         json_insert_parse(pbr->prev, buf);
     }
 
-    //param.printParam(stderr);
+    DEBUG_MODE param.printParam(stderr);
     return;
 }
 

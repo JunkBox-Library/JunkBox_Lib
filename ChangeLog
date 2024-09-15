@@ -9,6 +9,7 @@ working now ..... v1.10.1
 
 v1.10.1
 	add  rm_dir_rcsv() to Lib/xtool.c
+	fix comples skeleton bug for slTF, DAE
 
 
 v1.10.0 '24/09/04
