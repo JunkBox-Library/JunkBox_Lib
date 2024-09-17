@@ -525,7 +525,6 @@ void  OBJFacetMtlNode::setup_params(void)
     if (texture.isSetTexture()) {       // map_Kd
         this->map_kd = make_Buffer_str(texture.getName());
         canonical_filename_Buffer(&this->map_kd, TRUE);
-
     }
     if (specmap.isSetTexture()) {       // map_Ks
         this->map_ks = make_Buffer_str(specmap.getName());

@@ -759,7 +759,7 @@ char*  ColladaXML::addImage(const char* fn)
 
     Buffer file_name = make_Buffer_str(fn);
     canonical_filename_Buffer(&file_name, TRUE);
-    Buffer file_id  = replace_sBuffer_str(file_name, ".", "_");
+    Buffer file_id = replace_sBuffer_str(file_name, ".", "_");
 
     bool exist_same_image = existSameID(library_images_tag, "<library_images><image>", _tochar(file_id.buf));
     if (!exist_same_image) {

@@ -639,11 +639,13 @@ void  GLTFData::addTextures(MeshFacetNode* facet)
             tList* lt = search_key_tList(this->image_list, image_name, 1);
             //
             if (lt==NULL) {
+                Buffer file_name = make_Buffer_str(image_name);
+                canonical_filename_Buffer(&file_name, TRUE);
                 tList* ltend = find_tList_end(this->image_list);
-                add_tList_node_bystr(ltend, this->image_no, 0, image_name, NULL, NULL, 0);
+                add_tList_node_bystr(ltend, this->image_no, 0, (char*)file_name.buf, NULL, NULL, 0);
                 // images
                 memset(buf, 0, LBUF);
-                snprintf(buf, LBUF-1, JBXL_GLTF_IMAGES, image_name);
+                snprintf(buf, LBUF-1, JBXL_GLTF_IMAGES, (char*)file_name.buf);
                 json_insert_parse(this->images, buf);
 
                 // textures
@@ -651,6 +653,7 @@ void  GLTFData::addTextures(MeshFacetNode* facet)
                 snprintf(buf, LBUF-1, JBXL_GLTF_TEXTURES, this->image_no);
                 json_insert_parse(this->textures, buf);
 
+                free_Buffer(&file_name);
                 this->image_no++;
             }
         }
@@ -676,14 +679,17 @@ void  GLTFData::addMaterials(MeshFacetNode* facet)
                 add_tList_node_bystr(ltend, this->material_no, 0, material_name, NULL, NULL, 0);
                 // 
                 char* image_name = (char*)facet->material_param.texture.getName();
+                Buffer file_name = make_Buffer_bystr(image_name);
+                canonical_filename_Buffer(&file_name, TRUE);
                 int img_no = 0;
-                lt = search_key_tList(this->image_list, image_name, 1);
+                lt = search_key_tList(this->image_list, (char*)file_name.buf, 1);
                 if (lt!=NULL) {
                     img_no = lt->ldat.id;
                 }
                 else {
-                    PRINT_MESG("GLTFData::addMaterials: ERROR: lost image file (%s). this is coding miss!\n", image_name);
+                    PRINT_MESG("GLTFData::addMaterials: ERROR: lost image file (%s). this is coding miss!\n", (char*)file_name.buf);
                 }
+                free_Buffer(&file_name);
                 //
                 memset(buf, 0, LBUF);
                 snprintf(buf, LBUF-1, JBXL_GLTF_MTLS_NAME_PBR, material_name, img_no);
