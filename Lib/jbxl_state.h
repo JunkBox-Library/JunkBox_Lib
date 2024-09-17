@@ -49,6 +49,9 @@ void    jbxl_add_state(int id, const char* smb, const char* str);
 #define  JBXL_FILE_MAKE_ERROR       -25         ///< ファイル作成エラー
 #define  JBXL_FILE_DESTOPEN_ERROR   -26         ///< ディスティネーションファイルのオープン失敗
 
+#define  JBXL_DIR_OPEN_ERROR        -30         ///< ディレクトリオープンエラー
+#define  JBXL_DIR_MAKE_ERROR        -35         ///< ディレクトリ作成エラー
+
 #define  JBXL_TOOLS_ERROR           -100        ///< Tools ライブラリのエラー
 #define  JBXL_TOOLS_BUF_ERROR       -101        ///< バッファ（データ格納）部の領域がない
 #define  JBXL_TOOLS_BUFSZ_ERROR     -102        ///< バッファ（データ格納）部の大きさが足りない

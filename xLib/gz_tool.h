@@ -7,8 +7,9 @@
 @author  Fumi.Iseki (C)
 */
 
-#include "tools.h"
-#include "buffer.h"
+//#include "tools.h"
+//#include "buffer.h"
+#include "xtools.h"
 
 #include <zlib.h>
 
@@ -40,6 +41,37 @@ int  gz_decode_gzfp(gzFile* gf, FILE* fp);                      ///< GZIPのフ�
 int  gz_encode_file(const char* ffn, const char* tfn);          ///< ファイル名による ファイルの圧縮
 int  gz_decode_file(const char* ffn, const char* tfn);          ///< ファイル名による ファイルの解凍
 int  gz_decode_file_replace(const char* fn, const char* dir);   ///< ファイル名による ファイルの解凍．ファイルを置き換える．
+
+
+
+/////////////////////////////////////////////////////
+// tar
+struct  _header_ustar { 
+    char name[100]; 
+    char mode[8]; 
+    char uid[8]; 
+    char gid[8]; 
+    char size[12]; 
+    char mtime[12]; 
+    char checksum[8]; 
+    char typeflag[1]; 
+    char linkname[100]; 
+    char magic[6]; 
+    char version[2]; 
+    char uname[32]; 
+    char gname[32]; 
+    char devmajor[8]; 
+    char devminor[8]; 
+    char prefix[155]; 
+    char pad[12]; 
+};
+
+
+typedef  struct _header_ustar  Tar_Header;
+
+
+void  extract_tTar(Buffer tardata, Buffer prefix, mode_t mode);
+void  extract_tTar_file(const char* fn);
 
 
 #endif 

@@ -108,9 +108,9 @@
 
 typedef union _union_val {
     long long int           llint;
-    unsigned long long int  ullint;
+    long unsigned long int  ullint;
     long int                lint;
-    unsigned long int       ulint;
+    long unsigned int       ulint;
     int                     nint;
     unsigned int            uint;
     short int               sint;
@@ -130,9 +130,9 @@ typedef union _union_val {
 
 typedef union _union_ptr {
     long long int*          llintp;
-    unsigned long long int* ullintp;
+    long unsigned long int* ullintp;
     long int*               lintp;
-    unsigned long int*      ulintp;
+    long unsigned int*      ulintp;
     int*                    nintp;
     unsigned int*           uintp;
     short int*              sintp;
@@ -193,7 +193,7 @@ extern unsigned char  LocalIPNum6[16];      ///< ::1 のバイナリ
 #define  LOCAL_IPADDR   LOCAL_IPv4
 #define  LOCAL_IPADDR6  LOCAL_IPv6
 
-extern unsigned long int UsedMemoryBase;
+extern long unsigned int UsedMemoryBase;
 
 // not C++
 #ifndef CPLUSPLUS
@@ -240,31 +240,31 @@ int     is_number(unsigned char*);                               ///< 数字か�
 // thread unsafe
 char*   itostr(int n);                                           ///< int を文字に変換する．free() は不要    
 char*   ltostr(long int n);                                      ///< long int を文字に変換する．free() は不要    
-char*   ultostr(unsigned long int n);                            ///< unsigned long int を文字に変換する．free() は不要    
+char*   ultostr(long unsigned int n);                            ///< long unsigned int を文字に変換する．free() は不要    
 char*   lltostr(long long int n);                                ///< long long int を文字に変換する．free() は不要    
-char*   ulltostr(unsigned long long int n);                      ///< unsigned long long int を文字に変換する．free() は不要    
+char*   ulltostr(long unsigned long int n);                      ///< long unsigned long int を文字に変換する．free() は不要    
 char*   ftostr(float n);                                         ///< float  を文字に変換する．free() は不要    
 char*   dtostr(double n);                                        ///< double を文字に変換する．free() は不要    
 
 // thread safe
 char*   itostr_ts(int n);                                        ///< int を文字に変換する．要 free()   
 char*   ltostr_ts(long int n);                                   ///< long int を文字に変換する．要 free()   
-char*   ultostr_ts(unsigned long int n);                         ///< unsigned long int を文字に変換する．要 free()   
+char*   ultostr_ts(long unsigned int n);                         ///< long unsigned int を文字に変換する．要 free()   
 char*   lltostr_ts(long long int n);                             ///< long long int を文字に変換する．要 free()
-char*   ulltostr_ts(unsigned long long int n);                   ///< unsigned long long int を文字に変換する．要 free() 
+char*   ulltostr_ts(long unsigned long int n);                   ///< long unsigned long int を文字に変換する．要 free() 
 char*   ftostr_ts(float n);                                      ///< float  を文字に変換する．要 free()
 char*   dtostr_ts(double n);                                     ///< double を文字に変換する．要 free()
 
 int     count_lines(const char* buf);                            ///< 文字列データの行数を数える．行頭が '@\0'の場合も1行と数える．
 int     hexstr2i(const char* str);                               ///< 16進の文字列を整数に変換する．
     
-unsigned long long int ntohull(unsigned long long int s);        ///< Network形式からHost形式へ，64bit unsigned long long int データの変換 
-#define htonull(s)    ntohull((s))                               ///< Host形式からNetwork形式へ，64bit unsigned long long int データの変換 ntohull()
+long unsigned long int ntohull(long unsigned long int s);        ///< Network形式からHost形式へ，64bit long unsigned long int データの変換 
+#define htonull(s)    ntohull((s))                               ///< Host形式からNetwork形式へ，64bit long unsigned long int データの変換 ntohull()
 
 void    swap_byte(void* p, int s, int b);                        ///< sの長さのpのバイト順序をbバイト毎に逆順にする．
 short   swaps(unsigned short p);                                 ///< 16bit の上下8bitを入れ替える．
 int     swapl(unsigned int   p);                                 ///< 32bit pを8bitづつ逆順にする
-long long int swapd(unsigned long long int   p);                 ///< 64bit pを8bitづつ逆順にする
+long long int swapd(long unsigned long int   p);                 ///< 64bit pを8bitづつ逆順にする
 void    reverse_str(uByte* p, int s);                            ///< バイト(octet)列を逆順にする．
 void    upper_string(char* str);
 #define int_swap(p, s)     {int swap=(p); (p)=(s); (s)=swap;}    ///< データを入れ替える
@@ -334,13 +334,15 @@ char*   del_file_extension(const char* str);                            ///< フ
 char*   get_file_path(const char* str);                                 ///< ファイル名を含むパスからパスのみを生成する．strは変化しない．要 free()．
 char*   cut_file_extension(const char* str);                            ///< 拡張子を削除したフパス名を生成する．strは変化しない．要 free()．
 
-unsigned long   file_size(const char* fn);                              ///< ファイルの大きさを返す．
+long unsigned   file_size(const char* fn);                              ///< ファイルの大きさを返す．
 int             file_exist(const char* fn);                             ///< ファイルの存在を検査する．
 FILE*           file_chmod_open(const char* fn, const char* fm, mode_t mode); ///< ファイルの許可属性をmode へ変更した後，ファイルを fmモードでオープン
 char*           temp_filename(const char*, int);                        ///< /dev/urandom を利用して作業用ファイルのランダムなファイル名を得る．
 
-unsigned char*  read_file (const char* fname, unsigned long int* size);                     ///< ファイルからデータを読み込む
-long int        write_file(const char* fname, unsigned char* buf, unsigned long int size);  ///< ファイルにデータを書き込む
+unsigned char*    read_file (const char* fname, long unsigned int* size);                       ///< ファイルからデータを読み込む
+long unsigned int write_file(const char* fname, unsigned char* buf, long unsigned int size);    ///< ファイルにデータを書き込む
+
+int     mkdirp(const char* path, mode_t mode);                          ///< mkdir -p path 相当．
 
 // 乱数
 void    init_rand(void);                                                ///< /dev/urandom からデータで乱数の系列を初期化する
@@ -392,11 +394,11 @@ unsigned char*  guid2uuid(unsigned char* p);            ///< guid を uuid に�
 
 #ifndef WIN32
 // プロセス
-unsigned long int get_used_memory(void);                ///< 使用中のメモリサイズを得る．
-unsigned long int get_free_memory(void);                ///< 未使用のメモリサイズを得る．
+long unsigned int get_used_memory(void);                ///< 使用中のメモリサイズを得る．
+long unsigned int get_free_memory(void);                ///< 未使用のメモリサイズを得る．
 
 void    memory_check_start(void);
-unsigned long int  memory_check(void);
+long unsigned int  memory_check(void);
 
 void    set_sigterm_child(void (*handler)(int));        ///< child プロセス終了時の処理を設定．
 void    sigterm_child(int signal);                      ///< child プロセス終了時の処理

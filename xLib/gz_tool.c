@@ -376,4 +376,52 @@ int  gz_decode_file_replace(const char* fn, const char* tempdir)
 } 
 
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// tiny Tar
+
+void  extract_tTar(Buffer tardata, Buffer prefix, mode_t mode)
+{
+    Tar_Header  tar_header;
+
+    long unsigned int size = 0;
+    long unsigned int datalen = (long unsigned int)(tardata.vldsz - 1024);
+
+#ifdef WIN32
+    if (prefix.buf[prefix.vldsz-1]!='\\') cat_s2Buffer("\\", &prefix);
+#else
+    if (prefix.buf[prefix.vldsz-1]!='/')  cat_s2Buffer("/", &prefix);
+#endif
+    //
+    while (size < datalen) {
+        memcpy(&tar_header, (char*)&tardata.buf[size], sizeof(Tar_Header));
+        Buffer fname = make_Buffer_bystr(tar_header.name);
+        canonical_filename_Buffer(&fname, FALSE);
+        size += sizeof(Tar_Header);
+        //
+        Buffer path = dup_Buffer(prefix);
+        cat_Buffer(&fname, &path);
+        free_Buffer(&fname);
+        //
+        int ret = mkdirp((char*)path.buf, mode);
+        if (ret<0) PRINT_MESG("extract_tTar: WARNING: Failed to create directory.\n");
+        long unsigned int len = (long unsigned int)strtol(tar_header.size, NULL, 8);
+        write_file((char*)path.buf, &tardata.buf[size], len); 
+        free_Buffer(&path);
+        //
+        if (len%512>0) len = (len/512 + 1)*512;
+        size += len;
+    }
+    return;
+}
+
+
+void  extract_tTar_file(const char* fn)
+{
+    UNUSED(fn);
+
+    return;
+}
+
+
 #endif

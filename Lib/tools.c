@@ -2449,7 +2449,7 @@ char*  temp_filename(const char* dir, int flen)
 
 
 /**
-unsigned char*  read_file(const char* fname, unsigned long int* size)
+unsigned char*  read_file(const char* fname, long unsigned int* size)
 
 ファイルを読み込んで，データへのポインタを返す．
 
@@ -2457,7 +2457,7 @@ unsigned char*  read_file(const char* fname, unsigned long int* size)
 @param  size 読み込んだデータのサイズを返す．
 @return 読み込んだデータへのポインタ．
 */
-unsigned char*  read_file(const char* fname, unsigned long int* size)
+unsigned char*  read_file(const char* fname, long unsigned int* size)
 {
     size_t rs;
     UNUSED(rs);
@@ -2485,16 +2485,16 @@ unsigned char*  read_file(const char* fname, unsigned long int* size)
 
 
 /**
-long int  write_file(const char* fname, unsigned char* buf, unsigned long int size)
+unsigned long int  write_file(const char* fname, unsigned char* buf, long unsigned int size)
 
 ファイルにデータを書き込む
 
-@param  fname ファイル名．
-@param  buf 書き込むデータへのポインタ．
-@param  size 読み込んだデータのサイズを返す．
+@param   fname ファイル名．
+@param   buf  書き込むデータへのポインタ．
+@param   size 書き込むデータのサイズ．
 @return  実際に書き込んだデータサイズ
 */
-long int  write_file(const char* fname, unsigned char* buf, unsigned long int size)
+unsigned long int  write_file(const char* fname, unsigned char* buf, long unsigned int size)
 {
     if (size==0) return 0;
 
@@ -2505,6 +2505,56 @@ long int  write_file(const char* fname, unsigned char* buf, unsigned long int si
     fclose(fp);
 
     return size;
+}
+
+
+int  mkdirp(const char* path, mode_t mode)
+{
+    if (path==NULL) return JBXL_ARGS_ERROR;
+
+    long unsigned int lpath  = strlen(path);
+    char* file_name = (char*)malloc(lpath + 1);
+    memcpy(file_name, path, lpath);
+    file_name[lpath] = '\0';
+    //
+    long unsigned int size = 0;
+    int  mark = 1;
+
+    char* wrk = (char*)malloc(lpath + 1);
+    while (size < lpath) {
+        memcpy(wrk, file_name, lpath + 1);
+        int dirs = 0;
+        for (long unsigned int ptr=0; ptr<=lpath; ptr++) {
+#ifdef WIN32
+            if (wrk[ptr]=='\\') dirs++;
+#else
+            if (wrk[ptr]=='/')  dirs++;
+#endif
+            if (mark==dirs) {
+                wrk[ptr] = '\0';
+                struct stat stbuf;
+                int ret = stat(wrk, &stbuf);
+                if (ret>=0) {
+#ifdef WIN32
+                    if (!(stbuf.st_mode & _S_IFDIR)) {
+#else
+                    if (!(stbuf.st_mode & S_IFDIR)) {
+#endif
+                        return JBXL_DIR_MAKE_ERROR;
+                    }
+                    break;
+                }
+                ret = mkdir(wrk, mode);
+                if (ret<0) return JBXL_DIR_MAKE_ERROR;
+                break;
+            }
+            size = ptr;
+        }
+        mark++;
+    }
+    free(wrk);
+    
+    return JBXL_NORMAL;
 }
 
 
