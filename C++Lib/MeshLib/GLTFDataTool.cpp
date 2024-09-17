@@ -1856,17 +1856,20 @@ void  GLTFData::output_gltf(char* fn, char* out_dirn, char* tex_dirn, char* bin_
 {
     Buffer out_path = make_Buffer_bystr(out_dirn);
     cat_s2Buffer(fn, &out_path);
-    change_file_extension_Buffer(&out_path, ".gltf");
+    //change_file_extension_Buffer(&out_path, ".gltf");
+    cat_s2Buffer(".gltf", &out_path);
 
     Buffer bin_path = make_Buffer_bystr(out_dirn);
     cat_s2Buffer(bin_dirn, &bin_path);
     cat_s2Buffer(fn, &bin_path);
-    change_file_extension_Buffer(&bin_path, ".bin");
+    //change_file_extension_Buffer(&bin_path, ".bin");
+    cat_s2Buffer(".bin", &bin_path);
 
     Buffer tex_path = make_Buffer_bystr(tex_dirn);
     Buffer rel_path = make_Buffer_bystr(bin_dirn);
     cat_s2Buffer(fn, &rel_path);
-    change_file_extension_Buffer(&rel_path, ".bin");
+    //change_file_extension_Buffer(&rel_path, ".bin");
+    cat_s2Buffer(".bin", &rel_path);
 #ifdef WIN32
     replace_char(rel_path.buf, rel_path.vldsz, '\\', '/');
     replace_char(tex_path.buf, tex_path.vldsz, '\\', '/');
@@ -1931,7 +1934,8 @@ void  GLTFData::output_glb(char* fn, char* out_dirn, char* tex_dirn, char* bin_d
 
     Buffer out_path = make_Buffer_bystr(out_dirn);
     cat_s2Buffer(fn, &out_path);
-    change_file_extension_Buffer(&out_path, ".glb");
+    //change_file_extension_Buffer(&out_path, ".glb");
+    cat_s2Buffer(".glb", &out_path);
 
     Buffer tex_path = make_Buffer_bystr(out_dirn);
     cat_s2Buffer(tex_dirn, &tex_path);
