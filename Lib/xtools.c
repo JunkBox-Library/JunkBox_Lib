@@ -2078,14 +2078,10 @@ void  canonical_filename_Buffer(Buffer* fname, int no_dir)
     rewrite_Buffer_bychar(fname, ')', '_');
     rewrite_Buffer_bychar(fname, '<', '_');
     rewrite_Buffer_bychar(fname, '>', '_');
-#ifdef WIN32
-    rewrite_Buffer_bychar(fname, '/', '_');
-    if (no_dir) rewrite_Buffer_bychar(fname, '\\', '_');
-#else
-    rewrite_Buffer_bychar(fname, '\\', '_');
-    if (no_dir) rewrite_Buffer_bychar(fname, '/', '_');
-#endif
-
+    if (no_dir) {
+        rewrite_Buffer_bychar(fname, '/', '_');
+        rewrite_Buffer_bychar(fname, '\\', '_');
+    }
     return;
 }
 

@@ -45,7 +45,7 @@ void    jbxl_add_state(int id, const char* smb, const char* str);
 #define  JBXL_FILE_READ_ERROR       -21         ///< ファイル読み込みエラー
 #define  JBXL_FILE_WRITE_ERROR      -22         ///< ファイル書き込みエラー
 #define  JBXL_FILE_CLOSE_ERROR      -23         ///< ファイルのクローズエラー
-#define  JBXL_FILE_EXIST_ERROR      -24         ///< ファイルが存在しない（シンボリックリンクもダメ）
+#define  JBXL_FILE_EXIST_ERROR      -24         ///< ファイルが存在しない（シンボリックリンクもダメ）．または既に存在する．
 #define  JBXL_FILE_MAKE_ERROR       -25         ///< ファイル作成エラー
 #define  JBXL_FILE_DESTOPEN_ERROR   -26         ///< ディスティネーションファイルのオープン失敗
 

@@ -42,6 +42,8 @@ int  gz_encode_file(const char* ffn, const char* tfn);          ///< ファイ�
 int  gz_decode_file(const char* ffn, const char* tfn);          ///< ファイル名による ファイルの解凍
 int  gz_decode_file_replace(const char* fn, const char* dir);   ///< ファイル名による ファイルの解凍．ファイルを置き換える．
 
+int  is_gz_data(Buffer enc);
+
 
 
 /////////////////////////////////////////////////////

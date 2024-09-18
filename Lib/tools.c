@@ -2494,14 +2494,14 @@ unsigned long int  write_file(const char* fname, unsigned char* buf, long unsign
 @param   size 書き込むデータのサイズ．
 @return  実際に書き込んだデータサイズ
 */
-unsigned long int  write_file(const char* fname, unsigned char* buf, long unsigned int size)
+long unsigned int  write_file(const char* fname, unsigned char* buf, long unsigned int size)
 {
     if (size==0) return 0;
 
-    FILE* fp  = fopen(fname, "wb");
+    FILE* fp = fopen(fname, "wb");
     if (fp==NULL) return 0;
 
-    size = (long int)fwrite(buf, size, 1, fp);
+    size = (long unsigned int)fwrite(buf, size, 1, fp);
     fclose(fp);
 
     return size;
@@ -2512,35 +2512,30 @@ int  mkdirp(const char* path, mode_t mode)
 {
     if (path==NULL) return JBXL_ARGS_ERROR;
 
-    long unsigned int lpath  = strlen(path);
+    long unsigned int lpath  = (long unsigned int)strlen(path);
     char* file_name = (char*)malloc(lpath + 1);
     memcpy(file_name, path, lpath);
     file_name[lpath] = '\0';
     //
     long unsigned int size = 0;
     int  mark = 1;
+#ifdef WIN32
+    if (file_name[1]==':') mark = 2;    // ex.) "D:/abc/xyz"
+#endif
 
     char* wrk = (char*)malloc(lpath + 1);
     while (size < lpath) {
         memcpy(wrk, file_name, lpath + 1);
         int dirs = 0;
         for (long unsigned int ptr=0; ptr<=lpath; ptr++) {
-#ifdef WIN32
-            if (wrk[ptr]=='\\') dirs++;
-#else
             if (wrk[ptr]=='/')  dirs++;
-#endif
             if (mark==dirs) {
                 wrk[ptr] = '\0';
                 struct stat stbuf;
                 int ret = stat(wrk, &stbuf);
                 if (ret>=0) {
-#ifdef WIN32
-                    if (!(stbuf.st_mode & _S_IFDIR)) {
-#else
                     if (!(stbuf.st_mode & S_IFDIR)) {
-#endif
-                        return JBXL_DIR_MAKE_ERROR;
+                        return JBXL_FILE_EXIST_ERROR;
                     }
                     break;
                 }
@@ -2553,7 +2548,6 @@ int  mkdirp(const char* path, mode_t mode)
         mark++;
     }
     free(wrk);
-    
     return JBXL_NORMAL;
 }
 

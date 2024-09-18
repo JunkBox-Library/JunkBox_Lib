@@ -376,6 +376,16 @@ int  gz_decode_file_replace(const char* fn, const char* tempdir)
 } 
 
 
+int  is_gz_data(Buffer enc)
+{
+    if (enc.vldsz<2) return FALSE;
+
+    if (enc.buf[0]==0x1f && enc.buf[1]==0x8b) return TRUE;
+    return FALSE;
+}
+
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // tiny Tar
