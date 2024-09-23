@@ -403,25 +403,55 @@ void  extract_tTar(Buffer tardata, Buffer prefix, mode_t mode)
     if (prefix.buf[prefix.vldsz-1]!='/')  cat_s2Buffer("/", &prefix);
 #endif
     //
+    int long_link = FALSE;
+    Buffer long_link_name = init_Buffer();
+    //
     while (size < datalen) {
         memcpy(&tar_header, (char*)&tardata.buf[size], sizeof(Tar_Header));
         Buffer fname = make_Buffer_bystr(tar_header.name);
+
+        if (!long_link && (*tar_header.typeflag=='L' || *tar_header.typeflag=='K')) {
+            // GNU Long Link
+            long_link = TRUE;
+        }
+        else if (long_link) {
+            fname = dup_Buffer(long_link_name);
+            free_Buffer(&long_link_name);
+            long_link_name = init_Buffer();
+            long_link = FALSE;
+        }
+        else {
+            fname = make_Buffer_bystr(tar_header.name);
+        }
+
+        if (*tar_header.typeflag=='x') {
+            PRINT_MESG("xLib/extract_tTar: ERROR: type flag \"x\" (POSIX pax extend header) is not supported\n");
+        }
+        //
         canonical_filename_Buffer(&fname, FALSE);
         size += sizeof(Tar_Header);
         //
         Buffer path = dup_Buffer(prefix);
-        cat_Buffer(&fname, &path);
-        free_Buffer(&fname);
+        if (!long_link) {
+            cat_Buffer(&fname, &path);
+            free_Buffer(&fname);
+        }
         //
         int ret = mkdirp((char*)path.buf, mode);
-        if (ret<0) PRINT_MESG("extract_tTar: WARNING: Failed to create directory.\n");
+        if (ret<0) PRINT_MESG("xLib/extract_tTar: WARNING: Failed to create directory.\n");
         long unsigned int len = (long unsigned int)strtol(tar_header.size, NULL, 8);
-        write_file((char*)path.buf, &tardata.buf[size], len); 
+        if (long_link) {
+            long_link_name = make_Buffer_bystr(&tardata.buf[size]);
+        }
+        else {
+            write_file((char*)path.buf, &tardata.buf[size], len); 
+        }
         free_Buffer(&path);
         //
         if (len%512>0) len = (len/512 + 1)*512;
         size += len;
     }
+    free_Buffer(&long_link_name);
     return;
 }
 
