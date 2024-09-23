@@ -225,8 +225,7 @@ void  OBJData::output_mtl(char* fname, char* out_dirn, char* tex_dirn, char* mtl
     //if (phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &mtl_path);
     cat_s2Buffer(mtl_dirn, &mtl_path);
     cat_s2Buffer(fname,    &mtl_path);
-    //change_file_extension_Buffer(&mtl_path, ".mtl");
-    cat_s2Buffer(".mtl", &mtl_path);
+    change_file_extension_Buffer(&mtl_path, ".mtl");
 
     FILE* fp = fopen((char*)mtl_path.buf, "wb");
     if (fp==NULL) {
@@ -303,13 +302,11 @@ void  OBJData::output_obj(char* fname, char* out_dirn, char* tex_dirn, char* mtl
     Buffer obj_path = make_Buffer_bystr((char*)out_dirn);
     //if (phantom_out && ptm_dirn!=NULL) cat_s2Buffer(ptm_dirn, &obj_path);
     cat_s2Buffer(fname, &obj_path);
-    //change_file_extension_Buffer(&obj_path, ".obj");
-    cat_s2Buffer(".obj", &obj_path);
+    change_file_extension_Buffer(&obj_path, ".obj");
 
     Buffer mtl_path = make_Buffer_bystr(mtl_dirn);
     cat_s2Buffer(fname, &mtl_path);
-    //change_file_extension_Buffer(&mtl_path, ".mtl");
-    cat_s2Buffer(".mtl", &mtl_path);
+    change_file_extension_Buffer(&mtl_path, ".mtl");
 #ifdef WIN32
     replace_char(mtl_path.buf, mtl_path.vldsz, '\\', '/');        // for MS Windows
 #endif

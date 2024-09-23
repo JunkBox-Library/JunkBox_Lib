@@ -1182,8 +1182,7 @@ void  ColladaXML::outputFile(const char* fname, const char* path, int mode)
     if (path==NULL) out_path = make_Buffer_bystr("./");
     else            out_path = make_Buffer_bystr(path);
     cat_Buffer(&file_name, &out_path);
-    //change_file_extension_Buffer(&out_path, ".dae");
-    cat_s2Buffer(".dae", &out_path);
+    change_file_extension_Buffer(&out_path, ".dae");
     //
     FILE* fp = fopen((char*)out_path.buf, "wb");
     if (fp!=NULL) {
