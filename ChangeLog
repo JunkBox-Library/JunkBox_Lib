@@ -11,6 +11,7 @@ v1.10.1
 	add tar function at gz_tool
 	add rm_dir_rcsv() to Lib/xtool.c
 	fix comples skeleton bug for slTF, DAE
+	fix read_index_tList_fp(): 最初の区切り記号が値の中に入るバグ．
 
 
 v1.10.0 '24/09/04

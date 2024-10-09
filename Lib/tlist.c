@@ -2233,7 +2233,7 @@ tList*  read_index_tList_file(const char* fname, char deli)
 /**
 tList*  read_index_tList_fp(FILE* fp, char deli)
 
-ファイルポインタが示すファイルから一行ずつ読み込んで，deliを区切り文字にしてリストのキー部とデータ部に格納．@n
+ファイルポインタが示すファイルから一行ずつ読み込んで，最初の deliを区切り文字にしてリストのキー部とデータ部に格納．@n
 データ部に区切り記号が存在しても良い@n
 キー部とデータ部の前後の空白，TAB, CR, LF は削除する．@n
 空行はリストに加えない．#で始まる行はリストに加えない
@@ -2255,7 +2255,8 @@ tList*  read_index_tList_fp(FILE* fp, char deli)
     while (pp!=NULL) {
         fst = awk_Buffer(pp->ldat.key, deli, 1);
         //snd = awk_Buffer(pp->ldat.key, deli, 2);
-        snd = make_Buffer_bystr((char*)&(pp->ldat.key.buf[fst.vldsz]));
+        //snd = make_Buffer_bystr((char*)&(pp->ldat.key.buf[fst.vldsz]));
+        snd = make_Buffer_bystr((char*)&(pp->ldat.key.buf[fst.vldsz]) + 1);
         key = pack_Buffer(fst, ' ');
         val = pack_Buffer(snd, ' ');
         if (lt==NULL) lt = add_tList_node_byBuffer(NULL, 0, 0, key, val, NULL, 0);
