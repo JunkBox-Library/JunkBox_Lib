@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 
-AC_PREREQ(2.59)
+AC_PREREQ([2.63])
 
 AC_INIT([JunkBox_Lib],[1.10.0alpha],[fumi.hax@gmail.com],[JunkBox_Lib])
 AC_CONFIG_SRCDIR([Lib/tools.c])
