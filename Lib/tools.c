@@ -2527,7 +2527,8 @@ int  mkdirp(const char* path, mode_t mode)
     while (size < lpath) {
         memcpy(wrk, file_name, lpath + 1);
         int dirs = 0;
-        for (long unsigned int ptr=0; ptr<=lpath; ptr++) {
+        long unsigned int ptr = 0;
+        for (ptr=0; ptr<=lpath; ptr++) {
             if (wrk[ptr]=='/')  dirs++;
             if (mark==dirs) {
                 wrk[ptr] = '\0';
