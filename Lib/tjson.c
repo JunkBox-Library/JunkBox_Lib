@@ -1006,7 +1006,10 @@ void  json_copy_data(tJson* f_json, tJson* t_json)
 void  json_insert_child(tJson* parent, tJson* child)
 
 json ツリー parent に json ツリー child のノードを挿入する．
-ANCHORノードは処理しない．ANCHORが有る場合は，これを呼び出す前に処理すること．
+
+取り消し 2025/5/13
+    誤: ANCHORノードは処理しない．ANCHORが有る場合は，これを呼び出す前に処理すること．
+    正: ANCHORノードは関数内で処理する．
 
 parent が 単独の{ または 属性がOBJECTのノード の場合
    child の { は破棄されて，それ以下のノードが parent の子（姉妹）として結合される．
@@ -1020,6 +1023,8 @@ parent がそれ外の場合
 */
 tJson*  json_insert_child(tJson* parent, tJson* child)
 {
+    if (child!=NULL  && child->ldat.id ==JSON_ANCHOR_NODE) child  = child->next;
+    if (parent!=NULL && parent->ldat.id==JSON_ANCHOR_NODE) parent = parent->next;
     if (parent==NULL || child ==NULL) return NULL;
     if (parent->ldat.id!=JSON_BRACKET_NODE && parent->ldat.lv!=JSON_VALUE_OBJ && parent->ldat.id!=JSON_ARRAY_NODE) return NULL;
     if (child->ldat.id !=JSON_BRACKET_NODE) return NULL;

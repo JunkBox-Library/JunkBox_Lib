@@ -4,8 +4,12 @@
 (*) indicates the main theme of that version.
 
 rewrite configure.ac, doxygen.conf
-working now ..... v1.10.1
+working now ..... v1.10.2
 
+
+v1.10.2
+	json_insert_child() 内で ANCHOEノードを処理するように変更
+	    lticontainerspawner/ltictr_api でバグ発生のため．2025/5/13
 
 v1.10.1
 	add tar function at gz_tool
