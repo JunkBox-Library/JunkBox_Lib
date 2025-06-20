@@ -42,6 +42,7 @@ int    del_list(struct host_list* hl, struct sockaddr_in cl_addr);
 
 //アドレス,ポート情報 cl_addrを持つリストから該当hostを返す 
 struct host_list*  get_host(struct host_list* hl, struct sockaddr_in cl_addr); 
+struct host_list*  get_host_port(struct host_list* hl, struct sockaddr_in cl_addr, int port); 
 
 //全クライアントのIPアドレスとユーザ名をstderrに出力 
 int    print_list(struct host_list* hl); 
