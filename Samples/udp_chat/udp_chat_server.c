@@ -1,7 +1,6 @@
-﻿
-/*
-演習用　簡易UDP_CHATシステム サーバ v2.0.1
-                        by Fumi.Iseki '07 6/4
+﻿/*
+演習用　簡易UDP_CHATシステム サーバ v2.1.0
+                        by Fumi.Iseki '25 6/20
 
     IP & Port ベース
     改行コード \n, \r, \r\n 対応
@@ -34,7 +33,7 @@ int main(int argc, char** argv)
 
     sock = udp_server_socket(sport, NULL);
     if (sock<0) Error("udp_server_socket");
-    fprintf(stderr,"簡易UDP_CHATサーバ：ポート番号 %d で接続を待ち受けます．\n\n", sport);
+    fprintf(stdout,"簡易UDP_CHATサーバ：ポート番号 %d で接続を待ち受けます．\n\n", sport);
 
     client = make_list();
     while (1) {
@@ -57,20 +56,20 @@ int main(int argc, char** argv)
             //if (host!=NULL && host->kcode==CODE_SJIS) kanji_convert_sjis2euc((unsigned char*)rmsg);
 
             // 受信データを表示
-            fprintf(stderr, "%s: %s> %s\r\n", ipaddr, dname, rmsg);
-            fflush(stderr);
+            fprintf(stdout, "%s: %s> %s\r\n", ipaddr, dname, rmsg);
+            fflush(stdout);
 
-            command = rmsg[0];                       // コマンド部 
-            if (rmsg[1]!='\0') operand = &(rmsg[1]); // オペランド部 
+            command = rmsg[0];                       // コマンド部
+            if (rmsg[1]!='\0') operand = &(rmsg[1]); // オペランド部
             else               operand = NULL;
 
-            // 接続開始 
+            // 接続開始
             if (command=='S') {
                 if (operand!=NULL){
                     if (host==NULL) {
                         name = awk(operand, ':', 1);
                         cprt = awk(operand, ':', 2);
-                    
+
                         dname = name;
                         if (name==NULL) dname = nonname;
 
@@ -80,12 +79,18 @@ int main(int argc, char** argv)
                             free(cprt);
                         }
 
+                        // 多重ログインデータを削除
+                        struct host_list* check_host = get_host_port(client, cl_addr, rport);
+                        if (check_host!=NULL) {
+                            del_list(client, check_host->cl_addr);
+                        }
+
                         //add_list(client, dname, rport, kcode, cl_addr);
                         add_list(client, dname, rport, 0, cl_addr);
 
                         snprintf(smsg, RECVBUFSZ-1, "%s %s %s\r\n", frmserv, dname, welcome);
                         udp_send_all(sock, smsg, client);
-                        if (name!=NULL) free(name);                     
+                        if (name!=NULL) free(name);
                     }
                     else {
                         host->times = 0;
@@ -101,19 +106,21 @@ int main(int argc, char** argv)
                 udp_send_sockaddr_in(sock, smsg, 0, &cl_addr);
             }
 
-            // メッセージ転送 
+            // メッセージ転送
             else if (command=='M'){
                 if (operand!=NULL && operand[0]!='\0') {
                     host->times = -1; // すぐに +1されて 0になる．
                     snprintf(smsg, RECVBUFSZ-1, "%s: %s> %s\r\n", ipaddr, host->name, operand);
                     udp_send_all(sock, smsg, client);
                 }
-                del_host(sock, client, MAX_TIMESOUT); 
+                del_host(sock, client, MAX_TIMESOUT);
             }
 
-            // ログインメンバー名表示 
+            // ログインメンバー名表示
             else if (command=='L'){
                 cltptr = client;
+                snprintf(smsg, RECVBUFSZ-1, "%s *** ユーザリスト ***\r\n", frmserv);
+                udp_send_message(sock, smsg, host);
                 while (cltptr->np!=NULL) {
                     nextcl = cltptr->np;
                     snprintf(smsg, RECVBUFSZ-1, "%s %s\r\n", frmserv, nextcl->name);
@@ -122,7 +129,7 @@ int main(int argc, char** argv)
                 }
             }
 
-            // 受信ポート指定 
+            // 受信ポート指定
             else if (command=='P'){
                 if (operand!=NULL) {
                     rport = atoi(operand);
@@ -141,9 +148,9 @@ int main(int argc, char** argv)
                 udp_send_all(sock, smsg, client);
                 int ret = del_list(client, cl_addr);
                 while (ret==0) ret = del_list(client, cl_addr);
-            }       
+            }
 
-            // 理解できないコマンド 
+            // 理解できないコマンド
             else {
                 snprintf(smsg, RECVBUFSZ-1, "%s コマンドエラーです．%s\r\n", frmserv, rmsg);
                 udp_send_message(sock, smsg, host);
@@ -154,7 +161,7 @@ int main(int argc, char** argv)
 
 
 // アイドルクライアントの削除
-void  del_host(int sock, struct host_list* client, int max_time) 
+void  del_host(int sock, struct host_list* client, int max_time)
 {
     struct host_list* nextcl;
     struct host_list* cltptr;
@@ -167,7 +174,7 @@ void  del_host(int sock, struct host_list* client, int max_time)
         nextcl->times++;
         if (nextcl->times > max_time) {
             memset(smsg, 0, RECVBUFSZ);
-            snprintf(smsg, RECVBUFSZ-1, 
+            snprintf(smsg, RECVBUFSZ-1,
                 "%s %s さんからは一定期間入力がなかったので，接続を切断します．\r\n", frmserv, nextcl->name);
             udp_send_all(sock, smsg, client);
             cltptr->np = nextcl->np;
@@ -180,7 +187,7 @@ void  del_host(int sock, struct host_list* client, int max_time)
 }
 
 
-struct host_list* make_list(void) 
+struct host_list* make_list(void)
 {
     struct host_list* hl;
 
@@ -192,7 +199,7 @@ struct host_list* make_list(void)
 }
 
 
-int  add_list(struct host_list* hl, char* name, int rport, int kcode, struct sockaddr_in cl_addr) 
+int  add_list(struct host_list* hl, char* name, int rport, int kcode, struct sockaddr_in cl_addr)
 {
     unsigned char* p;
     unsigned char* p1;
@@ -200,16 +207,16 @@ int  add_list(struct host_list* hl, char* name, int rport, int kcode, struct soc
 
     while (hl->np!=NULL) {
 /*
-		p1 = get_ipaddr_ipv4(hl->cl_addr.sin_addr);
-		p2 = get_ipaddr_ipv4(cl_addr.sin_addr);
-		if (!strcmp(p1, p2)) {
-			struct host_list* pl = hl;
-			hl = hl->np;
-			del_list(pl, pl->cl_addr);
-		}
+                p1 = get_ipaddr_ipv4(hl->cl_addr.sin_addr);
+                p2 = get_ipaddr_ipv4(cl_addr.sin_addr);
+                if (!strcmp(p1, p2)) {
+                        struct host_list* pl = hl;
+                        hl = hl->np;
+                        del_list(pl, pl->cl_addr);
+                }
 */
-		hl = hl->np;
-	}
+                hl = hl->np;
+        }
 
     hl->np = make_list();
     hl = hl->np;
@@ -224,7 +231,7 @@ int  add_list(struct host_list* hl, char* name, int rport, int kcode, struct soc
 }
 
 
-int  del_list(struct host_list* hl, struct sockaddr_in cl_addr) 
+int  del_list(struct host_list* hl, struct sockaddr_in cl_addr)
 {
     unsigned int ip;
     unsigned short int pt;
@@ -247,7 +254,7 @@ int  del_list(struct host_list* hl, struct sockaddr_in cl_addr)
 }
 
 
-struct host_list*  get_host(struct host_list* hl, struct sockaddr_in cl_addr) 
+struct host_list*  get_host(struct host_list* hl, struct sockaddr_in cl_addr)
 {
     unsigned int ip;
     unsigned short int pt;
@@ -267,7 +274,25 @@ struct host_list*  get_host(struct host_list* hl, struct sockaddr_in cl_addr)
 }
 
 
-int  print_list(struct host_list* hl) 
+struct host_list*  get_host_port(struct host_list* hl, struct sockaddr_in cl_addr, int port)
+{
+    unsigned int ip;
+    struct host_list* nx;
+
+    ip = cl_addr.sin_addr.s_addr;   // 送信元アドレス
+
+    while (hl->np!=NULL) {
+        nx = hl->np;
+        if (ip==(nx->cl_addr).sin_addr.s_addr && port==nx->rport) break;
+        hl = nx;
+    }
+
+    if (hl->np==NULL) return NULL;
+    return nx;
+}
+
+
+int  print_list(struct host_list* hl)
 {
     unsigned char* ip;
     unsigned short int pt;
@@ -277,10 +302,10 @@ int  print_list(struct host_list* hl)
         nx = hl->np;
         ip = (unsigned char*)&((nx->cl_addr).sin_addr);
         pt = (nx->cl_addr).sin_port;
-        fprintf(stderr, "%d.%d.%d.%d:%d  %s\n",ip[0],ip[1],ip[2],ip[3], ntohs(pt), nx->name);
+        fprintf(stdout, "%d.%d.%d.%d:%d  %s\n",ip[0],ip[1],ip[2],ip[3], ntohs(pt), nx->name);
         hl = nx;
     }
-}   
+}
 
 
 void  udp_send_all(int sock, char* mesg, struct host_list* hl)
@@ -302,7 +327,7 @@ void  udp_send_message(int sock, char* mesg, struct host_list* nx)
     int len = strlen(mesg)+1;
     char* sendmesg = (char*)malloc(len);
 
-    memcpy(sendmesg, mesg, len); 
+    memcpy(sendmesg, mesg, len);
 
     memcpy((char*)&sl_addr, (char*)&(nx->cl_addr), sizeof(sl_addr));
     if (nx->rport!=0) sl_addr.sin_port = htons(nx->rport);
@@ -310,6 +335,4 @@ void  udp_send_message(int sock, char* mesg, struct host_list* nx)
     udp_send_sockaddr_in(sock, sendmesg, 0, &sl_addr);
     free(sendmesg);
 }
-
-
 
