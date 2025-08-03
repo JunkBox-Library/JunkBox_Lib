@@ -329,6 +329,105 @@ Buffer  get_DHprivatekey(EVP_PKEY* dhkey)
 }
 
 
+/**
+Buffer  get_DHsharedkey_fY(Buffer ykey, JBXL_DH* dhkey)
+
+相手の（Diffie-Hellman の）Y鍵とDH Key（自分の鍵情報）を元に共通鍵を作り出す．
+
+dhkkey には DH_generate_key(DHkey)（gen_DHspki() または gen_DHspki_fs()でも可）によって全てのパラメータ
+（P,G,Y,秘密鍵）が設定されていなければならない． 
+
+@param  ykey   相手の Y鍵（公開鍵）
+@param  dhkey  自分の DH鍵
+@return 共通鍵（バイナリ）
+
+参考：man -M /usr/local/ssl/man bn, EVP_PKEY_derive
+
+*/
+Buffer get_DHsharedkey_fY(Buffer ykey, JBXL_DH* dhkey)
+{
+    Buffer buf = init_Buffer();
+    if (dhkey == NULL || ykey.buf == NULL || ykey.vldsz <= 0) return buf;
+
+    EVP_PKEY_CTX* ctx = NULL;
+    EVP_PKEY* peerkey = NULL;
+    BIGNUM* y_bn = NULL;
+
+    // --- 相手の Y鍵から EVP_PKEY を作成 ---
+    y_bn = BN_bin2bn((const unsigned char*)ykey.buf, ykey.vldsz, NULL);
+    if (y_bn == NULL) return buf;
+
+    const BIGNUM* p_bn = NULL;
+    const BIGNUM* g_bn = NULL;
+
+    // OpenSSL 3.x 以降: dhkey は EVP_PKEY
+    EVP_PKEY_get_bn_param(dhkey, OSSL_PKEY_PARAM_P, &p_bn);
+    EVP_PKEY_get_bn_param(dhkey, OSSL_PKEY_PARAM_G, &g_bn);
+
+    if (p_bn == NULL || g_bn == NULL) {
+        BN_free(y_bn);
+        return buf;
+    }
+
+    OSSL_PARAM peer_params[] = {
+        OSSL_PARAM_BN(OSSL_PKEY_PARAM_P,       p_bn, BN_num_bytes(p_bn)),
+        OSSL_PARAM_BN(OSSL_PKEY_PARAM_G,       g_bn, BN_num_bytes(g_bn)),
+        OSSL_PARAM_BN(OSSL_PKEY_PARAM_PUB_KEY, y_bn, BN_num_bytes(y_bn)),
+        OSSL_PARAM_END
+    };
+    peerkey = JBXL_DH_new(peer_params, 1);
+
+    if (p_bn) BN_free((BIGNUM*)p_bn);
+    if (g_bn) BN_free((BIGNUM*)g_bn);
+
+    if (peerkey == NULL) {
+        BN_free(y_bn);
+        return buf;
+    }
+
+    // --- 共通鍵の導出 ---
+    ctx = EVP_PKEY_CTX_new(dhkey, NULL);
+    if (ctx == NULL) {
+        EVP_PKEY_free(peerkey);
+        return buf;
+    }
+
+    if (EVP_PKEY_derive_init(ctx) <= 0 || EVP_PKEY_derive_set_peer(ctx, peerkey) <= 0) {
+        EVP_PKEY_CTX_free(ctx);
+        EVP_PKEY_free(peerkey);
+        return buf;
+    }
+
+    size_t keylen = 0;
+    if (EVP_PKEY_derive(ctx, NULL, &keylen) <= 0) {
+        EVP_PKEY_CTX_free(ctx);
+        EVP_PKEY_free(peerkey);
+        return buf;
+    }
+
+    buf = make_Buffer((int)keylen);
+    if (buf.buf == NULL) {
+        EVP_PKEY_CTX_free(ctx);
+        EVP_PKEY_free(peerkey);
+        return buf;
+    }
+
+    if (EVP_PKEY_derive(ctx, buf.buf, &keylen) <= 0) {
+        free_Buffer(&buf);
+        buf = init_Buffer();
+    }
+    else {
+        buf.vldsz = (int)keylen;
+    }
+
+    EVP_PKEY_CTX_free(ctx);
+    EVP_PKEY_free(peerkey);
+    BN_free(y_bn);
+
+    return buf;
+}
+
+
 #else
 
 
@@ -636,7 +735,7 @@ Buffer  get_DHprivatekey(JBXL_DH* dhkey)
     Buffer pv;
  
 #if OPENSSL_VERSION_NUMBER >= 0x10101000L
-    const BIGNUM* priv_key = DH_get0_pub_key(dhkey);
+    const BIGNUM* priv_key = DH_get0_priv_key(dhkey);
     sz = BN_num_bytes(priv_key);
 #else
     sz = BN_num_bytes(dhkey->priv_key);
@@ -652,6 +751,50 @@ Buffer  get_DHprivatekey(JBXL_DH* dhkey)
 #endif
 
     return pv;
+}
+
+
+/**
+Buffer  get_DHsharedkey_fY(Buffer ykey, JBXL_DH* dhkey)
+
+相手の（Diffie-Hellman の）Y鍵と自分の DH 鍵から共通鍵を生成する。
+
+@param  ykey   相手の Y鍵（公開鍵）
+@param  dhkey  自分の DH鍵（P, G, priv_key が設定されている必要あり）
+@return 共通鍵（バイナリ形式の Buffer）
+*/
+Buffer get_DHsharedkey_fY(Buffer ykey, JBXL_DH* dhkey)
+{
+    int sz;
+    Buffer buf;
+
+    buf = init_Buffer();
+    if (dhkey == NULL || ykey.buf == NULL || ykey.vldsz <= 0) return buf;
+
+    // 相手の公開鍵 Y を BIGNUM に変換
+    BIGNUM* yk = BN_bin2bn((const unsigned char*)(ykey.buf), ykey.vldsz, NULL);
+    if (yk == NULL) return buf;
+
+    // 共通鍵のサイズを確保（DH_size は出力バイト数）
+    sz = DH_size(dhkey);
+    buf = make_Buffer(sz);
+    if (buf.buf == NULL) {
+        BN_free(yk);
+        return init_Buffer();
+    }
+
+    // 共通鍵を計算
+    buf.vldsz = DH_compute_key(buf.buf, yk, dhkey);
+
+    BN_free(yk);
+
+    // エラー時は解放して空のバッファを返す
+    if (buf.vldsz <= 0) {
+        free_Buffer(&buf);
+        return init_Buffer();
+    }
+
+    return buf;
 }
 
 
@@ -792,39 +935,6 @@ Buffer get_DHsharedkey(Buffer pki, JBXL_DH* dhkey)
     
     free_Buffer(&ykey);
     return skey;
-}
-
-
-/**
-Buffer  get_DHsharedkey_fY(Buffer ykey, JBXL_DH* dhkey)
-
-相手の（Diffie-Hellman の）Y鍵とDH Key（自分の鍵情報）を元に共通鍵を作り出す．
-
-dhkkey には DH_generate_key(DHkey)（gen_DHspki() または gen_DHspki_fs()でも可）によって全てのパラメータ
-（P,G,Y,秘密鍵）が設定されていなければならない． 
-
-@param  ykey   相手の Y鍵（公開鍵）
-@param  dhkey  自分の DH鍵
-@return 共通鍵（バイナリ）
-
-参考：man -M /usr/local/ssl/man bn
-*/
-Buffer  get_DHsharedkey_fY(Buffer ykey, JBXL_DH* dhkey)
-{
-    int sz;
-    Buffer  buf;
-
-    buf = init_Buffer();
-    if (dhkey==NULL) return buf;
-
-    BIGNUM* yk = BN_bin2bn((const unsigned char*)(ykey.buf), ykey.vldsz, NULL);
-
-    sz  = JBXL_DH_size(dhkey);
-    buf = make_Buffer(sz);
-    buf.vldsz = sz;
-
-    BN_free(yk);
-    return buf;
 }
 
 
