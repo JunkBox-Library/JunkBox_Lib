@@ -8,6 +8,7 @@ working now ..... v1.10.2
 
 
 v1.10.2
+	for openssl v3.x  xLib/dh_tool.c, xLib/dh_tool.h  202.5/8/4
 	json_insert_child() 内で ANCHOEノードを処理するように変更
 	    lticontainerspawner/ltictr_api でバグ発生のため．2025/5/13
 

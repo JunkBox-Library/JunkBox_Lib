@@ -40,13 +40,15 @@ for use in the OpenSSL Toolkit. (http://www.openssl.org/)
 #include <openssl/ssl.h>
 #include <openssl/evp.h>
 #include <openssl/rand.h>
+
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
 #include <openssl/core_names.h>
+#endif
 
 
 #ifdef  WIN32
 #pragma  comment(lib, "openssl.lib")
 #endif
-
 
 #if OPENSSL_VERSION_NUMBER >= 0x30000000L
     EVP_PKEY* JBXL_DH_new(OSSL_PARAM* params, int ks);
@@ -69,7 +71,7 @@ Buffer   read_DHspki_with_private(FILE* fp, JBXL_DH** p_dhkey);
 Buffer   get_DHspki_ff(char* fn, int sz, JBXL_DH** p_dhkey);
 #define  get_DHspki_file(p, s, d)    get_DHspki_ff((p), (s), (d))
 
-Buffer   gen_DHspki(int ks, EVP_PKEY** p_dhkey);
+Buffer   gen_DHspki(int ks, JBXL_DH** p_dhkey);
 Buffer   gen_DHspki_fs(Buffer pki, JBXL_DH** p_dhkey);
 
 Buffer   get_DHsharedkey   (Buffer pki,  JBXL_DH* dhkey);
