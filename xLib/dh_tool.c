@@ -143,7 +143,7 @@ Buffer  gen_DHspki(int ks, EVP_PKEY** p_dhkey)
     if (ks<=0) ks = 2048;
 
     //DEBUG_MODE PRINT_MESG("Load /dev/urandom.\n");
-    if (!RAND_load_file("/dev/urandom", 1024)) return pk;
+    //if (!RAND_load_file("/dev/urandom", 1024)) return pk;
 
     //DEBUG_MODE PRINT_MESG("Generate parameters.\n");
     *p_dhkey = JBXL_DH_new(NULL, ks);
@@ -202,12 +202,11 @@ Buffer  gen_DHspki_fs(Buffer pki, EVP_PKEY** p_dhkey)
     BIGNUM* dhp_bn = BN_bin2bn((const unsigned char*)(pkey.buf), pkey.vldsz, NULL);
     BIGNUM* dhg_bn = BN_bin2bn((const unsigned char*)(gkey.buf), gkey.vldsz, NULL);
     //
-    free_Buffer(&pkey);
-    free_Buffer(&gkey);
-
-    if (dhp_bn == NULL || dhg_bn == NULL) {
-        BN_free(dhp_bn);
-        BN_free(dhg_bn);
+    if (dhp_bn==NULL || dhg_bn==NULL) {
+        free_Buffer(&pkey);
+        free_Buffer(&gkey);
+        if (dhp_bn!=NULL) BN_free(dhp_bn);
+        if (dhg_bn!=NULL) BN_free(dhg_bn);
         return pk;
     }
 
@@ -218,6 +217,8 @@ Buffer  gen_DHspki_fs(Buffer pki, EVP_PKEY** p_dhkey)
     };
     *p_dhkey = JBXL_DH_new(params, 1);
 
+    free_Buffer(&pkey);
+    free_Buffer(&gkey);
     BN_free(dhp_bn);
     BN_free(dhg_bn); 
     //
@@ -266,14 +267,13 @@ Buffer  read_DHspki_with_private(FILE* fp, EVP_PKEY** p_dhkey)
     BIGNUM* dhg_bn = BN_bin2bn((const unsigned char*)(gk.buf), gk.vldsz, NULL);
     BIGNUM* dhy_bn = BN_bin2bn((const unsigned char*)(yk.buf), yk.vldsz, NULL);
 
-    free_Buffer(&pk);
-    free_Buffer(&gk);
-    free_Buffer(&yk);
-
     // Private KEY の読み込み
     md = JBXL_FIO_PRIV_KEY | JBXL_FIO_ORIGINAL;
     pv = read_tagged_Buffer(fp, &md);
     if (pv.buf==NULL) {
+        free_Buffer(&pk);
+        free_Buffer(&gk);
+        free_Buffer(&yk);
         if (*p_dhkey!=NULL) JBXL_DH_free(*p_dhkey);
         free_Buffer(&pp);
         return pp;
@@ -289,6 +289,10 @@ Buffer  read_DHspki_with_private(FILE* fp, EVP_PKEY** p_dhkey)
         OSSL_PARAM_END
     };
     *p_dhkey = JBXL_DH_new(params, 1);
+
+    free_Buffer(&pk);
+    free_Buffer(&gk);
+    free_Buffer(&yk);
 
     if (dhp_bn!=NULL) BN_free(dhp_bn);
     if (dhg_bn!=NULL) BN_free(dhg_bn);
@@ -342,7 +346,6 @@ dhkkey には DH_generate_key(DHkey)（gen_DHspki() または gen_DHspki_fs()で
 @return 共通鍵（バイナリ）
 
 参考：man -M /usr/local/ssl/man bn, EVP_PKEY_derive
-
 */
 Buffer get_DHsharedkey_fY(Buffer ykey, JBXL_DH* dhkey)
 {
@@ -351,41 +354,41 @@ Buffer get_DHsharedkey_fY(Buffer ykey, JBXL_DH* dhkey)
 
     EVP_PKEY_CTX* ctx = NULL;
     EVP_PKEY* peerkey = NULL;
-    BIGNUM* y_bn = NULL;
+    BIGNUM*   dhy_bn  = NULL;
 
-    // --- 相手の Y鍵から EVP_PKEY を作成 ---
-    y_bn = BN_bin2bn((const unsigned char*)ykey.buf, ykey.vldsz, NULL);
-    if (y_bn == NULL) return buf;
+    // 相手の Y鍵から EVP_PKEY を作成
+    dhy_bn = BN_bin2bn((const unsigned char*)ykey.buf, ykey.vldsz, NULL);
+    if (dhy_bn == NULL) return buf;
 
-    const BIGNUM* p_bn = NULL;
-    const BIGNUM* g_bn = NULL;
+    BIGNUM* dhp_bn = NULL;
+    BIGNUM* dhg_bn = NULL;
 
-    // OpenSSL 3.x 以降: dhkey は EVP_PKEY
-    EVP_PKEY_get_bn_param(dhkey, OSSL_PKEY_PARAM_P, &p_bn);
-    EVP_PKEY_get_bn_param(dhkey, OSSL_PKEY_PARAM_G, &g_bn);
+    EVP_PKEY_get_bn_param(dhkey, OSSL_PKEY_PARAM_FFC_P, &dhp_bn);
+    EVP_PKEY_get_bn_param(dhkey, OSSL_PKEY_PARAM_FFC_G, &dhg_bn);
 
-    if (p_bn == NULL || g_bn == NULL) {
-        BN_free(y_bn);
+    if (dhp_bn==NULL || dhg_bn==NULL) {
+        if (dhp_bn!=NULL) BN_free(dhp_bn);
+        if (dhg_bn!=NULL) BN_free(dhg_bn);
+        BN_free(dhy_bn);
         return buf;
     }
 
     OSSL_PARAM peer_params[] = {
-        OSSL_PARAM_BN(OSSL_PKEY_PARAM_P,       p_bn, BN_num_bytes(p_bn)),
-        OSSL_PARAM_BN(OSSL_PKEY_PARAM_G,       g_bn, BN_num_bytes(g_bn)),
-        OSSL_PARAM_BN(OSSL_PKEY_PARAM_PUB_KEY, y_bn, BN_num_bytes(y_bn)),
+        OSSL_PARAM_BN(OSSL_PKEY_PARAM_FFC_P,   dhp_bn, BN_num_bytes(dhp_bn)),
+        OSSL_PARAM_BN(OSSL_PKEY_PARAM_FFC_G,   dhg_bn, BN_num_bytes(dhg_bn)),
+        OSSL_PARAM_BN(OSSL_PKEY_PARAM_PUB_KEY, dhy_bn, BN_num_bytes(dhy_bn)),
         OSSL_PARAM_END
     };
     peerkey = JBXL_DH_new(peer_params, 1);
 
-    if (p_bn) BN_free((BIGNUM*)p_bn);
-    if (g_bn) BN_free((BIGNUM*)g_bn);
+    BN_free(dhp_bn);
+    BN_free(dhg_bn);
 
     if (peerkey == NULL) {
-        BN_free(y_bn);
+        BN_free(dhy_bn);
         return buf;
     }
 
-    // --- 共通鍵の導出 ---
     ctx = EVP_PKEY_CTX_new(dhkey, NULL);
     if (ctx == NULL) {
         EVP_PKEY_free(peerkey);
@@ -398,31 +401,31 @@ Buffer get_DHsharedkey_fY(Buffer ykey, JBXL_DH* dhkey)
         return buf;
     }
 
-    size_t keylen = 0;
-    if (EVP_PKEY_derive(ctx, NULL, &keylen) <= 0) {
+    size_t sz = 0;
+    if (EVP_PKEY_derive(ctx, NULL, &sz) <= 0) {
         EVP_PKEY_CTX_free(ctx);
         EVP_PKEY_free(peerkey);
         return buf;
     }
 
-    buf = make_Buffer((int)keylen);
+    buf = make_Buffer((int)sz);
     if (buf.buf == NULL) {
         EVP_PKEY_CTX_free(ctx);
         EVP_PKEY_free(peerkey);
         return buf;
     }
 
-    if (EVP_PKEY_derive(ctx, buf.buf, &keylen) <= 0) {
+    if (EVP_PKEY_derive(ctx, buf.buf, &sz) <= 0) {
         free_Buffer(&buf);
         buf = init_Buffer();
     }
     else {
-        buf.vldsz = (int)keylen;
+        buf.vldsz = (int)sz;
     }
 
     EVP_PKEY_CTX_free(ctx);
     EVP_PKEY_free(peerkey);
-    BN_free(y_bn);
+    BN_free(dhy_bn);
 
     return buf;
 }
@@ -757,11 +760,14 @@ Buffer  get_DHprivatekey(JBXL_DH* dhkey)
 /**
 Buffer  get_DHsharedkey_fY(Buffer ykey, JBXL_DH* dhkey)
 
-相手の（Diffie-Hellman の）Y鍵と自分の DH 鍵から共通鍵を生成する。
+dhkkey には DH_generate_key(DHkey)（gen_DHspki() または gen_DHspki_fs()でも可）によって全てのパラメータ
+（P,G,Y,秘密鍵）が設定されていなければならない． 
 
 @param  ykey   相手の Y鍵（公開鍵）
 @param  dhkey  自分の DH鍵（P, G, priv_key が設定されている必要あり）
 @return 共通鍵（バイナリ形式の Buffer）
+
+参考：man -M /usr/local/ssl/man bn, EVP_PKEY_derive
 */
 Buffer get_DHsharedkey_fY(Buffer ykey, JBXL_DH* dhkey)
 {
@@ -776,7 +782,7 @@ Buffer get_DHsharedkey_fY(Buffer ykey, JBXL_DH* dhkey)
     if (yk == NULL) return buf;
 
     // 共通鍵のサイズを確保（DH_size は出力バイト数）
-    sz = DH_size(dhkey);
+    sz = JBXL_DH_size(dhkey);
     buf = make_Buffer(sz);
     if (buf.buf == NULL) {
         BN_free(yk);

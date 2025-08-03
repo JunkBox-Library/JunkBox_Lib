@@ -55,11 +55,11 @@ for use in the OpenSSL Toolkit. (http://www.openssl.org/)
 
     #define  JBXL_DH            EVP_PKEY
     #define  JBXL_DH_free(p)    EVP_PKEY_free((p))
-    #define  JBXL_DH_size(p)    EVP_PKEY_get_size((p));
+    #define  JBXL_DH_size(p)    EVP_PKEY_get_size((p))
 #else 
     #define  JBXL_DH            DH
     #define  JBXL_DH_free(p)    DH_free((p))
-    #define  JBXL_DH_size(p)    DH_size((p));
+    #define  JBXL_DH_size(p)    DH_size((p))
 #endif
 
 
