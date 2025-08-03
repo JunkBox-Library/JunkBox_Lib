@@ -29,15 +29,15 @@ for use in the OpenSSL Toolkit. (http://www.openssl.org/)
 #ifdef ENABLE_SSL
 
 
-//Buffer* Base64_DHspki  = NULL;
-//Buffer* Base64_RSAspki = NULL;
+//Buffer*  Base64_DHspki  = NULL;
+//Buffer*  Base64_RSAspki = NULL;
 
-//Buffer* CRYPT_SharedKey        = NULL;
-//const   EVP_CIPHER* CRYPT_Type = NULL;
-//DH*     DHkey                  = NULL;
+//Buffer*  CRYPT_SharedKey        = NULL;
+//const    EVP_CIPHER* CRYPT_Type = NULL;
+//JBXL_DH* DHkey                  = NULL;
 
-//int     KEYEX_Algorism = 0;
-//int     CRYPT_Algorism = 0;
+//int      KEYEX_Algorism = 0;
+//int      CRYPT_Algorism = 0;
 
 
 /*
@@ -79,21 +79,21 @@ ptr = (void*)dhkey @n
 @param  keyex   鍵交換アルゴリズム．現在サポートしているのは SSL_DH のみ．
 @param  spki    相手の SPKI 
 @param  shdkey  生成された共有鍵
-@param  ptr     付加情報（SSL_DHの場合は DH* ptr）
+@param  ptr     付加情報（SSL_DHの場合は JBXL_DH* ptr）
 
 @retval TRUE   成功
 @retval FALSE  失敗
 
 @see DH_generate_key()
 */
-//Buffer   get_DHsharedkey   (Buffer pki,  DH* dhkey);        // see dh_tools.c
+//Buffer   get_DHsharedkey   (Buffer pki,  JBXL_DH* dhkey);        // see dh_tools.c
 
 int  gen_CRYPT_SharedKey(int keyex, Buffer spki, Buffer* shdkey, void* ptr)
 {
     if (spki.buf==NULL || shdkey==NULL)  return FALSE;
 
     if (keyex==SSL_DH)  {
-        DH* dhkey = (DH*)ptr;
+        JBXL_DH* dhkey = (JBXL_DH*)ptr;
         *shdkey = get_DHsharedkey(spki, dhkey);     // 共有鍵を得る
     }
     else if (keyex==SSL_RSA) {                      // 未実装

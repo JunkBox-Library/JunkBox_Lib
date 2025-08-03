@@ -36,55 +36,514 @@ see https://github.com/eugen15/diffie-hellman-cpp
 */
 
 
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  Diffie-Hellman 鍵交換法
+//  Diffie-Hellman 鍵交換法 
+//     OpenSSL v3.x
 //
 
 /**
-int  save_DHspki_with_private(Buffer pki, FILE* fp)
+EVP_PKEY*  JBXL_DH_new(OSSL_PARAM* params, int mode)
 
-Diffie-Hellman の公開鍵情報（X.509の SubjectPublicKeyInfo）pkiとプライベート鍵
-(dhkeyより取得)をファイルに保存する．公開鍵情報，プライベート鍵の順で書き込まれる．
-既にファイルが存在する場合，その内容は上書きされる．
+DH Key の生成．for OpenSSL3
 
-@param  pki   保存する鍵情報（DER）．
-@param  fp    ファイルポインタ 
-@param  dhkey DH鍵．
-
-@retval TRUE  成功．
-@retval FALSE 失敗．ファイルの内容は保証されない．
+@param  params  DHの鍵パラメータ.
+@param  mode    モード(0: from parameters, 1: from data)．params==NULLの場合は 鍵長(Bit)．512/1024/2048 を指定．
+@return EVP_PLEY へのポインタ．
 */
-int  save_DHspki_with_private(Buffer pki, FILE* fp, DH* dhkey)
-{    
-    unsigned int  md;
-    Buffer pv;
+EVP_PKEY*  JBXL_DH_new(OSSL_PARAM* params, int mode)
+{
+    EVP_PKEY *dhkey  = NULL;
+    EVP_PKEY *param_key = NULL;
 
-    if (fp==NULL || dhkey==NULL) return FALSE;
+    EVP_PKEY_CTX* ctx = NULL;
 
-    md = JBXL_FIO_SPKI | JBXL_FIO_ORIGINAL;
-    if (!save_tagged_Buffer(pki, fp, md, FALSE)) return FALSE;
+    if (params!=NULL &&  mode>0) {  // params!=NULL, mode>0
+        ctx = EVP_PKEY_CTX_new_from_name(NULL, "DH", NULL);
+        if (!ctx) return NULL; 
 
-    pv = get_DHprivatekey(dhkey);
-    if (pv.buf==NULL) return FALSE;
+        if (EVP_PKEY_fromdata_init(ctx) <= 0) {
+            EVP_PKEY_CTX_free(ctx);
+            return NULL;
+        }
 
-    md = JBXL_FIO_PRIV_KEY | JBXL_FIO_ORIGINAL;
-    if (!save_tagged_Buffer(pv,  fp, md, FALSE)) return FALSE;
-    free_Buffer(&pv);
+        if (EVP_PKEY_fromdata(ctx, &dhkey, EVP_PKEY_KEYPAIR, params) <= 0) {
+            dhkey = NULL;
+        }
+    }
 
-    return  TRUE;
+    else {
+        ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_DH, NULL);
+        if (!ctx) return NULL;
+
+        if (EVP_PKEY_paramgen_init(ctx) <= 0) {
+            EVP_PKEY_CTX_free(ctx);
+            return NULL;
+        }
+
+        if (params==NULL) {         // params==NULL, mode==0/512/1024/2048
+            if (mode!=512 && mode!=1024) mode = 2048;
+            if (EVP_PKEY_CTX_set_dh_paramgen_prime_len(ctx, mode) <= 0) {
+                EVP_PKEY_CTX_free(ctx);
+                return NULL;
+            }
+        }
+        else {                      // params!=NULL, mode==0
+            if (EVP_PKEY_CTX_set_params(ctx, params) <= 0) {
+                EVP_PKEY_CTX_free(ctx);
+                return NULL;
+            }
+        }
+
+        if (EVP_PKEY_paramgen(ctx, &param_key) <= 0) {
+            EVP_PKEY_CTX_free(ctx);
+            return NULL;
+        }
+        EVP_PKEY_CTX_free(ctx);
+
+        EVP_PKEY_CTX *key_ctx = EVP_PKEY_CTX_new(param_key, NULL);
+        if (!key_ctx) {
+            EVP_PKEY_free(param_key);
+            return NULL;
+        }
+
+        if (EVP_PKEY_keygen_init(key_ctx) <= 0 || EVP_PKEY_keygen(key_ctx, &dhkey) <= 0) {
+            dhkey = NULL;
+        }
+
+        EVP_PKEY_CTX_free(key_ctx);
+        EVP_PKEY_free(param_key);
+    }
+
+    return dhkey;
 }
 
 
 /**
-Buffer  read_DHspki_with_private(FILE* fp, DH** p_dhkey)
+Buffer  gen_DHspki(int ks, EVP_PKEY** p_dhkey)
+
+Diffie-Hellman の鍵を生成し,公開鍵の完全な情報（X.509の SubjectPublicKeyInfo）のDER形式で返す．@n
+p_dhkey に DHの鍵パラメータが返る．
+
+for OpenSSL3
+
+@param  ks      鍵長(Bit)．512/1024/2048 を指定．
+@param  p_dhkey DHの鍵パラメータが返る．要 EVP_PKEY_free().
+@return DER形式の公開鍵情報．
+*/
+Buffer  gen_DHspki(int ks, EVP_PKEY** p_dhkey)
+{
+    int    sz;
+    Buffer pk;
+
+    pk = init_Buffer();
+    if (p_dhkey==NULL) return pk;
+    if (*p_dhkey!=NULL) EVP_PKEY_free(*p_dhkey);
+    if (ks<=0) ks = 2048;
+
+    //DEBUG_MODE PRINT_MESG("Load /dev/urandom.\n");
+    if (!RAND_load_file("/dev/urandom", 1024)) return pk;
+
+    //DEBUG_MODE PRINT_MESG("Generate parameters.\n");
+    *p_dhkey = JBXL_DH_new(NULL, ks);
+    if (*p_dhkey==NULL) {
+        return pk;
+    }
+
+    //DEBUG_MODE PRINT_MESG("Check key size.\n");
+    sz = i2d_PUBKEY(*p_dhkey, NULL);
+    if (sz<=0) {
+        EVP_PKEY_free(*p_dhkey);
+        *p_dhkey = NULL;
+        return pk;
+    }
+    pk = make_Buffer(sz);                      // パラメタを入れるメモリを確保 
+
+    unsigned char *p = pk.buf;
+    pk.vldsz = i2d_PUBKEY(*p_dhkey, &p);
+
+    return pk;
+}
+
+
+/**
+Buffer  gen_DHspki_fs(Buffer pki, EVP_PKEY** p_dhkey)
+
+Generate DH SPKI from Server's SPKI.
+
+サーバの公開鍵の情報（X.509の SubjectPublicKeyInfo, DER形式）の中の P,G鍵から
+自分の公開鍵情報（X.509 SPKI, DER形式）を作り出す．@n
+
+@param  pki     相手の公開鍵情報（DER形式）
+@param  p_dhkey DHの鍵パラメータが返る．要 JBXL_DH_free().
+@return 自分の公開鍵の情報（X.509の SubjectPublicKeyInfo, DER形式）
+*/
+Buffer  gen_DHspki_fs(Buffer pki, EVP_PKEY** p_dhkey)
+{
+    Buffer pk;
+    Buffer pkey, gkey;
+
+    //
+    pk = init_Buffer();
+    if (p_dhkey==NULL) return pk;
+    if (*p_dhkey != NULL) EVP_PKEY_free(*p_dhkey);
+
+    pkey = get_DHPkey(pki);
+    gkey = get_DHGkey(pki);
+    if (pkey.buf==NULL || gkey.buf==NULL) {
+        free_Buffer(&pkey);
+        free_Buffer(&gkey);
+        JBXL_DH_free(*p_dhkey);
+        *p_dhkey = NULL;
+        return pk;
+    }
+
+    BIGNUM* dhp_bn = BN_bin2bn((const unsigned char*)(pkey.buf), pkey.vldsz, NULL);
+    BIGNUM* dhg_bn = BN_bin2bn((const unsigned char*)(gkey.buf), gkey.vldsz, NULL);
+    //
+    free_Buffer(&pkey);
+    free_Buffer(&gkey);
+
+    if (dhp_bn == NULL || dhg_bn == NULL) {
+        BN_free(dhp_bn);
+        BN_free(dhg_bn);
+        return pk;
+    }
+
+    OSSL_PARAM params[] = {
+        OSSL_PARAM_BN(OSSL_PKEY_PARAM_FFC_P, dhp_bn, BN_num_bytes(dhp_bn)),
+        OSSL_PARAM_BN(OSSL_PKEY_PARAM_FFC_G, dhg_bn, BN_num_bytes(dhg_bn)),
+        OSSL_PARAM_END
+    };
+    *p_dhkey = JBXL_DH_new(params, 1);
+
+    BN_free(dhp_bn);
+    BN_free(dhg_bn); 
+    //
+    
+    int sz = i2d_PUBKEY(*p_dhkey, NULL);
+    pk = make_Buffer(sz);                          // パラメタを入れるメモリを確保 
+    if (pk.buf==NULL) {
+        JBXL_DH_free(*p_dhkey);
+        *p_dhkey = NULL;
+        return pk;
+    }
+    unsigned char* p = pk.buf;
+    pk.vldsz = i2d_PUBKEY(*p_dhkey, &p);
+
+    return pk;
+}
+
+
+/**
+Buffer  read_DHspki_with_private(FILE* fp, EVP_PKEY** p_dhkey)
 
 Diffie-Hellman の公開鍵情報（X.509の SubjectPublicKeyInfo）とプライペート鍵をファイルから読み込む．
 
 @param  fp      ファイルポインタ 
-@param  p_dhkey DHの鍵パラメータが返る．要 DH_free().
+@param  p_dhkey DHの鍵パラメータが返る．要 JBXL_DH_free(). OpenSSL3 の場合は EVP_PKEY**
 @return 読み込んだ鍵情報．
 */
-Buffer  read_DHspki_with_private(FILE* fp, DH** p_dhkey)
+Buffer  read_DHspki_with_private(FILE* fp, EVP_PKEY** p_dhkey)
+{
+    unsigned int  md;
+    Buffer  pp, pv, pk, gk, yk;
+
+    pp = init_Buffer();
+    if (fp==NULL) return pp;
+    if (*p_dhkey!=NULL) JBXL_DH_free(*p_dhkey);
+
+    md = JBXL_FIO_SPKI | JBXL_FIO_ORIGINAL;
+    pp = read_tagged_Buffer(fp, &md);
+    if (pp.buf==NULL) return pp;
+
+    pk = get_DHPkey(pp);
+    gk = get_DHGkey(pp);
+    yk = get_DHYkey(pp);
+
+    BIGNUM* dhp_bn = BN_bin2bn((const unsigned char*)(pk.buf), pk.vldsz, NULL);
+    BIGNUM* dhg_bn = BN_bin2bn((const unsigned char*)(gk.buf), gk.vldsz, NULL);
+    BIGNUM* dhy_bn = BN_bin2bn((const unsigned char*)(yk.buf), yk.vldsz, NULL);
+
+    free_Buffer(&pk);
+    free_Buffer(&gk);
+    free_Buffer(&yk);
+
+    // Private KEY の読み込み
+    md = JBXL_FIO_PRIV_KEY | JBXL_FIO_ORIGINAL;
+    pv = read_tagged_Buffer(fp, &md);
+    if (pv.buf==NULL) {
+        if (*p_dhkey!=NULL) JBXL_DH_free(*p_dhkey);
+        free_Buffer(&pp);
+        return pp;
+    }
+    BIGNUM* prv_bn = BN_bin2bn((const unsigned char*)(pv.buf), pv.vldsz, NULL);
+    free_Buffer(&pv);
+
+    OSSL_PARAM params[] = {
+        OSSL_PARAM_BN(OSSL_PKEY_PARAM_FFC_P,    dhp_bn, BN_num_bytes(dhp_bn)),
+        OSSL_PARAM_BN(OSSL_PKEY_PARAM_FFC_G,    dhg_bn, BN_num_bytes(dhg_bn)),
+        OSSL_PARAM_BN(OSSL_PKEY_PARAM_PUB_KEY,  dhy_bn, BN_num_bytes(dhy_bn)),
+        OSSL_PARAM_BN(OSSL_PKEY_PARAM_PRIV_KEY, prv_bn, BN_num_bytes(prv_bn)),
+        OSSL_PARAM_END
+    };
+    *p_dhkey = JBXL_DH_new(params, 1);
+
+    if (dhp_bn!=NULL) BN_free(dhp_bn);
+    if (dhg_bn!=NULL) BN_free(dhg_bn);
+    if (dhy_bn!=NULL) BN_free(dhy_bn);
+    if (prv_bn!=NULL) BN_free(prv_bn);
+
+    return  pp;
+}
+
+
+/**
+Buffer  get_DHprivatekey(EVP_PKEY* dhkey)
+
+DH鍵 dh からプライベート鍵を取り出して返す．
+
+@param  dhkey  DH鍵．
+@return プライベート鍵
+*/
+Buffer  get_DHprivatekey(EVP_PKEY* dhkey)
+{
+    Buffer pv = init_Buffer();
+    BIGNUM* priv_key = NULL;
+
+    if (dhkey == NULL) return pv;
+
+    if (EVP_PKEY_get_bn_param(dhkey, OSSL_PKEY_PARAM_PRIV_KEY, &priv_key) <= 0 || priv_key == NULL) {
+        return pv;
+    }
+
+    int sz = BN_num_bytes(priv_key);
+    pv = make_Buffer(sz);
+    if (pv.buf != NULL) {
+        pv.vldsz = BN_bn2bin(priv_key, pv.buf);
+    }
+
+    BN_free(priv_key);
+    return pv;
+}
+
+
+#else
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Diffie-Hellman 鍵交換法 
+//     OpenSSL v1.x
+//
+
+/**
+Buffer  gen_DHspki(int ks, JBXL_DH** p_dhkey)
+
+Diffie-Hellman の鍵を生成し,公開鍵の完全な情報（X.509の SubjectPublicKeyInfo）のDER形式で返す．@n
+p_dhkey に DHの鍵パラメータが返る．
+
+@param  ks      鍵長(Bit)．512/1024/2048 を指定．
+@param  p_dhkey DHの鍵パラメータが返る．要 JBXL_DH_free().
+@return DER形式の公開鍵情報．
+*/
+Buffer  gen_DHspki(int ks, JBXL_DH** p_dhkey)
+{
+    int  sz, n, code;
+    Buffer px, pp, pk;
+
+    pk = init_Buffer();
+    if (p_dhkey==NULL) return pk;
+    if (ks<=0) ks = 2048;
+
+    //if (!RAND_load_file("/dev/random", 1024)) return pk;
+    //DEBUG_MODE PRINT_MESG("Load /dev/urandom.\n");
+    if (!RAND_load_file("/dev/urandom", 1024)) return pk;
+
+    //DEBUG_MODE PRINT_MESG("Generate parameters.\n");
+    do {
+        if (*p_dhkey!=NULL) JBXL_DH_free(*p_dhkey);
+        *p_dhkey = DH_new();
+
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+        n = DH_generate_parameters_ex(*p_dhkey, ks, DH_GENERATOR_2, NULL);
+#else
+        *p_dhkey = DH_generate_parameters(ks, DH_GENERATOR_2, NULL, NULL);
+#endif
+        n = DH_check(*p_dhkey, &code);
+    } while (n!=1 || code!=0);
+
+    //DEBUG_MODE PRINT_MESG("Generate key.\n");
+    sz = DH_generate_key(*p_dhkey);                 // 公開鍵(DH->pub_key)と秘密鍵(DH->priv_key)の生成
+    if (sz==0) {
+        JBXL_DH_free(*p_dhkey);
+        *p_dhkey = NULL;
+        return pk;
+    }
+
+    //DEBUG_MODE PRINT_MESG("Check key size.\n");
+    sz = i2d_DHparams(*p_dhkey, NULL);              // パラメタのサイズを検査 
+    pp = px = make_Buffer(sz);                      // パラメタを入れるメモリを確保 
+    if (pp.buf==NULL) {
+        JBXL_DH_free(*p_dhkey);
+        *p_dhkey = NULL;
+        return pk;
+    }
+    pp.vldsz = i2d_DHparams(*p_dhkey, &(px.buf));   // パラメタ(P,G鍵)を DER形式へ．pp.bufに格納． 
+                                                    // px.bufは破壊される．
+
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+    const BIGNUM* pub_key = DH_get0_pub_key(*p_dhkey);
+    sz = BN_num_bytes(pub_key);
+#else
+    sz = BN_num_bytes((*p_dhkey)->pub_key);
+#endif
+
+    px = make_Buffer(sz);
+    if (px.buf==NULL) {
+        JBXL_DH_free(*p_dhkey);
+        *p_dhkey = NULL;
+        free_Buffer(&pp);
+        return pk;
+    }
+
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+    px.vldsz = BN_bn2bin(pub_key, px.buf);
+#else
+    px.vldsz = BN_bn2bin((*p_dhkey)->pub_key, px.buf);
+#endif
+
+    pk = join_DHpubkey(pp, px);                    // pp -> DHパラメタ(P,G鍵),  px-> Y鍵
+
+    free_Buffer(&pp);
+    free_Buffer(&px);
+
+    return pk;
+}
+
+
+/**
+Buffer  gen_DHspki_fs(Buffer pki, JBXL_DH** p_dhkey)
+
+Generate DH SPKI from Server's SPKI.
+
+サーバの公開鍵の情報（X.509の SubjectPublicKeyInfo, DER形式）の中の P,G鍵から
+自分の公開鍵情報（X.509 SPKI, DER形式）を作り出す．@n
+
+@param  pki     相手の公開鍵情報（DER形式）
+@param  p_dhkey DHの鍵パラメータが返る．要 JBXL_DH_free().
+@return 自分の公開鍵の情報（X.509の SubjectPublicKeyInfo, DER形式）
+*/
+Buffer  gen_DHspki_fs(Buffer pki, JBXL_DH** p_dhkey)
+{
+    int  sz, n = 0, code;
+    Buffer px, pp, pk;
+    Buffer pkey, gkey;
+
+    //
+    pk = init_Buffer();
+    if (p_dhkey==NULL) return pk;
+    //
+    if (*p_dhkey!=NULL) JBXL_DH_free(*p_dhkey);
+    *p_dhkey = DH_new();
+    if (*p_dhkey==NULL) return pk;
+
+    pkey = get_DHPkey(pki);
+    gkey = get_DHGkey(pki);
+    if (pkey.buf==NULL || gkey.buf==NULL) {
+        free_Buffer(&pkey);
+        free_Buffer(&gkey);
+        JBXL_DH_free(*p_dhkey);
+        *p_dhkey = NULL;
+        return pk;
+    }
+
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+    BIGNUM* dhp_bn = BN_bin2bn((const unsigned char*)(pkey.buf), pkey.vldsz, NULL);
+    BIGNUM* dhg_bn = BN_bin2bn((const unsigned char*)(gkey.buf), gkey.vldsz, NULL);
+    //
+    if (dhp_bn!=NULL && dhg_bn!=NULL) {
+        DH_set0_pqg(*p_dhkey, dhp_bn, NULL, dhg_bn);
+    }
+    else {
+        JBXL_DH_free(*p_dhkey);
+        *p_dhkey = NULL;
+    }
+    //BN_free(dhp_bn);  // DHkeyの中身も消えてしまうので ここでは freeしない
+    //BN_free(dhg_bn);
+#else
+    (*p_dhkey)->p = BN_bin2bn((const unsigned char*)(pkey.buf), pkey.vldsz, NULL);
+    (*p_dhkey)->g = BN_bin2bn((const unsigned char*)(gkey.buf), gkey.vldsz, NULL);
+#endif
+
+    free_Buffer(&pkey);
+    free_Buffer(&gkey);
+
+    //
+    if (*p_dhkey!=NULL) n = DH_check(*p_dhkey, &code);
+    if (n!=1 || code!=0) {
+        if (*p_dhkey!=NULL) JBXL_DH_free(*p_dhkey);
+        *p_dhkey = NULL;
+        return pk;
+    }
+
+    sz = DH_generate_key(*p_dhkey);
+    if (sz==0) {
+        JBXL_DH_free(*p_dhkey);
+        *p_dhkey = NULL;
+        return pk;
+    }
+
+    //
+    sz = i2d_DHparams(*p_dhkey, NULL);                  // パラメタのサイズを検査 
+    pp = px = make_Buffer(sz);                          // パラメタを入れるメモリを確保 
+    if (pp.buf==NULL) {
+        JBXL_DH_free(*p_dhkey);
+        *p_dhkey = NULL;
+        return pk;
+    }
+    pp.vldsz = i2d_DHparams(*p_dhkey, &(px.buf));       // パラメタ(P,G鍵)を DER形式へ．pp.bufに格納． 
+                                                        // px.bufは破壊される．
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+    const BIGNUM* pub_key = DH_get0_pub_key(*p_dhkey);
+    sz = BN_num_bytes(pub_key);
+#else
+    sz = BN_num_bytes((*p_dhkey)->pub_key);
+#endif
+
+    px = make_Buffer(sz);
+    if (px.buf==NULL) {
+        JBXL_DH_free(*p_dhkey);
+        *p_dhkey = NULL;
+        free_Buffer(&pp);
+        return px;
+    }
+
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+    px.vldsz = BN_bn2bin(pub_key, px.buf);              // 公開鍵(Y鍵)の DER形式 
+#else
+    px.vldsz = BN_bn2bin((*p_dhkey)->pub_key, px.buf);  // 公開鍵(Y鍵)の DER形式 
+#endif
+
+    pk = join_DHpubkey(pp, px);                         // pp -> DHパラメタ(P,G鍵),  px-> Y鍵
+
+    free_Buffer(&pp);
+    free_Buffer(&px);
+
+    return pk;
+}
+
+
+/**
+Buffer  read_DHspki_with_private(FILE* fp, JBXL_DH** p_dhkey)
+
+Diffie-Hellman の公開鍵情報（X.509の SubjectPublicKeyInfo）とプライペート鍵をファイルから読み込む．
+
+@param  fp      ファイルポインタ 
+@param  p_dhkey DHの鍵パラメータが返る．要 JBXL_DH_free(). OpenSSL3 の場合は EVP_PKEY**
+@return 読み込んだ鍵情報．
+*/
+Buffer  read_DHspki_with_private(FILE* fp, JBXL_DH** p_dhkey)
 {
     int  n = 0, code;
     unsigned int  md;
@@ -97,7 +556,7 @@ Buffer  read_DHspki_with_private(FILE* fp, DH** p_dhkey)
     pp = read_tagged_Buffer(fp, &md);
     if (pp.buf==NULL) return pp;
 
-    if (*p_dhkey!=NULL) DH_free(*p_dhkey);
+    if (*p_dhkey!=NULL) JBXL_DH_free(*p_dhkey);
     *p_dhkey = DH_new();
     if (*p_dhkey==NULL) {
         free_Buffer(&pp);
@@ -108,25 +567,25 @@ Buffer  read_DHspki_with_private(FILE* fp, DH** p_dhkey)
     gk = get_DHGkey(pp);
     yk = get_DHYkey(pp);
 
-#if OPENSSL_VERSION_NUMBER < 0x10101000L
-    // v1.1.0
-    (*p_dhkey)->p = BN_bin2bn((const unsigned char*)(pk.buf), pk.vldsz, NULL);
-    (*p_dhkey)->g = BN_bin2bn((const unsigned char*)(gk.buf), gk.vldsz, NULL);
-    (*p_dhkey)->pub_key = BN_bin2bn((const unsigned char*)(yk.buf), yk.vldsz, NULL);
-#else
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
     // v1.1.1
     BIGNUM* dhp_bn = BN_bin2bn((const unsigned char*)(pk.buf), pk.vldsz, NULL);
     BIGNUM* dhg_bn = BN_bin2bn((const unsigned char*)(gk.buf), gk.vldsz, NULL);
-    BIGNUM* dhy_bn = BN_bin2bn((const unsigned char*)(gk.buf), gk.vldsz, NULL);
+    BIGNUM* dhy_bn = BN_bin2bn((const unsigned char*)(yk.buf), yk.vldsz, NULL);
 
     if (dhp_bn!=NULL && dhg_bn!=NULL && dhy_bn!=NULL) {
         DH_set0_pqg(*p_dhkey, dhp_bn, NULL, dhg_bn);
         DH_set0_key(*p_dhkey, dhy_bn, NULL);
     }
     else {
-        DH_free(*p_dhkey);
+        JBXL_DH_free(*p_dhkey);
         *p_dhkey = NULL;
     }
+#else
+    // v1.1.0
+    (*p_dhkey)->p = BN_bin2bn((const unsigned char*)(pk.buf), pk.vldsz, NULL);
+    (*p_dhkey)->g = BN_bin2bn((const unsigned char*)(gk.buf), gk.vldsz, NULL);
+    (*p_dhkey)->pub_key = BN_bin2bn((const unsigned char*)(yk.buf), yk.vldsz, NULL);
 #endif
 
     free_Buffer(&pk);
@@ -136,7 +595,7 @@ Buffer  read_DHspki_with_private(FILE* fp, DH** p_dhkey)
     // 鍵のチェック
     if (*p_dhkey!=NULL) n = DH_check(*p_dhkey, &code);
     if (n!=1 || code!=0) {
-        if (*p_dhkey!=NULL) DH_free(*p_dhkey);
+        if (*p_dhkey!=NULL) JBXL_DH_free(*p_dhkey);
         free_Buffer(&pp);
         return pp;
     }
@@ -145,16 +604,16 @@ Buffer  read_DHspki_with_private(FILE* fp, DH** p_dhkey)
     md = JBXL_FIO_PRIV_KEY | JBXL_FIO_ORIGINAL;
     pv = read_tagged_Buffer(fp, &md);
     if (pv.buf==NULL) {
-        if (*p_dhkey!=NULL) DH_free(*p_dhkey);
+        if (*p_dhkey!=NULL) JBXL_DH_free(*p_dhkey);
         free_Buffer(&pp);
         return pp;
     }
 
-#if OPENSSL_VERSION_NUMBER < 0x10101000L
-    (*p_dhkey)->priv_key = BN_bin2bn((const unsigned char*)(pv.buf), pv.vldsz, NULL);
-#else
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
     BIGNUM* priv_key = BN_bin2bn((const unsigned char*)(pv.buf), pv.vldsz, NULL);
     DH_set0_key(*p_dhkey, NULL, priv_key);
+#else
+    (*p_dhkey)->priv_key = BN_bin2bn((const unsigned char*)(pv.buf), pv.vldsz, NULL);
 #endif
 
     free_Buffer(&pv);
@@ -164,7 +623,48 @@ Buffer  read_DHspki_with_private(FILE* fp, DH** p_dhkey)
 
 
 /**
-Buffer  get_DHspki_ff(char* filename, int ks, DH** p_dhkey)
+Buffer  get_DHprivatekey(JBXL_DH* dhkey)
+
+DH鍵 dh からプライベート鍵を取り出して返す．
+
+@param  dhkey  DH鍵．
+@return プライベート鍵
+*/
+Buffer  get_DHprivatekey(JBXL_DH* dhkey)
+{
+    int    sz;
+    Buffer pv;
+ 
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+    const BIGNUM* priv_key = DH_get0_pub_key(dhkey);
+    sz = BN_num_bytes(priv_key);
+#else
+    sz = BN_num_bytes(dhkey->priv_key);
+#endif
+
+    pv = make_Buffer(sz);
+    if (pv.buf==NULL) return pv;
+
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+    pv.vldsz = BN_bn2bin(priv_key, pv.buf);
+#else
+    pv.vldsz = BN_bn2bin(dhkey->priv_key, pv.buf);
+#endif
+
+    return pv;
+}
+
+
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Diffie-Hellman 鍵交換法 
+//     共通部分
+//
+
+/**
+Buffer  get_DHspki_ff(char* filename, int ks, JBXL_DH** p_dhkey)
 
 Generate DH SPKI from File.
 
@@ -179,11 +679,11 @@ p_dhkey に DHの鍵パラメータが返る．
 
 @param  filename  鍵が保存されているファイル
 @param  ks        新たに生成する場合の鍵長(Bit)．
-@param  p_dhkey   DHの鍵パラメータが返る．要 DH_free().
+@param  p_dhkey   DHの鍵パラメータが返る．要 JBXL_DH_free().
 
 @return DER形式の公開鍵情報．
 */
-Buffer  get_DHspki_ff(char* filename, int ks, DH** p_dhkey)
+Buffer  get_DHspki_ff(char* filename, int ks, JBXL_DH** p_dhkey)
 {
     Buffer  pki;
     FILE*   fp;
@@ -198,11 +698,13 @@ Buffer  get_DHspki_ff(char* filename, int ks, DH** p_dhkey)
         fclose(fp);
         //DEBUG_MODE PRINT_MESG("... done.\n");
         if (pki.buf!=NULL) {
-#if OPENSSL_VERSION_NUMBER < 0x10101000L
-            if (DH_size(*p_dhkey)<(ks+7)/8 || (*p_dhkey)->priv_key==NULL) free_Buffer(&pki);    // v1.1.0
-#else
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+            // NOP  No Check
+#elif OPENSSL_VERSION_NUMBER >= 0x10101000L
             const BIGNUM* priv_key = DH_get0_priv_key(*p_dhkey);
             if (DH_size(*p_dhkey)<(ks+7)/8 || priv_key==NULL) free_Buffer(&pki);              // v1.1.0
+#else
+            if (DH_size(*p_dhkey)<(ks+7)/8 || (*p_dhkey)->priv_key==NULL) free_Buffer(&pki);    // v1.1.0
 #endif
         }
     }
@@ -230,203 +732,42 @@ Buffer  get_DHspki_ff(char* filename, int ks, DH** p_dhkey)
 
 
 /**
-Buffer  gen_DHspki(int ks, DH** p_dhkey)
+int  save_DHspki_with_private(Buffer pki, FILE* fp, JBXL_DH* dhkey)
 
-Diffie-Hellman の鍵を生成し,公開鍵の完全な情報（X.509の SubjectPublicKeyInfo）のDER形式で返す．@n
-p_dhkey に DHの鍵パラメータが返る．
+Diffie-Hellman の公開鍵情報（X.509の SubjectPublicKeyInfo）pkiとプライベート鍵
+(dhkeyより取得)をファイルに保存する．公開鍵情報，プライベート鍵の順で書き込まれる．
+既にファイルが存在する場合，その内容は上書きされる．
 
-@param  ks      鍵長(Bit)．512/1024/2048 を指定．
-@param  p_dhkey DHの鍵パラメータが返る．要 DH_free().
-@return DER形式の公開鍵情報．
+@param  pki   保存する鍵情報（DER）．
+@param  fp    ファイルポインタ 
+@param  dhkey DH鍵． OpenSSL3 の場合は EVP_PKEY*
+
+@retval TRUE  成功．
+@retval FALSE 失敗．ファイルの内容は保証されない．
 */
-Buffer  gen_DHspki(int ks, DH** p_dhkey)
-{
-    int  sz, n, code;
-    Buffer px, pp, pk;
+int  save_DHspki_with_private(Buffer pki, FILE* fp, JBXL_DH* dhkey)
+{    
+    unsigned int  md;
+    Buffer pv;
 
-    pk = init_Buffer();
-    if (p_dhkey==NULL) return pk;
+    if (fp==NULL || dhkey==NULL) return FALSE;
 
-    //if (!RAND_load_file("/dev/random", 1024)) return pk;
-    //DEBUG_MODE PRINT_MESG("Load /dev/urandom.\n");
-    if (!RAND_load_file("/dev/urandom", 1024)) return pk;
+    md = JBXL_FIO_SPKI | JBXL_FIO_ORIGINAL;
+    if (!save_tagged_Buffer(pki, fp, md, FALSE)) return FALSE;
 
-    //DEBUG_MODE PRINT_MESG("Generate parameters.\n");
-    do {
-        if (*p_dhkey!=NULL) DH_free(*p_dhkey);
-        *p_dhkey = DH_new();
+    pv = get_DHprivatekey(dhkey);
+    if (pv.buf==NULL) return FALSE;
 
-#if OPENSSL_VERSION_NUMBER < 0x10101000L
-        *p_dhkey = DH_generate_parameters(ks, DH_GENERATOR_2, NULL, NULL);
-#else
-        n = DH_generate_parameters_ex(*p_dhkey, ks, DH_GENERATOR_2, NULL);
-#endif
-        n = DH_check(*p_dhkey, &code);
-    } while (n!=1 || code!=0);
+    md = JBXL_FIO_PRIV_KEY | JBXL_FIO_ORIGINAL;
+    if (!save_tagged_Buffer(pv,  fp, md, FALSE)) return FALSE;
+    free_Buffer(&pv);
 
-    //DEBUG_MODE PRINT_MESG("Generate key.\n");
-    sz = DH_generate_key(*p_dhkey);                 // 公開鍵(DH->pub_key)と秘密鍵(DH->priv_key)の生成
-    if (sz==0) {
-        DH_free(*p_dhkey);
-        *p_dhkey = NULL;
-        return pk;
-    }
-
-    //DEBUG_MODE PRINT_MESG("Check key size.\n");
-    sz = i2d_DHparams(*p_dhkey, NULL);              // パラメタのサイズを検査 
-    pp = px = make_Buffer(sz);                      // パラメタを入れるメモリを確保 
-    if (pp.buf==NULL) {
-        DH_free(*p_dhkey);
-        *p_dhkey = NULL;
-        return pk;
-    }
-    pp.vldsz = i2d_DHparams(*p_dhkey, &(px.buf));   // パラメタ(P,G鍵)を DER形式へ．pp.bufに格納． 
-                                                    // px.bufは破壊される．
-
-#if OPENSSL_VERSION_NUMBER < 0x10101000L
-    sz = BN_num_bytes((*p_dhkey)->pub_key);
-#else
-    const BIGNUM* pub_key = DH_get0_pub_key(*p_dhkey);
-    sz = BN_num_bytes(pub_key);
-#endif
-
-    px = make_Buffer(sz);
-    if (px.buf==NULL) {
-        DH_free(*p_dhkey);
-        *p_dhkey = NULL;
-        free_Buffer(&pp);
-        return pk;
-    }
-
-#if OPENSSL_VERSION_NUMBER < 0x10101000L
-    px.vldsz = BN_bn2bin((*p_dhkey)->pub_key, px.buf);
-#else
-    px.vldsz = BN_bn2bin(pub_key, px.buf);
-#endif
-
-    pk = join_DHpubkey(pp, px);                    // pp -> DHパラメタ(P,G鍵),  px-> Y鍵
-
-    free_Buffer(&pp);
-    free_Buffer(&px);
-
-    return pk;
+    return  TRUE;
 }
 
 
 /**
-Buffer  gen_DHspki_fs(Buffer pki, DH** p_dhkey)
-
-Generate DH SPKI from Server's SPKI.
-
-サーバの公開鍵の情報（X.509の SubjectPublicKeyInfo, DER形式）の中の P,G鍵から
-自分の公開鍵情報（X.509 SPKI, DER形式）を作り出す．@n
-
-@param  pki     相手の公開鍵情報（DER形式）
-@param  p_dhkey DHの鍵パラメータが返る．要 DH_free().
-@return 自分の公開鍵の情報（X.509の SubjectPublicKeyInfo, DER形式）
-*/
-Buffer  gen_DHspki_fs(Buffer pki, DH** p_dhkey)
-{
-    int  sz, n = 0, code;
-    Buffer px, pp, pk;
-    Buffer pkey, gkey;
-
-    //
-    pk = init_Buffer();
-    if (p_dhkey==NULL) return pk;
-    //
-    if (*p_dhkey!=NULL) DH_free(*p_dhkey);
-    *p_dhkey = DH_new();
-    if (*p_dhkey==NULL) return pk;
-
-    pkey = get_DHPkey(pki);
-    gkey = get_DHGkey(pki);
-    if (pkey.buf==NULL || gkey.buf==NULL) {
-        free_Buffer(&pkey);
-        free_Buffer(&gkey);
-        DH_free(*p_dhkey);
-        *p_dhkey = NULL;
-        return pk;
-    }
-
-#if OPENSSL_VERSION_NUMBER < 0x10101000L
-    (*p_dhkey)->p = BN_bin2bn((const unsigned char*)(pkey.buf), pkey.vldsz, NULL);
-    (*p_dhkey)->g = BN_bin2bn((const unsigned char*)(gkey.buf), gkey.vldsz, NULL);
-#else
-    BIGNUM* dhp_bn = BN_bin2bn((const unsigned char*)(pkey.buf), pkey.vldsz, NULL);
-    BIGNUM* dhg_bn = BN_bin2bn((const unsigned char*)(gkey.buf), gkey.vldsz, NULL);
-    //
-    if (dhp_bn!=NULL && dhg_bn!=NULL) {
-        DH_set0_pqg(*p_dhkey, dhp_bn, NULL, dhg_bn);
-    }
-    else {
-        DH_free(*p_dhkey);
-        *p_dhkey = NULL;
-    }
-    //BN_free(dhp_bn);  // DHkeyの中身も消えてしまうので ここでは freeしない
-    //BN_free(dhg_bn);
-#endif
-
-    free_Buffer(&pkey);
-    free_Buffer(&gkey);
-
-    //
-    if (*p_dhkey!=NULL) n = DH_check(*p_dhkey, &code);
-    if (n!=1 || code!=0) {
-        if (*p_dhkey!=NULL) DH_free(*p_dhkey);
-        *p_dhkey = NULL;
-        return pk;
-    }
-
-    sz = DH_generate_key(*p_dhkey);
-    if (sz==0) {
-        DH_free(*p_dhkey);
-        *p_dhkey = NULL;
-        return pk;
-    }
-
-    //
-    sz = i2d_DHparams(*p_dhkey, NULL);                  // パラメタのサイズを検査 
-    pp = px = make_Buffer(sz);                          // パラメタを入れるメモリを確保 
-    if (pp.buf==NULL) {
-        DH_free(*p_dhkey);
-        *p_dhkey = NULL;
-        return pk;
-    }
-    pp.vldsz = i2d_DHparams(*p_dhkey, &(px.buf));       // パラメタ(P,G鍵)を DER形式へ．pp.bufに格納． 
-                                                        // px.bufは破壊される．
-#if OPENSSL_VERSION_NUMBER < 0x10101000L
-    sz = BN_num_bytes((*p_dhkey)->pub_key);
-#else
-    const BIGNUM* pub_key = DH_get0_pub_key(*p_dhkey);
-    sz = BN_num_bytes(pub_key);
-#endif
-
-    px = make_Buffer(sz);
-    if (px.buf==NULL) {
-        DH_free(*p_dhkey);
-        *p_dhkey = NULL;
-        free_Buffer(&pp);
-        return px;
-    }
-
-#if OPENSSL_VERSION_NUMBER < 0x10101000L
-    px.vldsz = BN_bn2bin((*p_dhkey)->pub_key, px.buf);  // 公開鍵(Y鍵)の DER形式 
-#else
-    px.vldsz = BN_bn2bin(pub_key, px.buf);              // 公開鍵(Y鍵)の DER形式 
-#endif
-
-    pk = join_DHpubkey(pp, px);                         // pp -> DHパラメタ(P,G鍵),  px-> Y鍵
-
-    free_Buffer(&pp);
-    free_Buffer(&px);
-
-    return pk;
-}
-
-
-/**
-Buffer get_DHsharedkey(Buffer pki, DH* dhkey)
+Buffer get_DHsharedkey(Buffer pki, JBXL_DH* dhkey)
 
 相手の公開鍵の情報（X.509の SubjectPublicKeyInfo, DER形式）とDHkey（自分の鍵情報）を元に共通かぎを作り出す．
 
@@ -439,7 +780,7 @@ dhkkey には DH_generate_key(DHkey)（gen_DHspki() または gen_DHspki_fs()で
 
 参考：man -M /usr/local/ssl/man bn
 */
-Buffer get_DHsharedkey(Buffer pki, DH* dhkey)
+Buffer get_DHsharedkey(Buffer pki, JBXL_DH* dhkey)
 {
     Buffer  ykey, skey;
     
@@ -455,7 +796,7 @@ Buffer get_DHsharedkey(Buffer pki, DH* dhkey)
 
 
 /**
-Buffer  get_DHsharedkey_fY(Buffer ykey, DH* dhkey)
+Buffer  get_DHsharedkey_fY(Buffer ykey, JBXL_DH* dhkey)
 
 相手の（Diffie-Hellman の）Y鍵とDH Key（自分の鍵情報）を元に共通鍵を作り出す．
 
@@ -468,7 +809,7 @@ dhkkey には DH_generate_key(DHkey)（gen_DHspki() または gen_DHspki_fs()で
 
 参考：man -M /usr/local/ssl/man bn
 */
-Buffer  get_DHsharedkey_fY(Buffer ykey, DH* dhkey)
+Buffer  get_DHsharedkey_fY(Buffer ykey, JBXL_DH* dhkey)
 {
     int sz;
     Buffer  buf;
@@ -478,7 +819,7 @@ Buffer  get_DHsharedkey_fY(Buffer ykey, DH* dhkey)
 
     BIGNUM* yk = BN_bin2bn((const unsigned char*)(ykey.buf), ykey.vldsz, NULL);
 
-    sz  = DH_size(dhkey);
+    sz  = JBXL_DH_size(dhkey);
     buf = make_Buffer(sz);
     buf.vldsz = sz;
 
@@ -680,41 +1021,6 @@ Buffer  get_DHalgorism(Buffer param)
     for (i=0; i<lp; i++) pp.buf[i] = param.buf[sz+i];
     pp.vldsz = lp;
     return pp;
-}
-
-
-/**
-Buffer  get_DHprivatekey(DH* dhkey)
-
-DH鍵 dh からプライベート鍵を取り出して返す．
-
-@param  dhkey  DH鍵．
-@return プライベート鍵
-*/
-Buffer  get_DHprivatekey(DH* dhkey)
-{
-    int    sz;
-    Buffer pv;
- 
-#if OPENSSL_VERSION_NUMBER < 0x10101000L
-    sz = BN_num_bytes(dhkey->priv_key);
-//#elif OPENSSL_VERSION_NUMBER < 0x30000000L
-#else
-    const BIGNUM* priv_key = DH_get0_pub_key(dhkey);
-    sz = BN_num_bytes(priv_key);
-#endif
-
-    pv = make_Buffer(sz);
-    if (pv.buf==NULL) return pv;
-
-#if OPENSSL_VERSION_NUMBER < 0x10101000L
-    pv.vldsz = BN_bn2bin(dhkey->priv_key, pv.buf);
-//#elif OPENSSL_VERSION_NUMBER < 0xF0000000L
-#else
-    pv.vldsz = BN_bn2bin(priv_key, pv.buf);
-#endif
-
-    return pv;
 }
 
 

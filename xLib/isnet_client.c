@@ -366,11 +366,11 @@ int  start_CRYPT_transfer(int sock, int keyex, int cryptm, Buffer ipaddr, char* 
         spki = send_algor_recv_spki(sock, (char*)"DH", tm, NULL, NULL);
         //
         if (spki.buf!=NULL) {
-            DH* dhkey = NULL;
+            JBXL_DH* dhkey = NULL;
             mpki = gen_DHspki_fs(spki, &dhkey);
             if (dhkey!=NULL) {
                 gen_CRYPT_SharedKey(keyex, spki, shdkey, (void*)dhkey);
-                DH_free(dhkey);
+                JBXL_DH_free(dhkey);
             }
             else {
                 PRINT_MESG("ERROR: start_CRYPT_transfer: DH Key is NULL\n");

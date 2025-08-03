@@ -40,6 +40,7 @@ for use in the OpenSSL Toolkit. (http://www.openssl.org/)
 #include <openssl/ssl.h>
 #include <openssl/evp.h>
 #include <openssl/rand.h>
+#include <openssl/core_names.h>
 
 
 #ifdef  WIN32
@@ -47,24 +48,38 @@ for use in the OpenSSL Toolkit. (http://www.openssl.org/)
 #endif
 
 
-// Diffie-Hellman
-int      save_DHspki_with_private(Buffer  pki, FILE* fp, DH* dhkey);
-Buffer   read_DHspki_with_private(FILE* fp, DH** p_dhkey);
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+    EVP_PKEY* JBXL_DH_new(OSSL_PARAM* params, int ks);
 
-Buffer   get_DHspki_ff(char* fn, int sz, DH** p_dhkey);
+    #define  JBXL_DH            EVP_PKEY
+    #define  JBXL_DH_free(p)    EVP_PKEY_free((p))
+    #define  JBXL_DH_size(p)    EVP_PKEY_get_size((p));
+#else 
+    #define  JBXL_DH            DH
+    #define  JBXL_DH_free(p)    DH_free((p))
+    #define  JBXL_DH_size(p)    DH_size((p));
+#endif
+
+
+// Diffie-Hellman
+
+int      save_DHspki_with_private(Buffer  pki, FILE* fp, JBXL_DH* dhkey);
+Buffer   read_DHspki_with_private(FILE* fp, JBXL_DH** p_dhkey);
+
+Buffer   get_DHspki_ff(char* fn, int sz, JBXL_DH** p_dhkey);
 #define  get_DHspki_file(p, s, d)    get_DHspki_ff((p), (s), (d))
 
-Buffer   gen_DHspki(int sz, DH** p_dhkey);
-Buffer   gen_DHspki_fs(Buffer pki, DH** p_dhkey);
+Buffer   gen_DHspki(int ks, EVP_PKEY** p_dhkey);
+Buffer   gen_DHspki_fs(Buffer pki, JBXL_DH** p_dhkey);
 
-Buffer   get_DHsharedkey   (Buffer pki,  DH* dhkey);
-Buffer   get_DHsharedkey_fY(Buffer ykey, DH* dhkey);
+Buffer   get_DHsharedkey   (Buffer pki,  JBXL_DH* dhkey);
+Buffer   get_DHsharedkey_fY(Buffer ykey, JBXL_DH* dhkey);
 
 Buffer   get_DHYkey(Buffer param);
 Buffer   get_DHPkey(Buffer param);
 Buffer   get_DHGkey(Buffer param);
 Buffer   get_DHalgorism(Buffer param);
-Buffer   get_DHprivatekey(DH* dhkey);
+Buffer   get_DHprivatekey(JBXL_DH* dhkey);
 
 Buffer   join_DHpubkey(Buffer param, Buffer key);
 
