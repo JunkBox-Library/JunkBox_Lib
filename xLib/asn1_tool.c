@@ -375,6 +375,7 @@ tDERツリーの表示．ポインタ pp以降の全てのノードを fp に出
 void  print_tDER(FILE* fp, tDER* pp)
 {
     if (fp==NULL) fp = stderr;
+    if (pp!=NULL && pp->ldat.id==JBXL_ASN1_ANCHOR) pp = pp->next;
 
     if (pp!=NULL) {
         while(pp->esis!=NULL) pp = pp->esis;
@@ -382,8 +383,8 @@ void  print_tDER(FILE* fp, tDER* pp)
             int i;
             tList_data ld = pp->ldat;
 
-            for(i=0; i<pp->depth; i++) fprintf(fp, "    ");
-            if (pp->depth>0) fprintf(fp, " -> ");
+            for(i=0; i<pp->depth-1; i++) fprintf(fp, "    ");
+            if (pp->depth-1>0) fprintf(fp, " -> ");
             fprintf(fp, "%d: ", pp->depth);
             asn1_print_id(fp, ld.id);
             fprintf(fp, "%d, %d ", ld.lv, ld.val.vldsz);
@@ -393,9 +394,6 @@ void  print_tDER(FILE* fp, tDER* pp)
             if (pp->next!=NULL) print_tDER(fp, pp->next);
 
             pp = pp->ysis;
-            //if (pp!=NULL) {
-            //    for(i=1; i<pp->depth-1; i++) fprintf(fp, "           ");      // for " -> "
-            //}
         } while(pp!=NULL);
     }
     else {
