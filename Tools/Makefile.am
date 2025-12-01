@@ -32,7 +32,7 @@ check_ip_allow_SOURCES = check_ip_allow.c
 check_ip_allow_LDADD = $(LIB_EXT) $(LIB_BSC)
 
 llsd_dump_SOURCES = llsd_dump.c
-llsd_dump_LDADD = $(LIB_EXT) $(LIB_BSC)
+llsd_dump_LDADD = $(LIB_EXT) $(LIB_BSC) -lz
 
 
 clean:
