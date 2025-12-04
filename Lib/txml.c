@@ -39,7 +39,7 @@ tXML*  xml_parse(char* pp)
 @param  pp  文字列の XMLデータへのポインタ．
 @return XMLデータを格納した tXMLのアンカーへのポインタ．
 @return エラーの場合，next以下のノードにはエラーを起こす直前までの内容が保存される
-@retval 負数  エラーを起こした場合 stateに JBXL_XML_PARSED以外の値（0以下）が入る．
+@retval stats: 負数  エラーを起こした場合 stateに JBXL_XML_PARSED以外の値（0以下）が入る．
 
 @code
     tXML* xml = xml_parse("<a t=\"x\"><b>aaaa<d>bbbb</d>cccc<xxxi/>ddddd</b><c><e></e></c></a>");
