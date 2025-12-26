@@ -165,7 +165,7 @@ void  dump_bin64(char* format, Buffer str)
 {
     int  i;
 
-    fprintf(stderr, format);
+    fprintf(stderr, "%s", format);
     for (i=0; i<str.vldsz; i++) fprintf(stderr, "%1d", str.buf[i]);
     fprintf(stderr, "\n");
 }
