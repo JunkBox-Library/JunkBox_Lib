@@ -144,7 +144,7 @@ typedef  tTree  tJson;
     JBXL_JSON_NODE_EMPTY        JSONの空のノード
     JBXL_JSON_NOT_CLOSED        最終的にノードが閉じなかったが，解釈できるところまでは解釈した．
     JBXL_JSON_PARSE_TERM        JSON のパースが途中で終了した．入力データが不完全．
-    JBXL_JSON_IN_STR            SONデータの属性値処理で文字列を処理中．
+    JBXL_JSON_IN_STR            JSONデータの属性値処理で文字列を処理中．
     JBXL_JSON_IN_ARRAY          JSONデータの属性値処理で配列を処理中．
 
     JBXL_JSON_ERROR             tJson ライブラリのエラー
